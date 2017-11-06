@@ -13,7 +13,9 @@
 
 ### User config
 `ALTER role nsx SET client_encoding TO 'utf8';`
+
 `ALTER role nsx SET default_transaction_isolation TO 'read committed';`
+
 `ALTER role nsx SET timezone TO 'UTC';`
 
 ### Grant privileges
