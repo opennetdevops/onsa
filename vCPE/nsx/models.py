@@ -10,5 +10,5 @@ class Portgroup (models.Model):
 	name = models.CharField(max_length=50)
 	hub = models.ForeignKey(Hub)
 
-class Client (models.Model)
+class Client (models.Model):
 	name = models.CharField(max_length=50)
