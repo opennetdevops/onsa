@@ -22,7 +22,9 @@ class Client (models.Model):
 class PrivateIrsService (models.Model):
 	ip_segment = models.GenericIPAddressField()
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
+	client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
 
 class PublicIrsService (models.Model):
 	ip_segment = models.GenericIPAddressField()
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
+	client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
