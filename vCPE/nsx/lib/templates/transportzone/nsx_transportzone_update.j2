@@ -1,0 +1,21 @@
+<vdnScope>
+	<objectId>{{ objectId }}</objectId>
+	{% if name is defined %}
+	<name>{{ name }}</name>
+	{% endif %}
+	{% if description is defined %}
+	<description>{{ description }}</description>
+	{% endif %}
+	<clusters>
+		<cluster>
+			{% for cluster in clusters %}
+			<cluster>
+				<objectId>{{ cluster.objectId }}</objectId>
+			</cluster>
+			{% endfor %}
+		</cluster>
+	</clusters>
+	{% if controlPlaneMode is defined %}
+	<controlPlaneMode>{{ controlPlaneMode }}</controlPlaneMode>
+	{% endif %}
+</vdnScope>
