@@ -11,6 +11,9 @@ class Hub (models.Model):
 	uplink_ip = models.GenericIPAddressField()
 	uplink_pg = models.CharField(max_length=50)
 
+	def __str__(self):
+		return self.name
+
 class Portgroup (models.Model):
 	vlan_tag = models.IntegerField()
 	name = models.CharField(max_length=50)
@@ -18,6 +21,9 @@ class Portgroup (models.Model):
 
 class Client (models.Model):
 	name = models.CharField(max_length=50)
+
+	def __str__(self):
+		return self.name
 
 class PrivateIrsService (models.Model):
 	ip_segment = models.GenericIPAddressField()

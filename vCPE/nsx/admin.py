@@ -1,21 +1,17 @@
 from django.contrib import admin
 from .models import Hub, Portgroup, Client, PrivateIrsService, PublicIrsService
 
-
+class PrivateIrsAdmin (admin.ModelAdmin):
+	def save_model(self, request, obj, form, change):
+	  super(PrivateIrsAdmin, self).save_model(request, obj, form, change)
 
 class ClientAdmin (admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
+	list_display = ['name']
 
-
-
-
-
-# Register your models here.
 admin.site.register(Hub)
 admin.site.register(Portgroup)
-admin.site.register(Client, ClientAdmin)
-admin.site.register(PrivateIrsService)
+admin.site.register(Client,ClientAdmin)
+admin.site.register(PrivateIrsService,PrivateIrsAdmin)
 admin.site.register(PublicIrsService)
 
 
