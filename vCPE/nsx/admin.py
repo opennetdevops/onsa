@@ -1,4 +1,5 @@
 from django.contrib import admin
+from .lib.utils.nsx.edge import *
 from .models import Hub, Portgroup, Client, PrivateIrsService, PublicIrsService
 
 class PrivateIrsAdmin (admin.ModelAdmin):
@@ -7,6 +8,8 @@ class PrivateIrsAdmin (admin.ModelAdmin):
 
 class ClientAdmin (admin.ModelAdmin):
 	list_display = ['name']
+	def save_model(self, request, obj, form, change):
+		super(ClientAdmin, self).save_model(request, obj, form, change)
 
 admin.site.register(Hub)
 admin.site.register(Portgroup)

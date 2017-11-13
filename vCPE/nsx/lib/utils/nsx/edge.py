@@ -1,9 +1,5 @@
-import sys
-sys.path.append("../utils/common/")
-sys.path.append("../common/")
-
-from nsx_rest import *
-from jinja import render
+from .nsx_rest import *
+from ..common.jinja import render
 
 import json
 
