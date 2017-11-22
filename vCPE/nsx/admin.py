@@ -16,5 +16,3 @@ admin.site.register(Portgroup)
 admin.site.register(Client,ClientAdmin)
 admin.site.register(PrivateIrsService,PrivateIrsAdmin)
 admin.site.register(PublicIrsService)
-
-
