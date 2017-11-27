@@ -8,6 +8,7 @@ class Hub (models.Model):
 	cluster_name = models.CharField(max_length=50)
 	datastore_id = models.CharField(max_length=50)
 	resource_pool_id = models.CharField(max_length=50)
+	#gateway ip
 	uplink_ip = models.GenericIPAddressField()
 	uplink_pg = models.CharField(max_length=50)
 

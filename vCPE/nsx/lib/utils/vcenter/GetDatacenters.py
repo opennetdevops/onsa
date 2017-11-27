@@ -76,3 +76,6 @@ def getAllDatacenters():
         return 1
 
     return datacenters
+
+
+print (getAllDatacenters())
