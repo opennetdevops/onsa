@@ -1,0 +1,1 @@
+[{"pk":"1", "model": "nsx.hub", "fields": {"name":"Centro", "cluster_name":"VCPE-CEN-HUB01", "transport_zone_name":"CENTRO-TZ", "datastore_id":"datastore-4554", "resource_pool_id":"resgroup-4887","uplink_pg":"PG-CEN-UPLINK", "uplink_ip":"192.168.0.1", "mx_ip": "10.120.47.77" }}]
