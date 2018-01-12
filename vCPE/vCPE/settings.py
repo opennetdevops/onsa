@@ -28,6 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost']
 
 
+JQUERY_URL = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'nsx.apps.NsxConfig',
+    'django_select2',
 ]
 
 MIDDLEWARE = [

@@ -30,6 +30,6 @@ admin.autodiscover()
 urlpatterns = [
 
     # place it at whatever base url you like
-
+    url(r'^select2/', include('django_select2.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
