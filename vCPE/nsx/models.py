@@ -73,6 +73,10 @@ class Portgroup (models.Model):
 	def __str__(self):
 		return self.name
 
+	def getFreePortgroupAtHub(hub):
+		portgroupsFree = Portgroup.objects.filter(used=False)
+		return portgroupsFree[0]
+
 
 
 class Client (models.Model):

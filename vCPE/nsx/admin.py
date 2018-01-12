@@ -36,7 +36,15 @@ class PrivateIrsAdmin(admin.ModelAdmin):
 	def save_model(self, request, obj, form, change):
 
 		#Create NSX Edge
+
 		obj.edge_name = obj.client.name
+		print("Hub Name: ",form.cleaned_data['hub'].name)
+		print("SCO Name: ",form.cleaned_data['sco'].name)
+		pg = Portgroup.getFreePortgroupAtHub(form.cleaned_data['hub'].name)
+		print("Portgroup Name: ", pg.name)
+		obj.portgroup = pg
+
+		
 		#portgroup_id = getPortgroupId(obj.hub.uplink_pg)
 		# jinja_vars = {  "datacenterMoid" : 'datacenter-2',
 		# 				"name" : 'Edge-Test-Django',
@@ -60,7 +68,7 @@ class PrivateIrsAdmin(admin.ModelAdmin):
 		# 		}
 
 		# result = createNsxEdge(jinja_vars)
-		print(form.cleaned_data)
+		# print(form.cleaned_data)
 
 		super(PrivateIrsAdmin, self).save_model(request, obj, form, change)
 
