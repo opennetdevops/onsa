@@ -10,7 +10,7 @@ import argparse
 import logging, sys
 
 
-host = '10.120.78.204'
+# host = '10.120.78.204'
 user = mgiachetti
 passwd = Anabel15
 
