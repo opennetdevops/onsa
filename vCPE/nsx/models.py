@@ -41,6 +41,8 @@ class ScoPort(models.Model):
 
 
 
+
+
 class IpWan (models.Model):
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 	used = models.BooleanField(default=False)
@@ -98,6 +100,7 @@ class Service(models.Model):
 #
 class PrivateIrsService (Service):
 	ip_segment = models.GenericIPAddressField()
+
 	def __str__(self):
 		return self.client.name
 

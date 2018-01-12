@@ -3,19 +3,9 @@ from pprint import pprint
 from .lib.utils.nsx.edge import *
 from .lib.utils.vcenter.GetPortgroups import *
 from .models import *
-from django.forms import ModelChoiceField
-from django.forms import ModelForm
+from .forms import *
 
 
-class HubModelChoiceField(ModelChoiceField):
-	def label_from_instance(self, obj):
-		return "%s"%(obj.name)
-
-class IrsServiceForm(ModelForm):
-	hub = HubModelChoiceField(Hub.objects.all().order_by('name'))
-	class Meta:
-		model = PrivateIrsService
-		fields = ('ip_segment','client','portgroup','sco_port')
 
 
 
@@ -28,17 +18,22 @@ class PublicIrsAdmin (admin.ModelAdmin):
 	form = IrsServiceForm
 
 
-class PrivateIrsAdmin (admin.ModelAdmin):
-	#exclude = ('edge_name', 'portgroup')
-	list_display = ('ip_segment','client','edge_name')
-	list_filter = ('client', 'edge_name')
 
+
+
+class PrivateIrsAdmin(admin.ModelAdmin):
 	form = IrsServiceForm
 
-	def save_model(self, request, obj, form, change):
-		
+	list_display = ('ip_segment','client','edge_name','hub')
+	list_filter = ('client', 'edge_name')
 
-		#
+	exclude = ('edge_name', 'portgroup')
+
+	def hub(self, obj):
+		return obj.portgroup.hub
+
+
+	def save_model(self, request, obj, form, change):
 
 		#Create NSX Edge
 		obj.edge_name = obj.client.name
