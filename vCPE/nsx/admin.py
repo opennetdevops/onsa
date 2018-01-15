@@ -1,7 +1,7 @@
 from django.contrib import admin
 from pprint import pprint
 from .lib.utils.nsx.edge import *
-from .lib.utils.vcenter.GetPortgroups import *
+from .lib.utils.vcenter import GetPortgroups as vc_pg
 from .models import *
 from .forms import *
 
@@ -39,38 +39,44 @@ class PrivateIrsAdmin(admin.ModelAdmin):
 
 		obj.edge_name = obj.client.name
 		print("Hub Name: ",form.cleaned_data['hub'].name)
+		hub = form.cleaned_data['hub']
 		print("SCO Name: ",form.cleaned_data['sco'].name)
-		pg = Portgroup.getFreePortgroupAtHub(form.cleaned_data['hub'].name)
+		sco = form.cleaned_data['sco']
+		pg = Portgroup.get_free_pg_from_hub(form.cleaned_data['hub'])
 		print("Portgroup Name: ", pg.name)
 		obj.portgroup = pg
 
 		
-		#portgroup_id = getPortgroupId(obj.hub.uplink_pg)
-		# jinja_vars = {  "datacenterMoid" : 'datacenter-2',
-		# 				"name" : 'Edge-Test-Django',
-		# 				"description" : "",
-		# 				"appliances" : {    "applianceSize" : 'xlarge',
-		# 														"appliance" : {"resourcePoolId" : obj.hub.resource_pool_id,
-		# 																	 "datastoreId" : obj.hub.datastore_id
-		# 																	}},
-		# 		"vnics" : [{"index" : "0",
-		# 								"name" : "uplink",
-		# 								"type" : "Uplink",
-		# 								"portgroupId" : portgroup_id,
-		# 								"primaryAddress" : "192.168.0.1",
-		# 								"subnetMask" : "255.255.255.0",
-		# 								"mtu" : "1500",
-		# 								"isConnected" : "true"
-		# 							 }],
-		# 		"cliSettings" : {"userName" : "admin",
-		# 										 "password" : "T3stC@s3NSx!",
-		# 										 "remoteAccess" : "true"}
-		# 		}
+		portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
+		jinja_vars = {  "datacenterMoid" : hub.datacenter_id,
+						"name" : 'Edge-Test-Django', #TODO: Change me
+						"description" : "",
+						"appliances" : {    "applianceSize" : 'xlarge',
+																"appliance" : {"resourcePoolId" : hub.resource_pool_id,
+																			 "datastoreId" : hub.datastore_id
+																			}},
+				"vnics" : [{"index" : "0",
+										"name" : "uplink",
+										"type" : "Uplink",
+										"portgroupId" : portgroup_id,
+										"primaryAddress" : "192.168.0.1", #TODO: Change me
+										"subnetMask" : "255.255.255.0", #TODO: Change me
+										"mtu" : "1500",
+										"isConnected" : "true"
+									 }],
+				"cliSettings" : {"userName" : "admin",
+												 "password" : "T3stC@s3NSx!", #TODO: Change me
+												 "remoteAccess" : "true"}
+				}
+		port = ScoPort.get_free_port_from_sco(form.cleaned_data['sco'])
+		print("Port Name: ", port.description)
+		obj.sco_port = port
 
-		# result = createNsxEdge(jinja_vars)
 		# print(form.cleaned_data)
 
 		super(PrivateIrsAdmin, self).save_model(request, obj, form, change)
+		result = createNsxEdge(jinja_vars)
+		#todo use ports and vlans
 
 class ClientAdmin (admin.ModelAdmin):
 	list_display = ['name']

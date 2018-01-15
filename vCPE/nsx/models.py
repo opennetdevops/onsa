@@ -8,6 +8,7 @@ class Hub (models.Model):
 	cluster_name = models.CharField(max_length=50)
 	datastore_id = models.CharField(max_length=50)
 	resource_pool_id = models.CharField(max_length=50)
+	datacenter_id = models.CharField(max_length=50)
 	#gateway ip
 	uplink_ip = models.GenericIPAddressField()
 	uplink_pg = models.CharField(max_length=50)
@@ -38,6 +39,10 @@ class ScoPort(models.Model):
 
 	def __str__(self):
 		return self.description
+
+	def get_free_port_from_sco(sco):
+		portsFree = ScoPort.objects.filter(used=False, sco=sco) 
+		return portsFree[0]
 
 
 
@@ -73,8 +78,8 @@ class Portgroup (models.Model):
 	def __str__(self):
 		return self.name
 
-	def getFreePortgroupAtHub(hub):
-		portgroupsFree = Portgroup.objects.filter(used=False)
+	def get_free_pg_from_hub(hub):
+		portgroupsFree = Portgroup.objects.filter(used=False, hub=hub) 
 		return portgroupsFree[0]
 
 
