@@ -44,6 +44,12 @@ class ScoPort(models.Model):
 		portsFree = ScoPort.objects.filter(used=False, sco=sco) 
 		return portsFree[0]
 
+	def assign_free_port_from_sco(sco):
+		portsFree = ScoPort.objects.filter(used=False, sco=sco) 
+		portsFree[0].used = True
+		portsFree[0].save()
+		return portsFree[0]
+
 
 
 
@@ -51,21 +57,39 @@ class ScoPort(models.Model):
 class IpWan (models.Model):
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 	used = models.BooleanField(default=False)
-	network = models.GenericIPAddressField()
+	network = models.CharField(max_length=50)
+	prefix = models.PositiveSmallIntegerField()
 	
 	def __str__(self):
-		return "network"
+		return self.network
+
+	def get_free_wan_ip_from_hub(hub):
+		ipWanFree = IpWan.objects.filter(used=False, hub=hub) 
+		return ipWanFree[0]
+
+	def assign_free_wan_ip_from_hub(hub):
+		ipWanFree = IpWan.objects.filter(used=False, hub=hub) 
+		ipWanFree[0].used = True
+		return ipWanFree[0]
 
 
 
 class IpPublicSegment (models.Model):
-	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 	used = models.BooleanField(default=False)
-	ip = models.GenericIPAddressField()
-	mask = models.PositiveSmallIntegerField()
+	ip = models.GenericIPAddressField() 
+	prefix = models.PositiveSmallIntegerField()
 	
 	def __str__(self):
 		return self.ip
+
+	def get_free_public_ip():
+		ipFree = IpPublicSegment.objects.filter(used=False) 
+		return ipFree[0]
+
+	def assign_free_public_ip():
+		ipFree = IpPublicSegment.objects.filter(used=False) 
+		ipFree[0].used = True
+		return ipFree[0]
 
 
 
@@ -82,6 +106,11 @@ class Portgroup (models.Model):
 		portgroupsFree = Portgroup.objects.filter(used=False, hub=hub) 
 		return portgroupsFree[0]
 
+	def assign_free_pg_from_hub(hub):
+		portgroupsFree = Portgroup.objects.filter(used=False, hub=hub) 
+		portgroupsFree[0].used = True
+		portgroupsFree[0].save()
+		return portgroupsFree[0]
 
 
 class Client (models.Model):
@@ -95,10 +124,10 @@ class Client (models.Model):
 class Service(models.Model):
 	client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
 	edge_name = models.CharField(max_length=50)
-	ip_wan = models.GenericIPAddressField()
-	ip_wan.default = "0.0.0.0"
+	ip_wan = models.CharField(max_length=50)
 	portgroup = models.OneToOneField(Portgroup)
 	sco_port = models.OneToOneField(ScoPort)
+
 
 	class Meta:
 		abstract = True
@@ -115,7 +144,9 @@ class PrivateIrsService (Service):
 
 
 class PublicIrsService (Service):
-	ip_segment = models.GenericIPAddressField()
+
+	public_network = models.OneToOneField(IpPublicSegment)
+
 	def __str__(self):
 		return self.client.name
 

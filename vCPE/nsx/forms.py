@@ -51,7 +51,10 @@ class IrsServiceForm(ModelForm):
 
 
     class Meta:
-        model = PrivateIrsService
-        fields = ('ip_segment','client')
+        model = PublicIrsService
+        fields = ('public_network','client')
+        labels = {
+            'public_network': 'Network segment',
+        }
 
 
