@@ -22,6 +22,7 @@ class Hub (models.Model):
 class Sco(models.Model):
 	name = models.CharField(max_length=50)
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
+	# sco_id = models.CharField(max_length=4)
 
 	def __str__(self):
 		return self.name
@@ -46,9 +47,15 @@ class ScoPort(models.Model):
 
 	def assign_free_port_from_sco(sco):
 		portsFree = ScoPort.objects.filter(used=False, sco=sco) 
-		portsFree[0].used = True
-		portsFree[0].save()
-		return portsFree[0]
+		scoport = portsFree[0]
+		scoport.used = True
+		scoport.save()
+		return scoport
+
+	def unassign(self):
+		self.used = False
+		self.save()
+		return
 
 
 
@@ -69,8 +76,17 @@ class IpWan (models.Model):
 
 	def assign_free_wan_ip_from_hub(hub):
 		ipWanFree = IpWan.objects.filter(used=False, hub=hub) 
-		ipWanFree[0].used = True
-		return ipWanFree[0]
+		ipw = ipWanFree[0]
+		ipw.used = True
+		ipw.save()
+		return ipw
+
+	def unassign_ip(network):
+		ipToRelease = IpWan.objects.get(network=network) 
+		ipToRelease.used = False
+		ipToRelease.save()
+		return
+
 
 
 
@@ -88,8 +104,15 @@ class IpPublicSegment (models.Model):
 
 	def assign_free_public_ip():
 		ipFree = IpPublicSegment.objects.filter(used=False) 
-		ipFree[0].used = True
-		return ipFree[0]
+		ipp = ipFree[0]
+		ipp.used = True
+		ipp.save()
+		return ipp
+	
+	def unassign(self):
+		self.used = False
+		self.save()
+		return
 
 
 
@@ -107,10 +130,16 @@ class Portgroup (models.Model):
 		return portgroupsFree[0]
 
 	def assign_free_pg_from_hub(hub):
-		portgroupsFree = Portgroup.objects.filter(used=False, hub=hub) 
-		portgroupsFree[0].used = True
-		portgroupsFree[0].save()
-		return portgroupsFree[0]
+		portgroupsFree = Portgroup.objects.filter(used=False, hub=hub)
+		port_free = portgroupsFree[0] 
+		port_free.used = True
+		port_free.save()
+		return port_free
+
+	def unassign(self):
+		self.used = False
+		self.save()
+		return
 
 
 class Client (models.Model):

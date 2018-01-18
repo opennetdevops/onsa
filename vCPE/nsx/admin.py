@@ -47,6 +47,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		
 		pg = Portgroup.assign_free_pg_from_hub(form.cleaned_data['hub'])
 		print("Portgroup Name: ", pg.name)
+		print("Portgroup used?: ", pg.used)
 		obj.portgroup = pg
 		
 		wan_ip = IpWan.assign_free_wan_ip_from_hub(hub)
@@ -110,24 +111,30 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		# 			  "100.64.0.99",
 		# 			  "1.2.3.4")
 
-		#save all
+
+
+
+	def delete_model(self, request, obj):
+		print("borrando pg!!")
+		obj.portgroup.unassign()
+		print("borrando port!!")
+		obj.sco_port.unassign()
+		print("borrando ip!!")
+		IpWan.unassign_ip(obj.ip_wan)
+		obj.public_network.unassign()
 		
-		port.used = True
-		port.save()
-		
-		pg.used = True
-		pg.save()
+		obj.delete()
 
-		wan_ip.used = True
-		wan_ip.save()
-
-		public_network.used = True
-		public_network.save()
+	# def delete_selected(self, request, obj):
+	# 	print("borrando selecteds!!")
+	# 	for o in obj.all():
+	# 		o.portgroup.unassign()
+	# 		o.sco_port.unassign()
+	# 		IpWan.unassign_ip(o.ip_wan)
 
 
 
 
-		#todo use ports and vlans
 
 class ClientAdmin (admin.ModelAdmin):
 	list_display = ['name']
