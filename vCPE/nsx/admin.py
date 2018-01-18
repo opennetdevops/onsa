@@ -22,6 +22,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 	list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port')
 	list_filter = ('client', 'edge_name')
+	actions = ['delete_selected']
 
 
 	exclude = ('public_network', 'edge_name', 'portgroup')
@@ -122,15 +123,16 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		print("borrando ip!!")
 		IpWan.unassign_ip(obj.ip_wan)
 		obj.public_network.unassign()
-		
 		obj.delete()
 
-	# def delete_selected(self, request, obj):
-	# 	print("borrando selecteds!!")
-	# 	for o in obj.all():
-	# 		o.portgroup.unassign()
-	# 		o.sco_port.unassign()
-	# 		IpWan.unassign_ip(o.ip_wan)
+	def delete_selected(self, request, obj):
+		print("borrando selecteds!!")
+		for o in obj.all():
+			o.portgroup.unassign()
+			o.sco_port.unassign()
+			IpWan.unassign_ip(o.ip_wan)
+			o.public_network.unassign()
+			o.delete()
 
 
 
