@@ -79,7 +79,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"type" : "Uplink",
 										"portgroupId" : portgroup_id,
 										"primaryAddress" : "192.168.0.1", #TODO: Change me
-										"subnetMask" : "255.255.255.0", #TODO: Change me
+										"subnetMask" : "255.255.254.0", #TODO: Change me
 										"mtu" : "1500",
 										"isConnected" : "true"
 									 }],
@@ -87,6 +87,8 @@ class PublicIrsAdmin(admin.ModelAdmin):
 												 "password" : "T3stC@s3NSx!", #TODO: Change me
 												 "remoteAccess" : "true"}
 				}
+
+				#todo: add DG to NSX edge
 
 
 
@@ -109,8 +111,8 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		# 			  "ae2_description",
 		# 			  "vxrail_id",
 		# 			  "sco_id",
-		# 			  "100.64.0.99",
-		# 			  "1.2.3.4")
+		# 			  "181.30.31.1", #todo public prefix
+		# 			  "1.2.3.4") #ip nsx, obj.ip_wan
 
 
 
