@@ -1,9 +1,8 @@
-set interfaces ae1 unit {{ XXX }} description {{ ae1_description }}
-set interfaces ae1 unit {{ XXX }} vlan-tags outer {{ vxrail_id }}
-set interfaces ae1 unit {{ XXX }} vlan-tags inner {{ XXX }}
-set interfaces ae1 unit {{ XXX }} encapsulation vlan-bridge
- 
-set interfaces ae1 unit {{ YYY }} description {{ ae2_description }}
-set interfaces ae1 unit {{ YYY }} vlan-tags outer {{ sco_id }}
-set interfaces ae1 unit {{ YYY }} vlan-tags inner {{ YYY }}
-set interfaces ae1 unit {{ YYY }} encapsulation vlan-bridge
+set interfaces {{ vxrail_ae_interface }} unit {{ vxrail_log_unit }} description {{ description }}
+set interfaces {{ vxrail_ae_interface }} unit {{ vxrail_log_unit }} vlan-tags outer {{ vxrail_outer_vlan }}
+set interfaces {{ vxrail_ae_interface }} unit {{ vxrail_log_unit }} vlan-tags inner {{ vxrail_inner_vlan }}
+set interfaces {{ vxrail_ae_interface }} unit {{ vxrail_log_unit }} encapsulation vlan-bridge
+set interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} description {{ description }}
+set interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} vlan-tags outer {{ sco_outer_vlan }}
+set interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} vlan-tags inner {{ svxrail_inner_vlan }}
+set interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} encapsulation vlan-bridge

@@ -13,6 +13,8 @@ class Hub (models.Model):
 	uplink_ip = models.GenericIPAddressField()
 	uplink_pg = models.CharField(max_length=50)
 	mx_ip = models.GenericIPAddressField()
+	vxrail_ae_interface = models.CharField(max_length=50)
+	vxrail_outer_vlan = models.CharField(max_length=50)
 
 	def __str__(self):
 		return self.name
@@ -22,7 +24,10 @@ class Hub (models.Model):
 class Sco(models.Model):
 	name = models.CharField(max_length=50)
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
-	# sco_id = models.CharField(max_length=4)
+	sco_id = models.CharField(max_length=4)
+	sco_ae_interface = models.CharField(max_length=50)
+	sco_outer_vlan = models.CharField(max_length=50)
+
 
 	def __str__(self):
 		return self.name

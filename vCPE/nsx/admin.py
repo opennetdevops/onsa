@@ -45,6 +45,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		
 		print("SCO Name: ",form.cleaned_data['sco'].name)
 		sco = form.cleaned_data['sco']
+		print("SCO Id: ",sco.sco_id)
 		
 		pg = Portgroup.assign_free_pg_from_hub(form.cleaned_data['hub'])
 		print("Portgroup Name: ", pg.name)
@@ -66,7 +67,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 
 		
-		portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
+		uplink_portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
 		jinja_vars = {  "datacenterMoid" : hub.datacenter_id,
 						"name" : 'Edge-Test-Django', #TODO: Change me
 						"description" : "",
@@ -77,7 +78,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 				"vnics" : [{"index" : "0",
 										"name" : "uplink",
 										"type" : "Uplink",
-										"portgroupId" : portgroup_id,
+										"portgroupId" : uplink_portgroup_id,
 										"primaryAddress" : "192.168.0.1", #TODO: Change me
 										"subnetMask" : "255.255.254.0", #TODO: Change me
 										"mtu" : "1500",
@@ -100,19 +101,23 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		# print(form.cleaned_data)
 
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
-		# result = createNsxEdge(jinja_vars)
+		create_nsx_edge(jinja_vars)
 		
-		# configure_vcpe_mx("aliguori","21Ubuntu21!","10.106.16.104",
-		# 			  "bd_id",
-		# 			  "description",
-		# 			  "XXX",
-		# 			  "YYY",
-		# 			  "ae1_description",
-		# 			  "ae2_description",
-		# 			  "vxrail_id",
-		# 			  "sco_id",
-		# 			  "181.30.31.1", #todo public prefix
-		# 			  "1.2.3.4") #ip nsx, obj.ip_wan
+		configure_vcpe_mx("some","changeme",hub.mx_ip,
+						  "client_id",#todo change me
+						  "service_description",#todo change me
+						  "vxrail_log_unit",#todo change me
+						  "sco_log_unit",#todo change me
+						  obj.portgroup.vlan_tag, #vxrail_inner_vlan
+						  obj.sco_port.vlan_tag,#sco_inner_vlan,
+						  "vxrail_description",#todo change me
+						  "sco_description",#todo change me
+						  hub.vxrail_ae_interface,
+						  sco.sco_ae_interface,
+						  hub.vxrail_outer_vlan,
+						  sco.sco_outer_vlan,
+						  obj.public_network.ip, 
+						  obj.ip_wan) 
 
 
 
