@@ -1,6 +1,6 @@
 import json
 from django import forms
-from django.forms import ModelForm
+from django.forms import ModelForm, PasswordInput
 from .models import *
 from django_select2.forms import (
     HeavySelect2MultipleWidget, HeavySelect2Widget, ModelSelect2TagWidget,
@@ -48,6 +48,8 @@ class IrsServiceForm(ModelForm):
 
     hub.widget.attrs['data-width'] = '14em'
     sco.widget.attrs['data-width'] = '14em'
+    username = forms.CharField()
+    password = forms.CharField(widget=PasswordInput())
 
 
     class Meta:

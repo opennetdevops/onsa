@@ -103,7 +103,9 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		create_nsx_edge(jinja_vars)
 		
-		configure_vcpe_mx("some","changeme",hub.mx_ip,
+		configure_vcpe_mx(form.cleaned_data['username'],
+						  form.cleaned_data['password'],
+						  hub.mx_ip,
 						  "client_id",#todo change me
 						  "service_description",#todo change me
 						  "vxrail_log_unit",#todo change me
