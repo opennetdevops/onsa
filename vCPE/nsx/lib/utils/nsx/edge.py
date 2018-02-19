@@ -48,7 +48,9 @@ def create_nsx_edge(jinja_vars):
 	nsx_edge_xml = os.path.join(dir, '../../templates/edge/nsx_edge_create.j2')
 	data = render(nsx_edge_xml, jinja_vars) 
   
-	return nsxPost("/api/4.0/edges", data)
+	result= nsxPost("/api/4.0/edges", data)
+	print (result)
+	return
 
 def delete_nsx_edge_by_id(edgeId):
 	return nsxDelete("/api/4.0/edges/" + edgeId)

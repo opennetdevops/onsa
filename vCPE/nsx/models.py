@@ -9,17 +9,40 @@ class Hub (models.Model):
 	datastore_id = models.CharField(max_length=50)
 	resource_pool_id = models.CharField(max_length=50)
 	datacenter_id = models.CharField(max_length=50)
-	#gateway ip
 	uplink_ip = models.GenericIPAddressField()
 	uplink_pg = models.CharField(max_length=50)
 	mx_ip = models.GenericIPAddressField()
 	vxrail_ae_interface = models.CharField(max_length=50)
-	vxrail_outer_vlan = models.CharField(max_length=50)
 
 	def __str__(self):
 		return self.name
 
+class LogicalUnit (models.Model):
+	logical_unit_id = models.PositiveSmallIntegerField()
+	hubs = models.ManyToManyField(Hub)
+	used = models.BooleanField(default=False)
 
+	def __str__(self):
+		return str(self.logical_unit_id)
+
+	def assign_free_logical_unit_at_hub(hub):
+		free_logical_unit = LogicalUnit.objects.filter(used=False,hubs=hub)
+		logical_unit = free_logical_unit[0] 
+		logical_unit.used = True
+		logical_unit.save()
+		logical_unit.hubs.add(hub)
+		return logical_unit
+
+	def get_free_logical_unit_from_hub(hub):
+		free_logical_unit = LogicalUnit.objects.filter(used=False,hubs=hub)
+		return free_logical_unit
+
+	def unassign(logical_unit, hub):
+		logical_unit = LogicalUnit.objects.filter(used=True,hubs=hub,logical_unit_id=logical_unit)
+		logical_unit_to_release = logical_unit[0]
+		logical_unit_to_release.used = False
+		logical_unit_to_release.save()
+		return
 
 class Sco(models.Model):
 	name = models.CharField(max_length=50)
@@ -161,6 +184,7 @@ class Service(models.Model):
 	ip_wan = models.CharField(max_length=50)
 	portgroup = models.OneToOneField(Portgroup)
 	sco_port = models.OneToOneField(ScoPort)
+	sco_logical_unit = models.PositiveSmallIntegerField()
 
 
 	class Meta:
@@ -180,6 +204,8 @@ class PrivateIrsService (Service):
 class PublicIrsService (Service):
 
 	public_network = models.OneToOneField(IpPublicSegment)
+	vxrail_logical_unit = models.PositiveSmallIntegerField()
+
 
 	def __str__(self):
 		return self.client.name

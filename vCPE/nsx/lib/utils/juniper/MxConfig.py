@@ -55,8 +55,8 @@ def configure_bridge_domains(dev, client_id, service_description, vxrail_ae_inte
 		return
 
 def configure_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, 
-						service_description, sco_log_unit, vxrail_outer_vlan, sco_outer_vlan,
-						vxrail_inner_vlan, sco_inner_vlan):
+						service_description, sco_log_unit, sco_outer_vlan,
+						vxrail_vlan, sco_inner_vlan):
 
 	logging.basicConfig(level=logging.INFO)
 
@@ -68,9 +68,8 @@ def configure_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_
 				  'vxrail_log_unit' : vxrail_log_unit,
 				  'sco_log_unit' : sco_log_unit,
 				  'description' : service_description,
-				  'vxrail_outer_vlan' : vxrail_outer_vlan,
 				  'sco_outer_vlan' : sco_outer_vlan,
-				  'vxrail_inner_vlan' : vxrail_inner_vlan,
+				  'vxrail_vlan' : vxrail_vlan,
 				  'sco_inner_vlan' : sco_inner_vlan
 				  }
 	try:
@@ -129,13 +128,12 @@ def configure_vcpe_mx(user,
 					  service_description,
 					  vxrail_log_unit,
 					  sco_log_unit,
-					  vxrail_inner_vlan,
+					  vxrail_vlan,
 					  sco_inner_vlan,
 					  vxrail_description,
 					  sco_description,
 					  vxrail_ae_interface,
 					  sco_ae_interface,
-					  vxrail_outer_vlan,
 					  sco_outer_vlan,
 					  public_prefix,
 					  nexthop_vcpe):
@@ -166,8 +164,8 @@ def configure_vcpe_mx(user,
 							sco_ae_interface, vxrail_log_unit, sco_log_unit)
 
 	configure_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, 
-						service_description, sco_log_unit, vxrail_outer_vlan, sco_outer_vlan,
-						vxrail_inner_vlan, sco_inner_vlan)
+						service_description, sco_log_unit, sco_outer_vlan,
+						vxrail_vlan, sco_inner_vlan)
 
 	configure_static_route(dev, public_prefix, nexthop_vcpe)
 	commit_result = dev.cu.commit_check()

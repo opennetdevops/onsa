@@ -1,8 +1,6 @@
 import sys
-sys.path.append("../utils/common/")
-
-from nsx_rest import *
-from jinja import render
+from .nsx_rest import *
+from ..common.jinja import render
 
 import json
 
@@ -47,7 +45,6 @@ def update_nsx_edge_static(edgeId, jinja_vars):
 	dir = os.path.dirname(__file__)
 	nsx_static_xml = os.path.join(dir, '../../templates/edge_routing/nsx_edge_routing_static.j2')
 	data = render(nsx_static_xml, jinja_vars) 
-
 	return nsxPost("/api/4.0/edges/" + edgeId + "/routing/config/static", data)
 
 def delete_nsx_edge_static(edgeId):

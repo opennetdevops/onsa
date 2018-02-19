@@ -18,12 +18,12 @@ class Migration(migrations.Migration):
             field=models.CharField(default='ae1', max_length=50),
             preserve_default=False,
         ),
-        migrations.AddField(
-            model_name='hub',
-            name='vxrail_outer_vlan',
-            field=models.CharField(default='21', max_length=50),
-            preserve_default=False,
-        ),
+        # migrations.AddField(
+        #     model_name='hub',
+        #     name='vxrail_outer_vlan',
+        #     field=models.CharField(default='21', max_length=50),
+        #     preserve_default=False,
+        # ),
         migrations.AddField(
             model_name='sco',
             name='sco_ae_interface',

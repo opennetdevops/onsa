@@ -1,12 +1,14 @@
 from django.contrib import admin
 from pprint import pprint
 from .lib.utils.nsx.edge import *
+from .lib.utils.nsx.edge_routing import *
 from .lib.utils.vcenter import GetPortgroups as vc_pg
 from .lib.utils.juniper.MxConfig import *
 from .models import *
 from .forms import *
+# from ipaddr import *
 
-
+#todo add hubs to logical units view
 
 
 class PrivateIrsAdmin (admin.ModelAdmin):
@@ -63,11 +65,23 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		public_network = IpPublicSegment.assign_free_public_ip()
 		obj.public_network = public_network
 		print("Public Network: ", obj.public_network.ip)
+		#todo print ( obj.public_network + 1)
 
+		print ("Free logical units at hub:", LogicalUnit.get_free_logical_unit_from_hub(form.cleaned_data['hub']) )
+		vxrail_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
+		print ("Logical Unit Assigned to vxrail: ", vxrail_logical_unit)
+		
+		sco_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
+		print ("Logical Unit Assigned to sco: ", sco_logical_unit)
+
+		obj.vxrail_logical_unit = vxrail_logical_unit.logical_unit_id
+		obj.sco_logical_unit = sco_logical_unit.logical_unit_id
 
 
 		
 		uplink_portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
+		public_portgroup_id = vc_pg.getPortgroupId(obj.portgroup)
+
 		jinja_vars = {  "datacenterMoid" : hub.datacenter_id,
 						"name" : 'Edge-Test-Django', #TODO: Change me
 						"description" : "",
@@ -79,8 +93,17 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"name" : "uplink",
 										"type" : "Uplink",
 										"portgroupId" : uplink_portgroup_id,
-										"primaryAddress" : "192.168.0.1", #TODO: Change me
-										"subnetMask" : "255.255.254.0", #TODO: Change me
+										"primaryAddress" : obj.ip_wan,
+										"subnetMask" : "255.255.254.0", #TODO: Change me or leave it, 
+										"mtu" : "1500",
+										"isConnected" : "true"
+									 },
+							{"index" : "1",
+										"name" : "public",
+										"type" : "Internal",
+										"portgroupId" : public_portgroup_id,
+										"primaryAddress" : obj.public_network,
+										"subnetPrefixLength" : obj.public_network.prefix, 
 										"mtu" : "1500",
 										"isConnected" : "true"
 									 }],
@@ -88,35 +111,27 @@ class PublicIrsAdmin(admin.ModelAdmin):
 												 "password" : "T3stC@s3NSx!", #TODO: Change me
 												 "remoteAccess" : "true"}
 				}
-
-				#todo: add DG to NSX edge
-
-
-
-
-
-
-
-
-		# print(form.cleaned_data)
+		print (jinja_vars)
 
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
+		
 		create_nsx_edge(jinja_vars)
+		edge_id = get_nsx_edge_id_by_name("Edge-Test-Django") #todo change me
+		nsx_edge_add_gateway(edge_id, "", "0", hub.mx_ip, "1500")
 		
 		configure_vcpe_mx(form.cleaned_data['username'],
 						  form.cleaned_data['password'],
 						  hub.mx_ip,
 						  "client_id",#todo change me
 						  "service_description",#todo change me
-						  "vxrail_log_unit",#todo change me
-						  "sco_log_unit",#todo change me
-						  obj.portgroup.vlan_tag, #vxrail_inner_vlan
+						  obj.vxrail_logical_unit,#
+						  obj.sco_logical_unit,
+						  obj.portgroup.vlan_tag, #vxrail_vlan
 						  obj.sco_port.vlan_tag,#sco_inner_vlan,
 						  "vxrail_description",#todo change me
 						  "sco_description",#todo change me
 						  hub.vxrail_ae_interface,
 						  sco.sco_ae_interface,
-						  hub.vxrail_outer_vlan,
 						  sco.sco_outer_vlan,
 						  obj.public_network.ip, 
 						  obj.ip_wan) 
@@ -125,22 +140,28 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 
 	def delete_model(self, request, obj):
-		print("borrando pg!!")
+		# print("borrando pg!!")
 		obj.portgroup.unassign()
-		print("borrando port!!")
+		# print("borrando port!!")
 		obj.sco_port.unassign()
-		print("borrando ip!!")
+		# print("borrando ip!!")
+		
+		LogicalUnit.unassign(obj.vxrail_logical_unit, obj.portgroup.hub )
+		LogicalUnit.unassign(obj.sco_logical_unit, obj.portgroup.hub )
+
 		IpWan.unassign_ip(obj.ip_wan)
 		obj.public_network.unassign()
 		obj.delete()
 
 	def delete_selected(self, request, obj):
-		print("borrando selecteds!!")
+		# print("borrando selecteds!!")
 		for o in obj.all():
 			o.portgroup.unassign()
 			o.sco_port.unassign()
 			IpWan.unassign_ip(o.ip_wan)
 			o.public_network.unassign()
+			LogicalUnit.unassign(o.vxrail_logical_unit, o.portgroup.hub )
+			LogicalUnit.unassign(o.sco_logical_unit, o.portgroup.hub )
 			o.delete()
 
 
@@ -173,6 +194,7 @@ class PublicNetworkAdmin(admin.ModelAdmin):
 
 admin.site.register(Hub)
 admin.site.register(Sco)
+admin.site.register(LogicalUnit)
 admin.site.register(IpWan,IpWanAdmin)
 
 admin.site.register(IpPublicSegment, PublicNetworkAdmin)
