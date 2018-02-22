@@ -32,19 +32,19 @@
 	"defaultRoute": 
 	{
 		{% if defaultRoute.description is defined %}
-		"description": {{ defaultRoute.description }},
+		"description": "{{ defaultRoute.description }}",
 		{% endif %}
 
 		{% if defaultRoute.vnic is defined %}
-		"vnic": {{ defaultRoute.vnic }},
+		"vnic": "{{ defaultRoute.vnic }}",
 		{% endif %}
 
 		{% if defaultRoute.gatewayAddress is defined %}
-		"gatewayAddress": {{ defaultRoute.gatewayAddress }},
+		"gatewayAddress": "{{ defaultRoute.gatewayAddress }}",
 		{% endif %}
 
 		{% if defaultRoute.mtu is defined %}
-		"mtu": {{ defaultRoute.mtu }}
+		"mtu": "{{ defaultRoute.mtu }}"
 	}
 	{% endif %}
 
