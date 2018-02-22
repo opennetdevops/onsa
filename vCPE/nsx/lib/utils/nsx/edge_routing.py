@@ -2,8 +2,15 @@ import sys
 import json
 
 from pprint import pprint
-from .nsx_rest import *
-from ..common.jinja import render
+sys.path.append("../common")
+from jinja import render
+from nsx_rest import *
+
+
+
+# from pprint import pprint
+# from .nsx_rest import *
+# from ..common.jinja import render
 
 # BGP_ROUTING
 # TODO: definir que parametros de bgp se quieren tocar
@@ -49,6 +56,15 @@ def update_nsx_edge_static(edgeId, jinja_vars):
 
 	return nsxPut("/api/4.0/edges/" + edgeId + "/routing/config/static", data)
 
+def update_nsx_edge_static_json(edgeId, jinja_vars):
+	dir = os.path.dirname(__file__)
+	nsx_static_json = os.path.join(dir, '../../templates/edge_routing/nsx_edge_routing_static_json.j2')
+	data = render(nsx_static_json, jinja_vars) 
+
+	print(data)
+
+	return nsxPutAsJson("/api/4.0/edges/" + edgeId + "/routing/config/static", data)
+
 def delete_nsx_edge_static(edgeId):
 	return nsxDelete("/api/4.0/edges/" + edgeId + "/routing/config/static")
 
@@ -64,9 +80,17 @@ def nsx_edge_add_static_route(edgeId, vnic, network, nextHop, mtu="1500", descri
 
 
 def nsx_edge_add_gateway(edgeId, defaultRouteVnic, gatewayAddress, defaultRouteMtu, defaultRouteDescription="description"):
-	jinja_vars = {'staticRouting' : {'defaultRoute' : {'description': defaultRouteDescription,
-									 				   'vnic' : defaultRouteVnic,
-									 				   'gatewayAddress' : gatewayAddress,
-									 				   'mtu' : defaultRouteMtu}}}
+	# jinja_vars = {'staticRouting' : {'defaultRoute' : {'description': defaultRouteDescription,
+	# 								 				   'vnic' : defaultRouteVnic,
+	# 								 				   'gatewayAddress' : gatewayAddress,
+	# 								 				   'mtu' : defaultRouteMtu}}}
 
-	return update_nsx_edge_static(edgeId, jinja_vars)
+	jinja_vars = {'defaultRoute' : {'description': defaultRouteDescription,
+								 				   'vnic' : defaultRouteVnic,
+								 				   'gatewayAddress' : gatewayAddress,
+								 				   'mtu' : defaultRouteMtu}}
+								 				   
+	return update_nsx_edge_static_json(edgeId, jinja_vars)
+
+
+print(nsx_edge_add_gateway("edge-1774", "0", "100.64.3.1", "1500"))
