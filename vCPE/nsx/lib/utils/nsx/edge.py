@@ -1,5 +1,7 @@
-from .nsx_rest import *
-from ..common.jinja import render
+# from .nsx_rest import *
+# from ..common.jinja import render
+
+from nsx_rest import *
 
 import json
 
@@ -161,3 +163,7 @@ def create_nat_rule(edgeId):
 	jinja_vars = {}
 	return update_nsx_edge_nat(edgeId, jinja_vars)
 
+
+
+for i in range(1624,1741):
+	delete_nsx_edge_by_id("edge-%s" % str(i))

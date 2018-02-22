@@ -89,8 +89,5 @@ def nsx_edge_add_gateway(edgeId, defaultRouteVnic, gatewayAddress, defaultRouteM
 								 				   'vnic' : defaultRouteVnic,
 								 				   'gatewayAddress' : gatewayAddress,
 								 				   'mtu' : defaultRouteMtu}}
-								 				   
+
 	return update_nsx_edge_static_json(edgeId, jinja_vars)
-
-
-print(nsx_edge_add_gateway("edge-1774", "0", "100.64.3.1", "1500"))

@@ -5,22 +5,22 @@
 		"route":
 		{	
 				{% if staticRoutes.route.description is defined %}
-				"description": {{ staticRoutes.route.description }},
+				"description": "{{ staticRoutes.route.description }}",
 				{% endif %}
 				{% if staticRoutes.route.vnic is defined %}
-				"vnic": {{ staticRoutes.route.vnic }},
+				"vnic": "{{ staticRoutes.route.vnic }}",
 				{% endif %}
 				{% if staticRoutes.route.network is defined %}
-				"network": {{ staticRoutes.route.network }},
+				"network": "{{ staticRoutes.route.network }}",
 				{% endif %}
 				{% if staticRoutes.route.nextHop is defined %}
-				"nextHop": {{ staticRoutes.route.nextHop }},
+				"nextHop": "{{ staticRoutes.route.nextHop }}",
 				{% endif %}
 				{% if staticRoutes.route.mtu is defined %}
-				"mtu": {{ staticRoutes.route.mtu }},
+				"mtu": "{{ staticRoutes.route.mtu }}",
 				{% endif %}
 				{% if staticRoutes.route.type is defined %}
-				"type": {{ staticRoutes.route.type }}
+				"type": "{{ staticRoutes.route.type }}"
 				{% endif %}
 
 		}

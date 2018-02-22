@@ -72,3 +72,6 @@ def getAllDVS():
         return 1
 
     return distributed_vswtiches
+
+
+print(getAllDVS())
