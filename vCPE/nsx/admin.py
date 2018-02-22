@@ -6,7 +6,7 @@ from .lib.utils.vcenter import GetPortgroups as vc_pg
 from .lib.utils.juniper.MxConfig import *
 from .models import *
 from .forms import *
-# from ipaddr import *
+from ipaddress import *
 
 #todo add hubs to logical units view
 
@@ -58,13 +58,17 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		obj.ip_wan = wan_ip.network
 		print("IP Wan: ", obj.ip_wan)
 		
-		port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
-		print("Port Name: ", port.description)
-		obj.sco_port = port
+		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
+		print("Port Name: ", sco_port.description)
+		obj.sco_port = sco_port
 
 		public_network = IpPublicSegment.assign_free_public_ip()
 		obj.public_network = public_network
 		print("Public Network: ", obj.public_network.ip)
+		network = ip_address(obj.public_network.ip)
+		print(str(network))
+		print(str(network + 1))
+
 		#todo print ( obj.public_network + 1)
 
 		print ("Free logical units at hub:", LogicalUnit.get_free_logical_unit_from_hub(form.cleaned_data['hub']) )
@@ -80,7 +84,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		
 		uplink_portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
-		public_portgroup_id = vc_pg.getPortgroupId(obj.portgroup)
+		public_portgroup_id = vc_pg.getPortgroupId(obj.portgroup.name)
 
 		jinja_vars = {  "datacenterMoid" : hub.datacenter_id,
 						"name" : 'Edge-Test-Django', #TODO: Change me
@@ -89,7 +93,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 																"appliance" : {"resourcePoolId" : hub.resource_pool_id,
 																			 "datastoreId" : hub.datastore_id
 																			}},
-				"vnics" : [{"index" : "0",
+						"vnics" : [{"index" : "0",
 										"name" : "uplink",
 										"type" : "Uplink",
 										"portgroupId" : uplink_portgroup_id,
@@ -98,19 +102,21 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"mtu" : "1500",
 										"isConnected" : "true"
 									 },
-							{"index" : "1",
+									{"index" : "1",
 										"name" : "public",
 										"type" : "Internal",
 										"portgroupId" : public_portgroup_id,
-										"primaryAddress" : obj.public_network,
-										"subnetPrefixLength" : obj.public_network.prefix, 
+										"primaryAddress" : str(network + 1),
+										# "subnetPrefixLength" : str(obj.public_network.prefix), 
+										"subnetMask" : "255.255.255.128", #TODO: Change me or leave it,
 										"mtu" : "1500",
 										"isConnected" : "true"
 									 }],
-				"cliSettings" : {"userName" : "admin",
-												 "password" : "T3stC@s3NSx!", #TODO: Change me
-												 "remoteAccess" : "true"}
+						"cliSettings" : {"userName" : "admin",
+										"password" : "T3stC@s3NSx!", #TODO: Change me
+										"remoteAccess" : "true"}
 				}
+		
 		print (jinja_vars)
 
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)

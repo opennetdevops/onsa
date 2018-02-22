@@ -140,7 +140,8 @@ def configure_vcpe_mx(user,
 
 	logging.basicConfig(level=logging.INFO)
 
-	dev = Device(host=host_rac, user=user, password=passwd, port=443)
+	# 
+	dev = Device(host=host_rac, user=user, password=passwd, port=443 )
 
 	try:
 		logging.info("Openning NETCONF connection to device")
@@ -168,25 +169,27 @@ def configure_vcpe_mx(user,
 						vxrail_vlan, sco_inner_vlan)
 
 	configure_static_route(dev, public_prefix, nexthop_vcpe)
-	commit_result = dev.cu.commit_check()
-	logging.info("commit_result:")
-	logging.info(commit_result)
+	
 
-	# logging.info( "Committing the configuration")
-	# try:
-	# 	# commit_result = dev.cu.commit()
-	# 	# Show that the commit worked True means it worked, false means it failed
-	# 	logging.debug( "Commit result: %s",commit_result)
 
-	# except CommitError:
-	# 	logging.error( "Error: Unable to commit configuration")
-	# 	logging.error( "Unlocking the configuration")
-	# 	try:
-	# 		dev.cu.unlock()
-	# 	except UnlockError:
-	# 		logging.error( "Error: Unable to unlock configuration")
-	# 		dev.close()
-	# 		return
+
+	logging.info( "Committing the configuration")
+	try:
+		dev.timeout=120
+		commit_result = dev.cu.commit_check()
+		# Show that the commit worked True means it worked, false means it failed
+		logging.debug( "Commit result: %s",commit_result)
+
+	except (CommitError, RpcTimeoutError) as e:
+		logging.error( "Error: Unable to commit configuration")
+		logging.error( "Unlocking the configuration")
+		try:
+			dev.cu.unlock()
+		except UnlockError:
+			logging.error( "Error: Unable to unlock configuration")
+			dev.close()
+			return
+
 
 	logging.info( "Unlocking the configuration")
 	try:
