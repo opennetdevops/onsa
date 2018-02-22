@@ -112,6 +112,15 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"mtu" : "1500",
 										"isConnected" : "true"
 									 }],
+						"routing" : {'staticRouting' : {'staticRoutes' : {'route' : {'description' : description,
+																  'vnic' : vnic,
+																  'network' : network,
+																  'nextHop' : nextHop,
+																  'mtu' : mtu}},
+									'defaultRoute' : {'description': defaultRouteDescription,
+									 				   'vnic' : defaultRouteVnic,
+									 				   'gatewayAddress' : gatewayAddress,
+									 				   'mtu' : defaultRouteMtu}}},
 						"cliSettings" : {"userName" : "admin",
 										"password" : "T3stC@s3NSx!", #TODO: Change me
 										"remoteAccess" : "true"}

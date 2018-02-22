@@ -1,6 +1,12 @@
 import sys
+
+from pprint import pprint
 from .nsx_rest import *
 from ..common.jinja import render
+
+# from nsx_rest import *
+# sys.path.append("../common/")
+# from jinja import render
 
 import json
 
@@ -45,7 +51,10 @@ def update_nsx_edge_static(edgeId, jinja_vars):
 	dir = os.path.dirname(__file__)
 	nsx_static_xml = os.path.join(dir, '../../templates/edge_routing/nsx_edge_routing_static.j2')
 	data = render(nsx_static_xml, jinja_vars) 
-	return nsxPost("/api/4.0/edges/" + edgeId + "/routing/config/static", data)
+
+	print(data)
+
+	return nsxPut("/api/4.0/edges/" + edgeId + "/routing/config/static", data)
 
 def delete_nsx_edge_static(edgeId):
 	return nsxDelete("/api/4.0/edges/" + edgeId + "/routing/config/static")
@@ -72,8 +81,41 @@ def nsx_edge_add_gateway(edgeId, defaultRouteDescription, defaultRouteVnic, gate
 									 				   'gatewayAddress' : gatewayAddress,
 									 				   'mtu' : defaultRouteMtu}}}
 
+	pprint(jinja_vars)
+
 	return update_nsx_edge_static(edgeId, jinja_vars)
 
+
+def nsx_edge_add_static(edgeId, description, vnic, network, nextHop,
+	mtu, defaultRouteDescription, defaultRouteMtu, defaultRouteVnic, gatewayAddress):
+
+	jinja_vars = {'staticRouting' : {'staticRoutes' : {'route' : {'description' : description,
+																  'vnic' : vnic,
+																  'network' : network,
+																  'nextHop' : nextHop,
+																  'mtu' : mtu}},
+									'defaultRoute' : {'description': defaultRouteDescription,
+									 				   'vnic' : defaultRouteVnic,
+									 				   'gatewayAddress' : gatewayAddress,
+									 				   'mtu' : defaultRouteMtu}}}
+
+
+	pprint(jinja_vars)
+
+	return update_nsx_edge_static(edgeId, jinja_vars)
+
+
+print(nsx_edge_add_static("edge-1774", "description", "0", "10.120.0.0/24", "191.12.12.1",
+	"1500", "defaultRouteDescription", "1500", "0", "192.12.12.2").status_code)
+
+
+# print(nsx_edge_add_static_route("edge-1774",
+# 						  "description",
+# 						  "0",
+# 						  "10.10.10.0/24",
+# 						  "192.168.0.1",
+# 						  "1500").status_code)
+# print(nsx_edge_add_gateway("edge-1774", "defaultRouteDescription", "0", "1.1.1.1", "1500").status_code)
 
 
 

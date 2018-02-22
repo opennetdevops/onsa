@@ -47,7 +47,7 @@ def create_nsx_edge(jinja_vars):
 	dir = os.path.dirname(__file__)
 	nsx_edge_xml = os.path.join(dir, '../../templates/edge/nsx_edge_create.j2')
 	data = render(nsx_edge_xml, jinja_vars) 
-  
+  	
 	result= nsxPost("/api/4.0/edges", data)
 	print (result)
 	return
