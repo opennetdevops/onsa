@@ -3,7 +3,7 @@ from pprint import pprint
 from .lib.utils.nsx.edge import *
 from .lib.utils.nsx.edge_routing import *
 from .lib.utils.vcenter import GetPortgroups as vc_pg
-from .lib.utils.juniper.MxConfig import *
+from .lib.utils.juniper.mx_config import *
 from .models import *
 from .forms import *
 from ipaddress import *
@@ -112,15 +112,6 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"mtu" : "1500",
 										"isConnected" : "true"
 									 }],
-						"routing" : {'staticRouting' : {'staticRoutes' : {'route' : {'description' : description,
-																  'vnic' : vnic,
-																  'network' : network,
-																  'nextHop' : nextHop,
-																  'mtu' : mtu}},
-									'defaultRoute' : {'description': defaultRouteDescription,
-									 				   'vnic' : defaultRouteVnic,
-									 				   'gatewayAddress' : gatewayAddress,
-									 				   'mtu' : defaultRouteMtu}}},
 						"cliSettings" : {"userName" : "admin",
 										"password" : "T3stC@s3NSx!", #TODO: Change me
 										"remoteAccess" : "true"}
@@ -134,24 +125,43 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		edge_id = get_nsx_edge_id_by_name("Edge-Test-Django") #todo change me
 		nsx_edge_add_gateway(edge_id, "", "0", hub.mx_ip, "1500")
 		
-		configure_vcpe_mx(form.cleaned_data['username'],
-						  form.cleaned_data['password'],
-						  hub.mx_ip,
-						  "client_id",#todo change me
-						  "service_description",#todo change me
-						  obj.vxrail_logical_unit,#
-						  obj.sco_logical_unit,
-						  obj.portgroup.vlan_tag, #vxrail_vlan
-						  obj.sco_port.vlan_tag,#sco_inner_vlan,
-						  "vxrail_description",#todo change me
-						  "sco_description",#todo change me
-						  hub.vxrail_ae_interface,
-						  sco.sco_ae_interface,
-						  sco.sco_outer_vlan,
-						  obj.public_network.ip, 
-						  obj.ip_wan) 
+
+		# load mx configuration parameters
+		mx_parameters = {'username' : form.cleaned_data['username'],
+						'password' : form.cleaned_data['password'],
+						'mx_ip' : hub.mx_ip,
+						'client_id' : "",
+						'service_description' : "",
+						'vxrail_logical_unit' : obj.vxrail_logical_unit,
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'vxrail_vlan' : obj.portgroup.vlan_tag,
+						'sco_inner_vlan' : obj.sco_port.vlan_tag,
+						'vxrail_description' : "",
+						'sco_description' : "",
+						'vxrail_ae_interface' : hub.vxrail_ae_interface,
+						'sco_ae_interface': sco.sco_ae_interface,
+						'sco_outer_vlan': sco.sco_outer_vlan,
+						"public_network_ip" : obj.public_network.ip,
+						"ip_wan" : obj.ip_wan}
 
 
+		configure_vcpe_mx(mx_parameters)
+		# configure_vcpe_mx(form.cleaned_data['username'],
+		# 				  form.cleaned_data['password'],
+		# 				  hub.mx_ip,
+		# 				  "client_id",#todo change me
+		# 				  "service_description",#todo change me
+		# 				  obj.vxrail_logical_unit,#
+		# 				  obj.sco_logical_unit,
+		# 				  obj.portgroup.vlan_tag, #vxrail_vlan
+		# 				  obj.sco_port.vlan_tag,#sco_inner_vlan,
+		# 				  "vxrail_description",#todo change me
+		# 				  "sco_description",#todo change me
+		# 				  hub.vxrail_ae_interface,
+		# 				  sco.sco_ae_interface,
+		# 				  sco.sco_outer_vlan,
+		# 				  obj.public_network.ip, 
+		# 				  obj.ip_wan) 
 
 
 	def delete_model(self, request, obj):

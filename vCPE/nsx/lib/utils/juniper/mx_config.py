@@ -22,7 +22,7 @@ def render(tpl_path, context):
 		loader=jinja2.FileSystemLoader(path or './')
 	).get_template(filename).render(context)
 
-def configure_bridge_domains(dev, client_id, service_description, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, sco_log_unit):
+def configure_bridge_domains(dev, bridge_domain_params, client_id, service_description, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, sco_log_unit):
 
 	dir = os.path.dirname(__file__)
 	template_rac_file = os.path.join(dir, './templates/bridge_domains.set')
@@ -121,27 +121,12 @@ def configure_static_route(dev, public_prefix, nexthop_vcpe):
 		return
 
 
-def configure_vcpe_mx(user,
-					  passwd,
-					  host_rac,
-					  client_id,
-					  service_description,
-					  vxrail_log_unit,
-					  sco_log_unit,
-					  vxrail_vlan,
-					  sco_inner_vlan,
-					  vxrail_description,
-					  sco_description,
-					  vxrail_ae_interface,
-					  sco_ae_interface,
-					  sco_outer_vlan,
-					  public_prefix,
-					  nexthop_vcpe):
+def configure_vcpe_mx(mx_parameters):
 
 	logging.basicConfig(level=logging.INFO)
 
 	# 
-	dev = Device(host=host_rac, user=user, password=passwd, port=443 )
+	dev = Device(host=mx_parameters["mx_ip"], user=mx_parameters["user"], password=mx_parameters["password"], port=443 )
 
 	try:
 		logging.info("Openning NETCONF connection to device")
@@ -161,14 +146,27 @@ def configure_vcpe_mx(user,
 		dev.close()
 		return
 
-	configure_bridge_domains(dev, client_id, service_description, vxrail_ae_interface, 
-							sco_ae_interface, vxrail_log_unit, sco_log_unit)
+	configure_bridge_domains(dev,
+							 mx_parameters["client_id"],
+							 mx_parameters["service_description"],
+							 mx_parameters["vxrail_ae_interface"],
+							 mx_parameters["sco_ae_interface"],
+							 mx_parameters["vxrail_log_unit"],
+							 mx_parameters["sco_log_unit"])
 
-	configure_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, 
-						service_description, sco_log_unit, sco_outer_vlan,
-						vxrail_vlan, sco_inner_vlan)
+	configure_interfaces(dev,
+						 mx_parameters["vxrail_ae_interface"]
+						 mx_parameters["sco_ae_interface"],
+						 mx_parameters["vxrail_log_unit"],
+						 mx_parameters["service_description"],
+						 mx_parameters["sco_log_unit"],
+						 mx_parameters["sco_outer_vlan"],
+						 mx_parameters["vxrail_vlan"],
+						 mx_parameters["sco_inner_vlan"])
 
-	configure_static_route(dev, public_prefix, nexthop_vcpe)
+	configure_static_route(dev,
+						   mx_parameters["public_network_ip"],
+						   mx_parameters["ip_wan"])
 	
 
 

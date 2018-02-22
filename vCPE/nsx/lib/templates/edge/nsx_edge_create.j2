@@ -134,51 +134,6 @@
     </vnic>
     {% endfor %}
   </vnics>
-  {% if routing is defined %}
-  <routing>
-  <staticRouting>
-  {% if routing.staticRouting.staticRoutes is defined %}
-  <staticRoutes>
-    {% if routing.staticRouting.staticRoutes.route is defined %}
-    <route>
-      {% if routing.staticRouting.staticRoutes.route.description is defined %}
-      <description>{{ routing.staticRouting.staticRoutes.route.description }}</description>
-      {% endif %}
-      {% if routing.staticRouting.staticRoutes.route.vnic is defined %}
-      <vnic>{{ routing.staticRouting.staticRoutes.route.vnic }}</vnic>
-      {% endif %}
-      {% if routing.staticRouting.staticRoutes.route.network is defined %}
-      <network>{{ routing.staticRouting.staticRoutes.route.network }}</network>
-      {% endif %}
-      {% if routing.staticRouting.staticRoutes.route.nextHop is defined %}
-      <nextHop>{{ routing.staticRouting.staticRoutes.route.nextHop }}</nextHop>
-      {% endif %}
-      {% if routing.staticRouting.staticRoutes.route.mtu is defined %}
-      <mtu>{{ routing.staticRouting.staticRoutes.route.mtu }}</mtu>
-      {% endif %}
-    </route>
-    {% endif %}
-  </staticRoutes>
-  {% endif %}
-  {% if staticRouting.defaultRoute is defined %}
-  <defaultRoute>
-    {% if staticRouting.defaultRoute.description is defined %}
-    <description>{{ staticRouting.defaultRoute.description }}</description>
-    {% endif %}
-    {% if staticRouting.defaultRoute.vnic is defined %}
-    <vnic>{{ staticRouting.defaultRoute.vnic }}</vnic>
-    {% endif %}
-    {% if staticRouting.defaultRoute.gatewayAddress is defined %}
-    <gatewayAddress>{{ staticRouting.defaultRoute.gatewayAddress }}</gatewayAddress>
-    {% endif %}
-    {% if staticRouting.defaultRoute.mtu is defined %}
-    <mtu>{{ staticRouting.defaultRoute.mtu }}</mtu>
-    {% endif %}
-  </defaultRoute>
-  {% endif %}
-</staticRouting>
-  </routing>
-  {% endif %}
   <cliSettings>    
     <userName>{{ cliSettings.userName }}</userName>
     <password>{{ cliSettings.password }}</password>
