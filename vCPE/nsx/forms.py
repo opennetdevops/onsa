@@ -57,6 +57,7 @@ class IrsServiceForm(ModelForm):
         fields = ('public_network','client')
         labels = {
             'public_network': 'Network segment',
+            'product_identifier' : 'ID'
         }
 
 

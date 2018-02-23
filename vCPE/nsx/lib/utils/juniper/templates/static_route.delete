@@ -1,0 +1,1 @@
+delete routing-instances INTERNET routing-options static route {{ public_prefix }} next-hop {{ nexthop_vcpe }} tag 1

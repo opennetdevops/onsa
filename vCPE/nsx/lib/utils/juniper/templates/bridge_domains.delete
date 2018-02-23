@@ -1,0 +1,4 @@
+delete bridge-domains vcpe-{{ id }} description {{ description }}
+delete bridge-domains vcpe-{{ id }} domain-type bridge
+delete bridge-domains vcpe-{{ id }} interface {{ vxrail_ae_interface }}.{{ vxrail_log_unit }}
+delete bridge-domains vcpe-{{ id }} interface {{ sco_ae_interface }}.{{ sco_log_unit }}

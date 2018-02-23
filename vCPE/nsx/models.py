@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 class Hub (models.Model):
 	name = models.CharField(max_length=50)
 	transport_zone_name = models.CharField(max_length=50)
@@ -55,8 +53,6 @@ class Sco(models.Model):
 	def __str__(self):
 		return self.name
 
-
-
 class ScoPort(models.Model):
 	description = models.CharField(max_length=50)
 	port = models.CharField(max_length=50)
@@ -85,10 +81,6 @@ class ScoPort(models.Model):
 		self.save()
 		return
 
-
-
-
-
 class IpWan (models.Model):
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 	used = models.BooleanField(default=False)
@@ -115,9 +107,6 @@ class IpWan (models.Model):
 		ipToRelease.save()
 		return
 
-
-
-
 class IpPublicSegment (models.Model):
 	used = models.BooleanField(default=False)
 	ip = models.GenericIPAddressField() 
@@ -141,8 +130,6 @@ class IpPublicSegment (models.Model):
 		self.used = False
 		self.save()
 		return
-
-
 
 class Portgroup (models.Model):
 	vlan_tag = models.CharField(max_length=50)
@@ -177,15 +164,14 @@ class Client (models.Model):
 		return self.name
 
 
-
 class Service(models.Model):
 	client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
 	edge_name = models.CharField(max_length=50)
+	product_identifier = models.CharField(max_length=50)
 	ip_wan = models.CharField(max_length=50)
 	portgroup = models.OneToOneField(Portgroup)
 	sco_port = models.OneToOneField(ScoPort)
 	sco_logical_unit = models.PositiveSmallIntegerField()
-
 
 	class Meta:
 		abstract = True

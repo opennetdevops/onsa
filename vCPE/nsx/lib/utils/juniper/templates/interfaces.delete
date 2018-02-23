@@ -1,0 +1,7 @@
+delete interfaces {{ vxrail_ae_interface }} unit {{ vxrail_log_unit }} vlan-id {{ vxrail_vlan }}
+delete interfaces {{ vxrail_ae_interface }} unit {{ vxrail_log_unit }} description {{ description }}
+delete interfaces {{ vxrail_ae_interface }} unit {{ vxrail_log_unit }} encapsulation vlan-bridge
+delete interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} description {{ description }}
+delete interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} vlan-tags outer {{ sco_outer_vlan }}
+delete interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} vlan-tags inner {{ sco_inner_vlan }}
+delete interfaces {{ sco_ae_interface }} unit {{ sco_log_unit }} encapsulation vlan-bridge

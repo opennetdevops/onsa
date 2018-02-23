@@ -121,7 +121,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		
-		create_nsx_edge(jinja_vars)
+		nsx_edge_create(jinja_vars)
 		edge_id = get_nsx_edge_id_by_name("Edge-Test-Django") #todo change me
 		nsx_edge_add_gateway(edge_id, "", "0", hub.mx_ip, "1500")
 		
@@ -145,40 +145,51 @@ class PublicIrsAdmin(admin.ModelAdmin):
 						"ip_wan" : obj.ip_wan}
 
 
-		configure_vcpe_mx(mx_parameters)
-		# configure_vcpe_mx(form.cleaned_data['username'],
-		# 				  form.cleaned_data['password'],
-		# 				  hub.mx_ip,
-		# 				  "client_id",#todo change me
-		# 				  "service_description",#todo change me
-		# 				  obj.vxrail_logical_unit,#
-		# 				  obj.sco_logical_unit,
-		# 				  obj.portgroup.vlan_tag, #vxrail_vlan
-		# 				  obj.sco_port.vlan_tag,#sco_inner_vlan,
-		# 				  "vxrail_description",#todo change me
-		# 				  "sco_description",#todo change me
-		# 				  hub.vxrail_ae_interface,
-		# 				  sco.sco_ae_interface,
-		# 				  sco.sco_outer_vlan,
-		# 				  obj.public_network.ip, 
-		# 				  obj.ip_wan) 
-
+		configure_mx(mx_parameters, "set")
 
 	def delete_model(self, request, obj):
-		# print("borrando pg!!")
+		
+		# set portgroup to unused
 		obj.portgroup.unassign()
-		# print("borrando port!!")
+		
+		# set SCO port to unused
 		obj.sco_port.unassign()
-		# print("borrando ip!!")
-		LogicalUnit.unassign(obj.vxrail_logical_unit, obj.portgroup.hub )
-		LogicalUnit.unassign(obj.sco_logical_unit, obj.portgroup.hub )
+
+		# set logical units to unused
+		LogicalUnit.unassign(obj.vxrail_logical_unit, obj.portgroup.hub)
+		LogicalUnit.unassign(obj.sco_logical_unit, obj.portgroup.hub)
+
+		# set Edge WAN IP to unused
 		IpWan.unassign_ip(obj.ip_wan)
+
+		# set public segment to unused
 		obj.public_network.unassign()
 
+		# delete edge
+		nsx_edge_delete_by_name("")
 
-		# Delete Edge
+		# delete mx config
 
-		# Delete MX Config
+		# load mx configuration parameters
+		mx_parameters = {'username' : form.cleaned_data['username'],
+						'password' : form.cleaned_data['password'],
+						'mx_ip' : hub.mx_ip,
+						'client_id' : "",
+						'service_description' : "",
+						'vxrail_logical_unit' : obj.vxrail_logical_unit,
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'vxrail_vlan' : obj.portgroup.vlan_tag,
+						'sco_inner_vlan' : obj.sco_port.vlan_tag,
+						'vxrail_description' : "",
+						'sco_description' : "",
+						'vxrail_ae_interface' : hub.vxrail_ae_interface,
+						'sco_ae_interface': sco.sco_ae_interface,
+						'sco_outer_vlan': sco.sco_outer_vlan,
+						"public_network_ip" : obj.public_network.ip,
+						"ip_wan" : obj.ip_wan}
+
+
+		configure_mx(mx_parameters, "set")
 
 
 		obj.delete()
@@ -186,12 +197,49 @@ class PublicIrsAdmin(admin.ModelAdmin):
 	def delete_selected(self, request, obj):
 		# print("borrando selecteds!!")
 		for o in obj.all():
+			# set portgroup to unused
 			o.portgroup.unassign()
+
+			# set portgroup to unused
 			o.sco_port.unassign()
+
+			# set logical units to unused
+			LogicalUnit.unassign(o.vxrail_logical_unit, o.portgroup.hub)
+			LogicalUnit.unassign(o.sco_logical_unit, o.portgroup.hub)
+
+			# set Edge WAN IP to unused
 			IpWan.unassign_ip(o.ip_wan)
+
+			# set public segment to unused
 			o.public_network.unassign()
-			LogicalUnit.unassign(o.vxrail_logical_unit, o.portgroup.hub )
-			LogicalUnit.unassign(o.sco_logical_unit, o.portgroup.hub )
+
+			# delete Edge
+			nsx_edge_delete_by_name("")
+
+			# delete MX config
+			# load mx configuration parameters
+			mx_parameters = {'username' : form.cleaned_data['username'],
+							'password' : form.cleaned_data['password'],
+							'mx_ip' : hub.mx_ip,
+							'client_id' : "",
+							'service_description' : "",
+							'vxrail_logical_unit' : obj.vxrail_logical_unit,
+							'sco_logical_unit' : obj.sco_logical_unit,
+							'vxrail_vlan' : obj.portgroup.vlan_tag,
+							'sco_inner_vlan' : obj.sco_port.vlan_tag,
+							'vxrail_description' : "",
+							'sco_description' : "",
+							'vxrail_ae_interface' : hub.vxrail_ae_interface,
+							'sco_ae_interface': sco.sco_ae_interface,
+							'sco_outer_vlan': sco.sco_outer_vlan,
+							"public_network_ip" : obj.public_network.ip,
+							"ip_wan" : obj.ip_wan}
+
+
+			configure_mx(mx_parameters, "set")
+
+
+			# delete object
 			o.delete()
 
 
