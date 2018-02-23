@@ -170,12 +170,17 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		# print("borrando port!!")
 		obj.sco_port.unassign()
 		# print("borrando ip!!")
-		
 		LogicalUnit.unassign(obj.vxrail_logical_unit, obj.portgroup.hub )
 		LogicalUnit.unassign(obj.sco_logical_unit, obj.portgroup.hub )
-
 		IpWan.unassign_ip(obj.ip_wan)
 		obj.public_network.unassign()
+
+
+		# Delete Edge
+
+		# Delete MX Config
+
+
 		obj.delete()
 
 	def delete_selected(self, request, obj):
