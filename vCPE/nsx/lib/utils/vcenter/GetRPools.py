@@ -74,3 +74,6 @@ def getAllResourcePools():
         return 1
 
     return resourcePools
+
+
+# print(getAllResourcePools())

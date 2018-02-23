@@ -1,5 +1,5 @@
 #GetAllVMWPortgroups.py
-from .VMWConfigFile import *
+from VMWConfigFile import *
 from pyVim import connect
 from pyVim.connect import SmartConnect, Disconnect
 from pyVmomi import vim, vmodl
@@ -73,3 +73,6 @@ def getAllPortgroups():
 		return 1
 
 	return portgroups
+
+
+# print(getPortgroupId("PG-VCPE-CEN-VLAN3505"))

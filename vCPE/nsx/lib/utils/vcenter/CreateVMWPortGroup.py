@@ -129,7 +129,7 @@ def main(*args, **kwargs):
 
 		print "Connected to vCenter vSphere"
 
-		vlanIdRange = [3679, 3901]
+		vlanIdRange = [3887, 3901]
 
 		for i in range(vlanIdRange[0], vlanIdRange[1]):
 			exitCode = CreateVMWPortGroup(si, i, 'PG-VCPE-CEN-VLAN%d' % i, None, 'VMware HCIA Distributed Switch VCPE-CEN-HUB-01 1d706a')
@@ -145,9 +145,9 @@ def main(*args, **kwargs):
 		print "Caught vmodl fault: %s" % e.msg
 		return 1
 
-	# except Exception, e:
-	# 	print "Caught exception: %s" % str(e)
-	# 	return 1
+	except Exception, e:
+		print "Caught exception: %s" % str(e)
+		return 1
 
 
 if __name__ == '__main__':

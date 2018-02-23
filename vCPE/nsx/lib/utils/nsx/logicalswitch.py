@@ -2,11 +2,11 @@ from nsx_rest import *
 import json
 import sys
 
-sys.path.append("../utils/common/")
-from jinja import render
-from commonfunctions import removeEmptyParams
+# sys.path.append("../utils/common/")
+# from jinja import render
+# from commonfunctions import removeEmptyParams
 
-from transportzone import *
+# from transportzone import *
 
 # Example: createLS("GLOBAL-TZ-LAB", "EDGE-NAME-01")
 def createLogicalSwitch(tzone, name, tenantId=None, description=None, controlPlaneMode=None, guestVlanAllowed=None):
@@ -48,7 +48,7 @@ def getLogicalSwitchIdByName(name, tzone):
   return None
 
 def getAllLogicalSwitchesId():
-  r = nsxGet("/api/2.0/vdn/virtualwires")
+  r = nsxGet("/api/2.0/vdn/virtualwires","json")
   r_dict = json.loads(r)
 
   vws = r_dict['dataPage']['data']
@@ -84,10 +84,14 @@ def updateLogicalSwitchByName(name, tzone, newName=None, description=None, tenan
 
 def deleteLogicalSwitchByName(name, tzone):
   virtualwireName, virtualwireId = getLogicalSwitchIdByName(name, tzone)
-  return nsxDelete("/api/2.0/vdn/virtualwires/" + virtualwireId)
+  return nsxDelete("/api/2.0/vdn/virtualwires/" + virtualwireId, "xml")
 
 def deleteLogicalSwitchById(virtualwireId):
-  return nsxDelete("/api/2.0/vdn/virtualwires/" + virtualwireId)
+  return nsxDelete("/api/2.0/vdn/virtualwires/" + virtualwireId, "xml")
 
 
 
+# print(getAllLogicalSwitchesId())
+
+# for i in range(404,566):
+#   deleteLogicalSwitchById("virtualwire-%d" % i)

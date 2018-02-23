@@ -75,3 +75,5 @@ def getAllDatastores():
         return 1
 
     return datastores
+
+# print(getAllDatastores())

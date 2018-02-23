@@ -116,7 +116,36 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"password" : "T3stC@s3NSx!", #TODO: Change me
 										"remoteAccess" : "true"}
 				}
-		
+
+{
+	"datacenterMoid": "datacenter-2",
+	"name": "json-edge",
+	"description": "Edge created for testing purposes",
+	"appliances": {
+	    "applianceSize": "xlarge",
+	    "appliance": {
+	        "resourcePoolId": "resgroup-4887",
+	        "datastoreId": "datastore-4554",
+	        }
+	    },
+	"vnics": [{	
+	        "index": "0",
+	        "name": "Uplink",
+	        "type": "Uplink",
+	        "portgroupId": "dvportgroup-4886",
+            "primaryAddress": "181.12.110.1",
+	        "subnetMask": "255.255.255.252"
+		    "mtu": "1500",
+	        "isConnected": "true"
+	    }],
+	"cliSettings": {
+	    "userName": "admin",
+	    "password": "T3stC@s3NSx!",
+	    "remoteAccess": "true"
+	}
+}
+
+
 		print (jinja_vars)
 
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
