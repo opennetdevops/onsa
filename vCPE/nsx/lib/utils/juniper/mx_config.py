@@ -146,13 +146,13 @@ def configure_vcpe_mx(mx_parameters):
 		dev.close()
 		return
 
-	configure_bridge_domains(dev,
-							 mx_parameters["client_id"],
-							 mx_parameters["service_description"],
-							 mx_parameters["vxrail_ae_interface"],
-							 mx_parameters["sco_ae_interface"],
-							 mx_parameters["vxrail_log_unit"],
-							 mx_parameters["sco_log_unit"])
+	# configure_bridge_domains(dev,
+	# 						 mx_parameters["client_id"],
+	# 						 mx_parameters["service_description"],
+	# 						 mx_parameters["vxrail_ae_interface"],
+	# 						 mx_parameters["sco_ae_interface"],
+	# 						 mx_parameters["vxrail_log_unit"],
+	# 						 mx_parameters["sco_log_unit"])
 
 	configure_interfaces(dev,
 						 mx_parameters["vxrail_ae_interface"]
