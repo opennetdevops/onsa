@@ -1,16 +1,16 @@
 import sys
 import json
 
-from pprint import pprint
-sys.path.append("../common")
-from jinja import render
-from nsx_rest import *
-
-
-
 # from pprint import pprint
-# from .nsx_rest import *
-# from ..common.jinja import render
+# sys.path.append("../common")
+# from jinja import render
+# from nsx_rest import *
+
+
+
+from pprint import pprint
+from .nsx_rest import *
+from ..common.jinja import render
 
 # BGP_ROUTING
 # TODO: definir que parametros de bgp se quieren tocar

@@ -1,7 +1,7 @@
-# from .nsx_rest import *
-# from ..common.jinja import render
+from .nsx_rest import *
+from ..common.jinja import render
 
-from nsx_rest import *
+# from nsx_rest import *
 
 import json
 

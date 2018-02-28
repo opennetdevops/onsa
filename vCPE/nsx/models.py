@@ -55,12 +55,15 @@ class Sco(models.Model):
 
 class ScoPort(models.Model):
 	description = models.CharField(max_length=50)
+	
 	port = models.CharField(max_length=50)
+	port.null = True
+
 	used = models.BooleanField(default=False)
 	sco = models.ForeignKey(Sco, on_delete=models.CASCADE)
 	vlan_tag = models.CharField(max_length=50)
 	vlan_tag.null = True
-	port.null = True
+	
 
 	def __str__(self):
 		return self.description
