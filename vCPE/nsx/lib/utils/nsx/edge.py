@@ -83,7 +83,7 @@ def nsx_edge_resize(edgeId, applianceSize):
 def nsx_edge_add_vnic(edgeId, index, type, portgroupId, primaryAddress, secondaryAddress, mtu, isConnected):
 	jinja_vars = {}
 
-	return update_nsx_edge(edgeId, jinja_vars)
+	return nsx_edge_update(edgeId, jinja_vars)
 
 # CLI_SETTINGS
 
