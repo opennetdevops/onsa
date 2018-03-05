@@ -3,10 +3,12 @@
 ## Install PSQL Database
 ### Ubuntu
 
-sudo apt-get install postgresql postgresql-contrib
+`sudo apt-get install postgresql postgresql-contrib`
 
 
 ## Initialize PSQL Database settings
+
+`sudo su postgres`
 
 `psql postgres`
  
@@ -29,7 +31,7 @@ sudo apt-get install postgresql postgresql-contrib
 
 ## Django initialization
 
-sudo pip3 install -r requirements.txt
+`sudo pip3 install -r requirements.txt`
 
 ### Create Django user
 
