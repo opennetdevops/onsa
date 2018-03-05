@@ -80,11 +80,6 @@ def nsx_edge_add_static_route(edgeId, vnic, network, nextHop, mtu="1500", descri
 
 
 def nsx_edge_add_gateway(edgeId, defaultRouteVnic, gatewayAddress, defaultRouteMtu, defaultRouteDescription="description"):
-	# jinja_vars = {'staticRouting' : {'defaultRoute' : {'description': defaultRouteDescription,
-	# 								 				   'vnic' : defaultRouteVnic,
-	# 								 				   'gatewayAddress' : gatewayAddress,
-	# 								 				   'mtu' : defaultRouteMtu}}}
-
 	jinja_vars = {'defaultRoute' : {'description': defaultRouteDescription,
 								 				   'vnic' : defaultRouteVnic,
 								 				   'gatewayAddress' : gatewayAddress,

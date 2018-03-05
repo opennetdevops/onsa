@@ -47,7 +47,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		
 		print("SCO Name: ",form.cleaned_data['sco'].name)
 		sco = form.cleaned_data['sco']
-		print("SCO Id: ",sco.sco_id)
+		print("SCO Id: ", sco.sco_id)
 		
 		pg = Portgroup.assign_free_pg_from_hub(form.cleaned_data['hub'])
 		print("Portgroup Name: ", pg.name)
@@ -189,7 +189,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 						"ip_wan" : obj.ip_wan}
 
 
-		configure_mx(mx_parameters, "set")
+		configure_mx(mx_parameters, "delete")
 
 
 		obj.delete()
@@ -236,15 +236,11 @@ class PublicIrsAdmin(admin.ModelAdmin):
 							"ip_wan" : obj.ip_wan}
 
 
-			configure_mx(mx_parameters, "set")
+			configure_mx(mx_parameters, "delete")
 
 
 			# delete object
 			o.delete()
-
-
-
-
 
 class ClientAdmin (admin.ModelAdmin):
 	list_display = ['name']
@@ -268,8 +264,7 @@ class PublicNetworkAdmin(admin.ModelAdmin):
 	list_display = ['ip','prefix','used']
 
 
-
-
+# Register
 admin.site.register(Hub)
 admin.site.register(Sco)
 admin.site.register(LogicalUnit)
