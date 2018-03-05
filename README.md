@@ -1,5 +1,10 @@
 # vCPE
 
+## Install PSQL Database
+### Ubuntu
+
+sudo apt-get install postgresql postgresql-contrib
+
 
 ## Initialize PSQL Database settings
 
@@ -22,9 +27,9 @@
 
 `GRANT ALL PRIVILEGES ON DATABASE vcpe to nsx;`
 
-
-
 ## Django initialization
+
+sudo pip3 install -r requirements.txt
 
 ### Create Django user
 

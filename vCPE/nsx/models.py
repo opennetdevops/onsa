@@ -90,7 +90,7 @@ class IpWan (models.Model):
 	network = models.CharField(max_length=50)
 	prefix = models.PositiveSmallIntegerField()
 	
-	def __str__(self):
+	def __str__(self):	
 		return self.network
 
 	def get_free_wan_ip_from_hub(hub):
