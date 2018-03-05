@@ -172,8 +172,8 @@ class Service(models.Model):
 	edge_name = models.CharField(max_length=50)
 	product_identifier = models.CharField(max_length=50)
 	ip_wan = models.CharField(max_length=50)
-	portgroup = models.OneToOneField(Portgroup)
-	sco_port = models.OneToOneField(ScoPort)
+	portgroup = models.OneToOneField(Portgroup, on_delete=models.CASCADE)
+	sco_port = models.OneToOneField(ScoPort, on_delete=models.CASCADE)
 	sco_logical_unit = models.PositiveSmallIntegerField()
 
 	class Meta:
@@ -192,7 +192,7 @@ class PrivateIrsService (Service):
 
 class PublicIrsService (Service):
 
-	public_network = models.OneToOneField(IpPublicSegment)
+	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
 	vxrail_logical_unit = models.PositiveSmallIntegerField()
 
 

@@ -23,9 +23,7 @@ from django.conf import settings
 #     url(r'^admin/', admin.site.urls),
 # ]
 
-admin.autodiscover()
-
-
+# admin.autodiscover()
 
 urlpatterns = [
 

@@ -21,3 +21,11 @@
 ### Grant privileges
 
 `GRANT ALL PRIVILEGES ON DATABASE vcpe to nsx;`
+
+
+
+## Django initialization
+
+### Create Django user
+
+`python3 manage.py createsuperuser`

@@ -236,7 +236,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 							"ip_wan" : obj.ip_wan}
 
 
-			configure_mx(mx_parameters, "delete")
+			# configure_mx(mx_parameters, "delete")
 
 
 			# delete object
