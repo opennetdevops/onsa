@@ -80,8 +80,6 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		obj.vxrail_logical_unit = vxrail_logical_unit.logical_unit_id
 		obj.sco_logical_unit = sco_logical_unit.logical_unit_id
-
-
 		
 		uplink_portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
 		public_portgroup_id = vc_pg.getPortgroupId(obj.portgroup.name)
@@ -127,25 +125,25 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		
 
 		# load mx configuration parameters
-		mx_parameters = {'username' : form.cleaned_data['username'],
-						'password' : form.cleaned_data['password'],
-						'mx_ip' : hub.mx_ip,
-						'client_id' : "",
-						'service_description' : "",
-						'vxrail_logical_unit' : obj.vxrail_logical_unit,
-						'sco_logical_unit' : obj.sco_logical_unit,
-						'vxrail_vlan' : obj.portgroup.vlan_tag,
-						'sco_inner_vlan' : obj.sco_port.vlan_tag,
-						'vxrail_description' : "",
-						'sco_description' : "",
-						'vxrail_ae_interface' : hub.vxrail_ae_interface,
-						'sco_ae_interface': sco.sco_ae_interface,
-						'sco_outer_vlan': sco.sco_outer_vlan,
-						"public_network_ip" : obj.public_network.ip,
-						"ip_wan" : obj.ip_wan}
+		# mx_parameters = {'username' : form.cleaned_data['username'],
+		# 				'password' : form.cleaned_data['password'],
+		# 				'mx_ip' : hub.mx_ip,
+		# 				'client_id' : "",
+		# 				'service_description' : "",
+		# 				'vxrail_logical_unit' : obj.vxrail_logical_unit,
+		# 				'sco_logical_unit' : obj.sco_logical_unit,
+		# 				'vxrail_vlan' : obj.portgroup.vlan_tag,
+		# 				'sco_inner_vlan' : obj.sco_port.vlan_tag,
+		# 				'vxrail_description' : "",
+		# 				'sco_description' : "",
+		# 				'vxrail_ae_interface' : hub.vxrail_ae_interface,
+		# 				'sco_ae_interface': sco.sco_ae_interface,
+		# 				'sco_outer_vlan': sco.sco_outer_vlan,
+		# 				"public_network_ip" : obj.public_network.ip,
+		# 				"ip_wan" : obj.ip_wan}
 
 
-		configure_mx(mx_parameters, "set")
+		# configure_mx(mx_parameters, "set")
 
 	def delete_model(self, request, obj):
 		

@@ -58,7 +58,7 @@ ROOT_URLCONF = 'vCPE.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/Users/arielik/vCPE/vCPE/nsx/templates'],
+        'DIRS': ['/Users/alvaro/Fibercorp/vCPE/vCPE/nsx/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

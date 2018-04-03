@@ -5,6 +5,9 @@
 
 `sudo apt-get install postgresql postgresql-contrib`
 
+### macOS
+
+brew install postgresql
 
 ## Initialize PSQL Database settings
 
@@ -36,3 +39,19 @@
 ### Create Django user
 
 `python3 manage.py createsuperuser`
+
+### Django create migrations
+
+`python3 manage.py makemigration`
+
+### Django apply migrations
+
+`python3 manage.py migrate`
+
+### Django run server
+
+`python3 manage.py runserver`
+
+### Comments
+
+Modify in `settings.py`: `TEMPLATES = [{'DIRS': '/<insert-path>/vCPE/vCPE/nsx/templates'}]`
