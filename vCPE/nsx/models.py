@@ -191,10 +191,9 @@ class PrivateIrsService (Service):
 
 
 class PublicIrsService (Service):
-
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
 	vxrail_logical_unit = models.PositiveSmallIntegerField()
-
+	
 
 	def __str__(self):
 		return self.client.name

@@ -120,7 +120,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		
 		nsx_edge_create(jinja_vars)
-		edge_id = get_nsx_edge_id_by_name("Edge-Test-Django") #todo change me
+		edge_id = nsx_edge_get_id_by_name("Edge-Test-Django") #todo change me
 		nsx_edge_add_gateway(edge_id, "", "0", hub.mx_ip, "1500")
 		
 
