@@ -44,16 +44,16 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		obj.edge_name = obj.client.name
 		
-		print("Hub Name: ",form.cleaned_data['hub'].name)
+		#print("Hub Name: ",form.cleaned_data['hub'].name)
 		hub = form.cleaned_data['hub']
 		
-		print("SCO Name: ",form.cleaned_data['sco'].name)
+		#print("SCO Name: ",form.cleaned_data['sco'].name)
 		sco = form.cleaned_data['sco']
-		print("SCO Id: ", sco.sco_id)
+		#print("SCO Id: ", sco.sco_id)
 		
 		pg = Portgroup.assign_free_pg_from_hub(form.cleaned_data['hub'])
-		print("Portgroup Name: ", pg.name)
-		print("Portgroup used?: ", pg.used)
+		#print("Portgroup Name: ", pg.name)
+		#print("Portgroup used?: ", pg.used)
 		obj.portgroup = pg
 		
 		wan_ip = IpWan.assign_free_wan_ip_from_hub(hub)
@@ -61,10 +61,10 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		wan_network = ip_network(obj.ip_wan + "/23")
 		print("WAN Network: ", wan_network)
 		print("WAN Network Mask: ", wan_network.netmask)
-		print("Uplink IP: ", list(wan_network.hosts())[1])
+		print("Uplink IP Address: %s/32" % list(wan_network.hosts())[1])
 		
 		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
-		print("Port Name: ", sco_port.description)
+		#print("Port Name: ", sco_port.description)
 		obj.sco_port = sco_port
 
 		public_network = IpPublicSegment.assign_free_public_ip()
@@ -72,20 +72,25 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		client_network = ip_network(obj.public_network.ip + "/" + str(obj.public_network.prefix))
 		print("Public Network: ", client_network)
 		print("Public Network Mask: ", client_network.netmask)
-		print("Cliente Gateway: ", list(client_network.hosts())[0])
+		print("Public Segment Gateway: %s/32" % list(client_network.hosts())[0])
 
-		print("Free logical units at hub:", LogicalUnit.get_free_logical_unit_from_hub(form.cleaned_data['hub']) )
+		#print("Free logical units at hub:", LogicalUnit.get_free_logical_unit_from_hub(form.cleaned_data['hub']) )
 		vxrail_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
-		print("Logical Unit Assigned to vxrail: ", vxrail_logical_unit)
+		#print("Logical Unit Assigned to vxrail: ", vxrail_logical_unit)
 		
 		sco_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
-		print("Logical Unit Assigned to sco: ", sco_logical_unit)
+		#print("Logical Unit Assigned to sco: ", sco_logical_unit)
 
 		obj.vxrail_logical_unit = vxrail_logical_unit.logical_unit_id
 		obj.sco_logical_unit = sco_logical_unit.logical_unit_id
 		
+		print("Test")
 		uplink_portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
 		public_portgroup_id = vc_pg.getPortgroupId(obj.portgroup.name)
+		print("Test")
+		
+		print("Uplink Portgroup Id: ", uplink_portgroup_id)
+		print("Public Portgroup Id: ", public_portgroup_id)
 
 		jinja_vars = {  "datacenterMoid" : hub.datacenter_id,
 						"name" : 'Edge-Test-Django', #TODO: Change me
@@ -142,11 +147,11 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		# 				'vxrail_ae_interface' : hub.vxrail_ae_interface,
 		# 				'sco_ae_interface': sco.sco_ae_interface,
 		# 				'sco_outer_vlan': sco.sco_outer_vlan,
-		# 				"public_network_ip" : obj.public_network.ip,
-		# 				"ip_wan" : obj.ip_wan}
+		# 				"public_network_ip" : client_network,
+		# 				"ip_wan" : list(wan_network.hosts())[1]}
 
-
-		# configure_mx(mx_parameters, "set")
+		# pprint(mx_parameters)
+		#configure_mx(mx_parameters, "set")
 
 	def delete_model(self, request, obj):
 		
@@ -167,7 +172,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		obj.public_network.unassign()
 
 		# delete edge
-		#nsx_edge_delete_by_name("")
+		# nsx_edge_delete_by_name("Edge-Test-Django")
 
 		# delete mx config
 

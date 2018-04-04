@@ -239,7 +239,7 @@ def configure_mx(mx_parameters, method):
 	logging.basicConfig(level=logging.INFO)
 
 	# 
-	dev = Device(host=mx_parameters["mx_ip"], user=mx_parameters["user"], password=mx_parameters["password"], port=443 )
+	dev = Device(host=mx_parameters["mx_ip"], user=mx_parameters["username"], password=mx_parameters["password"], port=443 )
 
 	try:
 		logging.info("Openning NETCONF connection to device")
