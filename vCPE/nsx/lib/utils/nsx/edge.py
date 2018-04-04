@@ -40,7 +40,7 @@ def nsx_edge_get_by_name(edge_name):
 	return nsx_edge_get_by_id(edgeId)
 
 def nsx_edge_get_by_id(edgeId):
-	r = nsxGet("/api/4.0/edges/" + edgeId, "xml")
+	r = nsxGet("/api/4.0/edges/" + edgeId, "json")
 	r_dict = json.loads(r)
 	return r_dict
 
@@ -58,7 +58,7 @@ def nsx_edge_delete_by_id(edgeId):
 	return nsxDelete("/api/4.0/edges/" + edgeId, "xml")
 
 def nsx_edge_delete_by_name(edge_name):
-	edgeId = nsx_edge_get_by_name(edge_name)
+	edgeId = nsx_edge_get_id_by_name(edge_name)
 	return nsx_edge_delete_by_id(edgeId)
 
 # NSX_EDGE_UPDATE

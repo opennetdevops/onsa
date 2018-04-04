@@ -58,10 +58,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		
 		wan_ip = IpWan.assign_free_wan_ip_from_hub(hub)
 		obj.ip_wan = wan_ip.network
-		wan_network = ip_network(obj.ip_wan + "/23")
-		print("WAN Network: ", wan_network)
-		print("WAN Network Mask: ", wan_network.netmask)
-		print("Uplink IP Address: %s/32" % list(wan_network.hosts())[1])
+		print("IP WAN: ", obj.ip_wan)
 		
 		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
 		#print("Port Name: ", sco_port.description)
@@ -88,7 +85,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		uplink_portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
 		public_portgroup_id = vc_pg.getPortgroupId(obj.portgroup.name)
 		print("Test")
-		
+
 		print("Uplink Portgroup Id: ", uplink_portgroup_id)
 		print("Public Portgroup Id: ", public_portgroup_id)
 
@@ -103,8 +100,8 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"name" : "uplink",
 										"type" : "Uplink",
 										"portgroupId" : uplink_portgroup_id,
-										"primaryAddress" : list(wan_network.hosts())[1],
-										"subnetMask" : wan_network.netmask, 
+										"primaryAddress" : obj.ip_wan,
+										"subnetMask" : "255.255.254.0", 
 										"mtu" : "1500",
 										"isConnected" : "true"
 									},
@@ -129,7 +126,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		nsx_edge_create(jinja_vars)
 		edge_id = nsx_edge_get_id_by_name("Edge-Test-Django") #todo change me
 		print(edge_id)
-		nsx_edge_add_gateway(edge_id, "0", list(wan_network.hosts())[0], "1500")
+		nsx_edge_add_gateway(edge_id, "0", "100.64.3.1", "1500")
 		
 
 		# load mx configuration parameters
@@ -172,7 +169,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		obj.public_network.unassign()
 
 		# delete edge
-		# nsx_edge_delete_by_name("Edge-Test-Django")
+		nsx_edge_delete_by_name("Edge-Test-Django")
 
 		# delete mx config
 
