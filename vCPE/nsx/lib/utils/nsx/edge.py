@@ -22,7 +22,7 @@ def nsx_edge_get_all():
 	return edges
 
 def nsx_edge_get_id_by_name(name):
-	r = nsxGet("/api/4.0/edges", "xml")
+	r = nsxGet("/api/4.0/edges", "json")
 
 	r_dict = json.loads(r)
 	
@@ -52,7 +52,7 @@ def nsx_edge_create(jinja_vars):
   	
 	result= nsxPost("/api/4.0/edges", data, "xml")
 	print (result)
-	return
+	return result
 
 def nsx_edge_delete_by_id(edgeId):
 	return nsxDelete("/api/4.0/edges/" + edgeId, "xml")

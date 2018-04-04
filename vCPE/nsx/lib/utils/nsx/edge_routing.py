@@ -58,12 +58,10 @@ def update_nsx_edge_static(edgeId, jinja_vars):
 
 def update_nsx_edge_static_json(edgeId, jinja_vars):
 	dir = os.path.dirname(__file__)
-	nsx_static_json = os.path.join(dir, '../../templates/edge_routing/nsx_edge_routing_static_json.j2')
+	nsx_static_json = os.path.join(dir, '../../templates/edge_routing/nsx_edge_routing_static.j2')
 	data = render(nsx_static_json, jinja_vars) 
 
-	print(data)
-
-	return nsxPutAsJson("/api/4.0/edges/" + edgeId + "/routing/config/static", data)
+	return nsxPut("/api/4.0/edges/" + edgeId + "/routing/config/static", data, "json")
 
 def delete_nsx_edge_static(edgeId):
 	return nsxDelete("/api/4.0/edges/" + edgeId + "/routing/config/static")

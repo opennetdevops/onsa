@@ -8,6 +8,8 @@ from .models import *
 from .forms import *
 from ipaddress import *
 
+from pprint import pprint
+
 #todo add hubs to logical units view
 
 
@@ -56,7 +58,10 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		
 		wan_ip = IpWan.assign_free_wan_ip_from_hub(hub)
 		obj.ip_wan = wan_ip.network
-		print("IP Wan: ", obj.ip_wan)
+		wan_network = ip_network(obj.ip_wan + "/23")
+		print("WAN Network: ", wan_network)
+		print("WAN Network Mask: ", wan_network.netmask)
+		print("Uplink IP: ", list(wan_network.hosts())[1])
 		
 		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
 		print("Port Name: ", sco_port.description)
@@ -64,19 +69,17 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		public_network = IpPublicSegment.assign_free_public_ip()
 		obj.public_network = public_network
-		print("Public Network: ", obj.public_network.ip)
-		network = ip_address(obj.public_network.ip)
-		print(str(network))
-		print(str(network + 1))
+		client_network = ip_network(obj.public_network.ip + "/" + str(obj.public_network.prefix))
+		print("Public Network: ", client_network)
+		print("Public Network Mask: ", client_network.netmask)
+		print("Cliente Gateway: ", list(client_network.hosts())[0])
 
-		#todo print ( obj.public_network + 1)
-
-		print ("Free logical units at hub:", LogicalUnit.get_free_logical_unit_from_hub(form.cleaned_data['hub']) )
+		print("Free logical units at hub:", LogicalUnit.get_free_logical_unit_from_hub(form.cleaned_data['hub']) )
 		vxrail_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
-		print ("Logical Unit Assigned to vxrail: ", vxrail_logical_unit)
+		print("Logical Unit Assigned to vxrail: ", vxrail_logical_unit)
 		
 		sco_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
-		print ("Logical Unit Assigned to sco: ", sco_logical_unit)
+		print("Logical Unit Assigned to sco: ", sco_logical_unit)
 
 		obj.vxrail_logical_unit = vxrail_logical_unit.logical_unit_id
 		obj.sco_logical_unit = sco_logical_unit.logical_unit_id
@@ -95,33 +98,33 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"name" : "uplink",
 										"type" : "Uplink",
 										"portgroupId" : uplink_portgroup_id,
-										"primaryAddress" : obj.ip_wan,
-										"subnetMask" : "255.255.254.0", #TODO: Change me or leave it, 
+										"primaryAddress" : list(wan_network.hosts())[1],
+										"subnetMask" : wan_network.netmask, 
 										"mtu" : "1500",
 										"isConnected" : "true"
-									 },
+									},
 									{"index" : "1",
 										"name" : "public",
 										"type" : "Internal",
 										"portgroupId" : public_portgroup_id,
-										"primaryAddress" : str(network + 1),
-										# "subnetPrefixLength" : str(obj.public_network.prefix), 
-										"subnetMask" : "255.255.255.128", #TODO: Change me or leave it,
+										"primaryAddress" : list(client_network.hosts())[0],
+										"subnetMask" : client_network.netmask,
 										"mtu" : "1500",
 										"isConnected" : "true"
 									 }],
+
 						"cliSettings" : {"userName" : "admin",
 										"password" : "T3stC@s3NSx!", #TODO: Change me
 										"remoteAccess" : "true"}
 				}
 
-		print (jinja_vars)
-
+		pprint(jinja_vars)
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		
 		nsx_edge_create(jinja_vars)
 		edge_id = nsx_edge_get_id_by_name("Edge-Test-Django") #todo change me
-		nsx_edge_add_gateway(edge_id, "", "0", hub.mx_ip, "1500")
+		print(edge_id)
+		nsx_edge_add_gateway(edge_id, "0", list(wan_network.hosts())[0], "1500")
 		
 
 		# load mx configuration parameters
@@ -164,30 +167,30 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		obj.public_network.unassign()
 
 		# delete edge
-		nsx_edge_delete_by_name("")
+		#nsx_edge_delete_by_name("")
 
 		# delete mx config
 
 		# load mx configuration parameters
-		mx_parameters = {'username' : form.cleaned_data['username'],
-						'password' : form.cleaned_data['password'],
-						'mx_ip' : hub.mx_ip,
-						'client_id' : "",
-						'service_description' : "",
-						'vxrail_logical_unit' : obj.vxrail_logical_unit,
-						'sco_logical_unit' : obj.sco_logical_unit,
-						'vxrail_vlan' : obj.portgroup.vlan_tag,
-						'sco_inner_vlan' : obj.sco_port.vlan_tag,
-						'vxrail_description' : "",
-						'sco_description' : "",
-						'vxrail_ae_interface' : hub.vxrail_ae_interface,
-						'sco_ae_interface': sco.sco_ae_interface,
-						'sco_outer_vlan': sco.sco_outer_vlan,
-						"public_network_ip" : obj.public_network.ip,
-						"ip_wan" : obj.ip_wan}
+		# mx_parameters = {'username' : form.cleaned_data['username'],
+		# 				'password' : form.cleaned_data['password'],
+		# 				'mx_ip' : hub.mx_ip,
+		# 				'client_id' : "",
+		# 				'service_description' : "",
+		# 				'vxrail_logical_unit' : obj.vxrail_logical_unit,
+		# 				'sco_logical_unit' : obj.sco_logical_unit,
+		# 				'vxrail_vlan' : obj.portgroup.vlan_tag,
+		# 				'sco_inner_vlan' : obj.sco_port.vlan_tag,
+		# 				'vxrail_description' : "",
+		# 				'sco_description' : "",
+		# 				'vxrail_ae_interface' : hub.vxrail_ae_interface,
+		# 				'sco_ae_interface': sco.sco_ae_interface,
+		# 				'sco_outer_vlan': sco.sco_outer_vlan,
+		# 				"public_network_ip" : obj.public_network.ip,
+		# 				"ip_wan" : obj.ip_wan}
 
 
-		configure_mx(mx_parameters, "delete")
+		#configure_mx(mx_parameters, "delete")
 
 
 		obj.delete()
@@ -212,26 +215,26 @@ class PublicIrsAdmin(admin.ModelAdmin):
 			o.public_network.unassign()
 
 			# delete Edge
-			nsx_edge_delete_by_name("")
+			#nsx_edge_delete_by_name("")
 
 			# delete MX config
 			# load mx configuration parameters
-			mx_parameters = {'username' : form.cleaned_data['username'],
-							'password' : form.cleaned_data['password'],
-							'mx_ip' : hub.mx_ip,
-							'client_id' : "",
-							'service_description' : "",
-							'vxrail_logical_unit' : obj.vxrail_logical_unit,
-							'sco_logical_unit' : obj.sco_logical_unit,
-							'vxrail_vlan' : obj.portgroup.vlan_tag,
-							'sco_inner_vlan' : obj.sco_port.vlan_tag,
-							'vxrail_description' : "",
-							'sco_description' : "",
-							'vxrail_ae_interface' : hub.vxrail_ae_interface,
-							'sco_ae_interface': sco.sco_ae_interface,
-							'sco_outer_vlan': sco.sco_outer_vlan,
-							"public_network_ip" : obj.public_network.ip,
-							"ip_wan" : obj.ip_wan}
+			# mx_parameters = {'username' : form.cleaned_data['username'],
+			# 				'password' : form.cleaned_data['password'],
+			# 				'mx_ip' : hub.mx_ip,
+			# 				'client_id' : "",
+			# 				'service_description' : "",
+			# 				'vxrail_logical_unit' : obj.vxrail_logical_unit,
+			# 				'sco_logical_unit' : obj.sco_logical_unit,
+			# 				'vxrail_vlan' : obj.portgroup.vlan_tag,
+			# 				'sco_inner_vlan' : obj.sco_port.vlan_tag,
+			# 				'vxrail_description' : "",
+			# 				'sco_description' : "",
+			# 				'vxrail_ae_interface' : hub.vxrail_ae_interface,
+			# 				'sco_ae_interface': sco.sco_ae_interface,
+			# 				'sco_outer_vlan': sco.sco_outer_vlan,
+			# 				"public_network_ip" : obj.public_network.ip,
+			# 				"ip_wan" : obj.ip_wan}
 
 
 			# configure_mx(mx_parameters, "delete")
