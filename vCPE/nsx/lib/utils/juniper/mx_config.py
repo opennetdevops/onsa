@@ -22,7 +22,14 @@ def render(tpl_path, context):
 		loader=jinja2.FileSystemLoader(path or './')
 	).get_template(filename).render(context)
 
-def set_bridge_domains(dev, bridge_domain_params, client_id, service_description, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, sco_log_unit):
+def set_bridge_domains(dev,
+	client_id,
+	service_description,
+	vxrail_ae_interface,
+	sco_ae_interface,
+	vxrail_log_unit,
+	sco_log_unit):
+
 
 	dir = os.path.dirname(__file__)
 	template_rac_file = os.path.join(dir, './templates/bridge_domains.set')
@@ -122,7 +129,6 @@ def set_static_route(dev, public_prefix, nexthop_vcpe):
 
 
 def delete_bridge_domains(dev,
-						  bridge_domain_params,
 						  client_id,
 						  service_description,
 						  vxrail_ae_interface,
@@ -261,48 +267,48 @@ def configure_mx(mx_parameters, method):
 
 	if method == "set":
 		# logging.info("Setting bridge domains")
-		# set_bridge_domains(dev,
-		# 						 mx_parameters["client_id"],
-		# 						 mx_parameters["service_description"],
-		# 						 mx_parameters["vxrail_ae_interface"],
-		# 						 mx_parameters["sco_ae_interface"],
-		# 						 mx_parameters["vxrail_log_unit"],
-		# 						 mx_parameters["sco_log_unit"])
+		set_bridge_domains(dev,
+							mx_parameters["client_id"],
+							mx_parameters["service_description"],
+							mx_parameters["vxrail_ae_interface"],
+							mx_parameters["sco_ae_interface"],
+							mx_parameters["vxrail_logical_unit"],
+							mx_parameters["sco_logical_unit"])
 
 		# logging.info("Setting interfaces")
-		# set_interfaces(dev,
-		# 					 mx_parameters["vxrail_ae_interface"]
-		# 					 mx_parameters["sco_ae_interface"],
-		# 					 mx_parameters["vxrail_log_unit"],
-		# 					 mx_parameters["service_description"],
-		# 					 mx_parameters["sco_log_unit"],
-		# 					 mx_parameters["sco_outer_vlan"],
-		# 					 mx_parameters["vxrail_vlan"],
-		# 					 mx_parameters["sco_inner_vlan"])
+		set_interfaces(dev,
+						mx_parameters["vxrail_ae_interface"],
+						mx_parameters["sco_ae_interface"],
+						mx_parameters["vxrail_logical_unit"],
+						mx_parameters["service_description"],
+						mx_parameters["sco_logical_unit"],
+						mx_parameters["sco_outer_vlan"],
+						mx_parameters["vxrail_vlan"],
+						mx_parameters["sco_inner_vlan"])
 
 		logging.info("Setting static route")
 		set_static_route(dev, mx_parameters["public_network_ip"], mx_parameters["ip_wan"])
 
 	elif method == "delete":
 		# logging.info("Deleting bridge domains")
-		# delete_bridge_domains(dev,
-		# 						 mx_parameters["client_id"],
-		# 						 mx_parameters["service_description"],
-		# 						 mx_parameters["vxrail_ae_interface"],
-		# 						 mx_parameters["sco_ae_interface"],
-		# 						 mx_parameters["vxrail_log_unit"],
-		# 						 mx_parameters["sco_log_unit"])
+		delete_bridge_domains(dev,
+								mx_parameters["client_id"],
+								mx_parameters["service_description"],
+								mx_parameters["vxrail_ae_interface"],
+								mx_parameters["sco_ae_interface"],
+								mx_parameters["vxrail_logical_unit"],
+								mx_parameters["sco_logical_unit"])
 
 		# logging.info("Deleting interfaces")
-		# delete_interfaces(dev,
-		# 					 mx_parameters["vxrail_ae_interface"]
-		# 					 mx_parameters["sco_ae_interface"],
-		# 					 mx_parameters["vxrail_log_unit"],
-		# 					 mx_parameters["service_description"],
-		# 					 mx_parameters["sco_log_unit"],
-		# 					 mx_parameters["sco_outer_vlan"],
-		# 					 mx_parameters["vxrail_vlan"],
-		# 					 mx_parameters["sco_inner_vlan"])
+		delete_interfaces(dev,
+							mx_parameters["vxrail_ae_interface"],
+							mx_parameters["sco_ae_interface"],
+							mx_parameters["vxrail_logical_unit"],
+							mx_parameters["service_description"],
+							mx_parameters["sco_logical_unit"],
+							mx_parameters["sco_outer_vlan"],
+							mx_parameters["vxrail_vlan"],
+							mx_parameters["sco_inner_vlan"])
 
 		logging.info("Deleting static route")
 		delete_static_route(dev, mx_parameters["public_network_ip"], mx_parameters["ip_wan"])

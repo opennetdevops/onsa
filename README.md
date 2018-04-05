@@ -7,7 +7,7 @@
 
 ### macOS
 
-brew install postgresql
+`brew install postgresql`
 
 ## Initialize PSQL Database settings
 
@@ -54,4 +54,4 @@ brew install postgresql
 
 ### Comments
 
-Modify in `settings.py`: `TEMPLATES = [{'DIRS': '/<insert-path>/vCPE/vCPE/nsx/templates'}]`
+Modify in `settings.py:` `TEMPLATES = [{'DIRS': '/<insert-path>/vCPE/vCPE/nsx/templates'}]`

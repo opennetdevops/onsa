@@ -129,26 +129,27 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		nsx_edge_add_gateway(edge_id, "0", "100.64.3.1", "1500")
 		
 
-		# load mx configuration parameters
-		# mx_parameters = {'username' : form.cleaned_data['username'],
-		# 				'password' : form.cleaned_data['password'],
-		# 				'mx_ip' : hub.mx_ip,
-		# 				'client_id' : "",
-		# 				'service_description' : "",
-		# 				'vxrail_logical_unit' : obj.vxrail_logical_unit,
-		# 				'sco_logical_unit' : obj.sco_logical_unit,
-		# 				'vxrail_vlan' : obj.portgroup.vlan_tag,
-		# 				'sco_inner_vlan' : obj.sco_port.vlan_tag,
-		# 				'vxrail_description' : "",
-		# 				'sco_description' : "",
-		# 				'vxrail_ae_interface' : hub.vxrail_ae_interface,
-		# 				'sco_ae_interface': sco.sco_ae_interface,
-		# 				'sco_outer_vlan': sco.sco_outer_vlan,
-		# 				"public_network_ip" : client_network,
-		# 				"ip_wan" : list(wan_network.hosts())[1]}
+		#load mx configuration parameters
+		mx_parameters = {'username' : form.cleaned_data['username'],
+						'password' : form.cleaned_data['password'],
+						'mx_ip' : hub.mx_ip,
+						'client_id' : "client-some",
+						'service_description' : "some",
+						'vxrail_logical_unit' : obj.vxrail_logical_unit,
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'vxrail_vlan' : obj.portgroup.vlan_tag,
+						'sco_inner_vlan' : obj.sco_port.vlan_tag,
+						'vxrail_description' : "vxrail-dsce",
+						'sco_description' : "sco-descp",
+						'vxrail_ae_interface' : hub.vxrail_ae_interface,
+						'sco_ae_interface': sco.sco_ae_interface,
+						'sco_outer_vlan': sco.sco_outer_vlan,
+						"public_network_ip" : client_network,
+						"ip_wan" : obj.ip_wan}
 
-		# pprint(mx_parameters)
-		#configure_mx(mx_parameters, "set")
+		pprint(mx_parameters)
+		configure_mx(mx_parameters, "set")
+		# configure_mx(mx_parameters, "delete")
 
 	def delete_model(self, request, obj):
 		
@@ -217,7 +218,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 			o.public_network.unassign()
 
 			# delete Edge
-			#nsx_edge_delete_by_name("")
+			nsx_edge_delete_by_name("Edge-Test-Django")
 
 			# delete MX config
 			# load mx configuration parameters
