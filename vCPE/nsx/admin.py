@@ -58,7 +58,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		
 		wan_ip = IpWan.assign_free_wan_ip_from_hub(hub)
 		obj.ip_wan = wan_ip.network
-		print("IP WAN: ", obj.ip_wan)
+		print("IP WAN: %s/32" % obj.ip_wan)
 		
 		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
 		#print("Port Name: ", sco_port.description)
@@ -120,7 +120,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"remoteAccess" : "true"}
 				}
 
-		pprint(jinja_vars)
+		# pprint(jinja_vars)
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		
 		nsx_edge_create(jinja_vars)
@@ -147,9 +147,9 @@ class PublicIrsAdmin(admin.ModelAdmin):
 						"public_network_ip" : client_network,
 						"ip_wan" : obj.ip_wan}
 
-		pprint(mx_parameters)
+		# pprint(mx_parameters)
 		configure_mx(mx_parameters, "set")
-		# configure_mx(mx_parameters, "delete")
+		#configure_mx(mx_parameters, "delete")
 
 	def delete_model(self, request, obj):
 		
