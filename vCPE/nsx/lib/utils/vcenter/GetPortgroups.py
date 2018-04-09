@@ -75,4 +75,4 @@ def getAllPortgroups():
 	return portgroups
 
 
-# print(getPortgroupId("PG-VCPE-CEN-VLAN3505"))
+# print(getPortgroupId("PG-CEN-UPLINK"))

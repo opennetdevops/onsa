@@ -9,6 +9,7 @@ class Hub (models.Model):
 	datacenter_id = models.CharField(max_length=50)
 	uplink_ip = models.GenericIPAddressField()
 	uplink_pg = models.CharField(max_length=50)
+	uplink_pg_id = models.CharField(max_length=50)
 	mx_ip = models.GenericIPAddressField()
 	vxrail_ae_interface = models.CharField(max_length=50)
 
@@ -139,6 +140,7 @@ class Portgroup (models.Model):
 	name = models.CharField(max_length=50)
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 	used = models.BooleanField(default=False)
+	dvportgroup_id = models.CharField(max_length=50)
 
 	def __str__(self):
 		return self.name

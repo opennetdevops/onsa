@@ -9,6 +9,7 @@ import os
 import argparse
 import logging, sys
 
+from pprint import pprint
 
 # host = '10.120.78.204'
 # host  = 10.106.16.104
@@ -80,7 +81,7 @@ def set_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit,
 				  'sco_inner_vlan' : sco_inner_vlan
 				  }
 	try:
-		dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars)
+		dev.cu.load(template_path=template_rac_file, erge=True, template_vars=jinja_vars)
 		dev.cu.pdiff()
 
 	except ValueError as err:
@@ -200,6 +201,7 @@ def delete_static_route(dev, public_prefix):
 	template_rac_file = os.path.join(dir, './templates/static_route.delete')
 
 	jinja_vars = {'public_prefix' : public_prefix}
+	print(render(template_rac_file, jinja_vars))
 	try:
 		dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars)
 		dev.cu.pdiff()
@@ -227,7 +229,7 @@ def configure_mx(mx_parameters, method):
 	logging.basicConfig(level=logging.INFO)
 
 	# 
-	dev = Device(host=mx_parameters["mx_ip"], user=mx_parameters["username"], password=mx_parameters["password"], port=443 )
+	dev = Device(host=mx_parameters["mx_ip"], user="automeishon", password="Automeishon", port=443 )
 
 	try:
 		logging.info("Openning NETCONF connection to device")
@@ -290,7 +292,7 @@ def configure_mx(mx_parameters, method):
 	logging.info("Committing the configuration")
 	try:
 		dev.timeout=120
-		commit_result = dev.cu.commit_check()
+		commit_result = dev.cu.commit()
 		# Show that the commit worked True means it worked, false means it failed
 		logging.debug( "Commit result: %s",commit_result)
 

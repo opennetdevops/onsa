@@ -48,8 +48,8 @@ class IrsServiceForm(ModelForm):
 
     hub.widget.attrs['data-width'] = '14em'
     sco.widget.attrs['data-width'] = '14em'
-    username = forms.CharField()
-    password = forms.CharField(widget=PasswordInput())
+    #username = forms.CharField()
+    #password = forms.CharField(widget=PasswordInput())
 
 
     class Meta:
