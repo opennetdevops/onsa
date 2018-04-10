@@ -42,7 +42,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		#Create NSX Edge
 
-		obj.edge_name = obj.client.name
+		obj.edge_name = "VCPE-" + obj.client.name + "-" + obj.product_identifier
 		
 		#print("Hub Name: ",form.cleaned_data['hub'].name)
 		hub = form.cleaned_data['hub']
@@ -120,7 +120,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 										"remoteAccess" : "true"}
 				}
 
-		# pprint(jinja_vars)
+		pprint(jinja_vars)
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		
 		# nsx_edge_create(jinja_vars)
@@ -131,7 +131,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		#load mx configuration parameters
 		mx_parameters = {'mx_ip' : hub.mx_ip,
-						'client_id' : obj.client.name,
+						'client_id' : "BD-" + obj.client.name + "-" + obj.product_identifier,
 						'service_description' : "Public IRS Service",
 						'vxrail_logical_unit' : obj.vxrail_logical_unit,
 						'sco_logical_unit' : obj.sco_logical_unit,
@@ -173,7 +173,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 		# load mx configuration parameters
 		mx_parameters = {'mx_ip' : obj.portgroup.hub.mx_ip,
-						'client_id' : obj.client.name,
+						'client_id' : "BD-" + obj.client.name + "-" + obj.product_identifier,
 						'vxrail_logical_unit' : obj.vxrail_logical_unit,
 						'sco_logical_unit' : obj.sco_logical_unit,
 						'vxrail_ae_interface' : obj.portgroup.hub.vxrail_ae_interface,
@@ -211,7 +211,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 
 			# delete MX config
 			mx_parameters = {'mx_ip' : obj.portgroup.hub.mx_ip,
-						'client_id' : obj.client.name,
+						'client_id' : "BD-" + obj.client.name + "-" + obj.product_identifier,
 						'vxrail_logical_unit' : obj.vxrail_logical_unit,
 						'sco_logical_unit' : obj.sco_logical_unit,
 						'vxrail_ae_interface' : obj.portgroup.hub.vxrail_ae_interface,
@@ -220,7 +220,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 											  str(obj.public_network.prefix))}
 
 
-			# configure_mx(mx_parameters, "delete")
+			#configure_mx(mx_parameters, "delete")
 
 
 			# delete object

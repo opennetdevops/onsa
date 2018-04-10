@@ -22,7 +22,6 @@ def getScoAsTuple():
 
 class IrsServiceForm(ModelForm):
 
-
     hub = forms.ModelChoiceField(
         queryset=Hub.objects.all(),
         label="Hub",
@@ -32,8 +31,6 @@ class IrsServiceForm(ModelForm):
 
         )
     )
-
-    
 
     sco = forms.ModelChoiceField(
         queryset=Sco.objects.all(),
@@ -54,7 +51,7 @@ class IrsServiceForm(ModelForm):
 
     class Meta:
         model = PublicIrsService
-        fields = ('public_network','client')
+        fields = ('public_network','client', 'product_identifier')
         labels = {
             'public_network': 'Network segment',
             'product_identifier' : 'ID'
