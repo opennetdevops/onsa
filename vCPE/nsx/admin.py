@@ -24,7 +24,7 @@ class PrivateIrsAdmin (admin.ModelAdmin):
 class PublicIrsAdmin(admin.ModelAdmin):
 	form = IrsServiceForm
 
-	list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port')
+	list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port', 'product_identifier')
 	list_filter = ('client', 'edge_name')
 	actions = ['delete_selected']
 
@@ -90,7 +90,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		print("Public Portgroup Id: ", obj.portgroup.dvportgroup_id)
 
 		jinja_vars = {  "datacenterMoid" : hub.datacenter_id,
-						"name" : 'Edge-Test-Django', #TODO: Change me
+						"name" : obj.edge_name, #TODO: Change me
 						"description" : "",
 						"appliances" : {    "applianceSize" : 'xlarge',
 																"appliance" : {"resourcePoolId" : hub.resource_pool_id,
@@ -123,30 +123,30 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		# pprint(jinja_vars)
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		
-		nsx_edge_create(jinja_vars)
-		edge_id = nsx_edge_get_id_by_name("Edge-Test-Django") #todo change me
-		print(edge_id)
-		nsx_edge_add_gateway(edge_id, "0", "100.64.3.1", "1500")
+		# nsx_edge_create(jinja_vars)
+		# edge_id = nsx_edge_get_id_by_name("Edge-Test-Django") #todo change me
+		# print(edge_id)
+		# nsx_edge_add_gateway(edge_id, "0", "100.64.3.1", "1500")
 		
 
 		#load mx configuration parameters
 		mx_parameters = {'mx_ip' : hub.mx_ip,
-						'client_id' : "client-some",
-						'service_description' : "some",
+						'client_id' : obj.client.name,
+						'service_description' : "Public IRS Service",
 						'vxrail_logical_unit' : obj.vxrail_logical_unit,
 						'sco_logical_unit' : obj.sco_logical_unit,
 						'vxrail_vlan' : obj.portgroup.vlan_tag,
 						'sco_inner_vlan' : obj.sco_port.vlan_tag,
-						'vxrail_description' : "vxrail-dsce",
-						'sco_description' : "sco-descp",
+						'vxrail_description' : "VxRail CEN",
+						'sco_description' : "SCO-CEN-24",
 						'vxrail_ae_interface' : hub.vxrail_ae_interface,
 						'sco_ae_interface': sco.sco_ae_interface,
 						'sco_outer_vlan': sco.sco_outer_vlan,
 						"public_network_ip" : client_network,
 						"ip_wan" : obj.ip_wan}
 
-		# pprint(mx_parameters)
-		configure_mx(mx_parameters, "set")
+		pprint(mx_parameters)
+		# configure_mx(mx_parameters, "set")
 		
 	def delete_model(self, request, obj):
 		
@@ -167,23 +167,22 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		obj.public_network.unassign()
 
 		# delete edge
-		nsx_edge_delete_by_name("Edge-Test-Django")
+		# nsx_edge_delete_by_name("Edge-Test-Django")
 
 		# delete mx config
 
 		# load mx configuration parameters
-		# mx_parameters = {'mx_ip' : hub.mx_ip,
-		# 				'client_id' : "client-some",
-		# 				'vxrail_logical_unit' : obj.vxrail_logical_unit,
-		# 				'sco_logical_unit' : obj.sco_logical_unit,
-		# 				'vxrail_ae_interface' : hub.vxrail_ae_interface,
-		# 				'sco_ae_interface': sco.sco_ae_interface,
-		# 				"public_network_ip" : "181.30.161.64/29"}
-		mx_parameters = {'mx_ip' : "10.120.80.61",
-						"public_network_ip" : "181.30.161.64/29"}
+		mx_parameters = {'mx_ip' : obj.portgroup.hub.mx_ip,
+						'client_id' : obj.client.name,
+						'vxrail_logical_unit' : obj.vxrail_logical_unit,
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'vxrail_ae_interface' : obj.portgroup.hub.vxrail_ae_interface,
+						'sco_ae_interface': obj.sco_port.sco.sco_ae_interface,
+						"public_network_ip" : ip_network(obj.public_network.ip + "/" + \
+											  str(obj.public_network.prefix))}
 
-
-		configure_mx(mx_parameters, "delete")
+		pprint(mx_parameters)
+		# configure_mx(mx_parameters, "delete")
 
 
 		obj.delete()
@@ -211,23 +210,17 @@ class PublicIrsAdmin(admin.ModelAdmin):
 			nsx_edge_delete_by_name("Edge-Test-Django")
 
 			# delete MX config
-			mx_parameters = {'mx_ip' : hub.mx_ip,
-						'client_id' : "client-some",
-						'service_description' : "some",
+			mx_parameters = {'mx_ip' : obj.portgroup.hub.mx_ip,
+						'client_id' : obj.client.name,
 						'vxrail_logical_unit' : obj.vxrail_logical_unit,
 						'sco_logical_unit' : obj.sco_logical_unit,
-						'vxrail_vlan' : obj.portgroup.vlan_tag,
-						'sco_inner_vlan' : obj.sco_port.vlan_tag,
-						'vxrail_description' : "vxrail-dsce",
-						'sco_description' : "sco-descp",
-						'vxrail_ae_interface' : hub.vxrail_ae_interface,
-						'sco_ae_interface': sco.sco_ae_interface,
-						'sco_outer_vlan': sco.sco_outer_vlan,
-						"public_network_ip" : client_network,
-						"ip_wan" : obj.ip_wan}
+						'vxrail_ae_interface' : obj.portgroup.hub.vxrail_ae_interface,
+						'sco_ae_interface': obj.sco_port.sco.sco_ae_interface,
+						"public_network_ip" : ip_network(obj.public_network.ip + "/" + \
+											  str(obj.public_network.prefix))}
 
 
-			configure_mx(mx_parameters, "delete")
+			# configure_mx(mx_parameters, "delete")
 
 
 			# delete object
