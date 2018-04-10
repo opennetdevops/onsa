@@ -167,7 +167,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		obj.public_network.unassign()
 
 		# delete edge
-		# nsx_edge_delete_by_name("Edge-Test-Django")
+		nsx_edge_delete_by_name(obj.edge_name)
 
 		# delete mx config
 
@@ -207,7 +207,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 			o.public_network.unassign()
 
 			# delete Edge
-			nsx_edge_delete_by_name("Edge-Test-Django")
+			nsx_edge_delete_by_name(obj.edge_name)
 
 			# delete MX config
 			mx_parameters = {'mx_ip' : obj.portgroup.hub.mx_ip,
