@@ -1,4 +1,4 @@
-from nsx_rest import *
+from .nsx_rest import *
 import json
 import sys
 
@@ -6,7 +6,7 @@ import sys
 # from jinja import render
 # from commonfunctions import removeEmptyParams
 
-# from transportzone import *
+from .transportzone import *
 
 # Example: createLS("GLOBAL-TZ-LAB", "EDGE-NAME-01")
 def createLogicalSwitch(tzone, name, tenantId=None, description=None, controlPlaneMode=None, guestVlanAllowed=None):
@@ -29,38 +29,35 @@ def createLogicalSwitch(tzone, name, tenantId=None, description=None, controlPla
   return nsxPost("/api/2.0/vdn/scopes/" + vdnScopeId + "/virtualwires", data)
 
 
-# TODO:
-def getLogicalSwitchById(virtualwireId):
-  pass
+def get_logicalswitch(name, tzone, virtualwireId=None):
 
-def getLogicalSwitchIdByName(name, tzone):
-  tzName, tzId = getTzIdByName(tzone)
-  r = nsxGet("/api/2.0/vdn/scopes/" + tzId + "/virtualwires")
+  if virtualwireId is None:
+    tzName, tzId = get_tz_id_by_name(tzone)
+    r = nsxGet("/api/2.0/vdn/scopes/" + tzId + "/virtualwires", "json")
 
-  r_dict = json.loads(r)
+    r_dict = json.loads(r)
 
-  vws = r_dict['dataPage']['data']
+    vws = r_dict['dataPage']['data']
 
-  for vw in vws:
-    if vw['name'] == name:
-      return vw['name'], vw['objectId']
+    for vw in vws:
+      if vw['name'] == name:
+        return {"name" : vw['name'], "virtualwireId" : vw['objectId']}
+    return None
 
-  return None
-
-def getAllLogicalSwitchesId():
+def get_logicalswitches_all():
   r = nsxGet("/api/2.0/vdn/virtualwires","json")
   r_dict = json.loads(r)
 
   vws = r_dict['dataPage']['data']
 
-  virtualwires = []
+  virtualwires = {"virtualwires" : []}
 
   for vw in vws:
-    virtualwires.append({'name' : vw['name'], 'id' : vw['objectId']})
+    virtualwires["virtualwires"].append({'name' : vw['name'], 'id' : vw['objectId']})
 
   return virtualwires
 
-def updateLogicalSwitchByName(name, tzone, newName=None, description=None, tenantId=None, controlPlaneMode=None):
+def update_logical_switch(name, tzone, newName=None, description=None, tenantId=None, controlPlaneMode=None):
       
   jinja_vars = {'name' : newName,
                 'description' : description,

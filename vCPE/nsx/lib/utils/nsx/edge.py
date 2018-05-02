@@ -9,15 +9,15 @@ from pprint import pprint
 
 # READ_NSX_EDGE
 def nsx_edge_get_all():
-	r = nsxGet("/api/4.0/edges", "xml")
+	r = nsxGet("/api/4.0/edges", "json")
 
 	r_dict = json.loads(r)
 	allEdges = r_dict['edgePage']['data']
 
-	edges = []
+	edges = {"edges" : []}
 
 	for edge in allEdges:
-		edges.append({'name' : edge['name'], 'id' : edge['id']})
+		edges["edges"].append({'name' : edge['name'], 'id' : edge['id']})
 
 	return edges
 

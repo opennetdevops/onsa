@@ -1,6 +1,4 @@
-#GetDatacenters.py
-
-from VMWConfigFile import *
+from .VMWConfigFile import *
 from pyVim import connect
 from pyVim.connect import SmartConnect, Disconnect
 from pyVmomi import vim, vmodl
@@ -26,9 +24,9 @@ def get_vim_objects(content, vim_type):
         content.rootFolder, [vim_type], recursive=True
     ).view]
 
-def getDatacenterId(name):
+def get_datacenter_id(name):
 
-    dc_list = getAllDatacenters()
+    dc_list = get_datacenters_all()
     # print dc_list
 
     for dc in dc_list:
@@ -37,9 +35,7 @@ def getDatacenterId(name):
 
     return ""
 
-
-
-def getAllDatacenters():
+def get_datacenters_all():
 
     try:
         si = None
@@ -62,10 +58,10 @@ def getAllDatacenters():
         dc_list = obj_view.view
         obj_view.Destroy()
 
-        datacenters = []
+        datacenters = {"datacenters" : []}
 
         for dc in dc_list:
-            datacenters.append({'name' : dc.name, 'moId' : dc._moId})
+            datacenters["datacenters"].append({'name' : dc.name, 'moId' : dc._moId})
         
     except vmodl.MethodFault as e:
         print("Caught vmodl fault: %s" % e.msg)
@@ -76,6 +72,3 @@ def getAllDatacenters():
         return 1
 
     return datacenters
-
-
-print (getAllDatacenters())

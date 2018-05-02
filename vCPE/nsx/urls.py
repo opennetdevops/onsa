@@ -21,13 +21,19 @@ from django.conf import settings
 from . import views
 
 
-# urlpatterns = [
-#     url(r'^admin/', admin.site.urls),
-# ]
-
 # admin.autodiscover()
 
-urlpatterns = [
+urlpatterns = [ 
+    url(r'^api/scos/', views.scos),
+    url(r'^api/scoports/', views.scoports),
+    url(r'^api/privateirsservices/', views.privateirsservices),
+    url(r'^api/portgroups/', views.portgroups),
+    url(r'^api/logicalunits/', views.logicalunits),
+    url(r'^api/ipwans/', views.ipwans),
+    url(r'^api/ippublicsegments/', views.ippublicsegments),
+    url(r'^api/publicirsservices/', views.publicirsservices),
+    url(r'^api/hubs/', views.hubs),
+    url(r'^api/clients/', views.clients),
     url(r'^api/transportzones/', views.transportzones),
     url(r'^api/datacenter/', views.datacenter),
     url(r'^api/datacenters/', views.datacenters),
