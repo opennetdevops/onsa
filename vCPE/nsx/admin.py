@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from pprint import pprint
 from .lib.utils.nsx.edge import *
 from .lib.utils.nsx.edge_routing import *
@@ -10,15 +11,12 @@ from ipaddress import *
 
 from pprint import pprint
 
-#todo add hubs to logical units view
-
-
 class PrivateIrsAdmin (admin.ModelAdmin):
+	form = IrsServiceForm
+
 	#exclude = ('edge_name', 'portgroup')
 	list_display = ('ip_segment','client','edge_name')
 	list_filter = ('client', 'edge_name')
-
-	form = IrsServiceForm
 
 
 class PublicIrsAdmin(admin.ModelAdmin):
@@ -41,7 +39,6 @@ class PublicIrsAdmin(admin.ModelAdmin):
 	def save_model(self, request, obj, form, change):
 
 		#Create NSX Edge
-
 		obj.edge_name = "VCPE-" + obj.client.name + "-" + obj.product_identifier
 		
 		#print("Hub Name: ",form.cleaned_data['hub'].name)
@@ -138,7 +135,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 						'vxrail_vlan' : obj.portgroup.vlan_tag,
 						'sco_inner_vlan' : obj.sco_port.vlan_tag,
 						'vxrail_description' : "VxRail CEN",
-						'sco_description' : "SCO-CEN-24",
+						'sco_description' : sco.name,
 						'vxrail_ae_interface' : hub.vxrail_ae_interface,
 						'sco_ae_interface': sco.sco_ae_interface,
 						'sco_outer_vlan': sco.sco_outer_vlan,

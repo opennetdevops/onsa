@@ -18,6 +18,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
 
+from . import views
+
 
 # urlpatterns = [
 #     url(r'^admin/', admin.site.urls),
@@ -26,8 +28,13 @@ from django.conf import settings
 # admin.autodiscover()
 
 urlpatterns = [
-
-    # place it at whatever base url you like
+    url(r'^api/transportzones/', views.transportzones),
+    url(r'^api/datacenter/', views.datacenter),
+    url(r'^api/datacenters/', views.datacenters),
+    url(r'^api/logicalswitch/', views.logicalswitch),
+    url(r'^api/logicalswitches/', views.logicalswitches),
+    url(r'^api/edge/', views.edge),
+    url(r'^api/edges/', views.edges),
     url(r'^select2/', include('django_select2.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

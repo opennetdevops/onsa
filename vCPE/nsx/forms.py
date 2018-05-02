@@ -7,11 +7,6 @@ from django_select2.forms import (
     ModelSelect2Widget, Select2Widget
 )
 
-
-
-
-
-
 def getHubsAsTuple():
     return Hub.objects.all().values_list('name','name')
 

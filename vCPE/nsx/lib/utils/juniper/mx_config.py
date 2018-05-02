@@ -33,7 +33,7 @@ def set_bridge_domains(dev,
 
 
 	dir = os.path.dirname(__file__)
-	template_rac_file = os.path.join(dir, './templates/set_bridge_domains.conf')
+	template_rac_file = os.path.join(dir, './templates/public_irs/set_bridge_domains.conf')
 
 	jinja_vars = {	'id' : client_id, 
 					'description' : service_description,
@@ -69,7 +69,7 @@ def set_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit,
 	logging.basicConfig(level=logging.INFO)
 
 	dir = os.path.dirname(__file__)
-	template_rac_file = os.path.join(dir, './templates/set_interfaces.conf')
+	template_rac_file = os.path.join(dir, './templates/public_irs/set_interfaces.conf')
 
 	jinja_vars = {'vxrail_ae_interface' : vxrail_ae_interface,
 				  'sco_ae_interface' : sco_ae_interface,
@@ -104,7 +104,7 @@ def set_static_route(dev, public_prefix, nexthop_vcpe):
 	logging.basicConfig(level=logging.INFO)
 
 	dir = os.path.dirname(__file__)
-	template_rac_file = os.path.join(dir, './templates/set_static_route.conf')
+	template_rac_file = os.path.join(dir, './templates/public_irs/set_static_route.conf')
 
 	jinja_vars = {'public_prefix' : public_prefix,
 				  'nexthop_vcpe': nexthop_vcpe}
@@ -133,7 +133,7 @@ def delete_bridge_domains(dev,
 						  client_id):
 
 	dir = os.path.dirname(__file__)
-	template_rac_file = os.path.join(dir, './templates/delete_bridge_domains.conf')
+	template_rac_file = os.path.join(dir, './templates/public_irs/delete_bridge_domains.conf')
 
 	jinja_vars = {	'id' : client_id }
 
@@ -167,7 +167,7 @@ def delete_interfaces(dev,
 	logging.basicConfig(level=logging.INFO)
 
 	dir = os.path.dirname(__file__)
-	template_rac_file = os.path.join(dir, './templates/delete_interfaces.conf')
+	template_rac_file = os.path.join(dir, './templates/public_irs/delete_interfaces.conf')
 
 	jinja_vars = {'vxrail_ae_interface' : vxrail_ae_interface,
 				  'sco_ae_interface' : sco_ae_interface,
@@ -198,7 +198,7 @@ def delete_static_route(dev, public_prefix):
 	logging.basicConfig(level=logging.INFO)
 
 	dir = os.path.dirname(__file__)
-	template_rac_file = os.path.join(dir, './templates/delete_static_route.conf')
+	template_rac_file = os.path.join(dir, './templates/public_irs/delete_static_route.conf')
 
 	jinja_vars = {'public_prefix' : public_prefix}
 
