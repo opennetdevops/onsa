@@ -17,8 +17,8 @@ def edges(request):
 	if request.method == "GET":
 		data = nsx_edge_get_all()
 		return JsonResponse(data,json_dumps_params={'indent': 3})
-	elif request.method == "POST":
-		return None
+	else:
+		return HttpResponse("Method not permited.")
 
 def edge(request):
 	if request.method == "GET":
@@ -35,8 +35,8 @@ def edge(request):
 
 		return response
 
-	elif request.method == "POST":
-		return None
+	else:
+		return HttpResponse("Method not permited.")
 
 def logicalswitches(request):
 	if request.method == "GET":
@@ -44,7 +44,7 @@ def logicalswitches(request):
 		return JsonResponse(data, json_dumps_params={'indent': 3})
 
 	elif request.method == "POST":
-		return HttpResponse("POST is not ready.")
+		return HttpResponse("Method not permited.")
 
 def logicalswitch(request):
 	if request.method == "GET":	
@@ -63,16 +63,20 @@ def logicalswitch(request):
 		else:
 			response = HttpResponse("Logical switch not found.")
 
-	if request.method == "POST":
-		response = HttpResponse("POST is not ready.")
+	else:
+		response = HttpResponse("Method not permited.")
 
 	return response
 
 def datacenters(request):
 	if request.method == "GET":
 		data = get_datacenters_all()
+		return JsonResponse(data)
 
-	return JsonResponse(data)
+	else:
+		return HttpResponse("Method not permited.")
+
+	
 
 def datacenter(request):
 	if request.method == "GET":
@@ -81,19 +85,20 @@ def datacenter(request):
 			dcId = get_datacenter_id(datacenterName)		
 			data = {"datacenterName" : datacenterName, "datacenterId" : dcId}
 
-			response = JsonResponse(data, json_dumps_params={'indent': 3})
+			return JsonResponse(data, json_dumps_params={'indent': 3})
 
 	else:
-		data = {"Error" : "Not Found"}
-		response = JsonResponse(data)
+		return HttpResponse("Method not permited.")
 
-	return response
 
 def transportzones(request):
 
 	if request.method == "GET":
 		data = get_tz_all()
 		return JsonResponse(data, json_dumps_params={'indent': 3})
+
+	else:
+		return HttpResponse("Method not permited.")
 
 
 def clients(request):
@@ -104,7 +109,8 @@ def clients(request):
 		return JsonResponse(data, json_dumps_params={'indent': 3})
 
 	elif request.method == "POST":
-		return HttpResponse("Method not yet available.")
+		data = request.body
+		print(data)
 
 
 def hubs(request):

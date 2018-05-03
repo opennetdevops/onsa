@@ -25,9 +25,9 @@ def get_vim_objects(content, vim_type):
 	'''Get vim objects of a given type.'''
 	return [item for item in content.viewManager.CreateContainerView(content.rootFolder, [vim_type], recursive=True).view]
 
-def getPortgroupId(name):
+def get_portgroup_id(name):
 
-	pg_list = getAllPortgroups()
+	pg_list = get_portgroups_all()
 	#print pg_list
 
 	for pg in pg_list:
@@ -36,7 +36,7 @@ def getPortgroupId(name):
 
 	return ""
 
-def getAllPortgroups():
+def get_portgroups_all():
 
 	try:
 		si = None
