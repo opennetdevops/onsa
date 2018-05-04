@@ -58,7 +58,7 @@ ROOT_URLCONF = 'nsx.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/home/alvaro/Fibercorp/vcpe/vCPE/vCPE/nsx/templates/'],
+        'DIRS': [BASE_DIR + '/nsx/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
