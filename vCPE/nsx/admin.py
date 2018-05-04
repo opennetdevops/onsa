@@ -87,7 +87,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		print("Public Portgroup Id: ", obj.portgroup.dvportgroup_id)
 
 		jinja_vars = {  "datacenterMoid" : hub.datacenter_id,
-						"name" : obj.edge_name, #TODO: Change me
+						"name" : obj.edge_name, 
 						"description" : "",
 						"appliances" : {    "applianceSize" : 'xlarge',
 																"appliance" : {"resourcePoolId" : hub.resource_pool_id,
@@ -143,7 +143,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 						"ip_wan" : obj.ip_wan}
 
 		pprint(mx_parameters)
-		# configure_mx(mx_parameters, "set")
+		configure_mx(mx_parameters, "set")
 		
 	def delete_model(self, request, obj):
 		
@@ -204,17 +204,17 @@ class PublicIrsAdmin(admin.ModelAdmin):
 			o.public_network.unassign()
 
 			# delete Edge
-			nsx_edge_delete_by_name(obj.edge_name)
+			nsx_edge_delete_by_name(o.edge_name)
 
 			# delete MX config
-			mx_parameters = {'mx_ip' : obj.portgroup.hub.mx_ip,
-						'client_id' : "BD-" + obj.client.name + "-" + obj.product_identifier,
-						'vxrail_logical_unit' : obj.vxrail_logical_unit,
-						'sco_logical_unit' : obj.sco_logical_unit,
-						'vxrail_ae_interface' : obj.portgroup.hub.vxrail_ae_interface,
-						'sco_ae_interface': obj.sco_port.sco.sco_ae_interface,
-						"public_network_ip" : ip_network(obj.public_network.ip + "/" + \
-											  str(obj.public_network.prefix))}
+			mx_parameters = {'mx_ip' : o.portgroup.hub.mx_ip,
+						'client_id' : "BD-" + o.client.name + "-" + o.product_identifier,
+						'vxrail_logical_unit' : o.vxrail_logical_unit,
+						'sco_logical_unit' : o.sco_logical_unit,
+						'vxrail_ae_interface' : o.portgroup.hub.vxrail_ae_interface,
+						'sco_ae_interface': o.sco_port.sco.sco_ae_interface,
+						"public_network_ip" : ip_network(o.public_network.ip + "/" + \
+											  str(o.public_network.prefix))}
 
 
 			#configure_mx(mx_parameters, "delete")

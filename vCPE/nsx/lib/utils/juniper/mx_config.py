@@ -42,6 +42,9 @@ def set_bridge_domains(dev,
 					'vxrail_log_unit' : vxrail_log_unit,
 					'sco_log_unit' : sco_log_unit}
 
+	pprint(jinja_vars)
+	print(render(template_rac_file,jinja_vars))
+
 	try:
 		dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
 		dev.cu.pdiff()
@@ -88,10 +91,7 @@ def set_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit,
 		logging.error("Error: %s", err.message)
 
 	except Exception as err:
-		if err.rsp.find('.//ok') is None:
-			rpc_msg = err.rsp.findtext('.//error-message')
-			logging.error("Unable to load configuration changes: %s", rpc_msg)
-
+		logging.error("Unable to load configuration changes: %s", err)
 		logging.info("Unlocking the configuration")
 		try:
 				dev.cu.unlock()
@@ -249,7 +249,7 @@ def configure_mx(mx_parameters, method):
 		return
 
 	if method == "set":
-		# logging.info("Setting bridge domains")
+		logging.info("Setting bridge domains")
 		set_bridge_domains(dev,
 							mx_parameters["client_id"],
 							mx_parameters["service_description"],
@@ -258,7 +258,7 @@ def configure_mx(mx_parameters, method):
 							mx_parameters["vxrail_logical_unit"],
 							mx_parameters["sco_logical_unit"])
 
-		# logging.info("Setting interfaces")
+		logging.info("Setting interfaces")
 		set_interfaces(dev,
 						mx_parameters["vxrail_ae_interface"],
 						mx_parameters["sco_ae_interface"],
