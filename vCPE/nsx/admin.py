@@ -249,12 +249,9 @@ admin.site.register(Hub)
 admin.site.register(Sco)
 admin.site.register(LogicalUnit)
 admin.site.register(IpWan,IpWanAdmin)
-
 admin.site.register(IpPublicSegment, PublicNetworkAdmin)
-
 admin.site.register(ScoPort,ScoPortAdmin)
 admin.site.register(Portgroup,PortgroupAdmin)
 admin.site.register(Client,ClientAdmin)
-
 admin.site.register(PrivateIrsService,PrivateIrsAdmin)
 admin.site.register(PublicIrsService,PublicIrsAdmin)
