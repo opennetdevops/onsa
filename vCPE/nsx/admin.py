@@ -120,10 +120,9 @@ class PublicIrsAdmin(admin.ModelAdmin):
 		pprint(jinja_vars)
 		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
 		
-		# nsx_edge_create(jinja_vars)
-		# edge_id = nsx_edge_get_id_by_name("Edge-Test-Django") #todo change me
-		# print(edge_id)
-		# nsx_edge_add_gateway(edge_id, "0", "100.64.3.1", "1500")
+		nsx_edge_create(jinja_vars)
+		edge_id = nsx_edge_get_id_by_name(obj.edge_name)
+		nsx_edge_add_gateway(edge_id, "0", "100.64.4.1", "1500") # CHANGE HARDCODED IP
 		
 
 		#load mx configuration parameters
@@ -179,7 +178,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 											  str(obj.public_network.prefix))}
 
 		pprint(mx_parameters)
-		# configure_mx(mx_parameters, "delete")
+		configure_mx(mx_parameters, "delete")
 
 
 		obj.delete()
@@ -217,7 +216,7 @@ class PublicIrsAdmin(admin.ModelAdmin):
 											  str(o.public_network.prefix))}
 
 
-			#configure_mx(mx_parameters, "delete")
+			configure_mx(mx_parameters, "delete")
 
 
 			# delete object

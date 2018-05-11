@@ -29,7 +29,8 @@ def set_bridge_domains(dev,
 	vxrail_ae_interface,
 	sco_ae_interface,
 	vxrail_log_unit,
-	sco_log_unit):
+	sco_log_unit,
+	vlan_id):
 
 
 	dir = os.path.dirname(__file__)
@@ -40,7 +41,8 @@ def set_bridge_domains(dev,
 					'vxrail_ae_interface' : vxrail_ae_interface,
 					'sco_ae_interface' : sco_ae_interface,
 					'vxrail_log_unit' : vxrail_log_unit,
-					'sco_log_unit' : sco_log_unit}
+					'sco_log_unit' : sco_log_unit,
+					'vlan_id' : vlan_id}
 
 	pprint(jinja_vars)
 	print(render(template_rac_file,jinja_vars))
@@ -228,7 +230,7 @@ def configure_mx(mx_parameters, method):
 	logging.basicConfig(level=logging.INFO)
 
 	# 
-	dev = Device(host=mx_parameters["mx_ip"], user="automeishon", password="Automeishon", port=443 )
+	dev = Device(host=mx_parameters["mx_ip"], user="agaona", password="Clave123", port=443)
 
 	try:
 		logging.info("Openning NETCONF connection to device")
@@ -256,7 +258,8 @@ def configure_mx(mx_parameters, method):
 							mx_parameters["vxrail_ae_interface"],
 							mx_parameters["sco_ae_interface"],
 							mx_parameters["vxrail_logical_unit"],
-							mx_parameters["sco_logical_unit"])
+							mx_parameters["sco_logical_unit"],
+							mx_parameters["vxrail_vlan"])
 
 		logging.info("Setting interfaces")
 		set_interfaces(dev,
