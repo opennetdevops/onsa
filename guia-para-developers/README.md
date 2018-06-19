@@ -1,7 +1,3 @@
----
-description: Guía para el desarrollo de la aplicación.
----
-
 # Guía para developers
 
 ## Requerimientos
