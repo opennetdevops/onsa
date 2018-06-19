@@ -243,6 +243,20 @@ class IpWanAdmin(admin.ModelAdmin):
 class PublicNetworkAdmin(admin.ModelAdmin):
 	list_display = ['ip','prefix','used']
 
+class CpeLessIrsAdmin (admin.ModelAdmin):
+	form = IrsServiceForm
+
+	#exclude = ('edge_name', 'portgroup')
+	list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port', 'product_identifier')
+	list_filter = ('client', 'edge_name')
+
+	exclude = ('public_network', 'edge_name', 'portgroup')
+
+	def hub(self, obj):
+		return obj.portgroup.hub
+
+	def sco(self,obj):
+		return obj.sco_port.sco
 
 # Register
 admin.site.register(Hub)
@@ -255,3 +269,4 @@ admin.site.register(Portgroup,PortgroupAdmin)
 admin.site.register(Client,ClientAdmin)
 admin.site.register(PrivateIrsService,PrivateIrsAdmin)
 admin.site.register(PublicIrsService,PublicIrsAdmin)
+admin.site.register(CpeLessIrsService,CpeLessIrsAdmin)

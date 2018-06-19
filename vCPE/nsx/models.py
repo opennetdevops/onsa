@@ -200,6 +200,13 @@ class PublicIrsService (Service):
 	def __str__(self):
 		return self.client.name
 
+class CpeLessIrsService(Service):
+	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
+	
+
+	def __str__(self):
+		return self.client_name
+
 
 
 
