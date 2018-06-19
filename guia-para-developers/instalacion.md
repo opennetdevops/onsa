@@ -1,7 +1,5 @@
 # Instalación
 
-## Instalación
-
 Primero se debe verificar que la versión de python3 sea &gt;= 3.5.2.
 
 ```bash
