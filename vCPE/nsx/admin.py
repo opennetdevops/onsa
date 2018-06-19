@@ -11,15 +11,14 @@ from ipaddress import *
 
 from pprint import pprint
 
-class PrivateIrsAdmin (admin.ModelAdmin):
-	form = IrsServiceForm
+# class PrivateIrsAdmin (admin.ModelAdmin):
+# 	form = IrsServiceForm
 
-	#exclude = ('edge_name', 'portgroup')
-	list_display = ('ip_segment','client','edge_name')
-	list_filter = ('client', 'edge_name')
+# 	#exclude = ('edge_name', 'portgroup')
+# 	list_display = ('ip_segment','client','edge_name')
+# 	list_filter = ('client', 'edge_name')
 
-
-class PublicIrsAdmin(admin.ModelAdmin):
+class NsxPublicIrsAdmin(admin.ModelAdmin):
 	form = IrsServiceForm
 
 	list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port', 'product_identifier')
@@ -231,14 +230,11 @@ class ClientAdmin (admin.ModelAdmin):
 class PortgroupAdmin(admin.ModelAdmin):
 	list_display = ['name','vlan_tag', 'hub', 'used']
 
-
 class ScoPortAdmin(admin.ModelAdmin):
 	list_display = ['description','port', 'sco', 'vlan_tag','used']
 
-
 class IpWanAdmin(admin.ModelAdmin):
 	list_display = ['network','prefix', 'hub','used']
-
 
 class PublicNetworkAdmin(admin.ModelAdmin):
 	list_display = ['ip','prefix','used']
@@ -247,10 +243,9 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 	form = IrsServiceForm
 
 	#exclude = ('edge_name', 'portgroup')
-	list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port', 'product_identifier')
-	list_filter = ('client', 'edge_name')
-
-	exclude = ('public_network', 'edge_name', 'portgroup')
+	list_display = ('public_network','client','hub', 'sco', 'sco_port', 'product_identifier')
+	
+	exclude = ['public_network']
 
 	def hub(self, obj):
 		return obj.portgroup.hub
@@ -267,6 +262,6 @@ admin.site.register(IpPublicSegment, PublicNetworkAdmin)
 admin.site.register(ScoPort,ScoPortAdmin)
 admin.site.register(Portgroup,PortgroupAdmin)
 admin.site.register(Client,ClientAdmin)
-admin.site.register(PrivateIrsService,PrivateIrsAdmin)
-admin.site.register(PublicIrsService,PublicIrsAdmin)
+# admin.site.register(PrivateIrsService,PrivateIrsAdmin)
+admin.site.register(NsxPublicIrsService,NsxPublicIrsAdmin)
 admin.site.register(CpeLessIrsService,CpeLessIrsAdmin)

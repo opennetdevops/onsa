@@ -171,10 +171,7 @@ class Client (models.Model):
 
 class Service(models.Model):
 	client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
-	edge_name = models.CharField(max_length=50)
 	product_identifier = models.CharField(max_length=50)
-	ip_wan = models.CharField(max_length=50)
-	portgroup = models.OneToOneField(Portgroup, on_delete=models.CASCADE)
 	sco_port = models.OneToOneField(ScoPort, on_delete=models.CASCADE)
 	sco_logical_unit = models.PositiveSmallIntegerField()
 
@@ -185,24 +182,26 @@ class Service(models.Model):
 #
 # @ip_segment: Private IP Addressing used at customer location
 #
-class PrivateIrsService (Service):
-	ip_segment = models.GenericIPAddressField()
+# class PrivateIrsService (Service):
+# 	ip_segment = models.GenericIPAddressField()
 
-	def __str__(self):
-		return self.client.name
+# 	def __str__(self):
+# 		return self.client.name
 
-
-class PublicIrsService (Service):
+class NsxPublicIrsService (Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
 	vxrail_logical_unit = models.PositiveSmallIntegerField()
+	edge_name = models.CharField(max_length=50)
+	ip_wan = models.CharField(max_length=50)
+	portgroup = models.OneToOneField(Portgroup, on_delete=models.CASCADE)
 	
-
 	def __str__(self):
 		return self.client.name
 
 class CpeLessIrsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
-	
+	ip_wan = models.CharField(max_length=50)
+	client_unit = models.PositiveSmallIntegerField()
 
 	def __str__(self):
 		return self.client_name

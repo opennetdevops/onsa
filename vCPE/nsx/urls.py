@@ -18,12 +18,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
 
+from rest_framework_jwt.views import obtain_jwt_token
+
 from . import views
 
 
 # admin.autodiscover()
 
 urlpatterns = [ 
+    url(r'^api/login/', obtain_jwt_token),
     url(r'^api/scos/', views.scos),
     url(r'^api/scoports/', views.scoports),
     url(r'^api/privateirsservices/', views.privateirsservices),
@@ -41,6 +44,5 @@ urlpatterns = [
     url(r'^api/logicalswitches/', views.logicalswitches),
     url(r'^api/edge/', views.edge),
     url(r'^api/edges/', views.edges),
-    url(r'^select2/', include('django_select2.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^select2/', include('django_select2.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

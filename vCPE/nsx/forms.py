@@ -45,7 +45,7 @@ class IrsServiceForm(ModelForm):
 
 
     class Meta:
-        model = PublicIrsService
+        model = NsxPublicIrsService
         fields = ('public_network','client', 'product_identifier')
         labels = {
             'public_network': 'Network segment',
