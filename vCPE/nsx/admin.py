@@ -141,7 +141,7 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 						"ip_wan" : obj.ip_wan}
 
 		pprint(mx_parameters)
-		configure_mx(mx_parameters, "set")
+		NsxHandler.configure_mx(mx_parameters, "set")
 		
 	def delete_model(self, request, obj):
 		
@@ -177,7 +177,7 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 											  str(obj.public_network.prefix))}
 
 		pprint(mx_parameters)
-		configure_mx(mx_parameters, "delete")
+		NsxHandler.configure_mx(mx_parameters, "delete")
 
 
 		obj.delete()
@@ -215,7 +215,7 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 											  str(o.public_network.prefix))}
 
 
-			configure_mx(mx_parameters, "delete")
+			NsxHandler.configure_mx(mx_parameters, "delete")
 
 
 			# delete object
@@ -253,6 +253,21 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 	def sco(self,obj):
 		return obj.sco_port.sco
 
+
+class CpeLessMplsAdmin (admin.ModelAdmin):
+	form = IrsServiceForm
+
+	#exclude = ('edge_name', 'portgroup')
+	list_display = ('public_network','client','hub', 'sco', 'sco_port', 'product_identifier')
+	
+	exclude = ['public_network']
+
+	def hub(self, obj):
+		return obj.portgroup.hub
+
+	def sco(self,obj):
+		return obj.sco_port.sco
+
 # Register
 admin.site.register(Hub)
 admin.site.register(Sco)
@@ -265,3 +280,4 @@ admin.site.register(Client,ClientAdmin)
 # admin.site.register(PrivateIrsService,PrivateIrsAdmin)
 admin.site.register(NsxPublicIrsService,NsxPublicIrsAdmin)
 admin.site.register(CpeLessIrsService,CpeLessIrsAdmin)
+admin.site.register(CpeLessMplsService,CpeLessMplsAdmin)

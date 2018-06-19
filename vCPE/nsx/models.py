@@ -1,6 +1,6 @@
 from django.db import models
 
-class Hub (models.Model):
+class Hub(models.Model):
 	name = models.CharField(max_length=50)
 	transport_zone_name = models.CharField(max_length=50)
 	cluster_name = models.CharField(max_length=50)
@@ -16,7 +16,7 @@ class Hub (models.Model):
 	def __str__(self):
 		return self.name
 
-class LogicalUnit (models.Model):
+class LogicalUnit(models.Model):
 	logical_unit_id = models.PositiveSmallIntegerField()
 	hubs = models.ManyToManyField(Hub)
 	used = models.BooleanField(default=False)
@@ -85,7 +85,7 @@ class ScoPort(models.Model):
 		self.save()
 		return
 
-class IpWan (models.Model):
+class IpWan(models.Model):
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
 	used = models.BooleanField(default=False)
 	network = models.CharField(max_length=50)
@@ -111,7 +111,7 @@ class IpWan (models.Model):
 		ipToRelease.save()
 		return
 
-class IpPublicSegment (models.Model):
+class IpPublicSegment(models.Model):
 	used = models.BooleanField(default=False)
 	ip = models.GenericIPAddressField() 
 	prefix = models.PositiveSmallIntegerField()
@@ -135,7 +135,7 @@ class IpPublicSegment (models.Model):
 		self.save()
 		return
 
-class Portgroup (models.Model):
+class Portgroup(models.Model):
 	vlan_tag = models.CharField(max_length=50)
 	name = models.CharField(max_length=50)
 	hub = models.ForeignKey(Hub, on_delete=models.CASCADE)
@@ -161,13 +161,11 @@ class Portgroup (models.Model):
 		self.save()
 		return
 
-
-class Client (models.Model):
+class Client(models.Model):
 	name = models.CharField(max_length=50)
 
 	def __str__(self):
 		return self.name
-
 
 class Service(models.Model):
 	client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
@@ -177,16 +175,6 @@ class Service(models.Model):
 
 	class Meta:
 		abstract = True
-
-
-#
-# @ip_segment: Private IP Addressing used at customer location
-#
-# class PrivateIrsService (Service):
-# 	ip_segment = models.GenericIPAddressField()
-
-# 	def __str__(self):
-# 		return self.client.name
 
 class NsxPublicIrsService (Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
@@ -202,6 +190,15 @@ class CpeLessIrsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
 	ip_wan = models.CharField(max_length=50)
 	client_unit = models.PositiveSmallIntegerField()
+
+	def __str__(self):
+		return self.client_name
+
+class CpeLessMplsService(Service):
+	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
+	ip_wan = models.CharField(max_length=50)
+	client_unit = models.PositiveSmallIntegerField()
+	vrf_name = models.CharField(max_length=50)
 
 	def __str__(self):
 		return self.client_name

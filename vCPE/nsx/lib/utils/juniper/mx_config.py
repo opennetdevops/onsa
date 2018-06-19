@@ -18,12 +18,11 @@ def render(tpl_path, context):
 		loader=jinja2.FileSystemLoader(path or './')
 	).get_template(filename).render(context)
 
+class __Handler(object):
+	def __init__(self):
+		self.url = ""
 
-class __Handler(self):
-	def __init__():
-		pass
-
-	def __set_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, 
+	def __set_interfaces(self, dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, 
 							service_description, sco_log_unit, sco_outer_vlan,
 							vxrail_vlan, sco_inner_vlan):
 
@@ -42,7 +41,7 @@ class __Handler(self):
 					  'sco_inner_vlan' : sco_inner_vlan
 					  }
 		try:
-			dev.cu.load(template_path=template_rac_file, erge=True, template_vars=jinja_vars, format="set")
+			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
 			dev.cu.pdiff()
 
 		except ValueError as err:
@@ -52,7 +51,7 @@ class __Handler(self):
 			logging.error("Unable to load configuration changes: %s", err)
 			logging.info("Unlocking the configuration")
 			try:
-					dev.cu.unlock()
+				dev.cu.unlock()
 			except UnlockError:
 					logging.error("Error: Unable to unlock configuration")
 			dev.close()
@@ -60,7 +59,7 @@ class __Handler(self):
 
 
 	@staticmethod
-	def __delete_interfaces(dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, sco_log_unit):
+	def __delete_interfaces(self, dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, sco_log_unit):
 
 		logging.basicConfig(level=logging.INFO)
 
@@ -93,7 +92,7 @@ class __Handler(self):
 			return
 	
 class NsxHandler(__Handler):
-	def __init__():
+	def __init__(self):
 		self.url = "./templates/nsxpublicirs/"
 
 	def __set_bridge_domains(self, dev, client_id, service_description, vxrail_ae_interface,
@@ -307,10 +306,9 @@ class NsxHandler(__Handler):
 		logging.info("Closing NETCONF session")
 		dev.close()
 
-
 class CpelessHandler(__Handler):
-	def __init__():
-		self.url = "./templates/cpeless/irs/"
+	def __init__(self):
+		self.url = "./templates/cpeless/"
 
 	@staticmethod
 	def configure_mx(mx_parameters, method):
