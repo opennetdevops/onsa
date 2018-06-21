@@ -63,7 +63,7 @@ $ ALTER role automation SET timezone TO 'UTC';
 #### Dar privilegios al usuario
 
 ```sql
-$ GRANT ALL PRIVILEGES ON DATABASE vcpe to nsx;
+$ GRANT ALL PRIVILEGES ON DATABASE onsa to automation;
 ```
 
 ## Instalar dependencias
