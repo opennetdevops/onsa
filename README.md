@@ -1,2 +1,2 @@
-# Virtual CPE
+# Open Network Services Automation
 
