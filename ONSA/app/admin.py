@@ -253,6 +253,72 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 	def sco(self,obj):
 		return obj.sco_port.sco
 
+	def save_model(self, request, obj, form, change):
+		
+		hub = form.cleaned_data['hub']		
+		sco = form.cleaned_data['sco']
+
+		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
+		obj.sco_port = sco_port
+
+		public_network = IpPublicSegment.assign_free_public_ip() # ToDo: get from FIPAM
+		obj.public_network = public_network
+		client_network = ip_network(obj.public_network.ip + "/" + str(obj.public_network.prefix))
+
+		print("Public Network: ", client_network)
+		print("Public Network Mask: ", client_network.netmask)
+		print("Public Segment Gateway: %s/32" % list(client_network.hosts())[0])
+
+		sco_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
+		
+		obj.sco_logical_unit = sco_logical_unit.logical_unit_id
+			
+		super(CpeLessIrsAdmin, self).save_model(request, obj, form, change)
+		
+		#load mx configuration parameters
+		mx_parameters = {'mx_ip' : hub.mx_ip,
+						'client_id' : "CPELESS-" + obj.client.name + "-" + obj.product_identifier,
+						'service_description' : "CPELess IRS Service",
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'sco_inner_vlan' : obj.sco_port.vlan_tag,
+						'sco_description' : sco.name,
+						'sco_ae_interface': sco.sco_ae_interface,
+						'sco_outer_vlan': sco.sco_outer_vlan,
+						"public_network_ip" : list(client_network.hosts())[0],
+						"vrf_name" : "INTERNET"}
+
+		pprint(mx_parameters)
+		# CpelessHandler.configure_mx(mx_parameters, "set")
+
+	def delete_model(self, request, obj, form, change):
+		
+		# set portgroup to unused
+		obj.portgroup.unassign()
+		
+		# set SCO port to unused
+		obj.sco_port.unassign()
+
+		# set logical units to unused
+		LogicalUnit.unassign(obj.vxrail_logical_unit, obj.portgroup.hub)
+		LogicalUnit.unassign(obj.sco_logical_unit, obj.portgroup.hub)
+
+		# set Edge WAN IP to unused
+		IpWan.unassign_ip(obj.ip_wan)
+
+		# set public segment to unused
+		obj.public_network.unassign()
+
+		
+		# load mx configuration parameters
+		mx_parameters = {
+						'mx_ip' : obj.portgroup.hub.mx_ip,
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'sco_ae_interface': obj.sco_port.sco.sco_ae_interface
+						}
+
+		pprint(mx_parameters)
+		# CpelessHandler.configure_mx(mx_parameters, "delete")
+
 
 class CpeLessMplsAdmin (admin.ModelAdmin):
 	form = IrsServiceForm

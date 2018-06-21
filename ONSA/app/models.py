@@ -189,19 +189,17 @@ class NsxPublicIrsService (Service):
 class CpeLessIrsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
 	ip_wan = models.CharField(max_length=50)
-	client_unit = models.PositiveSmallIntegerField()
-
+	
 	def __str__(self):
-		return self.client_name
+		return self.client.name
 
 class CpeLessMplsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
 	ip_wan = models.CharField(max_length=50)
-	client_unit = models.PositiveSmallIntegerField()
 	vrf_name = models.CharField(max_length=50)
 
 	def __str__(self):
-		return self.client_name
+		return self.client.name
 
 
 

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -80,8 +81,8 @@ WSGI_APPLICATION = 'ONSA.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'vcpe',
-        'USER': 'nsx',
+        'NAME': 'onsa',
+        'USER': 'automation',
         'PASSWORD': 'F1b3rc0rp',
         'HOST': 'localhost',
         'PORT': '',
