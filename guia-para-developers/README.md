@@ -19,17 +19,13 @@ Python 3.5.2
 
 Lo siguiente es instalar pip3 en el OS y PostgreSQL.
 
-{% hint style="info" %}
-Ubuntu
-{% endhint %}
+* Ubuntu
 
 ```bash
 $ sudo apt-get install postgresql postgresql-contrib
 ```
 
-{% hint style="info" %}
-macOS
-{% endhint %}
+* macOS
 
 ```bash
 $ brew install postgresql
