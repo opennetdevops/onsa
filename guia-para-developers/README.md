@@ -19,17 +19,13 @@ Python 3.5.2
 
 Lo siguiente es instalar pip3 en el OS y PostgreSQL.
 
-{% hint style="info" %}
-Ubuntu
-{% endhint %}
+* Ubuntu
 
 ```bash
 $ sudo apt-get install postgresql postgresql-contrib
 ```
 
-{% hint style="info" %}
-macOS
-{% endhint %}
+* macOS
 
 ```bash
 $ brew install postgresql
@@ -47,40 +43,40 @@ $ psql postgres
 #### Crear usuario nsx
 
 ```sql
-$ CREATE ROLE nsx with login password 'F1b3rc0rp';
+$ CREATE ROLE automation with login password 'F1b3rc0rp';
 ```
 
 #### Crear base de datos
 
 ```sql
-$ CREATE database vcpe;
+$ CREATE database onsa;
 ```
 
 #### Configuración de usuario
 
 ```sql
-$ ALTER role nsx SET client_encoding TO 'utf8';
-$ ALTER role nsx SET default_transaction_isolation TO 'read committed';
-$ ALTER role nsx SET timezone TO 'UTC';
+$ ALTER role automation SET client_encoding TO 'utf8';
+$ ALTER role automation SET default_transaction_isolation TO 'read committed';
+$ ALTER role automation SET timezone TO 'UTC';
 ```
 
 #### Dar privilegios al usuario
 
 ```sql
-$ GRANT ALL PRIVILEGES ON DATABASE vcpe to nsx;
+$ GRANT ALL PRIVILEGES ON DATABASE onsa to automation;
 ```
 
 ## Instalar dependencias
 
 ```bash
-$ cd vCPE
+$ cd ONSA
 sudo pip3 install -r requirements.txt
 ```
 
 ## Inicialización de Django
 
 ```bash
-$ cd vCPE/vCPE
+$ cd ONSA/ONSA
 $ python3 manage.py createsuperuser # Creates admin user
 Username:
 $ python3 manage.py makemmigrations # Makes migrations
