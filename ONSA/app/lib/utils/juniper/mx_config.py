@@ -18,28 +18,31 @@ def render(tpl_path, context):
 		loader=jinja2.FileSystemLoader(path or './')
 	).get_template(filename).render(context)
 
-class __Handler(object):
+class NsxHandler(object):
 	def __init__(self):
-		self.url = ""
+		self.url = "./templates/nsxpublicirs/"
 
-	def __set_interfaces(self, dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, 
-							service_description, sco_log_unit, sco_outer_vlan,
-							vxrail_vlan, sco_inner_vlan):
+	def __set_interfaces(self, mx_parameters):
 
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
 		template_rac_file = os.path.join(dir, self.url + "set_interfaces.conf")
 
-		jinja_vars = {'vxrail_ae_interface' : vxrail_ae_interface,
-					  'sco_ae_interface' : sco_ae_interface,
-					  'vxrail_log_unit' : vxrail_log_unit,
-					  'sco_log_unit' : sco_log_unit,
-					  'description' : service_description,
-					  'sco_outer_vlan' : sco_outer_vlan,
-					  'vxrail_vlan' : vxrail_vlan,
-					  'sco_inner_vlan' : sco_inner_vlan
+		jinja_vars = {
+					  'vxrail_ae_interface' : mx_parameters['vxrail_ae_interface'],
+					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
+					  'vxrail_logical_unit' : mx_parameters['vxrail_logical_unit'],
+					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
+					  'description' : mx_parameters['service_description'],
+					  'sco_outer_vlan' : mx_parameters['sco_outer_vlan'],
+					  'vxrail_vlan' : mx_parameters['vxrail_vlan'],
+					  'sco_inner_vlan' : mx_parameters['sco_inner_vlan'],
+					  'public_network_ip' : mx_parameters['public_network_ip']
 					  }
+
+		pprint(jinja_vars)
+
 		try:
 			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
 			dev.cu.pdiff()
@@ -58,19 +61,18 @@ class __Handler(object):
 			return
 
 
-	@staticmethod
-	def __delete_interfaces(self, dev, vxrail_ae_interface, sco_ae_interface, vxrail_log_unit, sco_log_unit):
+	def __delete_interfaces(self, dev, mx_parameters):
 
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
 		template_rac_file = os.path.join(dir, self.url + "delete_interfaces.conf")
 
-		jinja_vars = {'vxrail_ae_interface' : vxrail_ae_interface,
-					  'sco_ae_interface' : sco_ae_interface,
-					  'vxrail_log_unit' : vxrail_log_unit,
-					  'sco_log_unit' : sco_log_unit
-					  }
+		jinja_vars = {'vxrail_ae_interface' : mx_parameters['vxrail_ae_interface'],
+					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
+					  'vxrail_log_unit' : mx_parameters['vxrail_log_unit'],
+					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
+					  'vrf_name' : mx_parameters['vrf_name']}
 		try:
 			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
 			dev.cu.pdiff()
@@ -90,25 +92,21 @@ class __Handler(object):
 					logging.error("Error: Unable to unlock configuration")
 			dev.close()
 			return
-	
-class NsxHandler(__Handler):
-	def __init__(self):
-		self.url = "./templates/nsxpublicirs/"
 
-	def __set_bridge_domains(self, dev, client_id, service_description, vxrail_ae_interface,
-						   sco_ae_interface, vxrail_log_unit, sco_log_unit, vlan_id):
+
+	def __set_bridge_domains(self, dev, mx_parameters):
 
 		dir = os.path.dirname(__file__)
 		template_rac_file = os.path.join(dir, self.url + "set_bridge_domains.conf")
 
 		jinja_vars = 	{
-							'id' : client_id, 
-							'description' : service_description,
-							'vxrail_ae_interface' : vxrail_ae_interface,
-							'sco_ae_interface' : sco_ae_interface,
-							'vxrail_log_unit' : vxrail_log_unit,
-							'sco_log_unit' : sco_log_unit,
-							'vlan_id' : vlan_id
+							'id' : mx_parameters['client_id'], 
+							'description' : mx_parameters['service_description'],
+							'vxrail_ae_interface' : mx_parameters['vxrail_ae_interface'],
+							'sco_ae_interface' : mx_parameters['sco_ae_interface'],
+							'vxrail_log_unit' : mx_parameters['vxrail_logical_unit'],
+							'sco_log_unit' : mx_parameters['sco_logical_unit'],
+							'vlan_id' : mx_parameters['vlan_id']
 						}
 
 		try:
@@ -131,14 +129,14 @@ class NsxHandler(__Handler):
 			dev.close()
 			return
 
-	def __set_static_route(self, dev, public_prefix, nexthop_vcpe, url):
+	def __set_static_route(self, dev, mx_parameters):
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
 		template_rac_file = os.path.join(dir, self.url + "set_static_route.conf")
 
-		jinja_vars = {'public_prefix' : public_prefix,
-					  'nexthop_vcpe': nexthop_vcpe}
+		jinja_vars = {'public_prefix' : mx_parameters['public_prefix'],
+					  'nexthop_vcpe': mx_parameters['nexthop_vcpe']}
 		try:
 			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
 			dev.cu.pdiff()
@@ -159,12 +157,12 @@ class NsxHandler(__Handler):
 			dev.close()
 			return
 
-	def __delete_bridge_domains(self, dev, client_id, url):
+	def __delete_bridge_domains(self, dev, mx_parameters):
 
 		dir = os.path.dirname(__file__)
 		template_rac_file = os.path.join(dir, self.url + "delete_bridge_domains.conf")
 
-		jinja_vars = {	'id' : client_id }
+		jinja_vars = {	'id' : mx_parameters['client_id'] }
 
 		try:
 			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
@@ -186,13 +184,13 @@ class NsxHandler(__Handler):
 			dev.close()
 			return
 
-	def __delete_static_route(dev, public_prefix):
+	def __delete_static_route(self, dev, mx_parameters):
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
 		template_rac_file = os.path.join(dir, self.url + "delete_static_route.conf")
 
-		jinja_vars = {'public_prefix' : public_prefix}
+		jinja_vars = {'public_prefix' : mx_parameters['public_prefix']}
 
 		try:
 			logging.info("command: " + render(template_rac_file, jinja_vars))
@@ -213,13 +211,12 @@ class NsxHandler(__Handler):
 			dev.close()
 			return
 
-	@staticmethod
-	def configure_mx(mx_parameters, method):
+	def configure_mx(self, mx_parameters, method):
 
 		logging.basicConfig(level=logging.INFO)
 
 		# 
-		dev = Device(host=mx_parameters["mx_ip"], user="agaona", password="Clave123", port=443)
+		dev = Device(host=mx_parameters["mx_ip"], user="lab", password="lab123", port=443)
 
 		try:
 			logging.info("Openning NETCONF connection to device")
@@ -241,42 +238,23 @@ class NsxHandler(__Handler):
 
 		if method == "set":
 			logging.info("Setting bridge domains")
-			__set_bridge_domains(dev,
-								mx_parameters["client_id"],
-								mx_parameters["service_description"],
-								mx_parameters["vxrail_ae_interface"],
-								mx_parameters["sco_ae_interface"],
-								mx_parameters["vxrail_logical_unit"],
-								mx_parameters["sco_logical_unit"],
-								mx_parameters["vxrail_vlan"])
+			__set_bridge_domains(dev, mx_parameters)
 
 			logging.info("Setting interfaces")
-			__set_interfaces(dev,
-							mx_parameters["vxrail_ae_interface"],
-							mx_parameters["sco_ae_interface"],
-							mx_parameters["vxrail_logical_unit"],
-							mx_parameters["service_description"],
-							mx_parameters["sco_logical_unit"],
-							mx_parameters["sco_outer_vlan"],
-							mx_parameters["vxrail_vlan"],
-							mx_parameters["sco_inner_vlan"])
+			__set_interfaces(dev, mx_parameters)
 
 			logging.info("Setting static route")
-			__set_static_route(dev, mx_parameters["public_network_ip"], mx_parameters["ip_wan"])
+			__set_static_route(dev, mx_parameters)
 
 		elif method == "delete":
 			# logging.info("Deleting bridge domains")
-			__delete_bridge_domains(dev, mx_parameters["client_id"])
+			__delete_bridge_domains(dev, mx_parameters)
 
 			logging.info("Deleting interfaces")
-			__delete_interfaces(dev,
-							mx_parameters["vxrail_ae_interface"],
-							mx_parameters["sco_ae_interface"],
-							mx_parameters["vxrail_logical_unit"], 				
-							mx_parameters["sco_logical_unit"])
+			__delete_interfaces(dev, mx_parameters)
 
 			logging.info("Deleting static route")
-			__delete_static_route(dev, mx_parameters["public_network_ip"])
+			__delete_static_route(dev, mx_parameters)
 
 		logging.info("Committing the configuration")
 		try:
@@ -306,17 +284,83 @@ class NsxHandler(__Handler):
 		logging.info("Closing NETCONF session")
 		dev.close()
 
-class CpelessHandler(__Handler):
-	def __init__(self):
-		self.url = "./templates/cpeless/"
+class CpelessHandler(object):
+	def __init__(self, service):
+		self.url = "./templates/cpeless/"+service
 
-	@staticmethod
-	def configure_mx(mx_parameters, method):
-
+	def __set_interfaces(self, dev, mx_parameters):
 		logging.basicConfig(level=logging.INFO)
 
-		# 
-		dev = Device(host=mx_parameters["mx_ip"], user="agaona", password="Clave123", port=443)
+		dir = os.path.dirname(__file__)
+		template_rac_file = os.path.join(dir, self.url + "set_interfaces.conf")
+
+		jinja_vars = {
+					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
+					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
+					  'service_description' : mx_parameters['service_description'],
+					  'sco_outer_vlan' : mx_parameters['sco_outer_vlan'],
+					  'sco_inner_vlan' : mx_parameters['sco_inner_vlan'],
+					  'public_network_ip' : mx_parameters['public_network_ip'],
+					  'vrf_name' : mx_parameters["vrf_name"]
+					  }
+
+		pprint(jinja_vars)
+
+		print(render(template_rac_file, jinja_vars))
+
+		try:
+			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
+			dev.cu.pdiff()
+
+		except ValueError as err:
+			logging.error("Error: %s", err.message)
+
+		except Exception as err:
+			logging.error("Unable to load configuration changes: %s", err)
+			logging.info("Unlocking the configuration")
+			try:
+				dev.cu.unlock()
+			except UnlockError:
+					logging.error("Error: Unable to unlock configuration")
+			dev.close()
+			return
+
+
+	def __delete_interfaces(self, dev, mx_parameters):
+		logging.basicConfig(level=logging.INFO)
+
+		dir = os.path.dirname(__file__)
+		template_rac_file = os.path.join(dir, self.url + "delete_interfaces.conf")
+
+		jinja_vars = {
+					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
+					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
+					  'vrf_name' : mx_parameters["vrf_name"]
+					 }
+		try:
+			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
+			dev.cu.pdiff()
+
+		except ValueError as err:
+			logging.error("Error: %s", err.message)
+
+		except Exception as err:
+			if err.rsp.find('.//ok') is None:
+				rpc_msg = err.rsp.findtext('.//error-message')
+				logging.error("Unable to load configuration changes: %s", rpc_msg)
+
+			logging.info("Unlocking the configuration")
+			try:
+					dev.cu.unlock()
+			except UnlockError:
+					logging.error("Error: Unable to unlock configuration")
+			dev.close()
+			return
+
+	def configure_mx(self, mx_parameters, method):
+		logging.basicConfig(level=logging.INFO)
+
+		dev = Device(host=mx_parameters["mx_ip"], user="lab", password="lab123", port=443)
 
 		try:
 			logging.info("Openning NETCONF connection to device")
@@ -338,23 +382,11 @@ class CpelessHandler(__Handler):
 
 		if method == "set":
 			logging.info("Setting interfaces")
-			__set_interfaces(dev,
-							mx_parameters["vxrail_ae_interface"],
-							mx_parameters["sco_ae_interface"],
-							mx_parameters["vxrail_logical_unit"],
-							mx_parameters["service_description"],
-							mx_parameters["sco_logical_unit"],
-							mx_parameters["sco_outer_vlan"],
-							mx_parameters["vxrail_vlan"],
-							mx_parameters["sco_inner_vlan"])
+			self.__set_interfaces(dev, mx_parameters)
 
 		elif method == "delete":
 			logging.info("Deleting interfaces")
-			__delete_interfaces(dev,
-							mx_parameters["vxrail_ae_interface"],
-							mx_parameters["sco_ae_interface"],
-							mx_parameters["vxrail_logical_unit"], 				
-							mx_parameters["sco_logical_unit"])
+			self.__delete_interfaces(dev, mx_parameters)
 
 		logging.info("Committing the configuration")
 		try:

@@ -52,4 +52,42 @@ class IrsServiceForm(ModelForm):
             'product_identifier' : 'ID'
         }
 
+class MplsServiceForm(ModelForm):
+
+    hub = forms.ModelChoiceField(
+        queryset=Hub.objects.all(),
+        label="HUB",
+        widget=ModelSelect2Widget(
+            model=Hub,
+            search_fields=['name__icontains'],
+
+        )
+    )
+
+    sco = forms.ModelChoiceField(
+        queryset=Sco.objects.all(),
+        label="SCO",
+        widget=ModelSelect2Widget(
+            model=Sco,
+            search_fields=['name__icontains'],
+            dependent_fields={'hub': 'hub'},
+            max_results=500,
+        )
+    )
+
+    hub.widget.attrs['data-width'] = '14em'
+    sco.widget.attrs['data-width'] = '14em'
+    #username = forms.CharField()
+    #password = forms.CharField(widget=PasswordInput())
+
+
+    class Meta:
+        model = CpeLessMplsService
+        fields = ('public_network','client', 'product_identifier', 'vrf_name')
+        labels = {
+            'public_network': 'Network segment',
+            'product_identifier' : 'ID',
+            'vrf_name' : 'VRF'
+        }
+
     

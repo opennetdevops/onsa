@@ -2,14 +2,14 @@ from django.db import models
 
 class Hub(models.Model):
 	name = models.CharField(max_length=50)
-	transport_zone_name = models.CharField(max_length=50)
-	cluster_name = models.CharField(max_length=50)
-	datastore_id = models.CharField(max_length=50)
-	resource_pool_id = models.CharField(max_length=50)
-	datacenter_id = models.CharField(max_length=50)
-	uplink_ip = models.GenericIPAddressField()
-	uplink_pg = models.CharField(max_length=50)
-	uplink_pg_id = models.CharField(max_length=50)
+	transport_zone_name = models.CharField(max_length=50, blank=True)
+	cluster_name = models.CharField(max_length=50, blank=True)
+	datastore_id = models.CharField(max_length=50, blank=True)
+	resource_pool_id = models.CharField(max_length=50, blank=True)
+	datacenter_id = models.CharField(max_length=50, blank=True)
+	uplink_ip = models.GenericIPAddressField(null=True, blank=True)
+	uplink_pg = models.CharField(max_length=50, blank=True)
+	uplink_pg_id = models.CharField(max_length=50, blank=True)
 	mx_ip = models.GenericIPAddressField()
 	vxrail_ae_interface = models.CharField(max_length=50)
 
@@ -167,11 +167,20 @@ class Client(models.Model):
 	def __str__(self):
 		return self.name
 
+# ToDo: 
+# class Vrf(models..Model):
+# 	name = models.CharField(max_length=50)
+# 	rt = models.CharField(max_length=50)
+
+# 	def __str__(self):
+# 		return self.name
+
 class Service(models.Model):
 	client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
 	product_identifier = models.CharField(max_length=50)
 	sco_port = models.OneToOneField(ScoPort, on_delete=models.CASCADE)
 	sco_logical_unit = models.PositiveSmallIntegerField()
+	hub = models.OneToOneField(Hub, on_delete=models.CASCADE)
 
 	class Meta:
 		abstract = True
@@ -181,21 +190,19 @@ class NsxPublicIrsService (Service):
 	vxrail_logical_unit = models.PositiveSmallIntegerField()
 	edge_name = models.CharField(max_length=50)
 	ip_wan = models.CharField(max_length=50)
-	portgroup = models.OneToOneField(Portgroup, on_delete=models.CASCADE)
+	portgroup = models.ForeignKey(Portgroup, on_delete=models.CASCADE)
 	
 	def __str__(self):
 		return self.client.name
 
 class CpeLessIrsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
-	ip_wan = models.CharField(max_length=50)
-	
+		
 	def __str__(self):
 		return self.client.name
 
 class CpeLessMplsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
-	ip_wan = models.CharField(max_length=50)
 	vrf_name = models.CharField(max_length=50)
 
 	def __str__(self):

@@ -11,13 +11,6 @@ from ipaddress import *
 
 from pprint import pprint
 
-# class PrivateIrsAdmin (admin.ModelAdmin):
-# 	form = IrsServiceForm
-
-# 	#exclude = ('edge_name', 'portgroup')
-# 	list_display = ('ip_segment','client','edge_name')
-# 	list_filter = ('client', 'edge_name')
-
 class NsxPublicIrsAdmin(admin.ModelAdmin):
 	form = IrsServiceForm
 
@@ -37,51 +30,30 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 
 	def save_model(self, request, obj, form, change):
 
-		#Create NSX Edge
 		obj.edge_name = "VCPE-" + obj.client.name + "-" + obj.product_identifier
-		
-		#print("Hub Name: ",form.cleaned_data['hub'].name)
+				
 		hub = form.cleaned_data['hub']
-		
-		#print("SCO Name: ",form.cleaned_data['sco'].name)
 		sco = form.cleaned_data['sco']
-		#print("SCO Id: ", sco.sco_id)
 		
-		pg = Portgroup.assign_free_pg_from_hub(form.cleaned_data['hub'])
-		#print("Portgroup Name: ", pg.name)
-		#print("Portgroup used?: ", pg.used)
-		obj.portgroup = pg
+		obj.portgroup = Portgroup.assign_free_pg_from_hub(form.cleaned_data['hub'])
 		
-		wan_ip = IpWan.assign_free_wan_ip_from_hub(hub)
-		obj.ip_wan = wan_ip.network
+		obj.ip_wan = IpWan.assign_free_wan_ip_from_hub(hub).network
 		print("IP WAN: %s/32" % obj.ip_wan)
 		
-		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
-		#print("Port Name: ", sco_port.description)
-		obj.sco_port = sco_port
+		obj.sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
 
-		public_network = IpPublicSegment.assign_free_public_ip()
-		obj.public_network = public_network
+		obj.public_network = IpPublicSegment.assign_free_public_ip()
 		client_network = ip_network(obj.public_network.ip + "/" + str(obj.public_network.prefix))
 		print("Public Network: ", client_network)
 		print("Public Network Mask: ", client_network.netmask)
 		print("Public Segment Gateway: %s/32" % list(client_network.hosts())[0])
 
-		#print("Free logical units at hub:", LogicalUnit.get_free_logical_unit_from_hub(form.cleaned_data['hub']) )
 		vxrail_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
-		#print("Logical Unit Assigned to vxrail: ", vxrail_logical_unit)
-		
 		sco_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
-		#print("Logical Unit Assigned to sco: ", sco_logical_unit)
-
+		
 		obj.vxrail_logical_unit = vxrail_logical_unit.logical_unit_id
 		obj.sco_logical_unit = sco_logical_unit.logical_unit_id
 		
-		# print("Test")
-		# uplink_portgroup_id = vc_pg.getPortgroupId(hub.uplink_pg)
-		# public_portgroup_id = vc_pg.getPortgroupId(obj.portgroup.name)
-		# print("Test")
-
 		print("Uplink Portgroup Id: ", hub.uplink_pg_id)
 		print("Public Portgroup Id: ", obj.portgroup.dvportgroup_id)
 
@@ -117,11 +89,11 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 				}
 
 		pprint(jinja_vars)
-		super(PublicIrsAdmin, self).save_model(request, obj, form, change)
+		super(NsxPublicIrsAdmin, self).save_model(request, obj, form, change)
 		
-		nsx_edge_create(jinja_vars)
-		edge_id = nsx_edge_get_id_by_name(obj.edge_name)
-		nsx_edge_add_gateway(edge_id, "0", "100.64.4.1", "1500") # CHANGE HARDCODED IP
+		# nsx_edge_create(jinja_vars)
+		# edge_id = nsx_edge_get_id_by_name(obj.edge_name)
+		# nsx_edge_add_gateway(edge_id, "0", "100.64.4.1", "1500") # CHANGE HARDCODED IP
 		
 
 		#load mx configuration parameters
@@ -141,7 +113,8 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 						"ip_wan" : obj.ip_wan}
 
 		pprint(mx_parameters)
-		NsxHandler.configure_mx(mx_parameters, "set")
+		# handler = NsxHandler()
+		# handler.configure_mx(mx_parameters, "set")
 		
 	def delete_model(self, request, obj):
 		
@@ -177,7 +150,7 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 											  str(obj.public_network.prefix))}
 
 		pprint(mx_parameters)
-		NsxHandler.configure_mx(mx_parameters, "delete")
+		# NsxHandler.configure_mx(mx_parameters, "delete")
 
 
 		obj.delete()
@@ -227,6 +200,10 @@ class ClientAdmin (admin.ModelAdmin):
 	def save_model(self, request, obj, form, change):
 		super(ClientAdmin, self).save_model(request, obj, form, change)
 
+class LogicalUnitAdmin(admin.ModelAdmin):
+	list_display = ['logical_unit_id','used']
+
+
 class PortgroupAdmin(admin.ModelAdmin):
 	list_display = ['name','vlan_tag', 'hub', 'used']
 
@@ -248,7 +225,7 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 	exclude = ['public_network']
 
 	def hub(self, obj):
-		return obj.portgroup.hub
+		return obj.hub
 
 	def sco(self,obj):
 		return obj.sco_port.sco
@@ -278,32 +255,27 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 		#load mx configuration parameters
 		mx_parameters = {'mx_ip' : hub.mx_ip,
 						'client_id' : "CPELESS-" + obj.client.name + "-" + obj.product_identifier,
-						'service_description' : "CPELess IRS Service",
+						'service_description' : "CPELess IRS Service", #ToDo: Define description with IDR
 						'sco_logical_unit' : obj.sco_logical_unit,
 						'sco_inner_vlan' : obj.sco_port.vlan_tag,
 						'sco_description' : sco.name,
 						'sco_ae_interface': sco.sco_ae_interface,
 						'sco_outer_vlan': sco.sco_outer_vlan,
-						"public_network_ip" : list(client_network.hosts())[0],
+						"public_network_ip" : str(list(client_network.hosts())[0]) + "/" + str(obj.public_network.prefix),
 						"vrf_name" : "INTERNET"}
 
 		pprint(mx_parameters)
-		# CpelessHandler.configure_mx(mx_parameters, "set")
 
-	def delete_model(self, request, obj, form, change):
-		
-		# set portgroup to unused
-		obj.portgroup.unassign()
+		handler = CpelessHandler()
+		handler.configure_mx(mx_parameters, "set")
+
+	def delete_model(self, request, obj):
 		
 		# set SCO port to unused
 		obj.sco_port.unassign()
 
 		# set logical units to unused
-		LogicalUnit.unassign(obj.vxrail_logical_unit, obj.portgroup.hub)
-		LogicalUnit.unassign(obj.sco_logical_unit, obj.portgroup.hub)
-
-		# set Edge WAN IP to unused
-		IpWan.unassign_ip(obj.ip_wan)
+		LogicalUnit.unassign(obj.sco_logical_unit, obj.hub)
 
 		# set public segment to unused
 		obj.public_network.unassign()
@@ -311,33 +283,100 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 		
 		# load mx configuration parameters
 		mx_parameters = {
-						'mx_ip' : obj.portgroup.hub.mx_ip,
+						'mx_ip' : obj.hub.mx_ip,
 						'sco_logical_unit' : obj.sco_logical_unit,
 						'sco_ae_interface': obj.sco_port.sco.sco_ae_interface
 						}
 
 		pprint(mx_parameters)
-		# CpelessHandler.configure_mx(mx_parameters, "delete")
+		handler = CpelessHandler("irs")
+		handler.configure_mx(mx_parameters, "delete")
 
+		obj.delete()
 
 class CpeLessMplsAdmin (admin.ModelAdmin):
-	form = IrsServiceForm
+	form = MplsServiceForm
 
 	#exclude = ('edge_name', 'portgroup')
-	list_display = ('public_network','client','hub', 'sco', 'sco_port', 'product_identifier')
+	list_display = ('public_network','client','hub', 'sco', 'sco_port', 'product_identifier', 'vrf_name')
 	
 	exclude = ['public_network']
 
 	def hub(self, obj):
-		return obj.portgroup.hub
+		return obj.hub
 
 	def sco(self,obj):
 		return obj.sco_port.sco
 
+	def save_model(self, request, obj, form, change):
+		
+		hub = form.cleaned_data['hub']		
+		sco = form.cleaned_data['sco']
+
+		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
+		obj.sco_port = sco_port
+
+		public_network = IpPublicSegment.assign_free_public_ip() # ToDo: get from FIPAM
+		obj.public_network = public_network
+		client_network = ip_network(obj.public_network.ip + "/" + str(obj.public_network.prefix))
+
+		print("Public Network: ", client_network)
+		print("Public Network Mask: ", client_network.netmask)
+		print("Public Segment Gateway: %s/32" % list(client_network.hosts())[0])
+
+		sco_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(form.cleaned_data['hub'])
+		
+		obj.sco_logical_unit = sco_logical_unit.logical_unit_id
+			
+		super(CpeLessMplsAdmin, self).save_model(request, obj, form, change)
+		
+		#load mx configuration parameters
+		mx_parameters = {'mx_ip' : hub.mx_ip,
+						'client_id' : "CPELESS-" + obj.client.name + "-" + obj.product_identifier,
+						'service_description' : "CPELess IRS Service", #ToDo: Define description with IDR
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'sco_inner_vlan' : obj.sco_port.vlan_tag,
+						'sco_description' : sco.name,
+						'sco_ae_interface': sco.sco_ae_interface,
+						'sco_outer_vlan': sco.sco_outer_vlan,
+						"public_network_ip" : str(list(client_network.hosts())[0]) + "/" + str(obj.public_network.prefix),
+						"vrf_name" : obj.vrf_name}
+
+		pprint(mx_parameters)
+
+		handler = CpelessHandler("mpls")
+		handler.configure_mx(mx_parameters, "set")
+
+	def delete_model(self, request, obj):
+		
+		# set SCO port to unused
+		obj.sco_port.unassign()
+
+		# set logical units to unused
+		LogicalUnit.unassign(obj.sco_logical_unit, obj.hub)
+
+		# set public segment to unused
+		obj.public_network.unassign()
+
+		
+		# load mx configuration parameters
+		mx_parameters = {
+						'mx_ip' : obj.hub.mx_ip,
+						'sco_logical_unit' : obj.sco_logical_unit,
+						'sco_ae_interface': obj.sco_port.sco.sco_ae_interface,
+						'vrf_name' : obj.vrf_name
+						}
+
+		pprint(mx_parameters)
+		# handler = CpelessHandler("mpls")
+		# handler.configure_mx(mx_parameters, "delete")
+
+		obj.delete()
+
 # Register
 admin.site.register(Hub)
 admin.site.register(Sco)
-admin.site.register(LogicalUnit)
+admin.site.register(LogicalUnit, LogicalUnitAdmin)
 admin.site.register(IpWan,IpWanAdmin)
 admin.site.register(IpPublicSegment, PublicNetworkAdmin)
 admin.site.register(ScoPort,ScoPortAdmin)
