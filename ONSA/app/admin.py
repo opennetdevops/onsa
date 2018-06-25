@@ -5,6 +5,7 @@ from .lib.utils.nsx.edge import *
 from .lib.utils.nsx.edge_routing import *
 from .lib.utils.vcenter import portgroups as vc_pg
 from .lib.utils.juniper.mx_config import *
+from .lib.utils.common.rest import *
 from .models import *
 from .forms import *
 from ipaddress import *
@@ -17,7 +18,6 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 	list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port', 'product_identifier')
 	list_filter = ('client', 'edge_name')
 	actions = ['delete_selected']
-
 
 	exclude = ('public_network', 'edge_name', 'portgroup')
 
@@ -151,8 +151,6 @@ class NsxPublicIrsAdmin(admin.ModelAdmin):
 
 		pprint(mx_parameters)
 		# NsxHandler.configure_mx(mx_parameters, "delete")
-
-
 		obj.delete()
 
 	def delete_selected(self, request, obj):
@@ -238,7 +236,9 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 		sco_port = ScoPort.assign_free_port_from_sco(form.cleaned_data['sco'])
 		obj.sco_port = sco_port
 
-		public_network = IpPublicSegment.assign_free_public_ip() # ToDo: get from FIPAM
+		data = {"owner":"Public", "prefix":"29","hosts":"false"}
+		# public_network = IpPublicSegment.assign_free_public_ip() # ToDo: get from FIPAM
+		response = post("http://10.120.78.90/api/networks/assign_subnet", data,"json")
 		obj.public_network = public_network
 		client_network = ip_network(obj.public_network.ip + "/" + str(obj.public_network.prefix))
 
@@ -297,9 +297,7 @@ class CpeLessIrsAdmin (admin.ModelAdmin):
 class CpeLessMplsAdmin (admin.ModelAdmin):
 	form = MplsServiceForm
 
-	#exclude = ('edge_name', 'portgroup')
 	list_display = ('public_network','client','hub', 'sco', 'sco_port', 'product_identifier', 'vrf_name')
-	
 	exclude = ['public_network']
 
 	def hub(self, obj):
