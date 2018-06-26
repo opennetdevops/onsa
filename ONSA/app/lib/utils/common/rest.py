@@ -1,12 +1,19 @@
 import requests
+import json
 
-def get(url, format):
-  rheaders = {'Accept': 'application/%s' % format}
+MANAGER = "http://10.120.78.90/"
+
+def onsaGet(url):
+  rheaders = {'Accept': 'application/json'}
   r = requests.get(MANAGER + url, auth = None, verify = False, headers = rheaders)
   return r.text
 
+def onsaPost(url, data):
+  rheaders = {'Content-Type': 'application/json'}
+  r = requests.post(MANAGER + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+  return r
 
-def post(url, data, format):
-  rheaders = {'Content-Type': 'application/%s' % format}
-  r = requests.post(MANAGER + url, data = data, auth = None, verify = False, headers = rheaders)
+def onsaDelete(url):
+  rheaders = {'Content-Type': 'application/json'}
+  r = requests.delete(MANAGER + url, auth = None, verify = False, headers = rheaders)
   return r

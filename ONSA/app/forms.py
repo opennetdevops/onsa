@@ -42,13 +42,14 @@ class IrsServiceForm(ModelForm):
     sco.widget.attrs['data-width'] = '14em'
     #username = forms.CharField()
     #password = forms.CharField(widget=PasswordInput())
+    prefix = forms.CharField()
 
 
     class Meta:
         model = NsxPublicIrsService
-        fields = ('public_network','client', 'product_identifier')
+        fields = ('client', 'product_identifier', 'public_network')
         labels = {
-            'public_network': 'Network segment',
+            'public_network' : 'Network',
             'product_identifier' : 'ID'
         }
 
@@ -79,13 +80,14 @@ class MplsServiceForm(ModelForm):
     sco.widget.attrs['data-width'] = '14em'
     #username = forms.CharField()
     #password = forms.CharField(widget=PasswordInput())
+    prefix = forms.CharField()
 
 
     class Meta:
         model = CpeLessMplsService
-        fields = ('public_network','client', 'product_identifier', 'vrf_name')
+        fields = ('client', 'product_identifier', 'vrf_name', 'public_network')
         labels = {
-            'public_network': 'Network segment',
+            'public_network' : 'Network',
             'product_identifier' : 'ID',
             'vrf_name' : 'VRF'
         }

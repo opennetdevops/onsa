@@ -50,7 +50,7 @@ def nsx_edge_create(jinja_vars):
 	nsx_edge_xml = os.path.join(dir, '../../templates/edge/nsx_edge_create.j2')
 	data = render(nsx_edge_xml, jinja_vars) 
   	
-	result= nsxPost("/api/4.0/edges", data, "xml")
+	result = nsxPost("/api/4.0/edges", data, "xml")
 	print (result)
 	return result
 

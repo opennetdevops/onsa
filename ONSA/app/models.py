@@ -90,6 +90,7 @@ class IpWan(models.Model):
 	used = models.BooleanField(default=False)
 	network = models.CharField(max_length=50)
 	prefix = models.PositiveSmallIntegerField()
+	ipam_id = models.PositiveSmallIntegerField()
 	
 	def __str__(self):	
 		return self.network
@@ -115,6 +116,7 @@ class IpPublicSegment(models.Model):
 	used = models.BooleanField(default=False)
 	ip = models.GenericIPAddressField() 
 	prefix = models.PositiveSmallIntegerField()
+	ipam_id = models.PositiveSmallIntegerField()
 	
 	def __str__(self):
 		return self.ip
@@ -187,6 +189,7 @@ class Service(models.Model):
 
 class NsxPublicIrsService (Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
+	# public_prefix = models.PositiveSmallIntegerField()
 	vxrail_logical_unit = models.PositiveSmallIntegerField()
 	edge_name = models.CharField(max_length=50)
 	ip_wan = models.CharField(max_length=50)
@@ -197,12 +200,14 @@ class NsxPublicIrsService (Service):
 
 class CpeLessIrsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
+	# public_prefix = models.PositiveSmallIntegerField()
 		
 	def __str__(self):
 		return self.client.name
 
 class CpeLessMplsService(Service):
 	public_network = models.OneToOneField(IpPublicSegment, on_delete=models.CASCADE)
+	# public_prefix = models.PositiveSmallIntegerField()
 	vrf_name = models.CharField(max_length=50)
 
 	def __str__(self):
