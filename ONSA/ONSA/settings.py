@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app.apps.NsxConfig',
+    'core.apps.OnsaConfig',
     'django_select2',
 ]
 
@@ -54,12 +54,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+APPEND_SLASH=False
+
 ROOT_URLCONF = 'ONSA.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR + '/app/templates/'],
+        'DIRS': [BASE_DIR + '/core/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
