@@ -26,7 +26,7 @@ from . import views
 # admin.autodiscover()
 
 urlpatterns = [ 
-    url(r'^api/login', obtain_jwt_token),
+    # url(r'^api/login', obtain_jwt_token),
     url(r'^api/scos/', views.scos),
     url(r'^api/scoports/', views.scoports),
     url(r'^api/privateirsservices/', views.privateirsservices),
