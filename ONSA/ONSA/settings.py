@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core.apps.OnsaConfig',
+    'inventory.apps.InventoryConfig',
     'django_select2',
 ]
 

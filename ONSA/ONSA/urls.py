@@ -23,7 +23,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^core/', include('core.urls')),
-    url(r'^inv/', include('inv.urls')),
+    url(r'^inventory/', include('inventory.urls')),
     url(r'^api/login', obtain_jwt_token),
 ]
 
