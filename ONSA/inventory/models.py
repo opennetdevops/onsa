@@ -13,6 +13,23 @@ class Location(models.Model):
         node = router_node[0]
         return node
 
+    def get_access_nodes(self):
+        access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
+        return access_nodes
+
+    def create_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
+        qinqOuterVlan="1", ports=24, ifPattern="eth1/"):
+        router_node = self.get_router_node()
+        access_node = AccessNode()
+        pass
+
+    def create_router_node(self):
+        pass
+
+
+
+
+
 
 
 
@@ -33,11 +50,32 @@ class AccessNode(Device): #SCO
     accessNodeId = models.CharField(max_length=4)
     qinqOuterVlan = models.CharField(max_length=50)
 
+
+
+    def get_access_ports_from_node(self):
+        access_ports = AccessPort.objects.filter(accessNode=self)
+        return access_ports
+
+    def get_free_access_port_from_node(self):
+        access_ports = AccessPort.objects.filter(accessNode=self, used=False)
+        access_port = access_ports[0]
+        return access_port
+
+    def assign_free_access_port_from_node(self):
+        access_ports = AccessPort.objects.filter(accessNode=self, used=False)
+        access_port = access_ports[0]
+        access_port.used = True
+        access_port.save()
+        return access_port
+
+
     def __str__(self):
         return self.name
 
 class RouterNode(Device): #MX
     privateWanIp = models.GenericIPAddressField(null=True, blank=True)
+
+    # def add_router_node(name)
     
     def __str__(self):
         return self.name
