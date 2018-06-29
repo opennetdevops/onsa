@@ -18,6 +18,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
 
+from rest_framework_jwt.views import obtain_jwt_token
+
 
 from . import views
 
@@ -25,23 +27,23 @@ from . import views
 # admin.autodiscover()
 
 urlpatterns = [ 
-    # url(r'^api/login', obtain_jwt_token),
-    url(r'^api/scos/', views.scos),
-    url(r'^api/scoports/', views.scoports),
-    url(r'^api/privateirsservices/', views.privateirsservices),
-    url(r'^api/portgroups/', views.portgroups),
-    url(r'^api/logicalunits/', views.logicalunits),
-    url(r'^api/ipwans/', views.ipwans),
-    url(r'^api/ippublicsegments/', views.ippublicsegments),
-    url(r'^api/publicirsservices/', views.publicirsservices),
-    url(r'^api/hubs/', views.hubs),
-    url(r'^api/clients/', views.clients),
-    url(r'^api/transportzones/', views.transportzones),
-    url(r'^api/datacenter/', views.datacenter),
-    url(r'^api/datacenters/', views.datacenters),
-    url(r'^api/logicalswitch/', views.logicalswitch),
-    url(r'^api/logicalswitches/', views.logicalswitches),
-    url(r'^api/edge/', views.edge),
-    url(r'^api/edges/', views.edges),
-    url(r'^select2/', include('django_select2.urls'))
+    url(r'^api/login', obtain_jwt_token),
+#     url(r'^api/scos/', views.scos),
+#     url(r'^api/scoports/', views.scoports),
+#     url(r'^api/privateirsservices/', views.privateirsservices),
+#     url(r'^api/portgroups/', views.portgroups),
+#     url(r'^api/logicalunits/', views.logicalunits),
+#     url(r'^api/ipwans/', views.ipwans),
+#     url(r'^api/ippublicsegments/', views.ippublicsegments),
+#     url(r'^api/publicirsservices/', views.publicirsservices),
+#     url(r'^api/hubs/', views.hubs),
+#     url(r'^api/clients/', views.clients),
+#     url(r'^api/transportzones/', views.transportzones),
+#     url(r'^api/datacenter/', views.datacenter),
+#     url(r'^api/datacenters/', views.datacenters),
+#     url(r'^api/logicalswitch/', views.logicalswitch),
+#     url(r'^api/logicalswitches/', views.logicalswitches),
+#     url(r'^api/edge/', views.edge),
+#     url(r'^api/edges/', views.edges),
+#     url(r'^select2/', include('django_select2.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

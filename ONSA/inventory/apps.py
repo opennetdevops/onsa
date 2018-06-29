@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class InvConfig(AppConfig):
-    name = 'inv'
+class InventoryConfig(AppConfig):
+    name = 'inventory'

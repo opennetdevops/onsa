@@ -316,7 +316,7 @@ def publicirsservices(request):
 						'sco_description' : sco.name,
 						'vxrail_ae_interface' : hub.vxrail_ae_interface,
 						'sco_ae_interface': sco.sco_ae_interface,
-						'sco_outer_vlan': sco.sco_outer_vlan,
+						'qinqOuterVlan': sco.qinqOuterVlan,
 						"public_network_ip" : str(client_network),
 						"ip_wan" : obj.ip_wan}
 
@@ -675,10 +675,10 @@ def scos(request):
 		data = {"scos" : []}
 
 		for sco in Sco.objects.all():
-			data["scos"].append({"id" : sco.sco_id,
+			data["scos"].append({"id" : sco.accessNodeId,
 							 	 "name" : sco.name,
 							 	 "sco_ae_interface" : sco.sco_ae_interface,
-							 	 "sco_outer_vlan" : sco.sco_outer_vlan,
+							 	 "qinqOuterVlan" : sco.qinqOuterVlan,
 							 	 "hub" : sco.hub.name})
 
 		return JsonResponse(data, json_dumps_params={'indent': 3})
@@ -690,9 +690,9 @@ def scos(request):
 
 		if hub:
 			sco = Sco(name=data["name"],
-					  sco_id=data["sco_id"],
+					  accessNodeId=data["accessNodeId"],
 					  sco_ae_interface=data["sco_ae_interface"],
-					  sco_outer_vlan=data["sco_outer_vlan"],
+					  qinqOuterVlan=data["qinqOuterVlan"],
 					  hub=hub)
 
 			sco.save()

@@ -35,7 +35,7 @@ class NsxHandler(object):
 					  'vxrail_logical_unit' : mx_parameters['vxrail_logical_unit'],
 					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
 					  'description' : mx_parameters['service_description'],
-					  'sco_outer_vlan' : mx_parameters['sco_outer_vlan'],
+					  'qinqOuterVlan' : mx_parameters['qinqOuterVlan'],
 					  'vxrail_vlan' : mx_parameters['vxrail_vlan'],
 					  'sco_inner_vlan' : mx_parameters['sco_inner_vlan'],
 					  'public_network_ip' : mx_parameters['public_network_ip']
@@ -298,7 +298,7 @@ class CpelessHandler(object):
 					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
 					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
 					  'service_description' : mx_parameters['service_description'],
-					  'sco_outer_vlan' : mx_parameters['sco_outer_vlan'],
+					  'qinqOuterVlan' : mx_parameters['qinqOuterVlan'],
 					  'sco_inner_vlan' : mx_parameters['sco_inner_vlan'],
 					  'public_network_ip' : mx_parameters['public_network_ip'],
 					  'vrf_name' : mx_parameters["vrf_name"]
