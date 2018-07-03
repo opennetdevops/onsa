@@ -19,18 +19,32 @@ from .models import *
 # from .lib.utils.juniper.mx_config import *
 
 from ipaddress import *
+from pprint import pprint
 
 @api_view(["GET"])
 @authentication_classes([JSONWebTokenAuthentication])
 @permission_classes((IsAuthenticated,))
 def devices(request):
-    location = Location.objects.filter(name="CENTRO")
-    routerNode = location[0].get_router_node()
+    locations = Location.objects.filter(name="CENTRO")
+    VlanTag.initialize()
+    routerNode = locations[0].get_router_node()
     print(routerNode)
-    # accessNodes= 
-    data = AccessPort.get_free_port_from_accessNode("XXX")
-    print(data)
-    return JsonResponse(data,json_dumps_params={'indent': 3})
+    newAccessNode = AccessNode.add("AN", "1.1.1.1", "TN2020", 7, locations[0])
+    pprint(newAccessNode)
+    # pprint(newAccessNode.get_access_ports_from_node())
+    access_port = newAccessNode.assign_free_access_port_from_node()
+    print(access_port)
+    print(access_port.get_free_vlans())
+    print(access_port.get_used_vlans())
+    vlan = access_port.assign_free_vlan()
+    print("vlan: ",vlan)
+    
+
+
+    newAccessNode.delete()
+
+    data = "{}"
+    return JsonResponse(data)
 
 
 # def edges(request):

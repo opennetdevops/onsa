@@ -17,13 +17,33 @@ class Location(models.Model):
         access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
         return access_nodes
 
-    def create_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
+    def add_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
         qinqOuterVlan="1", ports=24, ifPattern="eth1/"):
-        router_node = self.get_router_node()
-        access_node = AccessNode()
+
+        #By default QinQ-Outer-VLAN is equal to the access Node (even if they say the opposite)
+        access_node = AccessNode(name=name, deviceType="AccessNode", mgmtIP=mgmtIP, model=model,
+            location=self, uplinkInterface=uplinkInterface, accessNodeId=accessNodeId,
+            qinqOuterVlan=accessNodeId)
+        access_node.save()
+
+        for i in ports:
+            port_name = ifPattern + "i"
+            access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
+            access_port.save()
+        return
+
+    def delete_access_node():
         pass
 
-    def create_router_node(self):
+    def get_free_logical_unit(self):
+        return LogicalUnit.get_free_logical_unit_from_location(self)
+    
+    def get_free_logical_units(self):     
+        return LogicalUnit.get_free_logical_units_from_location(self)    
+
+
+
+    def add_router_node(self):
         pass
 
 
@@ -50,6 +70,20 @@ class AccessNode(Device): #SCO
     accessNodeId = models.CharField(max_length=4)
     qinqOuterVlan = models.CharField(max_length=50)
 
+    def add(name, mgmtIP, model, accessNodeId, location, uplinkInterface="ae1",
+        qinqOuterVlan="1", ports=24, ifPattern="eth0/"):
+
+        #By default QinQ-Outer-VLAN is equal to the access Node (even if they say the opposite)
+        access_node = AccessNode(name=name, deviceType="AccessNode", mgmtIP=mgmtIP, model=model,
+            location=location, uplinkInterface=uplinkInterface, accessNodeId=accessNodeId,
+            qinqOuterVlan=accessNodeId)
+        access_node.save()
+
+        for i in range(ports):
+            port_name = ifPattern + str(i)
+            print(port_name)
+            access_port = AccessPort.add(port_name,access_node)
+        return access_node
 
 
     def get_access_ports_from_node(self):
@@ -109,42 +143,62 @@ class AccessPort(models.Model):
 
 
     def __str__(self):
-        return self.description
+        return str(self.accessNode.location) + " - " + self.port
 
-    def get_free_port_from_accessNode(accessNode):
-        portsFree = accessPort.objects.filter(used=False, accessNode=accessNode) 
-        return portsFree[0]
+    # def delete(self):
+    #     self.unassign()
+    #     super(AccessPort, self).delete()
 
-    def assign_free_port_from_accessNode(accessNode):
-        portsFree = accessPort.objects.filter(used=False, accessNode=accessNode) 
-        accport = portsFree[0]
-        accport.used = True
-        accport.save()
-        return accport
+
+    def add(port_name, access_node):
+        access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
+        access_port.save()
+        return access_port
+
 
     def unassign(self):
         self.used = False
+        #todo remove all vlan assoc
+        vlans = self.get_used_vlans()
+        for i in vlans:
+            i.access_ports.remove(self)
         self.save()
         return
 
-    def assign_free_vlan(self):
-        vlansFree = vlanTag.objects.filter(used=False, accessPorts=self) 
-        accport = vlansFree[0]
-        accport.used = True
-        accport.save()
-        return accport
 
-    def assign_vlan(self, vlanId):
-        vlan = vlanTag(used=True, vlan_tag=vlanId, accessNode=self)
+    def get_free_vlans(self):
+        vlansFree = VlanTag.objects.exclude(accessPorts=self)
+        return vlansFree
+
+    def get_used_vlans(self):
+        vlansUsed = VlanTag.objects.filter(accessPorts=self)
+        return vlansUsed
+
+
+    def assign_free_vlan(self):
+        vlansFree = VlanTag.objects.exclude(accessPorts=self) 
+        vlan = vlansFree[0]
+        vlan.accessPorts.add(self)       
         vlan.save()
         return vlan
+
+    def assign_vlan(self, vlanId):
+        vlan = VlanTag.objects.filter(vlan_tag=vlanId)
+        #todo error already assigned
+        vlan.accessPorts.add(self)
+        vlan.save()
+        return True
 
 
 class VlanTag(models.Model):
     vlan_tag = models.CharField(max_length=50)
     vlan_tag.null = True
     accessPorts = models.ManyToManyField(AccessPort)
-    used = models.BooleanField(default=False)
+    # used = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return self.vlan_tag
 
     # def assign_free_vlan_at_location(location):
     #     free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
@@ -164,6 +218,20 @@ class VlanTag(models.Model):
     #     logical_unit_to_release.used = False
     #     logical_unit_to_release.save()
     #     return
+    def initialize():
+        #TODO GLOBAL VARIABLE
+        vlans_per_port = 10
+        initial_vlan_tag_id = 1800
+
+        for i in range(vlans_per_port):
+            VlanTag.add(initial_vlan_tag_id+i)
+        return
+
+    def add(vlanId):
+        if VlanTag.objects.filter(vlan_tag=vlanId).count() > 0: return
+        vlan = VlanTag(vlan_tag=vlanId)
+        vlan.save()
+        return
 
 
 
@@ -234,6 +302,11 @@ class LogicalUnit(models.Model):
         return logical_unit
 
     def get_free_logical_unit_from_location(location):
+        free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
+        logical_unit = free_logical_unit[0] 
+        return logical_unit
+
+    def get_free_logical_units_from_location(location):
         free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
         return free_logical_unit
 
