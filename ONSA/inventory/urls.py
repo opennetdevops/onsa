@@ -5,13 +5,14 @@ from django.conf import settings
 
 from rest_framework_jwt.views import obtain_jwt_token
 
-from . import views
+from .views import devices, test_view
 
 
 
 urlpatterns = [ 
     url(r'^api/login', obtain_jwt_token),
-    url(r'^api/devices', views.devices)
+    url(r'^api/devices', devices.devices),
+    url(r'^api/test', test_view.test)
 #     url(r'^api/accessPorts/', views.scoports),
 #     url(r'^api/portgroups/', views.portgroups),
 #     url(r'^api/logicalunits/<pk[0-9]+>', views.logicalunits),

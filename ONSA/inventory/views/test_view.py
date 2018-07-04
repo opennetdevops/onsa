@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from .models import *
+from ..models import *
 
 # from .lib.utils.nsx.edge import *
 # from .lib.utils.nsx.edge_routing import *
@@ -24,7 +24,7 @@ from pprint import pprint
 @api_view(["GET"])
 @authentication_classes([JSONWebTokenAuthentication])
 @permission_classes((IsAuthenticated,))
-def devices(request):
+def test(request):
     locations = Location.objects.filter(name="CENTRO")
     VlanTag.initialize()
     routerNode = locations[0].get_router_node()

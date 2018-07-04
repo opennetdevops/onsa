@@ -33,6 +33,7 @@ class Location(models.Model):
         return
 
     def delete_access_node():
+        #todo
         pass
 
     def get_free_logical_unit(self):
@@ -41,15 +42,9 @@ class Location(models.Model):
     def get_free_logical_units(self):     
         return LogicalUnit.get_free_logical_units_from_location(self)    
 
-
-
     def add_router_node(self):
+        #todo
         pass
-
-
-
-
-
 
 
 
@@ -145,10 +140,6 @@ class AccessPort(models.Model):
     def __str__(self):
         return str(self.accessNode.location) + " - " + self.port
 
-    # def delete(self):
-    #     self.unassign()
-    #     super(AccessPort, self).delete()
-
 
     def add(port_name, access_node):
         access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
@@ -194,30 +185,10 @@ class VlanTag(models.Model):
     vlan_tag = models.CharField(max_length=50)
     vlan_tag.null = True
     accessPorts = models.ManyToManyField(AccessPort)
-    # used = models.BooleanField(default=False)
-
 
     def __str__(self):
         return self.vlan_tag
 
-    # def assign_free_vlan_at_location(location):
-    #     free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
-    #     logical_unit = free_logical_unit[0] 
-    #     logical_unit.used = True
-    #     logical_unit.save()
-    #     logical_unit.locations.add(location)
-    #     return logical_unit
-
-    # def get_free_logical_unit_from_location(location):
-    #     free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
-    #     return free_logical_unit
-
-    # def unassign(logical_unit, location):
-    #     logical_unit = LogicalUnit.objects.filter(used=True,locations=location,logical_unit_id=logical_unit)
-    #     logical_unit_to_release = logical_unit[0]
-    #     logical_unit_to_release.used = False
-    #     logical_unit_to_release.save()
-    #     return
     def initialize():
         #TODO GLOBAL VARIABLE
         vlans_per_port = 10
@@ -242,7 +213,6 @@ class VirtualVmwPod(Device):
     datastoreId = models.CharField(max_length=50, blank=True)
     resourcePoolId = models.CharField(max_length=50, blank=True)
     datacenterId = models.CharField(max_length=50, blank=True)
-
     uplinkPg = models.CharField(max_length=50, blank=True)
     uplinkPgId = models.CharField(max_length=50, blank=True)
 
@@ -288,7 +258,7 @@ class Portgroup(models.Model):
 class LogicalUnit(models.Model):
     logical_unit_id = models.PositiveSmallIntegerField()
     locations = models.ManyToManyField(Location)
-    used = models.BooleanField(default=False)
+    # used = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.logical_unit_id)
