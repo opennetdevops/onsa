@@ -7,9 +7,10 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+    #
     def get_router_node(self):
         router_node = RouterNode.objects.get(deviceType="RouterNode",location=self)
-        # node = router_node[0]
+        #node = router_node[0]
         return router_node
 
     def get_access_nodes(self):
@@ -46,6 +47,7 @@ class Location(models.Model):
         lu.save()
         return lu
 
+
     def assign_vlan(self, vlanId):
         vlan = VlanTag.objects.filter(vlan_tag=vlanId)
         #todo error already assigned
@@ -55,13 +57,7 @@ class Location(models.Model):
 
     def delete_access_node():
         #todo
-        pass
-
-    def get_free_logical_unit(self):
-        return LogicalUnit.get_free_logical_unit_from_location(self)
-    
-    def get_free_logical_units(self):     
-        return LogicalUnit.get_free_logical_units_from_location(self)    
+        pass  
 
     def add_router_node(self):
         #todo
