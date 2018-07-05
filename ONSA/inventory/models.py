@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class Location(models.Model):
     name = models.CharField(max_length=50, blank=True)  #HUB
     address = models.CharField(max_length=50, blank=True) 
@@ -9,12 +8,12 @@ class Location(models.Model):
         return self.name
 
     def get_router_node(self):
-        router_node = RouterNode.objects.filter(deviceType="RouterNode",location=self)
-        node = router_node[0]
-        return node
+        router_node = RouterNode.objects.get(deviceType="RouterNode",location=self)
+        # node = router_node[0]
+        return router_node
 
     def get_access_nodes(self):
-        access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
+        access_nodes = AccessNode.objects.get(deviceType="AccessNode",location=self)
         return access_nodes
 
     def add_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
