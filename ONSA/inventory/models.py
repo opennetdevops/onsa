@@ -32,6 +32,28 @@ class Location(models.Model):
             access_port.save()
         return
 
+    def get_free_logical_units(self):
+        lus_free = LogicalUnit.objects.exclude(locations=self)
+        return lus_free
+
+    def get_used_logical_units(self):
+        lus_Used = Location.objects.filter(locations=self)
+        return lus_Used
+
+    def assign_free_logical_unit(self):
+        lus_free = Location.objects.exclude(locations=self) 
+        lu = lus_free[0]
+        lu.locations.add(self)       
+        lu.save()
+        return lu
+
+    def assign_vlan(self, vlanId):
+        vlan = VlanTag.objects.filter(vlan_tag=vlanId)
+        #todo error already assigned
+        vlan.accessPorts.add(self)
+        vlan.save()
+        return True
+
     def delete_access_node():
         #todo
         pass
@@ -182,7 +204,7 @@ class AccessPort(models.Model):
 
 
 class VlanTag(models.Model):
-    vlan_tag = models.CharField(max_length=50)
+    vlan_tag = models.CharField(max_length=50,  unique=True)
     vlan_tag.null = True
     accessPorts = models.ManyToManyField(AccessPort)
 
@@ -199,7 +221,6 @@ class VlanTag(models.Model):
         return
 
     def add(vlanId):
-        if VlanTag.objects.filter(vlan_tag=vlanId).count() > 0: return
         vlan = VlanTag(vlan_tag=vlanId)
         vlan.save()
         return
@@ -229,6 +250,7 @@ class NsxEdge(Device):
         return self.client.name
 
 class Portgroup(models.Model):
+    #todo vlan tag unique - remove check
     vlan_tag = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
     virtualVmwPod = models.ForeignKey(VirtualVmwPod, on_delete=models.CASCADE)
@@ -256,33 +278,29 @@ class Portgroup(models.Model):
 
 
 class LogicalUnit(models.Model):
-    logical_unit_id = models.PositiveSmallIntegerField()
+    logical_unit_id = models.PositiveSmallIntegerField(unique=True)
     locations = models.ManyToManyField(Location)
-    # used = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.logical_unit_id)
 
-    def assign_free_logical_unit_at_location(location):
-        free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
-        logical_unit = free_logical_unit[0] 
-        logical_unit.used = True
-        logical_unit.save()
-        logical_unit.locations.add(location)
-        return logical_unit
+    def initialize():
+        #TODO GLOBAL VARIABLE
+        logical_units_per_location = 100
+        initial_logical_unit_id = 10000
 
-    def get_free_logical_unit_from_location(location):
-        free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
-        logical_unit = free_logical_unit[0] 
-        return logical_unit
-
-    def get_free_logical_units_from_location(location):
-        free_logical_unit = LogicalUnit.objects.filter(used=False,locations=location)
-        return free_logical_unit
-
-    def unassign(logical_unit, location):
-        logical_unit = LogicalUnit.objects.filter(used=True,locations=location,logical_unit_id=logical_unit)
-        logical_unit_to_release = logical_unit[0]
-        logical_unit_to_release.used = False
-        logical_unit_to_release.save()
+        for i in range(logical_units_per_location):
+            LogicalUnit.add(initial_logical_unit_id+i)
         return
+
+    def add(logical_unit_id):
+        logical_unit = LogicalUnit(logical_unit_id=logical_unit_id)
+        logical_unit.save()
+        return
+
+    # def unassign(logical_unit, location):
+    #     logical_unit = LogicalUnit.objects.filter(locations=location,logical_unit_id=logical_unit)
+    #     logical_unit_to_release = logical_unit[0]
+    #     logical_unit_to_release.used = False
+    #     logical_unit_to_release.save()
+    #     return
