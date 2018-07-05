@@ -7,9 +7,9 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
-    #
-    def get_router_nodes(self):
-        router_nodes = RouterNode.objects.filter(deviceType="RouterNode",location=self)
+    #Pre-cond only one router node per Location
+    def get_router_node(self):
+        router_node = RouterNode.objects.get(deviceType="RouterNode",location=self)
         #node = router_node[0]
         return router_nodes
 
@@ -48,26 +48,41 @@ class Location(models.Model):
         lu.save()
         return lu
 
+    def assign_free_logical_unit(self):
+        lus_free = Location.objects.exclude(locations=self) 
+        lu = lus_free[0]
+        lu.locations.add(self)       
+        lu.save()
+        return lu
 
-    def assign_vlan(self, vlanId):
-        vlan = VlanTag.objects.filter(vlan_tag=vlanId)
-        #todo error already assigned
-        vlan.accessPorts.add(self)
-        vlan.save()
-        return True
+    def remove_logical_unit(self, logical_unit_id):
+        lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id)
+        lu.locations.remove(self)
+        lu.save()
+        return lu
 
-    def delete_access_node():
-        #todo
-        pass  
-
-    def add_router_node(self, router_node):
-        pass
-
-    def delete_location(self):
-        #todo
-        pass
+    def assign_logical_unit(self, logical_unit_id):
+        lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id)
+        lu.locations.add(self)
+        lu.save()
+        return lu
 
 
+    def delete_access_node(self, accessNodeId):
+        an = AccessNode.objects.get(location=self,accessNodeId=accessNodeId)
+        an.delete()
+        return  
+
+    def add_router_node(self, name, mgmtIP, model, accessNodeId, privateWanIp):
+        router_node = RouterNode(name=name, deviceType="RouterNode", mgmtIP=mgmtIP, location=self,
+            model=model, privateWanIp=privateWanIp)
+        router_node.save()
+        return
+
+    def delete_router_node(self):
+        rn = self.get_router_node()
+        rn.delete()
+        return
 
 class Device(models.Model):
     name = models.CharField(max_length=50)
