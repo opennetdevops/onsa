@@ -8,15 +8,16 @@ class Location(models.Model):
         return self.name
 
     #
-    def get_router_node(self):
-        router_node = RouterNode.objects.get(deviceType="RouterNode",location=self)
+    def get_router_nodes(self):
+        router_nodes = RouterNode.objects.filter(deviceType="RouterNode",location=self)
         #node = router_node[0]
-        return router_node
+        return router_nodes
 
     def get_access_nodes(self):
-        access_nodes = AccessNode.objects.get(deviceType="AccessNode",location=self)
+        access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
         return access_nodes
 
+    # MODIFICAR!!!!!!!!!!!!!!!!!!!!!
     def add_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
         qinqOuterVlan="1", ports=24, ifPattern="eth1/"):
 
@@ -59,7 +60,10 @@ class Location(models.Model):
         #todo
         pass  
 
-    def add_router_node(self):
+    def add_router_node(self, router_node):
+        pass
+
+    def delete_location(self):
         #todo
         pass
 

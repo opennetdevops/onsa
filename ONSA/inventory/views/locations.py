@@ -1,48 +1,33 @@
+from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 
 from ..models import Location
 
-class RouterNode(View):
+import json
 
-	def get(self, request, location_name):
+class LocationsView(View):
 
-		location = Location.objects.get(name=location_name)
-		router_node = location.get_router_node()
+	def get(self, request):
+		locations = Location.objects.all()
 
-		if request.content_type == 'text/html':
-			return HttpResponse()
-		elif request.content_type == 'application/json':
-			response = {"name" : str(router_node.name),
-						"deviceType" : str(router_node.deviceType),
-						"mgmtIP" : str(router_node.mgmtIP),
-						"model" : str(router_node.model),
-						"location" : router_node.location.name}
+		if request.content_type == 'application/json':
+			data = serializers.serialize('json', locations)
+			return HttpResponse(data, content_type='application/json')
 
+	def post(self, request):
+		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-			return JsonResponse(response)
+		location = Location.objects.create(**data)
+		location.save()
+		location = Location.objects.filter(name=data['name'])
 
-	def post(self,request, location_name):
+		if request.content_type == 'application/json':
+			data = serializers.serialize('json', location)
+			return HttpResponse(data, content_type='application/json')
 
-		location = Location.objects.get(name=location_name)
-		
-		if request.content_type == 'text/html':
-			return HttpResponse()
-		elif request.content_type == 'application/json':
+	def put(self, request, location_id):
+		pass
 
-			return JsonResponse("")
-
-
-class AccessNode(View):
-
-	def get(self, request, **kwargs):
-		if request.content_type == 'text/html':
-			return HttpResponse()
-		elif request.content_type == 'application/json':
-			return JsonResponse("")
-
-	def post(self, request, **kwargs):
-		if request.content_type == 'text/html':
-			return HttpResponse()
-		elif request.content_type == 'application/json':
-			return JsonResponse("")
+	def delete(self, request, location_id):
+		pass
