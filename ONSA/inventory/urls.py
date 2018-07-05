@@ -13,9 +13,9 @@ from .views.locations import RouterNode, AccessNode
 
 
 urlpatterns = [ 
-    path('api/login', obtain_jwt_token),
-    path('api/devices', devices.devices),
-    path('api/test', test_view.test),
-    path('api/v1/location/<str:location_name>/routernode', RouterNode.as_view()),
-    path('api/v1/location/<str:location_name>/accessnode/<int:access_id>', AccessNode.as_view())
+    path('/api/login', obtain_jwt_token),
+    path('/api/devices', devices.devices),
+    path('/api/test', test_view.test),
+    path('/api/v1/location/<str:location_name>/routernode', RouterNode.as_view()),
+    path('/api/v1/location/<str:location_name>/accessnode/<int:access_id>', AccessNode.as_view())
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
