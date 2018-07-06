@@ -14,16 +14,16 @@ class AccessPortsView(View):
 		data = serializers.serialize('json', access_ports)
 		return HttpResponse(data, content_type='application/json')
 
-	def post(self, request, location_id):
+	def post(self, request, accessnode_id, accessport_num):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-		location = Location.objects.get(pk=location_id)
+		access_node = AccessNode.objects.get(pk=accessnode_id)
 
-		access_node = AccessNode.objects.create(**data, location=location)
-		access_node.save()
-		access_node = AccessNode.objects.filter(name=data['name'])
+		access_port = AccessPorts.objects.create(**data, location=location)
+		access_port.save()
+		access_port = AccessPorts.objects.filter(port=accessport_num)
 		
-		data = serializers.serialize('json', access_node)
+		data = serializers.serialize('json', access_port)
 		return HttpResponse(data, content_type='application/json')
 
 	def put(self, request, accessnode_id):
