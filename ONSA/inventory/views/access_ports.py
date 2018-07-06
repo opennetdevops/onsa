@@ -6,12 +6,12 @@ from ..models import Location, AccessNode
 
 import json
 
-class AccessNodesView(View):
-	def get(self, request, location_id):
-		location = Location.objects.get(pk=location_id)
-		access_nodes = location.get_access_nodes()
+class AccessPortsView(View):
+	def get(self, request, accessnode_id):
+		access_node = AccessNode.objects.get(pk=accessnode_id)
+		access_ports = access_node.get_access_ports_from_node()
 		
-		data = serializers.serialize('json', access_nodes)
+		data = serializers.serialize('json', access_ports)
 		return HttpResponse(data, content_type='application/json')
 
 	def post(self, request, location_id):

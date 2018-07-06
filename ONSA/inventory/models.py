@@ -7,16 +7,8 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
-
-    """
-    REMOVE
-    Change to get_router_nodes() : router_nodes
-    Output: list of all router nodes in a location.
-    """    
-    #Pre-cond only one router node per Location
-    def get_router_node(self):
-        router_node = RouterNode.objects.get(deviceType="RouterNode",location=self)
-        #node = router_node[0]
+    def get_router_nodes(self):
+        router_nodes = RouterNode.objects.filter(deviceType="RouterNode",location=self)
         return router_nodes
 
     def get_access_nodes(self):
