@@ -112,7 +112,6 @@ class Device(models.Model):
     model = models.CharField(max_length=50, blank=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE) 
 
-
     class Meta:
         abstract = True
 
@@ -135,6 +134,9 @@ class AccessNode(Device): #SCO
             print(port_name)
             access_port = AccessPort.add(port_name,access_node)
         return access_node
+
+    def add_virtual_vmw_pod(self):
+        pass
 
 
     def get_access_ports_from_node(self):
@@ -260,9 +262,7 @@ class VlanTag(models.Model):
         return
 
 
-
 class VirtualVmwPod(Device):
-    location = models.CharField(max_length=50, blank=True)  #HUB
     transportZoneName = models.CharField(max_length=50, blank=True) #TODO NSX Only
     clusterName = models.CharField(max_length=50, blank=True)
     datastoreId = models.CharField(max_length=50, blank=True)
@@ -284,7 +284,6 @@ class NsxEdge(Device):
         return self.client.name
 
 class Portgroup(models.Model):
-    #todo vlan tag unique - remove check
     vlan_tag = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
     virtualVmwPod = models.ForeignKey(VirtualVmwPod, on_delete=models.CASCADE)
@@ -332,9 +331,3 @@ class LogicalUnit(models.Model):
         logical_unit.save()
         return
 
-    # def unassign(logical_unit, location):
-    #     logical_unit = LogicalUnit.objects.filter(locations=location,logical_unit_id=logical_unit)
-    #     logical_unit_to_release = logical_unit[0]
-    #     logical_unit_to_release.used = False
-    #     logical_unit_to_release.save()
-    #     return
