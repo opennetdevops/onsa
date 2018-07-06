@@ -7,6 +7,12 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+
+    """
+    REMOVE
+    Change to get_router_nodes() : router_nodes
+    Output: list of all router nodes in a location.
+    """    
     #Pre-cond only one router node per Location
     def get_router_node(self):
         router_node = RouterNode.objects.get(deviceType="RouterNode",location=self)
@@ -17,7 +23,10 @@ class Location(models.Model):
         access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
         return access_nodes
 
-    # MODIFICAR!!!!!!!!!!!!!!!!!!!!!
+    """
+    REMOVE
+    Will be handled in views/access_nodes.py
+    """    
     def add_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
         qinqOuterVlan="1", ports=24, ifPattern="eth1/"):
 
@@ -67,18 +76,29 @@ class Location(models.Model):
         lu.save()
         return lu
 
-
+    """
+    REMOVE
+    Will be handled in views/access_nodes.py
+    """
     def delete_access_node(self, accessNodeId):
         an = AccessNode.objects.get(location=self,accessNodeId=accessNodeId)
         an.delete()
-        return  
+        return 
 
+    """
+    REMOVE
+    Will be handled in views/router_nodes.py
+    """  
     def add_router_node(self, name, mgmtIP, model, accessNodeId, privateWanIp):
         router_node = RouterNode(name=name, deviceType="RouterNode", mgmtIP=mgmtIP, location=self,
             model=model, privateWanIp=privateWanIp)
         router_node.save()
         return
 
+    """
+    REMOVE
+    Will be handled in views/router_nodes.py
+    """ 
     def delete_router_node(self):
         rn = self.get_router_node()
         rn.delete()
