@@ -34,40 +34,6 @@ class Location(models.Model):
 			access_port.save()
 		return
 
-	def get_free_logical_units(self):
-		lus_free = LogicalUnit.objects.exclude(locations=self)
-		return lus_free
-
-	def get_used_logical_units(self):
-		lus_Used = Location.objects.filter(locations=self)
-		return lus_Used
-
-	def assign_free_logical_unit(self):
-		lus_free = Location.objects.exclude(locations=self) 
-		lu = lus_free[0]
-		lu.locations.add(self)       
-		lu.save()
-		return lu
-
-	def assign_free_logical_unit(self):
-		lus_free = Location.objects.exclude(locations=self) 
-		lu = lus_free[0]
-		lu.locations.add(self)       
-		lu.save()
-		return lu
-
-	def remove_logical_unit(self, logical_unit_id):
-		lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id)
-		lu.locations.remove(self)
-		lu.save()
-		return lu
-
-	def assign_logical_unit(self, logical_unit_id):
-		lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id)
-		lu.locations.add(self)
-		lu.save()
-		return lu
-
 	"""
 	REMOVE
 	Will be handled in views/access_nodes.py
@@ -154,7 +120,39 @@ class AccessNode(Device): #SCO
 class RouterNode(Device): #MX
 	privateWanIp = models.GenericIPAddressField(null=True, blank=True)
 
-	# def add_router_node(name)
+    def get_free_logical_units(self):
+        lus_free = LogicalUnit.objects.exclude(routerNodes=self)
+        return lus_free
+
+    def get_used_logical_units(self):
+        lus_Used = Location.objects.filter(routerNodes=self)
+        return lus_Used
+
+    def assign_free_logical_unit(self):
+        lus_free = Location.objects.exclude(routerNodes=self) 
+        lu = lus_free[0]
+        lu.routerNodes.add(self)       
+        lu.save()
+        return lu
+
+    def assign_free_logical_unit(self):
+        lus_free = Location.objects.exclude(routerNodes=self) 
+        lu = lus_free[0]
+        lu.routerNodes.add(self)       
+        lu.save()
+        return lu
+
+    def remove_logical_unit(self, logical_unit_id):
+        lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id, routerNodes=self)
+        lu.routerNodes.remove(self)
+        lu.save()
+        return lu
+
+    def assign_logical_unit(self, logical_unit_id):
+        lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id)
+        lu.routerNodes.add(self)
+        lu.save()
+        return lu
 	
 	def __str__(self):
 		return self.name
@@ -272,7 +270,7 @@ class VirtualVmwPod(Device):
 	uplinkPgId = models.CharField(max_length=50, blank=True)
 
 	def __str__(self):
-		return self.client.name
+		return self.clusterName
 
 """
 REVISAR
@@ -283,7 +281,7 @@ class NsxEdge(Device):
 
 
 	def __str__(self):
-		return self.client.name
+		return self.edgeName
 
 """
 REVISAR
