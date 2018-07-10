@@ -164,8 +164,6 @@ class ClientNode(Device):
 	client = models.CharField(max_length=50, blank=True)
 	service = models.CharField(max_length=50, blank=True) #TODO Services (plural, multiple)
 
-
-
 	def __str__(self):
 		return self.serialNumber
 
