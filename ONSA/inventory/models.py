@@ -15,6 +15,7 @@ class Location(models.Model):
 		access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
 		return access_nodes
 
+
 	"""
 	REMOVE
 	Will be handled in views/access_nodes.py
@@ -61,6 +62,7 @@ class Location(models.Model):
 		rn = self.get_router_node()
 		rn.delete()
 		return
+        
 
 class Device(models.Model):
 	name = models.CharField(max_length=50)
@@ -77,24 +79,6 @@ class AccessNode(Device): #SCO
 	uplinkInterface = models.CharField(max_length=50)
 	accessNodeId = models.CharField(max_length=4)
 	qinqOuterVlan = models.CharField(max_length=50)
-
-	def add(name, mgmtIP, model, accessNodeId, location, uplinkInterface="ae1",
-		qinqOuterVlan="1", ports=24, ifPattern="eth0/"):
-
-		#By default QinQ-Outer-VLAN is equal to the access Node (even if they say the opposite)
-		access_node = AccessNode(name=name, deviceType="AccessNode", mgmtIP=mgmtIP, model=model,
-			location=location, uplinkInterface=uplinkInterface, accessNodeId=accessNodeId,
-			qinqOuterVlan=accessNodeId)
-		access_node.save()
-
-		for i in range(ports):
-			port_name = ifPattern + str(i)
-			print(port_name)
-			access_port = AccessPort.add(port_name,access_node)
-		return access_node
-
-	def add_virtual_vmw_pod(self):
-		pass
 
 
 	def get_access_ports_from_node(self):
@@ -153,6 +137,7 @@ class RouterNode(Device): #MX
         lu.routerNodes.add(self)
         lu.save()
         return lu
+
 	
 	def __str__(self):
 		return self.name
@@ -161,8 +146,6 @@ class ClientNode(Device):
 	serialNumber = models.CharField(max_length=50, blank=True)
 	client = models.CharField(max_length=50, blank=True)
 	service = models.CharField(max_length=50, blank=True) #TODO Services (plural, multiple)
-
-
 
 	def __str__(self):
 		return self.serialNumber
@@ -191,12 +174,6 @@ class AccessPort(models.Model):
 	def get_vlan_tags(self):
 		vlan_tags = VlanTag.objects.filter(accessPorts=self)
         return vlan_tags
-
-
-	def add(port_name, access_node):
-		access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
-		access_port.save()
-		return access_port
 
 
 	def unassign(self):
