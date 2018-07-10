@@ -15,25 +15,6 @@ class Location(models.Model):
 		access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
 		return access_nodes
 
-	"""
-	REMOVE
-	Will be handled in views/access_nodes.py
-	"""    
-	def add_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
-		qinqOuterVlan="1", ports=24, ifPattern="eth1/"):
-
-		#By default QinQ-Outer-VLAN is equal to the access Node (even if they say the opposite)
-		access_node = AccessNode(name=name, deviceType="AccessNode", mgmtIP=mgmtIP, model=model,
-			location=self, uplinkInterface=uplinkInterface, accessNodeId=accessNodeId,
-			qinqOuterVlan=accessNodeId)
-		access_node.save()
-
-		for i in ports:
-			port_name = ifPattern + "i"
-			access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
-			access_port.save()
-		return
-
 	def get_free_logical_units(self):
 		lus_free = LogicalUnit.objects.exclude(locations=self)
 		return lus_free
@@ -68,33 +49,6 @@ class Location(models.Model):
 		lu.save()
 		return lu
 
-	"""
-	REMOVE
-	Will be handled in views/access_nodes.py
-	"""
-	def delete_access_node(self, accessNodeId):
-		an = AccessNode.objects.get(location=self,accessNodeId=accessNodeId)
-		an.delete()
-		return 
-
-	"""
-	REMOVE
-	Will be handled in views/router_nodes.py
-	"""  
-	def add_router_node(self, name, mgmtIP, model, accessNodeId, privateWanIp):
-		router_node = RouterNode(name=name, deviceType="RouterNode", mgmtIP=mgmtIP, location=self,
-			model=model, privateWanIp=privateWanIp)
-		router_node.save()
-		return
-
-	"""
-	REMOVE
-	Will be handled in views/router_nodes.py
-	""" 
-	def delete_router_node(self):
-		rn = self.get_router_node()
-		rn.delete()
-		return
 
 class Device(models.Model):
 	name = models.CharField(max_length=50)
@@ -111,24 +65,6 @@ class AccessNode(Device): #SCO
 	uplinkInterface = models.CharField(max_length=50)
 	accessNodeId = models.CharField(max_length=4)
 	qinqOuterVlan = models.CharField(max_length=50)
-
-	def add(name, mgmtIP, model, accessNodeId, location, uplinkInterface="ae1",
-		qinqOuterVlan="1", ports=24, ifPattern="eth0/"):
-
-		#By default QinQ-Outer-VLAN is equal to the access Node (even if they say the opposite)
-		access_node = AccessNode(name=name, deviceType="AccessNode", mgmtIP=mgmtIP, model=model,
-			location=location, uplinkInterface=uplinkInterface, accessNodeId=accessNodeId,
-			qinqOuterVlan=accessNodeId)
-		access_node.save()
-
-		for i in range(ports):
-			port_name = ifPattern + str(i)
-			print(port_name)
-			access_port = AccessPort.add(port_name,access_node)
-		return access_node
-
-	def add_virtual_vmw_pod(self):
-		pass
 
 
 	def get_access_ports_from_node(self):
@@ -153,8 +89,6 @@ class AccessNode(Device): #SCO
 
 class RouterNode(Device): #MX
 	privateWanIp = models.GenericIPAddressField(null=True, blank=True)
-
-	# def add_router_node(name)
 	
 	def __str__(self):
 		return self.name
@@ -191,12 +125,6 @@ class AccessPort(models.Model):
 	def get_vlan_tags(self):
 		vlan_tags = VlanTag.objects.filter(accessPorts=self)
         return vlan_tags
-
-
-	def add(port_name, access_node):
-		access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
-		access_port.save()
-		return access_port
 
 
 	def unassign(self):
