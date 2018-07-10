@@ -16,53 +16,53 @@ class Location(models.Model):
 		return access_nodes
 
 
-	"""
-	REMOVE
-	Will be handled in views/access_nodes.py
-	"""    
-	def add_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
-		qinqOuterVlan="1", ports=24, ifPattern="eth1/"):
+	# """
+	# REMOVE
+	# Will be handled in views/access_nodes.py
+	# """    
+	# def add_access_node(self, name, mgmtIP, model, accessNodeId, uplinkInterface="ae1",
+	# 	qinqOuterVlan="1", ports=24, ifPattern="eth1/"):
 
-		#By default QinQ-Outer-VLAN is equal to the access Node (even if they say the opposite)
-		access_node = AccessNode(name=name, deviceType="AccessNode", mgmtIP=mgmtIP, model=model,
-			location=self, uplinkInterface=uplinkInterface, accessNodeId=accessNodeId,
-			qinqOuterVlan=accessNodeId)
-		access_node.save()
+	# 	#By default QinQ-Outer-VLAN is equal to the access Node (even if they say the opposite)
+	# 	access_node = AccessNode(name=name, deviceType="AccessNode", mgmtIP=mgmtIP, model=model,
+	# 		location=self, uplinkInterface=uplinkInterface, accessNodeId=accessNodeId,
+	# 		qinqOuterVlan=accessNodeId)
+	# 	access_node.save()
 
-		for i in ports:
-			port_name = ifPattern + "i"
-			access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
-			access_port.save()
-		return
+	# 	for i in ports:
+	# 		port_name = ifPattern + "i"
+	# 		access_port = AccessPort(port=port_name, used=False, accessNode=access_node)
+	# 		access_port.save()
+	# 	return
 
-	"""
-	REMOVE
-	Will be handled in views/access_nodes.py
-	"""
-	def delete_access_node(self, accessNodeId):
-		an = AccessNode.objects.get(location=self,accessNodeId=accessNodeId)
-		an.delete()
-		return 
+	# """
+	# REMOVE
+	# Will be handled in views/access_nodes.py
+	# """
+	# def delete_access_node(self, accessNodeId):
+	# 	an = AccessNode.objects.get(location=self,accessNodeId=accessNodeId)
+	# 	an.delete()
+	# 	return 
 
-	"""
-	REMOVE
-	Will be handled in views/router_nodes.py
-	"""  
-	def add_router_node(self, name, mgmtIP, model, accessNodeId, privateWanIp):
-		router_node = RouterNode(name=name, deviceType="RouterNode", mgmtIP=mgmtIP, location=self,
-			model=model, privateWanIp=privateWanIp)
-		router_node.save()
-		return
+	# """
+	# REMOVE
+	# Will be handled in views/router_nodes.py
+	# """  
+	# def add_router_node(self, name, mgmtIP, model, accessNodeId, privateWanIp):
+	# 	router_node = RouterNode(name=name, deviceType="RouterNode", mgmtIP=mgmtIP, location=self,
+	# 		model=model, privateWanIp=privateWanIp)
+	# 	router_node.save()
+	# 	return
 
-	"""
-	REMOVE
-	Will be handled in views/router_nodes.py
-	""" 
-	def delete_router_node(self):
-		rn = self.get_router_node()
-		rn.delete()
-		return
-        
+	# """
+	# REMOVE
+	# Will be handled in views/router_nodes.py
+	# """ 
+	# def delete_router_node(self):
+	# 	rn = self.get_router_node()
+	# 	rn.delete()
+	# 	return
+
 
 class Device(models.Model):
 	name = models.CharField(max_length=50)
@@ -81,28 +81,32 @@ class AccessNode(Device): #SCO
 	qinqOuterVlan = models.CharField(max_length=50)
 
 
-	def get_access_ports_from_node(self):
+	def get_access_ports(self):
 		access_ports = AccessPort.objects.filter(accessNode=self)
 		return access_ports
 
-	def get_free_access_port_from_node(self):
+	def get_free_access_ports(self):
 		access_ports = AccessPort.objects.filter(accessNode=self, used=False)
 		access_port = access_ports[0]
 		return access_port
 
-	def assign_free_access_port_from_node(self):
-		access_ports = AccessPort.objects.filter(accessNode=self, used=False)
-		access_port = access_ports[0]
-		access_port.used = True
-		access_port.save()
-		return access_port
+    # """
+    # REMOVE
+    # Will be handled in views/.py
+    # """ 
+	# def assign_free_access_port_from_node(self):
+	# 	access_ports = AccessPort.objects.filter(accessNode=self, used=False)
+	# 	access_port = access_ports[0]
+	# 	access_port.used = True
+	# 	access_port.save()
+	# 	return access_port
 
 
 	def __str__(self):
 		return self.name
 
 class RouterNode(Device): #MX
-	privateWanIp = models.GenericIPAddressField(null=True, blank=True)
+	privateWanIp = models.GenericIPAddressField(null=True, blank=True) #IP for WAN Virtual CPE
 
     def get_free_logical_units(self):
         lus_free = LogicalUnit.objects.exclude(routerNodes=self)
@@ -112,31 +116,47 @@ class RouterNode(Device): #MX
         lus_Used = Location.objects.filter(routerNodes=self)
         return lus_Used
 
-    def assign_free_logical_unit(self):
-        lus_free = Location.objects.exclude(routerNodes=self) 
-        lu = lus_free[0]
-        lu.routerNodes.add(self)       
-        lu.save()
-        return lu
+    # """
+    # REMOVE
+    # Will be handled in views/.py
+    # """ 
+    # def assign_free_logical_unit(self):
+    #     lus_free = Location.objects.exclude(routerNodes=self) 
+    #     lu = lus_free[0]
+    #     lu.routerNodes.add(self)       
+    #     lu.save()
+    #     return lu
+    
+    # # """
+    # # REMOVE
+    # # Will be handled in views/.py
+    # # """ 
+    # def assign_free_logical_unit(self):
+    #     lus_free = Location.objects.exclude(routerNodes=self) 
+    #     lu = lus_free[0]
+    #     lu.routerNodes.add(self)       
+    #     lu.save()
+    #     return lu
 
-    def assign_free_logical_unit(self):
-        lus_free = Location.objects.exclude(routerNodes=self) 
-        lu = lus_free[0]
-        lu.routerNodes.add(self)       
-        lu.save()
-        return lu
+    # """
+    # REMOVE
+    # Will be handled in views/.py
+    # """ 
+    # def remove_logical_unit(self, logical_unit_id):
+    #     lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id, routerNodes=self)
+    #     lu.routerNodes.remove(self)
+    #     lu.save()
+    #     return lu
 
-    def remove_logical_unit(self, logical_unit_id):
-        lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id, routerNodes=self)
-        lu.routerNodes.remove(self)
-        lu.save()
-        return lu
-
-    def assign_logical_unit(self, logical_unit_id):
-        lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id)
-        lu.routerNodes.add(self)
-        lu.save()
-        return lu
+    # """
+    # REMOVE
+    # Will be handled in views/.py
+    # """ 
+    # def assign_logical_unit(self, logical_unit_id):
+    #     lu = LogicalUnit.objects.get(logical_unit_id=logical_unit_id)
+    #     lu.routerNodes.add(self)
+    #     lu.save()
+    #     return lu
 
 	
 	def __str__(self):
@@ -234,9 +254,7 @@ class VlanTag(models.Model):
 		return
 
 
-"""
-REVISAR
-"""
+
 class VirtualVmwPod(Device):
 	transportZoneName = models.CharField(max_length=50, blank=True) #TODO NSX Only
 	clusterName = models.CharField(max_length=50, blank=True)
@@ -249,20 +267,23 @@ class VirtualVmwPod(Device):
 	def __str__(self):
 		return self.clusterName
 
-"""
-REVISAR
-"""
+
 class NsxEdge(Device):
 	edgeName = models.CharField(max_length=50)
 	ipWan = models.CharField(max_length=50)
+    portgroup = models.ForeignKey(Portgroup, on_delete=models.CASCADE)
+
+    def delete(self):
+        pg = self.portgroup
+        pg.used = False
+        pg.save()
+        super(NsxEdge, self).delete()
 
 
 	def __str__(self):
 		return self.edgeName
 
-"""
-REVISAR
-"""
+
 class Portgroup(models.Model):
 	vlan_tag = models.CharField(max_length=50)
 	name = models.CharField(max_length=50)
@@ -273,16 +294,34 @@ class Portgroup(models.Model):
 	def __str__(self):
 		return self.name
 
+
 	def get_free_pg_from_virtualVmwPod(virtualVmwPod):
 		portgroupsFree = Portgroup.objects.filter(used=False, virtualVmwPod=virtualVmwPod) 
 		return portgroupsFree[0]
 
-	def assign_free_pg_from_virtualVmwPod(virtualVmwPod):
-		portgroupsFree = Portgroup.objects.filter(used=False, virtualVmwPod=virtualVmwPod)
-		port_free = portgroupsFree[0] 
-		port_free.used = True
-		port_free.save()
-		return port_free
+    # """
+    # REMOVE
+    # Will be handled in views/.py
+    # """ 
+	# def assign_free_pg_from_virtualVmwPod(virtualVmwPod):
+		# portgroupsFree = Portgroup.objects.filter(used=False, virtualVmwPod=virtualVmwPod)
+		# port_free = portgroupsFree[0] 
+		# port_free.used = True
+		# port_free.save()
+		# return port_free
+
+    # """
+    # REMOVE
+    # Will be handled in views/.py
+    # """ 
+    # def assign_pg_from_virtualVmwPod(virtualVmwPod, dvportgroup_id):
+    #     pg = Portgroup.objects.filter(used=False, virtualVmwPod=virtualVmwPod, 
+    #         dvportgroup_id=dvportgroup_id)
+    #     #TODO Check if pg is empty
+    #     port_free = pg[0] 
+    #     port_free.used = True
+    #     port_free.save()
+    #     return port_free
 
 	def unassign(self):
 		self.used = False
