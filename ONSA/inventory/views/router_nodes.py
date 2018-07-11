@@ -21,6 +21,7 @@ class RouterNodesView(View):
 
 		location = Location.objects.get(pk=location_id)
 
+		#todo check location
 		router_node = RouterNode.objects.create(**data, location=location)
 		router_node.save()
 		router_node = RouterNode.objects.filter(name=data['name'])

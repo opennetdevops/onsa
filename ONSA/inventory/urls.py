@@ -24,6 +24,6 @@ urlpatterns = [
     path('/api/accessports/<int:accessport_id>', require_http_methods(["PUT","DELETE"])(access_ports.AccessPortsView.as_view())),
     path('/api/accessports/<int:accessport_id>/vlantags', require_http_methods(["GET","POST"])(vlan_tags.VlanTagsView.as_view())),
     path('/api/vlantags/<int:vlantag_id>', require_http_methods(["PUT","DELETE"])(vlan_tags.VlanTagsView.as_view())),
-    path('/api/routernodes/<int:routernode_id>/logicalunits', require_http_methods(["GET","POST"])(logical_units.LogicalUnitsView.as_view())),
-    path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","DELETE"])(logical_units.LogicalUnitsView.as_view()))    
+    path('/api/routernodes/<int:routernode_id>/logicalunits', require_http_methods(["GET"])(logical_units.LogicalUnitsView.as_view())),
+    path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","POST","DELETE"])(logical_units.LogicalUnitsView.as_view()))
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

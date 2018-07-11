@@ -8,20 +8,29 @@ import json
 
 class LogicalUnitsView(View):
 	def get(self, request, routernode_id):
-		router_node = RouterNode.objects.get(pk=accessnode_id)
-		access_ports = router_node.get_access_ports()
+		router_node = RouterNode.objects.get(pk=routernode_id)
+		lus = LogicalUnit.objects.all()
+		print(lus)
+		data = serializers.serialize('json', lus)
+		print(data)
+
+		all_lus = json.loads(data)
+		updated_lus = []
+		print("some")
+		print(all_lus)		
+		# for my_lu in all_lus:
+
+		#     my_lu['fields']['used'] = last_type
+		#     updated_lus.append(my_lu)
+
 		
-		data = serializers.serialize('json', access_ports)
 		return HttpResponse(data, content_type='application/json')
 
-	def post(self, request, routernode_id):
+	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-		router_node = RouterNode.objects.get(pk=accessnode_id)
-
-		logical_unit = LogicalUnit.objects.create(**data, routerNodes=router_node)
+		logical_unit = LogicalUnit.objects.create(**data)
 		logical_unit.save()
-		logical_unit = LogicalUnit.objects.filter(logical_unit_id=data['logical_unit_id'])
 		
 		data = serializers.serialize('json', logical_unit)
 		return HttpResponse(data, content_type='application/json')
