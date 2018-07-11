@@ -1,0 +1,52 @@
+{	
+	{% if staticRoutes is defined %}
+	"staticRoutes": {
+		{% if staticRoutes.route is defined %}
+		"route":
+		{	
+				{% if staticRoutes.route.description is defined %}
+				"description": "{{ staticRoutes.route.description }}",
+				{% endif %}
+				{% if staticRoutes.route.vnic is defined %}
+				"vnic": "{{ staticRoutes.route.vnic }}",
+				{% endif %}
+				{% if staticRoutes.route.network is defined %}
+				"network": "{{ staticRoutes.route.network }}",
+				{% endif %}
+				{% if staticRoutes.route.nextHop is defined %}
+				"nextHop": "{{ staticRoutes.route.nextHop }}",
+				{% endif %}
+				{% if staticRoutes.route.mtu is defined %}
+				"mtu": "{{ staticRoutes.route.mtu }}",
+				{% endif %}
+				{% if staticRoutes.route.type is defined %}
+				"type": "{{ staticRoutes.route.type }}"
+				{% endif %}
+
+		}
+		{% endif %}
+		},{% endif %}
+
+	{% if defaultRoute is defined %}
+
+	"defaultRoute": 
+	{
+		{% if defaultRoute.description is defined %}
+		"description": "{{ defaultRoute.description }}",
+		{% endif %}
+
+		{% if defaultRoute.vnic is defined %}
+		"vnic": "{{ defaultRoute.vnic }}",
+		{% endif %}
+
+		{% if defaultRoute.gatewayAddress is defined %}
+		"gatewayAddress": "{{ defaultRoute.gatewayAddress }}",
+		{% endif %}
+
+		{% if defaultRoute.mtu is defined %}
+		"mtu": "{{ defaultRoute.mtu }}"
+	}
+	{% endif %}
+
+	{% endif %}
+}
