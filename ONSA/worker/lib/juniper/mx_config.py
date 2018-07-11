@@ -20,25 +20,25 @@ def render(tpl_path, context):
 
 class NsxHandler(object):
 	def __init__(self):
-		self.url = "./templates/nsxpublicirs/"
+		self.url = "../templates/mx104/irs"
 
 	def __set_interfaces(self, mx_parameters):
 
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "set_interfaces.conf")
+		template_rac_file = os.path.join(dir, self.url + "/set/set_interfaces.conf")
 
 		jinja_vars = {
-					  'vxrail_ae_interface' : mx_parameters['vxrail_ae_interface'],
-					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
-					  'vxrail_logical_unit' : mx_parameters['vxrail_logical_unit'],
-					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
-					  'description' : mx_parameters['service_description'],
-					  'qinqOuterVlan' : mx_parameters['qinqOuterVlan'],
-					  'vxrail_vlan' : mx_parameters['vxrail_vlan'],
-					  'sco_inner_vlan' : mx_parameters['sco_inner_vlan'],
-					  'public_network_ip' : mx_parameters['public_network_ip']
+					  'vxrail_ae_interface' : mx_parameters['interfaces']['vxrail_ae_interface'],
+					  'sco_ae_interface' : mx_parameters['interfaces']['sco_ae_interface'],
+					  'vxrail_logical_unit' : mx_parameters['interfaces']['vxrail_logical_unit'],
+					  'sco_logical_unit' : mx_parameters['interfaces']['sco_logical_unit'],
+					  'description' : mx_parameters['interfaces']['service_description'],
+					  'qinqOuterVlan' : mx_parameters['interfaces']['qinqOuterVlan'],
+					  'vxrail_vlan' : mx_parameters['interfaces']['vxrail_vlan'],
+					  'qinqInnerVlan' : mx_parameters['interfaces']['qinqInnerVlan'],
+					  'public_network_ip' : mx_parameters['interfaces']['public_network_ip']
 					  }
 
 		pprint(jinja_vars)
@@ -66,13 +66,13 @@ class NsxHandler(object):
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "delete_interfaces.conf")
+		template_rac_file = os.path.join(dir, self.url + "/delete/delete_interfaces.conf")
 
-		jinja_vars = {'vxrail_ae_interface' : mx_parameters['vxrail_ae_interface'],
-					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
-					  'vxrail_log_unit' : mx_parameters['vxrail_log_unit'],
-					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
-					  'vrf_name' : mx_parameters['vrf_name']}
+		jinja_vars = {'vxrail_ae_interface' : mx_parameters['interfaces']['vxrail_ae_interface'],
+					  'sco_ae_interface' : mx_parameters['interfaces']['sco_ae_interface'],
+					  'vxrail_logical_unit' : mx_parameters['interfaces']['vxrail_logical_unit'],
+					  'sco_logical_unit' : mx_parameters['interfaces']['sco_logical_unit'],
+					  'vrf_name' : mx_parameters['interfaces']['vrf_name']}
 		try:
 			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
 			dev.cu.pdiff()
@@ -97,16 +97,16 @@ class NsxHandler(object):
 	def __set_bridge_domains(self, dev, mx_parameters):
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "set_bridge_domains.conf")
+		template_rac_file = os.path.join(dir, self.url + "/set/set_bridge_domains.conf")
 
 		jinja_vars = 	{
-							'id' : mx_parameters['client_id'], 
-							'description' : mx_parameters['service_description'],
-							'vxrail_ae_interface' : mx_parameters['vxrail_ae_interface'],
-							'sco_ae_interface' : mx_parameters['sco_ae_interface'],
-							'vxrail_log_unit' : mx_parameters['vxrail_logical_unit'],
-							'sco_log_unit' : mx_parameters['sco_logical_unit'],
-							'vlan_id' : mx_parameters['vlan_id']
+							'bridge_domain_id' : mx_parameters['bridge_domains']['bridge_domain_id'], 
+							'description' : mx_parameters['bridge_domains']['service_description'],
+							'vxrail_ae_interface' : mx_parameters['interfaces']['vxrail_ae_interface'],
+							'sco_ae_interface' : mx_parameters['interfaces']['sco_ae_interface'],
+							'vxrail_logical_unit' : mx_parameters['interfaces']['vxrail_logical_unit'],
+							'sco_logical_unit' : mx_parameters['interfaces']['sco_logical_unit'],
+							'vlan_id' : mx_parameters['bridge_domains']['vlan_id']
 						}
 
 		try:
@@ -133,10 +133,10 @@ class NsxHandler(object):
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "set_static_route.conf")
+		template_rac_file = os.path.join(dir, self.url + "/set/set_static_route.conf")
 
-		jinja_vars = {'public_prefix' : mx_parameters['public_prefix'],
-					  'nexthop_vcpe': mx_parameters['nexthop_vcpe']}
+		jinja_vars = {'public_cidr' : mx_parameters['routes']['public_cidr'],
+					  'nexthop': mx_parameters['routes']['nexthop']}
 		try:
 			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
 			dev.cu.pdiff()
@@ -160,7 +160,7 @@ class NsxHandler(object):
 	def __delete_bridge_domains(self, dev, mx_parameters):
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "delete_bridge_domains.conf")
+		template_rac_file = os.path.join(dir, self.url + "/delete/delete_bridge_domains.conf")
 
 		jinja_vars = {	'id' : mx_parameters['client_id'] }
 
@@ -188,9 +188,9 @@ class NsxHandler(object):
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "delete_static_route.conf")
+		template_rac_file = os.path.join(dir, self.url + "/delete/delete_static_route.conf")
 
-		jinja_vars = {'public_prefix' : mx_parameters['public_prefix']}
+		jinja_vars = {'bridge_domain_id' : mx_parameters['bridge_domains']['bridge_domain_id']}
 
 		try:
 			logging.info("command: " + render(template_rac_file, jinja_vars))
@@ -216,7 +216,7 @@ class NsxHandler(object):
 		logging.basicConfig(level=logging.INFO)
 
 		# 
-		dev = Device(host=mx_parameters["mx_ip"], user="lab", password="lab123", port=443)
+		dev = Device(host=mx_parameters["mgmt_ip"], user="lab", password="lab123", port=443)
 
 		try:
 			logging.info("Openning NETCONF connection to device")
@@ -286,13 +286,13 @@ class NsxHandler(object):
 
 class CpelessHandler(object):
 	def __init__(self, service):
-		self.url = "./templates/cpeless/"+service
+		self.url = "../templates/mx104/"+service
 
 	def __set_interfaces(self, dev, mx_parameters):
 		logging.basicConfig(level=logging.INFO)
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "set_interfaces.conf")
+		template_rac_file = os.path.join(dir, self.url + "/set/set_interfaces.conf")
 
 		jinja_vars = {
 					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],

@@ -1,10 +1,5 @@
 from django.contrib import admin
 from pprint import pprint
-from .lib.utils.nsx.edge import *
-from .lib.utils.nsx.edge_routing import *
-from .lib.utils.vcenter import portgroups as vc_pg
-from .lib.utils.juniper.mx_config import *
-from .lib.utils.common.rest import *
 from .models import *
 from .forms import *
 from ipaddress import *

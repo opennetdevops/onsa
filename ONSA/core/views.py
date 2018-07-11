@@ -10,13 +10,13 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import *
 
-from .lib.utils.nsx.edge import *
-from .lib.utils.nsx.edge_routing import *
-from .lib.utils.nsx.logicalswitch import *
-from .lib.utils.nsx.transportzone import *
-from .lib.utils.vcenter.datacenters import *
-from .lib.utils.vcenter import portgroups as vc_pg
-from .lib.utils.juniper.mx_config import *
+# from .lib.utils.nsx.edge import *
+# from .lib.utils.nsx.edge_routing import *
+# from .lib.utils.nsx.logicalswitch import *
+# from .lib.utils.nsx.transportzone import *
+# from .lib.utils.vcenter.datacenters import *
+# from .lib.utils.vcenter import portgroups as vc_pg
+# from .lib.utils.juniper.mx_config import *
 
 from ipaddress import *
 

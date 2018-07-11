@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin', admin.site.urls),
     path('core', include('core.urls')),
     path('inventory', include('inventory.urls')),
+    path('worker', include('worker.urls')),
     path('api/login', obtain_jwt_token),
 ]
 
