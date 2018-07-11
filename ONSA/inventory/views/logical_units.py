@@ -9,9 +9,9 @@ import json
 class LogicalUnitsView(View):
 	def get(self, request, routernode_id):
 		router_node = RouterNode.objects.get(pk=accessnode_id)
-		router_nodes = router_node.get_access_ports_from_node()
+		access_ports = router_node.get_access_ports()
 		
-		data = serializers.serialize('json', router_nodes)
+		data = serializers.serialize('json', access_ports)
 		return HttpResponse(data, content_type='application/json')
 
 	def post(self, request, routernode_id):
