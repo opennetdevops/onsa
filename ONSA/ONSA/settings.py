@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core.apps.OnsaConfig',
     'inventory.apps.InventoryConfig',
+    'worker.apps.WorkerConfig',
     'django_select2',
 ]
 

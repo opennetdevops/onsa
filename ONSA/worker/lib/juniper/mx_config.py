@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import *
@@ -18,367 +16,278 @@ def render(tpl_path, context):
 		loader=jinja2.FileSystemLoader(path or './')
 	).get_template(filename).render(context)
 
-class NsxHandler(object):
+class Handler(object):
+
+	@staticmethod
+	def factory(service_type):
+		if service_type == "vcpe": return VcpeHandler()
+		elif service_type == "cpeless": return CpelessHandler()
+
+	def _set_interfaces(self, parameters, dev=None):
+		logging.basicConfig(level=logging.INFO)
+
+		dir = os.path.dirname(__file__)
+		template_rac_file = os.path.join(dir, self.path+"set/set_interfaces.conf")
+
+		print(render(template_rac_file,parameters))
+
+		# try:
+		# 	dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
+		# 	dev.cu.pdiff()
+
+		# except ValueError as err:
+		# 	logging.error("Error: %s", err.message)
+
+		# except Exception as err:
+		# 	logging.error("Unable to load configuration changes: %s", err)
+		# 	logging.info("Unlocking the configuration")
+		# 	try:
+		# 		dev.cu.unlock()
+		# 	except UnlockError:
+		# 			logging.error("Error: Unable to unlock configuration")
+		# 	dev.close()
+		# 	return
+
+	def _delete_interfaces(self, parameters, dev=None):
+		logging.basicConfig(level=logging.INFO)
+
+		dir = os.path.dirname(__file__)
+		template_rac_file = os.path.join(dir, self.path+"delete/delete_interfaces.conf")
+
+		print(render(template_rac_file, parameters))
+
+		# try:
+		# 	dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
+		# 	dev.cu.pdiff()
+
+		# except ValueError as err:
+		# 	logging.error("Error: %s", err.message)
+
+		# except Exception as err:
+		# 	if err.rsp.find('.//ok') is None:
+		# 		rpc_msg = err.rsp.findtext('.//error-message')
+		# 		logging.error("Unable to load configuration changes: %s", rpc_msg)
+
+		# 	logging.info("Unlocking the configuration")
+		# 	try:
+		# 			dev.cu.unlock()
+		# 	except UnlockError:
+		# 			logging.error("Error: Unable to unlock configuration")
+		# 	dev.close()
+		# 	return
+
+	def _set_static_route(self, parameters, dev=None):
+		logging.basicConfig(level=logging.INFO)
+
+		dir = os.path.dirname(__file__)
+		template_rac_file = os.path.join(dir, self.path+"set/set_static_route.conf")
+
+		print(render(template_rac_file, parameters))
+
+		# try:
+		# 	dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
+		# 	dev.cu.pdiff()
+
+		# except ValueError as err:
+		# 	logging.error("Error: %s", err.message)
+
+		# except Exception as err:
+		# 	if err.rsp.find('.//ok') is None:
+		# 		rpc_msg = err.rsp.findtext('.//error-message')
+		# 		logging.error("Unable to load configuration changes: %s", rpc_msg)
+
+		# 	logging.info("Unlocking the configuration")
+		# 	try:
+		# 			dev.cu.unlock()
+		# 	except UnlockError:
+		# 			logging.error("Error: Unable to unlock configuration")
+		# 	dev.close()
+		# 	return
+
+	def _delete_static_route(self, parameters,  dev=None):
+		logging.basicConfig(level=logging.INFO)
+
+		dir = os.path.dirname(__file__)
+		template_rac_file = os.path.join(dir, self.path + "/delete/delete_static_route.conf")
+
+		print(render(template_rac_file, parameters))
+
+		# try:
+		# 	logging.info("command: " + render(template_rac_file, jinja_vars))
+		# 	dev.cu.load(template_path=template_rac_file, replace=True, template_vars=parameters, format="set")
+		# 	dev.cu.pdiff()
+
+		# except ValueError as err:
+		# 	logging.error("Error: %s", err.message)
+
+		# except Exception as err:
+		# 	logging.error(err)
+
+		# 	logging.info("Unlocking the configuration")
+		# 	try:
+		# 		dev.cu.unlock()
+		# 	except UnlockError:
+		# 		logging.error("Error: Unable to unlock configuration")
+		# 	dev.close()
+		# 	return
+
+class VcpeHandler(Handler):
 	def __init__(self):
-		self.url = "../templates/mx104/irs"
+		self.path = "../../templates/mx104/vcpe/"
 
-	def __set_interfaces(self, mx_parameters):
-
-		logging.basicConfig(level=logging.INFO)
+	def _set_bridge_domains(self, parameters, dev=None):
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "/set/set_interfaces.conf")
+		template_rac_file = os.path.join(dir, self.path+"set/set_bridge_domains.conf")
 
-		jinja_vars = {
-					  'vxrail_ae_interface' : mx_parameters['interfaces']['vxrail_ae_interface'],
-					  'sco_ae_interface' : mx_parameters['interfaces']['sco_ae_interface'],
-					  'vxrail_logical_unit' : mx_parameters['interfaces']['vxrail_logical_unit'],
-					  'sco_logical_unit' : mx_parameters['interfaces']['sco_logical_unit'],
-					  'description' : mx_parameters['interfaces']['service_description'],
-					  'qinqOuterVlan' : mx_parameters['interfaces']['qinqOuterVlan'],
-					  'vxrail_vlan' : mx_parameters['interfaces']['vxrail_vlan'],
-					  'qinqInnerVlan' : mx_parameters['interfaces']['qinqInnerVlan'],
-					  'public_network_ip' : mx_parameters['interfaces']['public_network_ip']
-					  }
+		print(render(template_rac_file, parameters))
 
-		pprint(jinja_vars)
+		# try:
+		# 	dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
+		# 	dev.cu.pdiff()
 
-		try:
-			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
+		# except ValueError as err:
+		# 	logging.error("Error: %s", err.message)
 
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
+		# except Exception as err:
+		# 	if err.rsp.find('.//ok') is None:
+		# 		rpc_msg = err.rsp.findtext('.//error-message')
+		# 		logging.error("Unable to load configuration changes: %s", rpc_msg)
 
-		except Exception as err:
-			logging.error("Unable to load configuration changes: %s", err)
-			logging.info("Unlocking the configuration")
-			try:
-				dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
+		# 	logging.info("Unlocking the configuration")
+		# 	try:
+		# 			dev.cu.unlock()
+		# 	except UnlockError:
+		# 			logging.error("Error: Unable to unlock configuration")
+		# 	dev.close()
+		# 	return
 
-
-	def __delete_interfaces(self, dev, mx_parameters):
-
-		logging.basicConfig(level=logging.INFO)
+	def _delete_bridge_domains(self, parameters, dev=None):
 
 		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "/delete/delete_interfaces.conf")
+		template_rac_file = os.path.join(dir, self.path+"delete/delete_bridge_domains.conf")
 
-		jinja_vars = {'vxrail_ae_interface' : mx_parameters['interfaces']['vxrail_ae_interface'],
-					  'sco_ae_interface' : mx_parameters['interfaces']['sco_ae_interface'],
-					  'vxrail_logical_unit' : mx_parameters['interfaces']['vxrail_logical_unit'],
-					  'sco_logical_unit' : mx_parameters['interfaces']['sco_logical_unit'],
-					  'vrf_name' : mx_parameters['interfaces']['vrf_name']}
-		try:
-			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
+		print(render(template_rac_file, parameters))
 
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
+		# try:
+		# 	dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
+		# 	dev.cu.pdiff()
 
-		except Exception as err:
-			if err.rsp.find('.//ok') is None:
-				rpc_msg = err.rsp.findtext('.//error-message')
-				logging.error("Unable to load configuration changes: %s", rpc_msg)
+		# except ValueError as err:
+		# 	logging.error("Error: %s", err.message)
 
-			logging.info("Unlocking the configuration")
-			try:
-					dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
+		# except Exception as err:
+		# 	if err.rsp.find('.//ok') is None:
+		# 		rpc_msg = err.rsp.findtext('.//error-message')
+		# 		logging.error("Unable to load configuration changes: %s", rpc_msg)
 
+		# 	logging.info("Unlocking the configuration")
+		# 	try:
+		# 			dev.cu.unlock()
+		# 	except UnlockError:
+		# 			logging.error("Error: Unable to unlock configuration")
+		# 	dev.close()
+		# 	return
 
-	def __set_bridge_domains(self, dev, mx_parameters):
+	def configure_mx(self, parameters, method):
 
-		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "/set/set_bridge_domains.conf")
+		# logging.basicConfig(level=logging.INFO)
 
-		jinja_vars = 	{
-							'bridge_domain_id' : mx_parameters['bridge_domains']['bridge_domain_id'], 
-							'description' : mx_parameters['bridge_domains']['service_description'],
-							'vxrail_ae_interface' : mx_parameters['interfaces']['vxrail_ae_interface'],
-							'sco_ae_interface' : mx_parameters['interfaces']['sco_ae_interface'],
-							'vxrail_logical_unit' : mx_parameters['interfaces']['vxrail_logical_unit'],
-							'sco_logical_unit' : mx_parameters['interfaces']['sco_logical_unit'],
-							'vlan_id' : mx_parameters['bridge_domains']['vlan_id']
-						}
+		# # 
+		# dev = Device(host=mx_parameters["mgmt_ip"], user="lab", password="lab123", port=443)
 
-		try:
-			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
+		# try:
+		# 	logging.info("Openning NETCONF connection to device")
+		# 	dev.open()
+		# except Exception as err:
+		# 	logging.error("Cannot connect to device:%s", err)
+		# 	return
 
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
+		# dev.bind(cu=Config)
 
-		except Exception as err:
-			if err.rsp.find('.//ok') is None:
-				rpc_msg = err.rsp.findtext('.//error-message')
-				logging.error("Unable to load configuration changes: %s", rpc_msg)
-
-			logging.info("Unlocking the configuration")
-			try:
-					dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
-
-	def __set_static_route(self, dev, mx_parameters):
-		logging.basicConfig(level=logging.INFO)
-
-		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "/set/set_static_route.conf")
-
-		jinja_vars = {'public_cidr' : mx_parameters['routes']['public_cidr'],
-					  'nexthop': mx_parameters['routes']['nexthop']}
-		try:
-			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
-
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
-
-		except Exception as err:
-			if err.rsp.find('.//ok') is None:
-				rpc_msg = err.rsp.findtext('.//error-message')
-				logging.error("Unable to load configuration changes: %s", rpc_msg)
-
-			logging.info("Unlocking the configuration")
-			try:
-					dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
-
-	def __delete_bridge_domains(self, dev, mx_parameters):
-
-		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "/delete/delete_bridge_domains.conf")
-
-		jinja_vars = {	'id' : mx_parameters['client_id'] }
-
-		try:
-			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
-
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
-
-		except Exception as err:
-			if err.rsp.find('.//ok') is None:
-				rpc_msg = err.rsp.findtext('.//error-message')
-				logging.error("Unable to load configuration changes: %s", rpc_msg)
-
-			logging.info("Unlocking the configuration")
-			try:
-					dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
-
-	def __delete_static_route(self, dev, mx_parameters):
-		logging.basicConfig(level=logging.INFO)
-
-		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "/delete/delete_static_route.conf")
-
-		jinja_vars = {'bridge_domain_id' : mx_parameters['bridge_domains']['bridge_domain_id']}
-
-		try:
-			logging.info("command: " + render(template_rac_file, jinja_vars))
-			dev.cu.load(template_path=template_rac_file, replace=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
-
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
-
-		except Exception as err:
-			logging.error(err)
-
-			logging.info("Unlocking the configuration")
-			try:
-				dev.cu.unlock()
-			except UnlockError:
-				logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
-
-	def configure_mx(self, mx_parameters, method):
-
-		logging.basicConfig(level=logging.INFO)
-
-		# 
-		dev = Device(host=mx_parameters["mgmt_ip"], user="lab", password="lab123", port=443)
-
-		try:
-			logging.info("Openning NETCONF connection to device")
-			dev.open()
-		except Exception as err:
-			logging.error("Cannot connect to device:%s", err)
-			return
-
-		dev.bind(cu=Config)
-
-		# Lock the configuration, load configuration changes, and commit
-		logging.info("Locking the configuration")
-		try:
-			dev.cu.lock()
-		except LockError:
-			logging.error("Error: Unable to lock configuration")
-			dev.close()
-			return
+		# # Lock the configuration, load configuration changes, and commit
+		# logging.info("Locking the configuration")
+		# try:
+		# 	dev.cu.lock()
+		# except LockError:
+		# 	logging.error("Error: Unable to lock configuration")
+		# 	dev.close()
+		# 	return
 
 		if method == "set":
-			logging.info("Setting bridge domains")
-			__set_bridge_domains(dev, mx_parameters)
+			# logging.info("Setting bridge domains")
+			VcpeHandler._set_bridge_domains(self, parameters['bridge_domains'])
 
-			logging.info("Setting interfaces")
-			__set_interfaces(dev, mx_parameters)
+			# logging.info("Setting interfaces")
+			VcpeHandler._set_interfaces(self, parameters['interfaces'])
 
-			logging.info("Setting static route")
-			__set_static_route(dev, mx_parameters)
+			# logging.info("Setting static route")
+			VcpeHandler._set_static_route(self, parameters['routes'])
 
 		elif method == "delete":
 			# logging.info("Deleting bridge domains")
-			__delete_bridge_domains(dev, mx_parameters)
+			VcpeHandler._delete_bridge_domains(self, parameters['bridge_domains'])
 
-			logging.info("Deleting interfaces")
-			__delete_interfaces(dev, mx_parameters)
+			# logging.info("Deleting interfaces")
+			VcpeHandler._delete_interfaces(self, parameters['interfaces'])
 
-			logging.info("Deleting static route")
-			__delete_static_route(dev, mx_parameters)
+			# logging.info("Deleting static route")
+			VcpeHandler._delete_static_route(self, parameters['routes'])
 
-		logging.info("Committing the configuration")
-		try:
-			dev.timeout=120
-			commit_result = dev.cu.commit()
-			# Show that the commit worked True means it worked, false means it failed
-			logging.debug( "Commit result: %s",commit_result)
+		# logging.info("Committing the configuration")
+		# try:
+		# 	dev.timeout=120
+		# 	commit_result = dev.cu.commit()
+		# 	# Show that the commit worked True means it worked, false means it failed
+		# 	logging.debug( "Commit result: %s",commit_result)
 
-		except (CommitError, RpcTimeoutError) as e:
-			logging.error( "Error: Unable to commit configuration")
-			logging.error( "Unlocking the configuration")
-			logging.error(e)
-			try:
-				dev.cu.unlock()
-			except UnlockError:
-				logging.error( "Error: Unable to unlock configuration")
-				dev.close()
-				return
+		# except (CommitError, RpcTimeoutError) as e:
+		# 	logging.error( "Error: Unable to commit configuration")
+		# 	logging.error( "Unlocking the configuration")
+		# 	logging.error(e)
+		# 	try:
+		# 		dev.cu.unlock()
+		# 	except UnlockError:
+		# 		logging.error( "Error: Unable to unlock configuration")
+		# 		dev.close()
+		# 		return
 
-		logging.info( "Unlocking the configuration")
-		try:
-			 dev.cu.unlock()
-		except UnlockError:
-			 logging.error( "Error: Unable to unlock configuration")
+		# logging.info( "Unlocking the configuration")
+		# try:
+		# 	 dev.cu.unlock()
+		# except UnlockError:
+		# 	 logging.error( "Error: Unable to unlock configuration")
 
-		# End the NETCONF session and close the connection
-		logging.info("Closing NETCONF session")
-		dev.close()
+		# # End the NETCONF session and close the connection
+		# logging.info("Closing NETCONF session")
+		# dev.close()
 
 class CpelessHandler(object):
 	def __init__(self, service):
-		self.url = "../templates/mx104/"+service
-
-	def __set_interfaces(self, dev, mx_parameters):
-		logging.basicConfig(level=logging.INFO)
-
-		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "/set/set_interfaces.conf")
-
-		jinja_vars = {
-					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
-					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
-					  'service_description' : mx_parameters['service_description'],
-					  'qinqOuterVlan' : mx_parameters['qinqOuterVlan'],
-					  'sco_inner_vlan' : mx_parameters['sco_inner_vlan'],
-					  'public_network_ip' : mx_parameters['public_network_ip'],
-					  'vrf_name' : mx_parameters["vrf_name"]
-					  }
-
-		pprint(jinja_vars)
-
-		print(render(template_rac_file, jinja_vars))
-
-		try:
-			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
-
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
-
-		except Exception as err:
-			logging.error("Unable to load configuration changes: %s", err)
-			logging.info("Unlocking the configuration")
-			try:
-				dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
-
-
-	def __delete_interfaces(self, dev, mx_parameters):
-		logging.basicConfig(level=logging.INFO)
-
-		dir = os.path.dirname(__file__)
-		template_rac_file = os.path.join(dir, self.url + "delete_interfaces.conf")
-
-		jinja_vars = {
-					  'sco_ae_interface' : mx_parameters['sco_ae_interface'],
-					  'sco_logical_unit' : mx_parameters['sco_logical_unit'],
-					  'vrf_name' : mx_parameters["vrf_name"]
-					 }
-		try:
-			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=jinja_vars, format="set")
-			dev.cu.pdiff()
-
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
-
-		except Exception as err:
-			if err.rsp.find('.//ok') is None:
-				rpc_msg = err.rsp.findtext('.//error-message')
-				logging.error("Unable to load configuration changes: %s", rpc_msg)
-
-			logging.info("Unlocking the configuration")
-			try:
-					dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return
+		self.path = "../templates/mx104/"+service
 
 	def configure_mx(self, mx_parameters, method):
-		logging.basicConfig(level=logging.INFO)
+		# logging.basicConfig(level=logging.INFO)
 
-		dev = Device(host=mx_parameters["mx_ip"], user="lab", password="lab123", port=443)
+		# dev = Device(host=mx_parameters["mx_ip"], user="lab", password="lab123", port=443)
 
-		try:
-			logging.info("Openning NETCONF connection to device")
-			dev.open()
-		except Exception as err:
-			logging.error("Cannot connect to device:%s", err)
-			return
+		# try:
+		# 	logging.info("Openning NETCONF connection to device")
+		# 	dev.open()
+		# except Exception as err:
+		# 	logging.error("Cannot connect to device:%s", err)
+		# 	return
 
-		dev.bind(cu=Config)
+		# dev.bind(cu=Config)
 
-		# Lock the configuration, load configuration changes, and commit
-		logging.info("Locking the configuration")
-		try:
-			dev.cu.lock()
-		except LockError:
-			logging.error("Error: Unable to lock configuration")
-			dev.close()
-			return
+		# # Lock the configuration, load configuration changes, and commit
+		# logging.info("Locking the configuration")
+		# try:
+		# 	dev.cu.lock()
+		# except LockError:
+		# 	logging.error("Error: Unable to lock configuration")
+		# 	dev.close()
+		# 	return
 
 		if method == "set":
 			logging.info("Setting interfaces")
