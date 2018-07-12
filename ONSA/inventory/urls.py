@@ -8,7 +8,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from django.views.decorators.http import require_http_methods
 
-from .views import devices, test_view, locations, router_nodes, access_nodes, access_ports, vlan_tags, logical_units
+from .views import devices, test_view, locations, router_nodes, access_nodes, access_ports, vlan_tags, logical_units, RouterNode_LogicalUnits
 
 urlpatterns = [ 
     path('/api/login', obtain_jwt_token),
@@ -24,6 +24,7 @@ urlpatterns = [
     path('/api/accessports/<int:accessport_id>', require_http_methods(["PUT","DELETE"])(access_ports.AccessPortsView.as_view())),
     path('/api/accessports/<int:accessport_id>/vlantags', require_http_methods(["GET","POST"])(vlan_tags.VlanTagsView.as_view())),
     path('/api/vlantags/<int:vlantag_id>', require_http_methods(["PUT","DELETE"])(vlan_tags.VlanTagsView.as_view())),
-    path('/api/routernodes/<int:routernode_id>/logicalunits', require_http_methods(["GET"])(logical_units.LogicalUnitsView.as_view())),
-    path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","POST","DELETE"])(logical_units.LogicalUnitsView.as_view()))
+    path('/api/routernodes/<int:routernode_id>/logicalunits', require_http_methods(["GET"])(RouterNode_LogicalUnits.RouterNodeLogicalUnitsView.as_view())),
+    path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","DELETE"])(logical_units.LogicalUnitsView.as_view())),
+    path('/api/logicalunits', require_http_methods(["GET","POST"])(logical_units.LogicalUnitsView.as_view()))
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
