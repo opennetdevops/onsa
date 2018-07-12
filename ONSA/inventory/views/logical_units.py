@@ -12,7 +12,7 @@ import json
 class LogicalUnitsView(View):
     def get(self, request):
         lus = LogicalUnit.objects.all().values()        
-        return JsonResponse(list(lus))
+        return JsonResponse(list(lus), safe=False)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))

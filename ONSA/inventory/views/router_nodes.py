@@ -1,5 +1,5 @@
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 
 from ..models import Location, RouterNode
@@ -9,20 +9,20 @@ import json
 
 class RouterNodesView(View):
 
-	def get(self, request, location_id):
-		location = Location.objects.get(pk=location_id)
-		router_nodes = location.get_router_nodes()
+	def get(self, request):
+		router_nodes = RouterNode.objects.all().values()
+		return JsonResponse(list(router_nodes), safe=False)
 		
-		data = serializers.serialize('json', router_nodes)
-		return HttpResponse(data, content_type='application/json')
+		# data = serializers.serialize('json', router_nodes)
+		# return HttpResponse(data, content_type='application/json')
 
-	def post(self,request,location_id):
+	def post(self,request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-		location = Location.objects.get(pk=location_id)
+		# location = Location.objects.get(pk=location_id)
 
 		#todo check location
-		router_node = RouterNode.objects.create(**data, location=location)
+		router_node = RouterNode.objects.create(**data)
 		router_node.save()
 		router_node = RouterNode.objects.filter(name=data['name'])
 		
