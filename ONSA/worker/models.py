@@ -62,7 +62,7 @@ class MxVcpeTask(Task):
             handler = Handler.factory(service_type="vcpe")
             handler.configure_mx(parameters, "delete")
 
-        self.task_state = "Completed"
+        self.task_state = "success"
         return self.task_state
 
     def rollback(self, parameters):
@@ -82,7 +82,7 @@ class MxCpelessIrsTask(Task):
     def run_task(self, parameters):
         handler = CpelessHandler("irs")
         handler.configure_mx(parameters, "set")
-        self.task_state = "Completed"
+        self.task_state = "success"
         return self.task_state
 
     def rollback(self, parameters):
