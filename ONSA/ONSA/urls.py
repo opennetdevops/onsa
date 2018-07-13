@@ -27,6 +27,7 @@ urlpatterns = [
     path('inventory', include('inventory.urls')),
     path('worker', include('worker.urls')),
     path('api/login', obtain_jwt_token),
+    path('charles',include('charles.urls'))
 ]
 
 

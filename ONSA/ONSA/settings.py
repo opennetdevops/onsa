@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core.apps.OnsaConfig',
     'inventory.apps.InventoryConfig',
     'worker.apps.WorkerConfig',
+    'charles.apps.CharlesConfig',
     'django_select2',
 ]
 
