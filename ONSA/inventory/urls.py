@@ -10,7 +10,7 @@ from django.views.decorators.http import require_http_methods
 
 from .views import devices, test_view, locations, router_nodes, access_nodes, access_ports, vlan_tags
 from .views import router_node_logical_units, logical_units, location_access_nodes, location_router_nodes
-from .views import access_node_access_ports, location_access_ports
+from .views import access_node_access_ports, location_access_ports, access_port_vlan_tags
 
 urlpatterns = [ 
     path('/api/login', obtain_jwt_token),
@@ -32,10 +32,12 @@ urlpatterns = [
     path('/api/accessnodes/<int:accessnode_id>', require_http_methods(["PUT","DELETE"])(access_nodes.AccessNodesView.as_view())),
     path('/api/accessnodes/<int:accessnode_id>/accessports', require_http_methods(["GET","POST"])(access_node_access_ports.AccessNodeAccessPortsView.as_view())),
     
+    path('/api/accessports', require_http_methods(["GET"])(access_ports.AccessPortsView.as_view())),
     path('/api/accessports/<int:accessport_id>', require_http_methods(["PUT","DELETE"])(access_ports.AccessPortsView.as_view())),
-    path('/api/accessports/<int:accessport_id>/vlantags', require_http_methods(["GET","POST"])(vlan_tags.VlanTagsView.as_view())),
-    
-    path('/api/vlantags/<int:vlantag_id>', require_http_methods(["PUT","DELETE"])(vlan_tags.VlanTagsView.as_view())),
+    path('/api/accessports/<int:accessport_id>/vlantags', require_http_methods(["GET","POST"])(access_port_vlan_tags.AccessPortVlanTagsView.as_view())),
+    path('/api/accessports/<int:accessport_id>/vlantags/<int:vlan_tag>', require_http_methods(["DELETE"])(access_port_vlan_tags.AccessPortVlanTagsView.as_view())),
+
+    path('/api/vlantags', require_http_methods(["GET","POST"])(vlan_tags.VlanTagsView.as_view())),
     
     
     path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","DELETE"])(logical_units.LogicalUnitsView.as_view())),

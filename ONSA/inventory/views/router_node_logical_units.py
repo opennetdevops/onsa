@@ -24,26 +24,19 @@ class RouterNodeLogicalUnitsView(View):
 
 
     def post(self, request, routernode_id):
-
         data = json.loads(request.body.decode(encoding='UTF-8'))
         router_node = RouterNode.objects.get(pk=routernode_id)
-        print(router_node)
-        print(data['logical_unit_id'])
         lu_id = data['logical_unit_id'] 
         lu = LogicalUnit.objects.get(logical_unit_id=lu_id)
         lu.routerNodes.add(router_node)
         lu.save()
-        
-
         return JsonResponse(data, safe=False)
 
 
     def delete(self, request, routernode_id, logicalunit_id):
-
         router_node = RouterNode.objects.get(pk=routernode_id)
         lu = LogicalUnit.objects.get(logical_unit_id=logicalunit_id)
         lu.routerNodes.remove(router_node)
         lu.save()
-      
         data = {"Message" : "RouterNode deleted successfully"}
         return JsonResponse(data, safe=False)
