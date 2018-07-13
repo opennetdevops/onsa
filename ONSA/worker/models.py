@@ -24,13 +24,14 @@ class Service(models.Model):
 class TaskChoices(Enum):
     MX_VCPE = "MX_VCPE"
     NSX_VCPE = "NSX_VCPE"
+    NSX_MPLS = "NSX_MPLS"
 
 
 class Task(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     task_state = models.CharField(default="Creating", max_length=50, blank=True)
 
-    task_type = models.CharField(max_length=20)
+    task_type = models.CharField(max_length=30)
 
     def __str__(self):
         return self.service.service_id
