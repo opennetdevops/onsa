@@ -233,7 +233,7 @@ class AccessPort(models.Model):
 class VlanTag(models.Model):
     vlan_tag = models.CharField(max_length=50,  unique=True)
     vlan_tag.null = True
-    accessPorts = models.ManyToManyField(AccessPort)
+    accessPorts = models.ManyToManyField(AccessPort, blank=True)
 
     def __str__(self):
         return self.vlan_tag
@@ -331,7 +331,7 @@ class NsxEdge(Device):
 
 class LogicalUnit(models.Model):
     logical_unit_id = models.PositiveSmallIntegerField(unique=True)
-    routerNodes = models.ManyToManyField(RouterNode) 
+    routerNodes = models.ManyToManyField(RouterNode, blank=True) 
 
     def __str__(self):
         return str(self.logical_unit_id)

@@ -25,7 +25,8 @@ urlpatterns = [
     
     path('/api/routernodes', require_http_methods(["GET","POST"])(router_nodes.RouterNodesView.as_view())),
     path('/api/routernodes/<int:routernode_id>', require_http_methods(["PUT","DELETE"])(router_nodes.RouterNodesView.as_view())),
-    path('/api/routernodes/<int:routernode_id>/logicalunits', require_http_methods(["GET"])(router_node_logical_units.RouterNodeLogicalUnitsView.as_view())),
+    path('/api/routernodes/<int:routernode_id>/logicalunits', require_http_methods(["GET","POST"])(router_node_logical_units.RouterNodeLogicalUnitsView.as_view())),
+    path('/api/routernodes/<int:routernode_id>/logicalunits/<int:logicalunit_id>', require_http_methods(["DELETE"])(router_node_logical_units.RouterNodeLogicalUnitsView.as_view())),
     
     path('/api/accessnodes', require_http_methods(["GET","POST"])(access_nodes.AccessNodesView.as_view())),
     path('/api/accessnodes/<int:accessnode_id>', require_http_methods(["PUT","DELETE"])(access_nodes.AccessNodesView.as_view())),
