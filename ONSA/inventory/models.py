@@ -49,9 +49,7 @@ class AccessNode(Device): #SCO
 
 class RouterNode(Device): #MX
     privateWanIp = models.GenericIPAddressField(null=True, blank=True) #IP for WAN Virtual CPE
-    uplinkInterface = models.CharField(max_length=50) #
-    accessNodeId = models.CharField(max_length=4)
-    qinqOuterVlan = models.CharField(max_length=50)
+
 
     def get_free_logical_units(self):
         lus_free = LogicalUnit.objects.exclude(routerNodes=self)
