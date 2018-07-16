@@ -15,8 +15,8 @@ class NsxHandler(object):
 
 	def add_gateway(edge_name):
 		edge_id = nsx_edge_get_id_by_name(edge_name)
-        return nsx_edge_add_gateway(edge_id, "0", "100.64.4.1", "1500")
-    
+		return nsx_edge_add_gateway(edge_id, "0", "100.64.4.1", "1500")
+	
 
 
 

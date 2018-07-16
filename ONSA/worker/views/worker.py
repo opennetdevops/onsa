@@ -28,9 +28,10 @@ class WorkerView(View):
 		for device in data['devices']:
 			pending_tasks.append(Task.factory(data['service_type'], service))
 
-
 		for task in pending_tasks:
-			task.run_task()
+			task_state = task.run_task()
+			
+
 
 
 		response = {"message" : "created"}

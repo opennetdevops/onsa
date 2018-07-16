@@ -218,8 +218,8 @@ class VcpeHandler(Handler):
 			# logging.info("Setting bridge domains")
 
 			bridge_domains_params = {
-										"bridge_domain_id" : ""
-										"description" : ""
+										"bridge_domain_id" : "",
+										"description" : "",
 										"vxrail_ae_interface" : parameters['vxrail_ae_interface'],
 										"vxrail_logical_unit" : parameters['vxrail_logical_unit'],
 										"sco_ae_interface" : parameters['sco_ae_interface'],
