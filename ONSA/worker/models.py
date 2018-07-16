@@ -1,7 +1,7 @@
 from django.db import models
 
 from .lib.juniper.mx_config import *
-from .lib.nsx.edge import *
+from .lib.nsx.nsx_handler import NsxHandler
 from enum import Enum
 
 
@@ -55,20 +55,14 @@ class MxVcpeTask(Task):
         return self.service.service_id
 
     def run_task(self, parameters, task_type):
-        if task_type == "CREATE" or task_type == "UPDATE":
-            handler = Handler.factory(service_type="vcpe")
-            handler.configure_mx(parameters, "set")
-        elif task_type == "DELETE":
-            handler = Handler.factory(service_type="vcpe")
-            handler.configure_mx(parameters, "delete")
-
+        handler = Handler.factory(service_type="vcpe")
+        handler.configure_mx(parameters, "set")
+        
         self.task_state = "success"
         return self.task_state
 
     def rollback(self, parameters):
-        handler = Handler.factory(service_type="vcpe")
-        handler.configure_mx(parameters, "delete")
-        return self.task_state
+        pass
 
 
 class MxCpelessIrsTask(Task):
@@ -86,7 +80,7 @@ class MxCpelessIrsTask(Task):
         return self.task_state
 
     def rollback(self, parameters):
-        return self.task_state
+        pass
 
 
 class NsxTask(Task):
@@ -98,12 +92,11 @@ class NsxTask(Task):
         return self.service.service_id
 
     def run_task(self, parameters, service_type):
-        pprint(parameters)
-        # nsx_edge_create(parameters)
-        # edge_id = nsx_edge_get_id_by_name(parameters['name'])
-        # nsx_edge_add_gateway(edge_id, "0", "100.64.4.1", "1500")
+        handler = NsxHandler()
+        handler.create_edge(parameters)
+        handler.add_gateway(parameters['name'])
         return self.task_state
 
     def rollback(self, parameters):
-        return self.task_state
+        pass
 

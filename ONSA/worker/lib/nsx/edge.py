@@ -51,7 +51,6 @@ def nsx_edge_create(jinja_vars):
 	data = render(nsx_edge_xml, jinja_vars) 
   	
 	result = nsxPost("/api/4.0/edges", data, "xml")
-	print (result)
 	return result
 
 def nsx_edge_delete_by_id(edgeId):

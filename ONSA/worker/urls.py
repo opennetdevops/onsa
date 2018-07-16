@@ -11,5 +11,7 @@ from django.views.decorators.http import require_http_methods
 from .views import worker
 
 urlpatterns = [ 
-    path('/api/services', require_http_methods(["GET","POST"])(worker.WorkerView.as_view()))    
+    path('/api/services', require_http_methods(["GET","POST"])(worker.WorkerView.as_view())),
+    path('/api/services/<int:service_id>', require_http_methods(["GET","POST", "DELETE"])(worker.WorkerView.as_view()))
+
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -216,22 +216,56 @@ class VcpeHandler(Handler):
 
 		if method == "set":
 			# logging.info("Setting bridge domains")
-			VcpeHandler._set_bridge_domains(self, parameters['bridge_domains'])
 
-			# logging.info("Setting interfaces")
-			VcpeHandler._set_interfaces(self, parameters['interfaces'])
+			bridge_domains_params = {
+										"bridge_domain_id" : ""
+										"description" : ""
+										"vxrail_ae_interface" : parameters['vxrail_ae_interface'],
+										"vxrail_logical_unit" : parameters['vxrail_logical_unit'],
+										"sco_ae_interface" : parameters['sco_ae_interface'],
+										"sco_logical_unit" : parameters['sco_logical_unit']
+									}
+
+			VcpeHandler._set_bridge_domains(self, bridge_domains_params)
+
+			# logging.info("Setting interfaces")			
+			interfaces_params = {
+									"vxrail_ae_interface" : parameters['vxrail_ae_interface'],
+									"vxrail_logical_unit" : parameters['vxrail_logical_unit'],
+									"description" : "",
+									"vxrail_vlan" : parameters['vxrail_vlan'],
+									"sco_ae_interface" : parameters['sco_ae_interface'],
+									"sco_logical_unit" : parameters['sco_logical_unit'],
+									"qinqOuterVlan" : parameters['qinqOuterVlan'],
+									"qinqInnerVlan" : parameters['qinqInnerVlan']
+								}
+
+			VcpeHandler._set_interfaces(self, interfaces_params)
 
 			# logging.info("Setting static route")
-			VcpeHandler._set_static_route(self, parameters['routes'])
+			routes_params = {"public_cidr" : parameters['public_cidr']}
+
+			VcpeHandler._set_static_route(self, routes_params)
 
 		elif method == "delete":
 			# logging.info("Deleting bridge domains")
-			VcpeHandler._delete_bridge_domains(self, parameters['bridge_domains'])
+
+			bridge_domains_params = {"bridge_domain_id" : ""}
+			VcpeHandler._delete_bridge_domains(self, bridge_domains_params)
 
 			# logging.info("Deleting interfaces")
-			VcpeHandler._delete_interfaces(self, parameters['interfaces'])
+			interfaces_params = {
+									"vxrail_ae_interface" : parameters['vxrail_ae_interface'],
+									"vxrail_logical_unit" : parameters['vxrail_logical_unit'],
+									"sco_ae_interface" : parameters['sco_ae_interface'],
+									"sco_logical_unit" : parameters['sco_logical_unit']
+								}
+
+			VcpeHandler._delete_interfaces(self, interfaces_params)
 
 			# logging.info("Deleting static route")
+
+			routes_params = {"public_cidr" : parameters['public_cidr']}
 			VcpeHandler._delete_static_route(self, parameters['routes'])
 
 		# logging.info("Committing the configuration")
