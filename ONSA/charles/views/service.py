@@ -2,29 +2,36 @@ from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from ..models import Service
+from enum import Enum
 import json
+
+class ServiceStatuses(Enum):
+    REQUESTED = "REQUESTED"
+    COMPLETED = "COMPLETED"
+    ERROR = "ERROR"
 
 class ServiceView(View):
 
+	def get(self, request):
+		services = Service.objects.all().values()
+		return JsonResponse(list(services), safe=False)
+
 	def post(self, request):
-		pass
-		# data = json.loads(request.body.decode(encoding='UTF-8'))
+		data = json.loads(request.body.decode(encoding='UTF-8'))
+		service = Service(service_id=data['service_id'], service_type=data['service_type'],
+		 service_state=ServiceStatuses['REQUESTED'].value, client_id=data['client_id'],
+		  client_name=data['client_name'] )
+		service.save()
+		response = {"message" : "Service requested"}
 
-		# service = Service(service_id=data['service_id'], service_type=data['service_type'], service_state="Requested")
-		# service.save()
 
-		# # # ToDo: Transitions
-		# for device in data['devices']:
-		# 	task = Task.factory(model=device['model'], service_type=data['service_type'], service=service)
-		# 	task.save()
-		# 	task_state = task.run_task(device['parameters'], data['tasks_type'])
+		#Make request to worker with all data needed
 
-		# response = {"message" : "created"}
-		# return JsonResponse(response)
+		return JsonResponse(response)
 
-	def put(self, request):
-		pass
-		# data = json.loads(request.body.decode(encoding='UTF-8'))
-
-		# data = serializers.serialize('json',)
-		# return HttpResponse(data, content_type='application/json')
+	def put(self, request, service_id):
+		data = json.loads(request.body.decode(encoding='UTF-8'))
+		service = Service.objects.filter(service_id=service_id)
+		service.update(**data)
+		data = serializers.serialize('json', service)
+		return HttpResponse(data, content_type='application/json')
