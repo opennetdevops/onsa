@@ -18,9 +18,8 @@ class ServiceView(View):
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-		service = Service(service_id=data['service_id'], service_type=data['service_type'],
-		 service_state=ServiceStatuses['REQUESTED'].value, client_id=data['client_id'],
-		  client_name=data['client_name'] )
+		service = Service.objects.create(**data)
+		service.service_state = ServiceStatuses['REQUESTED'].value
 		service.save()
 		response = {"message" : "Service requested"}
 

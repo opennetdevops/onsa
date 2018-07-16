@@ -1,0 +1,37 @@
+{
+   "client":"Starbucks",
+   "service_type":"vcpe",
+   "service_id":"0987654321",
+   "tasks_type":"",
+   "devices":[
+      {
+         "model":"MX104",
+         "parameters":{
+            "mgmt_ip":"10.120.104.13",
+            "vxrail_ae_interface":"ae1",
+            "vxrail_logical_unit":"100",
+            "vxrail_vlan":"10",
+            "sco_ae_interface":"ae1",
+            "sco_logical_unit":"24",
+            "qinqOuterVlan":"24",
+            "qinqInnerVlan":"555",
+            "public_cidr":"181.1.0.0/24"
+         }
+      },
+      {
+         "model":"NSX",
+         "parameters":{
+            "datacenterMoid":"datacenter-2",
+            "resourcePoolId":"resgroup-44",
+            "datastoreId":"datastore-55"
+         },
+         "uplink":{
+            "portgroupId":"dvportgroup-456",
+            "primaryAddress":"100.64.0.3",
+         },
+         "downlink":{
+            "portgroupId":"dvportgroup-999",
+         }
+      }
+   ]
+}
