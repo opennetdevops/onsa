@@ -30,7 +30,6 @@ class TaskChoices(Enum):
 class Task(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     task_state = models.CharField(default="Creating", max_length=50, blank=True)
-
     task_type = models.CharField(max_length=30)
 
     def __str__(self):
@@ -38,7 +37,6 @@ class Task(models.Model):
 
     def factory(model, service_type, service):
         if service_type == "vcpe":
-            print(TaskChoices.MX_VCPE)
             if model == "MX104": return MxVcpeTask(service=service, task_type=TaskChoices['MX_VCPE'].value)
             elif model == "NSX": return NsxTask(service=service, task_type=TaskChoices['NSX_VCPE'].value)
         elif service_type == "cpeless-irs":
@@ -54,9 +52,9 @@ class MxVcpeTask(Task):
     def __str__(self):
         return self.service.service_id
 
-    def run_task(self, parameters, task_type):
-        handler = Handler.factory(service_type="vcpe")
-        handler.configure_mx(parameters, "set")
+    def run_task(self, device):
+        handler = Handler.factory(service_type=self.task_type)
+        handler.configure_mx(device['parameters'], "set")
         
         self.task_state = "success"
         return self.task_state
@@ -91,12 +89,12 @@ class NsxTask(Task):
     def __str__(self):
         return self.service.service_id
 
-    def run_task(self, parameters, service_type):
+    def run_task(self,device):
         handler = NsxHandler()
-        handler.create_edge(parameters)
-        handler.add_gateway(parameters['name'])
+        handler.create_edge(device['parameters'])
+        # handler.add_gateway(parameters['name'])
         return self.task_state
 
-    def rollback(self, parameters):
+    def rollback(self,parameters):
         pass
 

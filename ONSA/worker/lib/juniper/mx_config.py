@@ -20,8 +20,8 @@ class Handler(object):
 
 	@staticmethod
 	def factory(service_type):
-		if service_type == "vcpe": return VcpeHandler()
-		elif service_type == "cpeless": return CpelessHandler()
+		if service_type == "MX_VCPE": return VcpeHandler()
+		elif service_type == "MX_CPELESS": return CpelessHandler()
 
 	def _set_interfaces(self, parameters, dev=None):
 		logging.basicConfig(level=logging.INFO)
