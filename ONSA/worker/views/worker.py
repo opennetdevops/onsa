@@ -8,13 +8,11 @@ from pprint import pprint
 
 from ..models import Service, Task
 
-import requests
+
 import json
 
 from ..lib.juniper.mx_config import *
 from ..lib.nsx.edge import *
-
-CHARLES = "http://localhost:8000"
 
 class WorkerView(View):
 	def get(self, request):
@@ -52,14 +50,5 @@ class WorkerView(View):
 		Runs all of the tasks in the background.
 		"""
 		service.deploy(service_id=service.service_id)
-		
-		"""
-		Updates Charles' service status	
-		"""
-
-		USER = "admin"
-		PASS = "F1b3rc0rp!"
-		rheaders = {'Content-Type': 'application/json'}
-		requests.put(CHARLES+"/api/charles/services/%s" % service.service_id, data = data, auth = (USER, PASS), verify = False, headers = rheaders)
 
 		return HttpResponse("")
