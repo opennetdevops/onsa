@@ -49,7 +49,7 @@ class NsxHandler(object):
 
 		pprint(edge_params)
 
-		return 0#nsx_edge_create(edge_params)
+		return nsx_edge_create(edge_params)
 
 	def add_gateway(self, edge_name):
 		edge_id = nsx_edge_get_id_by_name(edge_name)

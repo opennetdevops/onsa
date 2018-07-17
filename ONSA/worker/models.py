@@ -8,6 +8,10 @@ from enum import Enum
 from background_task import background
 
 from itertools import chain
+import requests
+
+
+CHARLES = "http://localhost:8000"
 
 class Service(models.Model):
 	service_id = models.CharField(max_length=50)
@@ -42,6 +46,16 @@ class Service(models.Model):
 		print(executed_tasks)
 
 		my_service.save()
+
+		"""
+		Updates Charles' service status	
+		"""
+
+		USER = "admin"
+		PASS = "F1b3rc0rp!"
+		rheaders = {'Content-Type': 'application/json'}
+		data = {"service_state" : my_service.service_state}
+		requests.put(CHARLES+"/api/charles/services/%s" % my_service.service_id, data = data, auth = (USER, PASS), verify = False, headers = rheaders)
 
 
 class TaskChoices(Enum):
@@ -126,9 +140,24 @@ class NsxTask(Task):
 
 	def run_task(self):
 		handler = NsxHandler()
-		self.task_state = handler.create_edge(self.config)
-		self.task_state =  handler.add_gateway(parameters['name'])
-		return self.task_state
+
+		subtasks = [handler.create_edge, handler.add_gateway]
+		options = [self.config, "VCPE-Test"]
+
+		idx = 0
+		result = 200
+		while(result == 200):
+			result = subtasks[idx](options[idx])
+			print(result)
+		
+		if result != 200:
+			self.task_state = "failed"
+			return self.task_state
+		else:
+			self.task_state = "success"
+			return self.task_state 
+
+
 
 	def rollback(self,parameters):
 		pass
