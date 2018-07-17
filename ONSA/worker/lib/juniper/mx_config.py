@@ -31,22 +31,22 @@ class Handler(object):
 
 		print(render(template_rac_file,parameters))
 
-		# try:
-		# 	dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
-		# 	dev.cu.pdiff()
+		try:
+			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
+			dev.cu.pdiff()
 
-		# except ValueError as err:
-		# 	logging.error("Error: %s", err.message)
+		except ValueError as err:
+			logging.error("Error: %s", err.message)
 
-		# except Exception as err:
-		# 	logging.error("Unable to load configuration changes: %s", err)
-		# 	logging.info("Unlocking the configuration")
-		# 	try:
-		# 		dev.cu.unlock()
-		# 	except UnlockError:
-		# 			logging.error("Error: Unable to unlock configuration")
-		# 	dev.close()
-		# 	return
+		except Exception as err:
+			logging.error("Unable to load configuration changes: %s", err)
+			logging.info("Unlocking the configuration")
+			try:
+				dev.cu.unlock()
+			except UnlockError:
+					logging.error("Error: Unable to unlock configuration")
+			dev.close()
+			return "failed"
 
 	def _delete_interfaces(self, parameters, dev=None):
 		logging.basicConfig(level=logging.INFO)
@@ -56,25 +56,25 @@ class Handler(object):
 
 		print(render(template_rac_file, parameters))
 
-		# try:
-		# 	dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
-		# 	dev.cu.pdiff()
+		try:
+			dev.cu.load(template_path=template_rac_file, merge=True, template_vars=parameters, format="set")
+			dev.cu.pdiff()
 
-		# except ValueError as err:
-		# 	logging.error("Error: %s", err.message)
+		except ValueError as err:
+			logging.error("Error: %s", err.message)
 
-		# except Exception as err:
-		# 	if err.rsp.find('.//ok') is None:
-		# 		rpc_msg = err.rsp.findtext('.//error-message')
-		# 		logging.error("Unable to load configuration changes: %s", rpc_msg)
+		except Exception as err:
+			if err.rsp.find('.//ok') is None:
+				rpc_msg = err.rsp.findtext('.//error-message')
+				logging.error("Unable to load configuration changes: %s", rpc_msg)
 
-		# 	logging.info("Unlocking the configuration")
-		# 	try:
-		# 			dev.cu.unlock()
-		# 	except UnlockError:
-		# 			logging.error("Error: Unable to unlock configuration")
-		# 	dev.close()
-		# 	return
+			logging.info("Unlocking the configuration")
+			try:
+					dev.cu.unlock()
+			except UnlockError:
+					logging.error("Error: Unable to unlock configuration")
+			dev.close()
+			return "failed"
 
 	def _set_static_route(self, parameters, dev=None):
 		logging.basicConfig(level=logging.INFO)
@@ -191,28 +191,28 @@ class VcpeHandler(Handler):
 
 	def configure_mx(self, parameters, method):
 
-		# logging.basicConfig(level=logging.INFO)
+		logging.basicConfig(level=logging.INFO)
 
-		# # 
-		# dev = Device(host=mx_parameters["mgmt_ip"], user="lab", password="lab123", port=443)
+		# 
+		dev = Device(host=parameters["mgmt_ip"], user="lab", password="lab123", port=443)
 
-		# try:
-		# 	logging.info("Openning NETCONF connection to device")
-		# 	dev.open()
-		# except Exception as err:
-		# 	logging.error("Cannot connect to device:%s", err)
-		# 	return
+		try:
+			logging.info("Openning NETCONF connection to device")
+			dev.open()
+		except Exception as err:
+			logging.error("Cannot connect to device:%s", err)
+			return "failed"
 
-		# dev.bind(cu=Config)
+		dev.bind(cu=Config)
 
-		# # Lock the configuration, load configuration changes, and commit
-		# logging.info("Locking the configuration")
-		# try:
-		# 	dev.cu.lock()
-		# except LockError:
-		# 	logging.error("Error: Unable to lock configuration")
-		# 	dev.close()
-		# 	return
+		# Lock the configuration, load configuration changes, and commit
+		logging.info("Locking the configuration")
+		try:
+			dev.cu.lock()
+		except LockError:
+			logging.error("Error: Unable to lock configuration")
+			dev.close()
+			return "failed"
 
 		if method == "set":
 			# logging.info("Setting bridge domains")
@@ -268,33 +268,36 @@ class VcpeHandler(Handler):
 			routes_params = {"public_cidr" : parameters['public_cidr']}
 			VcpeHandler._delete_static_route(self, parameters['routes'])
 
-		# logging.info("Committing the configuration")
-		# try:
-		# 	dev.timeout=120
-		# 	commit_result = dev.cu.commit()
-		# 	# Show that the commit worked True means it worked, false means it failed
-		# 	logging.debug( "Commit result: %s",commit_result)
+		logging.info("Committing the configuration")
+		try:
+			dev.timeout=120
+			commit_result = dev.cu.commit()
+			# Show that the commit worked True means it worked, false means it failed
+			logging.debug( "Commit result: %s",commit_result)
 
-		# except (CommitError, RpcTimeoutError) as e:
-		# 	logging.error( "Error: Unable to commit configuration")
-		# 	logging.error( "Unlocking the configuration")
-		# 	logging.error(e)
-		# 	try:
-		# 		dev.cu.unlock()
-		# 	except UnlockError:
-		# 		logging.error( "Error: Unable to unlock configuration")
-		# 		dev.close()
-		# 		return
+		except (CommitError, RpcTimeoutError) as e:
+			logging.error( "Error: Unable to commit configuration")
+			logging.error( "Unlocking the configuration")
+			logging.error(e)
+			try:
+				dev.cu.unlock()
+			except UnlockError:
+				logging.error( "Error: Unable to unlock configuration")
+				dev.close()
+				return "failed"
 
-		# logging.info( "Unlocking the configuration")
-		# try:
-		# 	 dev.cu.unlock()
-		# except UnlockError:
-		# 	 logging.error( "Error: Unable to unlock configuration")
+		logging.info( "Unlocking the configuration")
+		try:
+			 dev.cu.unlock()
+		except UnlockError:
+			 logging.error( "Error: Unable to unlock configuration")
+			 return "failed"
 
-		# # End the NETCONF session and close the connection
-		# logging.info("Closing NETCONF session")
-		# dev.close()
+		# End the NETCONF session and close the connection
+		logging.info("Closing NETCONF session")
+		dev.close()
+
+		return "success"
 
 class CpelessHandler(object):
 	def __init__(self, service):

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'worker.apps.WorkerConfig',
     'charles.apps.CharlesConfig',
     'django_select2',
+    'background_task',
 ]
 
 MIDDLEWARE = [
@@ -151,3 +152,4 @@ JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True
 }
 
+MAX_ATTEMPTS = 0
