@@ -43,15 +43,6 @@ class Service(models.Model):
 
 		my_service.save()
 
-		# ToDo: PUT /charles
-		
-	def create_task(self):
-		task = Task(service=self)
-		return task
-
-	def delete_task(self):
-		return access_nodes
-
 
 class TaskChoices(Enum):
 	MX_VCPE = "MX_VCPE"
