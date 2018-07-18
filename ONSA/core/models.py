@@ -53,6 +53,23 @@ class Service(models.Model):
         abstract = True
 
 
+class ServiceFactory(Service):
+
+    def create(**kwargs):
+        print(kwargs)
+        if kwargs['service_type'] == "PUBLIC_IRS_VCPE":
+            return PublicIrsService.objects.create(**kwargs)
+        elif kwargs['service_type'] == "PUBLIC_IRS_CPELESS":
+            return CpeLessIrsService.objects.create(**kwargs)
+        elif kwargs['service_type'] == "MPLS":
+            return MplsService.objects.create(**kwargs)
+        else:
+            return
+
+
+        
+
+
 
 
 class PublicIrsService (Service):

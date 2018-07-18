@@ -1,7 +1,7 @@
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from ..models import Service, PublicIrsService, CpeLessIrsService, MplsService
+from ..models import Service, PublicIrsService, CpeLessIrsService, MplsService, ServiceFactory
 from enum import Enum
 from itertools import chain
 import json
@@ -33,7 +33,7 @@ class ServiceView(View):
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        service = Service.objects.create(**data)
+        service = ServiceFactory.create(**data)
         service.service_state = ServiceStatuses['REQUESTED'].value
         service.save()
         response = {"message" : "Service requested"}
