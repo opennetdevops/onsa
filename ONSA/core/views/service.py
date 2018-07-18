@@ -14,22 +14,28 @@ class ServiceStatuses(Enum):
 
 class ServiceView(View):
 
-    def get(self, request):
-        state = request.GET.get('state', '')
+    def get(self, request, service_id=None):
+        state = request.GET.get('status', '')
 
-        if state in [ServiceStatuses['PENDING'].value, ServiceStatuses['ERROR'].value,
-        ServiceStatuses['REQUESTED'].value, ServiceStatuses['COMPLETED'].value]:    
-            pub_services = PublicIrsService.objects.filter(status=state).values()
-            cpel_services = CpeLessIrsService.objects.filter(status=state).values()
-            mpls_services = MplsService.objects.filter(status=state).values()
+        if service_id is None:
 
+            if state in [ServiceStatuses['PENDING'].value, ServiceStatuses['ERROR'].value,
+            ServiceStatuses['REQUESTED'].value, ServiceStatuses['COMPLETED'].value]:    
+                pub_services = PublicIrsService.objects.filter(status=state).values()
+                cpel_services = CpeLessIrsService.objects.filter(status=state).values()
+                mpls_services = MplsService.objects.filter(status=state).values()
+
+            else:
+                pub_services = PublicIrsService.objects.all().values()
+                cpel_services = CpeLessIrsService.objects.all().values()
+                mpls_services = MplsService.objects.all().values()
+
+            return JsonResponse(list(chain(pub_services, cpel_services, mpls_services)), safe=False)
         else:
-            pub_services = PublicIrsService.objects.all().values()
-            cpel_services = CpeLessIrsService.objects.all().values()
-            mpls_services = MplsService.objects.all().values()
+            s = ServiceFactory.get(service_id)
+            return JsonResponse(list(s), safe=False)
 
 
-        return JsonResponse(list(chain(pub_services, cpel_services, mpls_services)), safe=False)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
@@ -41,6 +47,6 @@ class ServiceView(View):
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        service = Service.objects.filter(service_id=service_id)
+        service = ServiceFactory.get(service_id)
         service.update(**data)
         return JsonResponse(data, safe=False)

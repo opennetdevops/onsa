@@ -22,7 +22,7 @@ class CpePort(models.Model):
 
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
-    service_id = models.CharField(max_length=50, unique=True)
+    service_id = models.PositiveSmallIntegerField(unique=True)
     product_identifier = models.CharField(max_length=50)
     bandwidth = models.PositiveSmallIntegerField()
     
@@ -66,6 +66,18 @@ class ServiceFactory(Service):
         else:
             return
 
+    def get(service_id):
+        if PublicIrsService.objects.filter(service_id=service_id).count() is not 0:
+            return PublicIrsService.objects.filter(service_id=service_id).values()
+        elif CpeLessIrsService.objects.filter(service_id=service_id).count() is not 0:
+            return CpeLessIrsService.objects.filter(service_id=service_id).values()
+        elif MplsService.objects.filter(service_id=service_id).count() is not 0:
+            return MplsService.objects.filter(service_id=service_id).values()
+        else:
+            return
+
+
+
 
         
 
@@ -76,6 +88,7 @@ class PublicIrsService (Service):
     
     edge_name = models.CharField(max_length=50,blank=True)
     ip_wan = models.GenericIPAddressField() 
+    public_prefix = models.PositiveSmallIntegerField()
     cpe_port = models.OneToOneField(CpePort, on_delete=models.SET_NULL,null=True)
 
     def __str__(self):
@@ -86,6 +99,7 @@ class PublicIrsService (Service):
 class CpeLessIrsService(Service):
 
     public_network = models.GenericIPAddressField()
+    public_prefix = models.PositiveSmallIntegerField()
         
     def __str__(self):
         return "CPE Less IRS Service" + self.public_network
