@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 
-from .lib.juniper.mx_config import *
-from .lib.nsx.nsx_handler import NsxHandler
+from .lib.juniper.Handler import Handler
+from .lib.juniper.VcpeHandler import VcpeHandler
+from .lib.juniper.CpelessHandler import CpelessHandler
+from .lib.nsx.NsxHandler import NsxHandler
 from enum import Enum
 
 from background_task import background
