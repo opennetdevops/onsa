@@ -7,7 +7,7 @@
    "service_id":"0987654321",
    "tasks_type":"",
    "devices":[
-      {
+      {  //me falta todo menos public_cidr
          "model":"MX104",
          "parameters":{
             "mgmt_ip":"10.120.104.13",
@@ -18,10 +18,10 @@
             "sco_logical_unit":"24",
             "qinqOuterVlan":"24",
             "qinqInnerVlan":"555",
-            "public_cidr":"181.1.0.0/24"
+            "public_cidr":"181.1.0.0/28"
          }
       },
-      {
+      {  //me falta todo menos primaryAddress
          "model":"NSX",
          "parameters":{
             "datacenterMoid":"datacenter-2",

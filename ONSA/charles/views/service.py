@@ -27,11 +27,17 @@ class ServiceView(View):
 		location = service.location
 
 		#Make request to worker with all data needed
-		public_ip = ServiceView.get_public_ip()
-		nsx_wan = ServiceView.get_nsx_wan(location)
+		mask = 28 #Depends on service type
+		public_ip = ServiceView.get_ip_wan_nsx(service.location,service.client_name,service.service_id)
+		nsx_wan = ServiceView.get_public_network(service.client_name,service.service_id,28)
 
-		print(public_ip)
-		print(nsx_wan)
+		if "network" in public_ip and "network" in nsx_wan:
+			#ask for devices 
+			print(public_ip["network"])
+			print(nsx_wan["network"])
+		else:
+			print("Not possible service")
+
 
 
 		response = {"message" : "Service requested"}
@@ -53,19 +59,25 @@ class ServiceView(View):
 		return json.loads(response.text)['auth_token']
 
 
-	def get_public_ip():
+	def get_ip_wan_nsx(location,client_name,service_id):
+		description = client_name + "-" + service_id
+		owner = "WAN_NSX_" + location
 		token = ServiceView.get_ipam_authentication_token()
-		url = "/api/networks"
+		url = "/api/networks/assign_ip"
 		rheaders = {'Content-Type': 'application/json',
 			'Authorization': 'Bearer ' + token}
-		response = requests.get(ServiceView.IPAM_BASE + url, auth = None, verify = False, headers = rheaders)
+		data = {"description":description,"owner":owner,"ip_version":4}
+		response = requests.post(ServiceView.IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		return json.loads(response.text)
 
-	def get_nsx_wan(location):
+	def get_public_network(client_name,service_id,mask):
+		description = client_name + "-" + service_id
+		owner = "PUBLIC_ONSA"
 		token = ServiceView.get_ipam_authentication_token()
-		url = "/api/networks"
+		url = "/api/networks/assign_subnet"
 		rheaders = {'Content-Type': 'application/json',
 			'Authorization': 'Bearer ' + token}
-		response = requests.get(ServiceView.IPAM_BASE + url, auth = None, verify = False, headers = rheaders)
+		data = {"description":description,"owner":owner,"ip_version":4,"mask":mask}
+		response = requests.post(ServiceView.IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		return json.loads(response.text)
 		
