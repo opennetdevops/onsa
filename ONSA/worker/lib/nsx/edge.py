@@ -1,5 +1,5 @@
 from .nsx_rest import *
-from ..common.jinja import render
+from ..common.render import render
 
 import json
 
