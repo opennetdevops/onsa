@@ -2,17 +2,11 @@ from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 
-
-
 from pprint import pprint
 
 from ..models import Service, Task
 
-
 import json
-
-from ..lib.juniper.mx_config import *
-from ..lib.nsx.edge import *
 
 class WorkerView(View):
 	def get(self, request):

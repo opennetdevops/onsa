@@ -1,13 +1,10 @@
 from .nsx_rest import *
 from ..common.jinja import render
 
-# from nsx_rest import *
-
 import json
 
 from pprint import pprint
 
-# READ_NSX_EDGE
 def nsx_edge_get_all():
 	r = nsxGet("/api/4.0/edges", "json")
 
@@ -60,7 +57,6 @@ def nsx_edge_delete_by_name(edge_name):
 	edgeId = nsx_edge_get_id_by_name(edge_name)
 	return nsx_edge_delete_by_id(edgeId)
 
-# NSX_EDGE_UPDATE
 def nsx_edge_update(edgeId, jinja_vars):
 	data = json.dumps(jinja_vars)
 	return nsxPut("/api/4.0/edges/" + edgeId, data, "xml")
@@ -78,13 +74,10 @@ def nsx_edge_resize(edgeId, applianceSize):
 
 	return update_nsx_edge(edgeId, jinja_vars)
 
-# TODO: definir que parametros se quiere tocar
 def nsx_edge_add_vnic(edgeId, index, type, portgroupId, primaryAddress, secondaryAddress, mtu, isConnected):
 	jinja_vars = {}
 
 	return nsx_edge_update(edgeId, jinja_vars)
-
-# CLI_SETTINGS
 
 def nsx_edge_get_cli_settings(edgeId):
 	r = get_nsx_edge(edgeId)
@@ -120,7 +113,6 @@ def enable_remote_access(edgeId):
 def disable_remote_access(edgeId):
 	return nsxPost("/api/4.0/edges/" + edgeId + "/cliremoteaccess?enable=False", "", "xml")
 
-# DNS_CLIENT
 def get_dns_client(edgeId):
 	r = nsxGet("/api/4.0/edges/" + edgeId + "/dnsclient", "xml")
 	return json.loads(r)
@@ -142,7 +134,6 @@ def update_secondary_dns(edgeId, secondaryDns, domainName):
 
 	return update_dns_client(edgeId, jinja_vars)
 
-# NAT
 def get_nsx_edge_nat(edgeId):
 	r = nsxGet("/api/4.0/edges/" + edgeId + "/nat/config", "xml")
 	return json.loads(r)
@@ -157,7 +148,6 @@ def update_nsx_edge_nat(edgeId, jinja_vars):
 def delete_nsx_edge_nat(edgeId):
 	return nsxDelete("/api/4.0/edges/" + edgeId + "/nat/config", "xml")
 
-# TODO: 
 def create_nat_rule(edgeId):
 	jinja_vars = {}
 	return update_nsx_edge_nat(edgeId, jinja_vars)
