@@ -23,7 +23,7 @@ class ServiceView(View):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 		service = Service.objects.create(**data)
 		service.service_state = ServiceStatuses['REQUESTED'].value
-		# service.save()
+		# service.save() ##TODO porque lo comentaste ??
 		location = service.location
 
 		#Make request to worker with all data needed
