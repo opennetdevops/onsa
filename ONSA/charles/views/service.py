@@ -15,8 +15,12 @@ class ServiceStatuses(Enum):
 class ServiceView(View):
 	IPAM_BASE = "http://10.120.78.90"
 
-	def get(self, request):
-		services = Service.objects.all().values()
+	def get(self, request, service_id=None):
+		if service_id is None:
+			services = Service.objects.all().values()
+		else:
+			services = Service.objects.get(service_id=service_id).values()
+			
 		return JsonResponse(list(services), safe=False)
 
 	def post(self, request):
@@ -37,7 +41,6 @@ class ServiceView(View):
 			print(nsx_wan["network"])
 		else:
 			print("Not possible service")
-
 
 
 		response = {"message" : "Service requested"}
