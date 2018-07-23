@@ -36,16 +36,14 @@ class Service(models.Model):
 		
 		for task in tasks:
 			task_state = task.run_task()
-			if task_state == "success":
+			if task_state == "SUCCESS":
 				executed_tasks.append(task)
-			elif task_state == "failed":
-			# 	# task.rollback()
-			# 	# for task in executed_tasks:
-			# 	# 	task_state = task.rollback()
+			elif task_state == "FAILED":
+				task.rollback()
+				for task in executed_tasks:
+					task.rollback()
 				my_service.service_state = "ERROR"            
 				break
-
-		print(executed_tasks)
 
 		my_service.save()
 
@@ -148,18 +146,20 @@ class NsxTask(Task):
 
 		idx = 0
 		result = 200
-		while(result == 200):
+		while(result == 200 or result == 201):
 			result = subtasks[idx](options[idx])
-			print(result)		
-			if result != 200:
-				self.task_state = "failed"
+			if result != 200 and result != 201:
+				self.task_state = "FAILED"
 				return self.task_state
 			else:
-				self.task_state = "success"
+				self.task_state = "SUCCESS"
 				return self.task_state 
 
 
 
 	def rollback(self,parameters):
-		pass
+		handler = NsxHandler()
+		status_code = handler.delete_edge("VCPE-Test")
+
+
 

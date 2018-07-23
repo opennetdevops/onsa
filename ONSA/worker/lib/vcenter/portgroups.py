@@ -1,5 +1,5 @@
 #GetAllVMWPortgroups.py
-from .VMWConfigFile import *
+from VMWConfigFile import *
 from pyVim import connect
 from pyVim.connect import SmartConnect, Disconnect
 from pyVmomi import vim, vmodl
@@ -16,7 +16,7 @@ import getpass
 requests.packages.urllib3.disable_warnings()
  
 # Disabling SSL certificate verification
-context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
 context.verify_mode = ssl.CERT_NONE
 
 
@@ -75,4 +75,5 @@ def get_portgroups_all():
 	return portgroups
 
 
-# print(getPortgroupId("PG-CEN-UPLINK"))
+print(get_portgroup_id("LAB_MGMT"))
+print(get_portgroup_id("LAB_Inside"))
