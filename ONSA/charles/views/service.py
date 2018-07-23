@@ -19,19 +19,30 @@ class ServiceView(View):
 		if service_id is None:
 			services = Service.objects.all().values()
 		else:
-			services = Service.objects.get(service_id=service_id).values()
+			services = Service.objects.filter(service_id=service_id).values()
 			
 		return JsonResponse(list(services), safe=False)
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-		service = Service.objects.create(**data)
+		
+		#CHECK if exists (RETRY option)
+		if Service.objects.filter(service_id=data['service_id']).count() is not 0:
+			service = Service.objects.filter(service_id=data['service_id'])
+			service.update(**data)
+		else:
+			service = Service.objects.create(**data)
+
+		service = Service.objects.get(service_id=data['service_id'])
 		service.service_state = ServiceStatuses['REQUESTED'].value
-		# service.save() ##TODO porque lo comentaste ??
+		#todo - hint - se va a romper cuando le pase el prefix
+		service.save()
+		
 		location = service.location
 
 		#Make request to worker with all data needed
 		mask = 28 #Depends on service type
+		#todo fix?
 		public_ip = ServiceView.get_ip_wan_nsx(service.location,service.client_name,service.service_id)
 		nsx_wan = ServiceView.get_public_network(service.client_name,service.service_id,28)
 

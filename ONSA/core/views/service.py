@@ -6,7 +6,7 @@ from enum import Enum
 from itertools import chain
 import json
 
-class ServiceStatuses(Enum):
+class ServiceStates(Enum):
     PENDING = "PENDING"
     REQUESTED = "REQUESTED"
     COMPLETED = "COMPLETED"
@@ -15,15 +15,15 @@ class ServiceStatuses(Enum):
 class ServiceView(View):
 
     def get(self, request, service_id=None):
-        state = request.GET.get('status', '')
+        state = request.GET.get('state', '')
 
         if service_id is None:
 
-            if state in [ServiceStatuses['PENDING'].value, ServiceStatuses['ERROR'].value,
-            ServiceStatuses['REQUESTED'].value, ServiceStatuses['COMPLETED'].value]:    
-                pub_services = PublicIrsService.objects.filter(status=state).values()
-                cpel_services = CpeLessIrsService.objects.filter(status=state).values()
-                mpls_services = MplsService.objects.filter(status=state).values()
+            if state in [ServiceStates['PENDING'].value, ServiceStates['ERROR'].value,
+            ServiceStates['REQUESTED'].value, ServiceStates['COMPLETED'].value]:    
+                pub_services = PublicIrsService.objects.filter(service_state=state).values()
+                cpel_services = CpeLessIrsService.objects.filter(service_state=state).values()
+                mpls_services = MplsService.objects.filter(service_state=state).values()
 
             else:
                 pub_services = PublicIrsService.objects.all().values()
@@ -40,7 +40,7 @@ class ServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         service = ServiceFactory.create(**data)
-        service.service_state = ServiceStatuses['REQUESTED'].value
+        service.service_state = ServiceStates['REQUESTED'].value
         service.save()
         response = {"message" : "Service requested"}
         return JsonResponse(response)

@@ -22,12 +22,12 @@ class CpePort(models.Model):
 
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
-    service_id = models.PositiveSmallIntegerField(unique=True)
+    service_id = models.CharField(max_length=50, unique=True)
     product_identifier = models.CharField(max_length=50)
     bandwidth = models.PositiveSmallIntegerField()
     
     
-    STATUS_CHOICES = (
+    SERVICE_STATE_CHOICES = (
     ("PENDING", "PENDING"),
     ("REQUESTED", "REQUESTED"),
     ("COMPLETED", "COMPLETED"),
@@ -45,8 +45,8 @@ class Service(models.Model):
                   choices=SERVICE_TYPES,
                   default="PUBLIC_IRS_CPELESS")
 
-    status = models.CharField(max_length=15,
-                  choices=STATUS_CHOICES,
+    service_state = models.CharField(max_length=15,
+                  choices=SERVICE_STATE_CHOICES,
                   default="PENDING")
 
     class Meta:

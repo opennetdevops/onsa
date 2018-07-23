@@ -4,8 +4,13 @@ import requests
 import json
 
 CORE_URL = "http://127.0.0.1:8000/core/api/services"
+CORE_CLIENT_URL = "http://127.0.0.1:8000/core/api/clients"
 CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
+
+rheaders = {'Content-Type': 'application/json'}
+
 # PENDING - REQUESTED - [COMPLETED / ERROR]
+
 
 def check_url_services(url,state):
     r = requests.get(CORE_URL + "?state=" + state)
@@ -18,20 +23,32 @@ def job():
     s = check_url_services(CORE_URL,"PENDING")
 
     for service in s:
-        # print(service['service_id'])
-        # print(service['status'])
+        #GET CLIENT Name
+        r = requests.get(CORE_CLIENT_URL + "/" + str(service['client_id']) )
+        clientData = r.json()
 
         data = {
         "service_id":service['service_id'],
+        "service_state":"PENDING",
         "service_type":service['service_type'],
         "client_id":service['client_id'],
-        "client_name":service['client_id'], #TODO CHANGE TO CLIENT NAME
+        "client_name":clientData[0]['name'], 
         "location":"MOCK" #todo no need, charles will know this... eventually?
         }
-        r = requests.post(CHARLES_URL + "", data = data)
+        print("DEBUG: ",data)
+
+        r = requests.post(CHARLES_URL, data = json.dumps(data), headers=rheaders)
         #if 200 --> PUT core to change service state to REQUESTED
-        #else to ERROR
-        # print("done")
+        if r.ok:
+            data = {
+            "service_state":"REQUESTED"
+            }
+        else:
+            data = {
+            "service_state":"ERROR"
+            }
+        r = requests.put(CORE_URL + "/" + service['service_id'], data = json.dumps(data), headers=rheaders)
+
 
 def check_job():
     print("I'm checking work...")
@@ -39,14 +56,18 @@ def check_job():
 
     for service in s:
         print(service)
-        r = requests.get(CHARLES_URL + "/" + service_id)
+        r = requests.get(CHARLES_URL + "/" + service['service_id'])
+        data = r.json()
+        if not data[0]['service_state'] == "REQUESTED":
+            newdata = {
+            "service_state":data['service_state']
+            }
+            p = requests.put(CORE_URL + "/" + service['service_id'], data = json.dumps(newdata), headers=rheaders)
 
 
-    #FOR SERVICE IN CHARLES_SERVICES
-    #    PUT CORE   
 
-schedule.every(1).minutes.do(job)
-schedule.every(1).minutes.do(check_job)
+schedule.every(20).seconds.do(job)
+schedule.every(40).seconds.do(check_job)
 
 while True:
     schedule.run_pending()
