@@ -4,15 +4,19 @@ from django.views import View
 
 from pprint import pprint
 
+from itertools import chain
+
 from ..models import Service, Task
 
 import json
 
 class WorkerView(View):
-	def get(self, request):
-		data = {"message" : "test"}
-		return JsonResponse(data, safe=False)
-
+	def get(self, request, service_id=None):
+		# state = request.GET.get('status', '')
+		if service_id is None:
+			my_services = Service.objects.all().values()			
+			return JsonResponse(list(chain(my_services)), safe=False)
+	
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
@@ -28,7 +32,9 @@ class WorkerView(View):
 
 		"""
 
-		service = Service(service_id=data['service_id'], service_type=data['service_type'], service_state="In Progress")
+		service = Service(service_id=data['metadata']['service_id'],
+						  service_type=data['metadata']['service_type'],
+						  service_state="IN_PROGRESS")
 		service.save()
 
 		"""

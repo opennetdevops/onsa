@@ -12,10 +12,20 @@ from background_task import background
 from itertools import chain
 import requests
 
+import json
+
 
 CHARLES = "http://localhost:8000"
 
+
+class ServiceStates(Enum):
+	IN_PROGRESS = "IN_PROGRESS"
+	COMPLETED = "COMPLETED"
+	ERROR = "ERROR"
+
+
 class Service(models.Model):
+	
 	service_id = models.CharField(max_length=50)
 	service_type = models.CharField(max_length=50)
 	service_state = models.CharField(max_length=50)
@@ -35,13 +45,16 @@ class Service(models.Model):
 		print(tasks)
 		
 		for task in tasks:
-			task_state = task.run_task()
-			if task_state == "SUCCESS":
+			task.run_task()
+			task.save()
+			if task.task_state == "COMPLETED":
 				executed_tasks.append(task)
-			elif task_state == "FAILED":
+			elif task.task_state == "ERROR":
 				task.rollback()
+				task.save()
 				for task in executed_tasks:
 					task.rollback()
+					task.save()
 				my_service.service_state = "ERROR"            
 				break
 
@@ -55,7 +68,15 @@ class Service(models.Model):
 		PASS = "F1b3rc0rp!"
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"service_state" : my_service.service_state}
-		requests.put(CHARLES+"/api/charles/services/%s" % my_service.service_id, data = data, auth = (USER, PASS), verify = False, headers = rheaders)
+		requests.put(CHARLES+"/api/charles/services/%s" % my_service.service_id, data = json.dumps(data), auth = (USER, PASS), verify = False, headers = rheaders)
+
+
+
+class TaskStates(Enum):
+	IN_PROGRESS = "IN_PROGRESS"
+	COMPLETED = "COMPLETED"
+	ROLLBACKED = "ROLLBACKED"
+	ERROR = "ERROR"
 
 
 class TaskChoices(Enum):
@@ -77,12 +98,12 @@ class Task(models.Model):
 	def factory(model, service_type, service, config):
 		if service_type == "vcpe":
 			if model == "MX104":
-				return MxVcpeTask(service=service, task_type=TaskChoices['MX_VCPE'].value, config=config)
+				return MxVcpeTask(service=service, task_state=TaskStates['IN_PROGRESS'],task_type=TaskChoices['MX_VCPE'].value, config=config)
 			elif model == "NSX":
-				return NsxTask(service=service, task_type=TaskChoices['NSX_VCPE'].value, config=config)
+				return NsxTask(service=service, task_state=TaskStates['IN_PROGRESS'], task_type=TaskChoices['NSX_VCPE'].value, config=config)
 		elif service_type == "cpeless-irs":
 			#todo change task type
-			if model == "MX104": return MxCpelessIrsTask(service=service, task_type=TaskChoices['MX_VCPE'].value, config=config)
+			if model == "MX104": return MxCpelessIrsTask(service=service, task_state=TaskStates['IN_PROGRESS'], task_type=TaskChoices['MX_VCPE'].value, config=config)
 
 class ManagerTaskMx(models.Manager):
 	def get_queryset(self):
@@ -104,28 +125,41 @@ class MxVcpeTask(Task):
 
 	def run_task(self):
 		handler = Handler.factory(service_type=self.task_type)
-		self.task_state = handler.configure_mx(self.config, "set")
-		return self.task_state
+		status, configuration = handler.configure_mx(self.confg, "set")
 
-	def rollback(self, parameters):
+		if status is not True:
+			self.task_state = TaskStates['ERROR'].value
+		else:
+			self.task_state = TaskStates['COMPLETED'].value
+			self.config = configuration
+
+	def rollback(self):
 		handler = Handler.factory(service_type=self.task_type)
-		self.task_state = handler.configure_mx(self.config, "delete")
-		pass
-
+		if handler.configure_mx(self.config, "delete") is True:
+			self.task_state = TaskStates['ROLLBACKED'].value
 
 class MxCpelessIrsTask(Task):
 
 	class Meta:
 		proxy = True
 
+	objects = ManagerTaskMx()
+
 	def run_task(self):
 		handler = CpelessHandler("irs")
-		self.task_state = handler.configure_mx(self.config, "set")
-		return self.task_state
+		status, configuration = handler.configure_mx(self.config, "set")
+		if status is not True:
+			self.task_state = TaskStates['ERROR'].value
+		else:
+			self.task_state = TaskStates['COMPLETED'].value
+			self.config = configuration
 
-	def rollback(self, parameters):
-		pass
+	def rollback(self):
+		handler = CpelessHandler("irs")
 
+		status, configuration = handler.configure_mx(self.config, "delete")
+		if status is True:
+			self.task_state = TaskStates['ROLLBACKED'].value
 
 class NsxTask(Task):
 	
@@ -142,26 +176,26 @@ class NsxTask(Task):
 	def run_task(self):
 		handler = NsxHandler()
 
-		subtasks = [handler.create_edge, handler.add_gateway]
-		options = [self.config, "VCPE-Test"]
+		status_code, create_edge_config =  handler.create_edge(self.config)
+		if status_code != 204:
+			self.task_state = TaskStates['ERROR'].value
+			return
+		status_code, add_gateway_config = handler.add_gateway("VCPE-Test")
+		if status_code != 201:
+			self.task_state = TaskStates['ERROR'].value
+			return
 
-		idx = 0
-		result = 200
-		while(result == 200 or result == 201):
-			result = subtasks[idx](options[idx])
-			if result != 200 and result != 201:
-				self.task_state = "FAILED"
-				return self.task_state
-			else:
-				self.task_state = "SUCCESS"
-				return self.task_state 
+		configuration = {'create_edge_config' : create_edge_config,
+						'add_gateway_config' : add_gateway_config}
 
+		self.config = configuration
+		self.task_state = TaskStates['COMPLETED'].value
 
-
-	def rollback(self,parameters):
+	def rollback(self):
 		handler = NsxHandler()
 		status_code = handler.delete_edge("VCPE-Test")
-		return status_code
 
-
-
+		if status_code is not 200:
+			self.task_state = TaskStates['ERROR'].value
+		else:
+			self.task_state = TaskStates['COMPLETED'].value

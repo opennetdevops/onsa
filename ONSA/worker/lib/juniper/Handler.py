@@ -15,8 +15,6 @@ class Handler(object):
 
 	def _open_conn():
 
-		status = "RUNNING"
-
 		logging.basicConfig(level=logging.INFO)
 		dev = Device(host=parameters["mgmt_ip"], user="lab", password="lab123", port=443)
 		try:
@@ -24,10 +22,10 @@ class Handler(object):
 			dev.open()
 		except Exception as err:
 			logging.error("Cannot connect to device:%s", err)
-			status = "FAILED"
+			status = False
 
 		dev.bind(cu=Config)
-		status = "SUCCESS"
+		status = True
 		
 		return dev, status
 
@@ -35,11 +33,9 @@ class Handler(object):
 		# End the NETCONF session and close the connection
 		logging.info("Closing NETCONF session")
 		dev.close()
-		return "SUCCESS"
+		return True
 
 	def _lock_config(dev):
-
-		status = "RUNNING"
 
 		# Lock the configuration
 		logging.info("Locking the configuration")
@@ -48,9 +44,9 @@ class Handler(object):
 		except LockError:
 			logging.error("Error: Unable to lock configuration")
 			dev.close()
-			status = "FAILED"
+			status = False
 
-		status = "SUCCESS"
+		status = True
 
 		return status
 
@@ -59,16 +55,16 @@ class Handler(object):
 		logging.info( "Unlocking the configuration")
 		try:
 			 dev.cu.unlock()
-			 status = "SUCCESS"
+			 status = True
 		except UnlockError:
 			 logging.error( "Error: Unable to unlock configuration")
-			 status = "FAILED"
+			 status = False
 
 		return status
 
 	def _load_config(dev, template, parameters):
 
-		status = "RUNNING"
+		status = True
 
 		# Loading configuration changes
 		try:
@@ -77,7 +73,7 @@ class Handler(object):
 
 		except ValueError as err:
 			logging.error("Error: %s", err.message)
-			status = "FAILED"
+			status = False
 
 		except Exception as err:
 			if err.rsp.find('.//ok') is None:
@@ -90,7 +86,7 @@ class Handler(object):
 			except UnlockError:
 					logging.error("Error: Unable to unlock configuration")
 			dev.close()
-			status = "FAILED"
+			status = False
 
 		return status
 
@@ -108,19 +104,19 @@ class Handler(object):
 			logging.error(e)
 			try:
 				dev.cu.unlock()
-				status = "FAILED"
+				status = False
 			except UnlockError:
 				logging.error( "Error: Unable to unlock configuration")
 				dev.close()
-				status = "FAILED"
+				status = False
 
 		logging.info( "Unlocking the configuration")
 		try:
 			 dev.cu.unlock()
-			 status = "SUCCESS"
+			 status = True
 		except UnlockError:
 			 logging.error( "Error: Unable to unlock configuration")
-			 status = "FAILED"
+			 status = False
 
 		return status
 
@@ -141,7 +137,4 @@ class Handler(object):
 		outcome = Handler._close_conn(dev)
 		status &= outcome
 
-		if status is not True:
-			return "FAILED"
-		else:
-			return "SUCCESS"
+		return status, parameters
