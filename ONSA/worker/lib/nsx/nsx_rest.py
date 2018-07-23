@@ -44,8 +44,8 @@ def nsxPut(url, data, format):
 #   return r
 
 
-def nsxDelete(url, format):
-  rheaders = {'Content-Type': 'application/%s' % format}
+def nsxDelete(url):
+  rheaders = {'Content-Type': 'application/xml'}
   r = requests.delete(MANAGER + url, auth = (USER, PASS), verify = False, headers = rheaders)
   return r.status_code
 

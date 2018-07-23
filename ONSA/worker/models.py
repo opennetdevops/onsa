@@ -150,14 +150,13 @@ class NsxTask(Task):
 		result = 200
 		while(result == 200):
 			result = subtasks[idx](options[idx])
-			print(result)
-		
-		if result != 200:
-			self.task_state = "failed"
-			return self.task_state
-		else:
-			self.task_state = "success"
-			return self.task_state 
+			print(result)		
+			if result != 200:
+				self.task_state = "failed"
+				return self.task_state
+			else:
+				self.task_state = "success"
+				return self.task_state 
 
 
 

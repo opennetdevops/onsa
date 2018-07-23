@@ -1,0 +1,35 @@
+<edge>
+  <datacenterMoid>{{ datacenterMoid }}</datacenterMoid>
+  <name>{{ name }}</name>
+  <description>{{ description }}</description>
+  <appliances>
+    <applianceSize>{{ appliances.applianceSize }}</applianceSize>
+    <appliance>
+      <resourcePoolId>{{ appliances.appliance.resourcePoolId }}</resourcePoolId>
+      <datastoreId>{{ appliances.appliance.datastoreId }}</datastoreId>
+    </appliance>
+  </appliances>
+  <vnics>
+    {% for vnic in vnics %}
+    <vnic>
+      <index>{{ vnic.index }}</index>
+      <name>{{ vnic.name }}</name>
+      <type>{{ vnic.type }}</type>
+      <portgroupId>{{ vnic.portgroupId }}</portgroupId>
+      <addressGroups>
+        <addressGroup>
+          <primaryAddress>{{ vnic.primaryAddress }}</primaryAddress>
+          <subnetMask>{{ vnic.subnetMask }}</subnetMask>
+        </addressGroup>
+      </addressGroups>
+      <mtu>{{ vnic.mtu }}</mtu>
+      <isConnected>{{ vnic.isConnected }}</isConnected>
+    </vnic>
+    {% endfor %}
+  </vnics>
+  <cliSettings>    
+    <userName>{{ cliSettings.userName }}</userName>
+    <password>{{ cliSettings.password }}</password>
+    <remoteAccess>{{ cliSettings.remoteAccess }}</remoteAccess>
+  </cliSettings>
+</edge>
