@@ -109,6 +109,7 @@ class MxVcpeTask(Task):
 
 	def rollback(self, parameters):
 		handler = Handler.factory(service_type=self.task_type)
+		self.task_state = handler.configure_mx(self.config, "delete")
 		pass
 
 
@@ -160,6 +161,7 @@ class NsxTask(Task):
 	def rollback(self,parameters):
 		handler = NsxHandler()
 		status_code = handler.delete_edge("VCPE-Test")
+		return status_code
 
 
 
