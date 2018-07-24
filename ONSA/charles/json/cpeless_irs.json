@@ -1,0 +1,23 @@
+{ 
+  "client" : "Cliente01",
+  "service_type" : "cpeless-irs",
+  "service_id" : "1",
+  "tasks_type" : "CREATE",
+  "devices" : [{"model" : "MX104",
+				"parameters" : {
+							"sco_ae_interface" : "a1",
+							"sco_logical_unit" : "10",
+							"vrf_name" : "INTERNET",
+							"qinqOuterVlan" : "10",
+							"qinqInnerVlan" : "999",
+							"public_cidr" : "181.10.10.0/29"
+							}
+				}]
+}
+
+
+
+
+
+
+

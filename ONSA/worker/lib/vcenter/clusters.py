@@ -13,7 +13,7 @@ import time
 requests.packages.urllib3.disable_warnings()
  
 # Disabling SSL certificate verification
-context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
 context.verify_mode = ssl.CERT_NONE
 
 def get_vim_objects(content, vim_type):
@@ -65,3 +65,5 @@ def getAllClusters():
         return 1
 
     return clusters
+
+print(getAllClusters())

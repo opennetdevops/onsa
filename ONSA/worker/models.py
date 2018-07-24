@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 
 from .lib.juniper.Handler import Handler
-from .lib.juniper.VcpeHandler import VcpeHandler
-from .lib.juniper.CpelessHandler import CpelessHandler
 from .lib.nsx.NsxHandler import NsxHandler
 from enum import Enum
 
@@ -16,7 +14,6 @@ import json
 
 
 CHARLES = "http://localhost:8000"
-
 
 class ServiceStates(Enum):
 	IN_PROGRESS = "IN_PROGRESS"
@@ -194,8 +191,9 @@ class NsxTask(Task):
 	def rollback(self):
 		handler = NsxHandler()
 		status_code = handler.delete_edge("VCPE-Test")
+		self.task_state = TaskStates['ROLLBACKED'].value
 
 		if status_code is not 200:
 			self.task_state = TaskStates['ERROR'].value
 		else:
-			self.task_state = TaskStates['COMPLETED'].value
+			self.task_state = TaskStates['ROLLBACKED'].value
