@@ -33,9 +33,9 @@ def job():
         "service_type":service['service_type'],
         "client_id":service['client_id'],
         "client_name":clientData[0]['name'], 
-        "location":"MOCK" #todo no need, charles will know this... eventually?
+        "location":"CENTRO" #todo no need, charles will know this... eventually?
         }
-        print("DEBUG: ",data)
+        # print("DEBUG: ",data)
 
         r = requests.post(CHARLES_URL, data = json.dumps(data), headers=rheaders)
         #if 200 --> PUT core to change service state to REQUESTED
