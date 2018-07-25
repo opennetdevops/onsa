@@ -7,7 +7,8 @@
    "service_id":"0987654321",
    "tasks_type":"",
    "devices":[
-      {  //me falta todo menos public_cidr
+      {  //me falta vxrail vxrail_ae_interface vxrail_logical_unit vxrail_vlan
+         // sco_ae_interface sco_logical_unit qinqOuterVlan qinqInnerVlan
          "model":"MX104",
          "parameters":{
             "mgmt_ip":"10.120.104.13",
@@ -21,7 +22,7 @@
             "public_cidr":"181.1.0.0/28"
          }
       },
-      {  //me falta todo menos primaryAddress
+      {  //me falta downlink
          "model":"NSX",
          "parameters":{
             "datacenterMoid":"datacenter-2",

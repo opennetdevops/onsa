@@ -65,7 +65,7 @@ class ServiceView(View):
 
 	def get_ip_wan_nsx(location,client_name,service_id):
 		description = client_name + "-" + service_id
-		#"Searchin by this owner prefix WAN_NSX"
+		#"Searchin by owner prefix=WAN_NSX"
 		owner = "WAN_NSX_" + location
 		token = ServiceView.get_ipam_authentication_token()
 		url = "/api/networks/assign_ip"
