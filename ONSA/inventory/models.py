@@ -154,6 +154,7 @@ class VlanTag(models.Model):
 
 
 class VirtualVmwPod(Device):
+    uplinkInterface = models.CharField(max_length=50, null=True) #AE del lado del MX
     transportZoneName = models.CharField(max_length=50, blank=True) #TODO NSX Only
     clusterName = models.CharField(max_length=50, blank=True)
     datastoreId = models.CharField(max_length=50, blank=True)
@@ -161,6 +162,8 @@ class VirtualVmwPod(Device):
     datacenterId = models.CharField(max_length=50, blank=True)
     uplinkPg = models.CharField(max_length=50, blank=True)
     uplinkPgId = models.CharField(max_length=50, blank=True)
+    routerNode = models.OneToOneField(RouterNode, on_delete=models.SET_NULL,null=True) #TODO no me gusta
+
 
     def __str__(self):
         return self.clusterName
@@ -199,7 +202,6 @@ class NsxEdge(Device):
 
     def __str__(self):
         return self.edgeName
-
 
 
 class LogicalUnit(models.Model):

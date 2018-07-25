@@ -19,7 +19,7 @@ def check_url_services(url,state):
     return data
 
 def job():
-    print("I'm working...")
+    # print("I'm working...")
     s = check_url_services(CORE_URL,"PENDING")
 
     for service in s:
@@ -51,11 +51,11 @@ def job():
 
 
 def check_job():
-    print("I'm checking work...")
+    # print("I'm checking work...")
     s = check_url_services(CORE_URL,"REQUESTED")
 
     for service in s:
-        print(service)
+        # print(service)
         r = requests.get(CHARLES_URL + "/" + service['service_id'])
         data = r.json()
         if not data[0]['service_state'] == "REQUESTED":

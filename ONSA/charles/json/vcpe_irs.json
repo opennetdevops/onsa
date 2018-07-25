@@ -9,33 +9,111 @@
    "devices":[
       {  //me falta vxrail vxrail_ae_interface vxrail_logical_unit vxrail_vlan
          // sco_ae_interface sco_logical_unit qinqOuterVlan qinqInnerVlan
+         // location_id -> virtual_pods , routernodes, accessPort
+         // routernodes -> logicalUnit
+         // accessPort -> acccessNode y VlanTag (innerVlan)
          "model":"MX104",
          "parameters":{
-            "mgmt_ip":"10.120.104.13",
-            "vxrail_ae_interface":"ae1",
-            "vxrail_logical_unit":"100",
-            "vxrail_vlan":"10",
-            "sco_ae_interface":"ae1",
-            "sco_logical_unit":"24",
-            "qinqOuterVlan":"24",
-            "qinqInnerVlan":"555",
+            "mgmt_ip":"10.120.104.13",    // /inventory/api/locations/<LOCATION_ID>/routernodes 
+            "vmw_uplinkInterface":"ae1",  // /inventory/api/locations/<LOCATION_ID>/virtualpods **4
+            "vmw_logicalUnit":"100",  // /inventory/api/routernodes/<ROUTERNODE_ID>/logicalunits?used=false
+            "vmw_vlan":"10",           // /inventory/api/virtualpods/<VMWPOD_ID>/portgroups?used=false **5 / vlan_tag
+            "an_uplinkInterface":"ae1",  // /inventory/api/locations/<LOCATION_ID>/accessports?used=false **1
+            "an_logicalUnit":"24",   // /inventory/api/routernodes/<ROUTERNODE_ID>/logicalunits?used=false
+            "an_qinqOuterVlan":"24",      // /inventory/api/accessnodes/<ACCESSNODE_ID> **2
+            "an_qinqInnerVlan":"555",     // /inventory/api/accessports/<ACCESPORT_ID>/vlantags?used=false **3
             "public_cidr":"181.1.0.0/28"
          }
       },
       {  //me falta downlink
          "model":"NSX",
          "parameters":{
-            "datacenterMoid":"datacenter-2",
-            "resourcePoolId":"resgroup-44",
-            "datastoreId":"datastore-55"
+            "datacenterMoid":"datacenter-2", // /inventory/api/locations/<LOCATION_ID>/virtualpods
+            "resourcePoolId":"resgroup-44",  // /inventory/api/locations/<LOCATION_ID>/virtualpods
+            "datastoreId":"datastore-55"     // /inventory/api/locations/<LOCATION_ID>/virtualpods
          },
          "uplink":{
-            "portgroupId":"dvportgroup-456",
+            "portgroupId":"dvportgroup-456", // /inventory/api/locations/<LOCATION_ID>/virtualpods //uplinkPg
             "primaryAddress":"100.64.0.3",
          },
          "downlink":{
-            "portgroupId":"dvportgroup-999",
+            "portgroupId":"dvportgroup-999", // **5
          }
       }
    ]
 }
+
+// **1 - Devuelve array de accessports, tiene AccessNode Id
+// Example:  /inventory/api/locations/2/accessports?used=false
+//[
+//     {
+//         "id": 2,                             // <--ACCESSPORT_ID to be used in /inventory/api/accessports/XXX/vlantags?used=false
+//         "description": "SCO CEN 7 - Port 2",
+//         "port": "eth1/2",
+//         "used": false,
+//         "accessNode_id": 1, //Use this to get the access Node
+//         "client": null
+//     },
+//
+// **2 - Devuelve array con 1 access node
+// Example: /inventory/api/accessnodes/1
+// [
+//     {
+//         "id": 1,
+//         "name": "SCO-some-07",
+//         "deviceType": "",
+//         "mgmtIP": "",
+//         "model": "",
+//         "location_id": 2,
+//         "uplinkInterface": "ae1",
+//         "accessNodeId": "7",
+//         "qinqOuterVlan": "7",
+//         "logicalUnitId": ""
+//     }
+// ]
+//
+// **3 - Devuelve array con vlan tags free o used (depende del query parameter)
+// Example: /inventory/api/accessports/1/vlantags?used=false
+// [
+//     {
+//         "id": 1,
+//         "vlan_tag": "1899"
+//     }
+// ]
+//
+// **4 - Devuelve array de virtual pods at location
+// Example: /inventory/api/locations/<LOCATION_ID>/virtualpods
+// [
+//     {
+//         "id": 1,
+//         "name": "AVALOS",
+//         "deviceType": "virtualpod",
+//         "mgmtIP": "10.120.110.9",
+//         "model": "VXRAIL",
+//         "location_id": 1,
+//         "transportZoneName": "CENTRO-TZ",
+//         "clusterName": "VCPE-CEN-HUB01",
+//         "datastoreId": "datastore-4554",
+//         "resourcePoolId": "resgroup-4887",
+//         "datacenterId": "datacenter-2",
+//         "uplinkPg": "PG-CEN-UPLINK",
+//         "uplinkPgId": "0",
+//         "uplinkInterface" : "ae1"
+//     }
+// ]
+// 
+// **5 -  Devuelve array de portgroups matching query parameter
+// Example: /inventory/api/virtualpods/2/portgroups?used=false
+// [
+//     {
+//         "id": 1,
+//         "vlan_tag": "1802",
+//         "name": "PG-02",
+//         "virtualVmwPod_id": 2,
+//         "used": false,
+//         "dvportgroup_id": "dvportgroup-457"
+//     }
+// ]
+
+
+

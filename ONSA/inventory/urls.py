@@ -9,7 +9,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 from django.views.decorators.http import require_http_methods
 
 from .views import devices, portgroups, virtualpods, locations, router_nodes, access_nodes, access_ports, vlan_tags
-from .views import router_node_logical_units, logical_units, location_access_nodes, location_router_nodes
+from .views import router_node_logical_units, logical_units, location_access_nodes, location_router_nodes, virtualpod_portgroups
 from .views import access_node_access_ports, location_access_ports, access_port_vlan_tags, locations_virtual_pod
 
 urlpatterns = [ 
@@ -25,6 +25,7 @@ urlpatterns = [
     path('/api/virtualpods', require_http_methods(["GET","POST"])(virtualpods.VirtualPodsView.as_view())),
     path('/api/virtualpods/<int:virtualpod_id>', require_http_methods(["GET","PUT", "DELETE"])(virtualpods.VirtualPodsView.as_view())),
     path('/api/locations/<int:location_id>/virtualpods', require_http_methods(["GET","POST"])(locations_virtual_pod.LocationVirtualPodView.as_view())),
+    path('/api/virtualpods/<int:virtualpod_id>/portgroups', require_http_methods(["GET"])(virtualpod_portgroups.VirtualpodPortgroupsView.as_view())),
     
     path('/api/portgroups', require_http_methods(["GET","POST"])(portgroups.PortgroupView.as_view())),
     path('/api/portgroups/<int:portgroup_id>', require_http_methods(["GET","PUT", "DELETE"])(portgroups.PortgroupView.as_view())),
@@ -35,7 +36,7 @@ urlpatterns = [
     path('/api/routernodes/<int:routernode_id>/logicalunits/<int:logicalunit_id>', require_http_methods(["DELETE"])(router_node_logical_units.RouterNodeLogicalUnitsView.as_view())),
     
     path('/api/accessnodes', require_http_methods(["GET","POST"])(access_nodes.AccessNodesView.as_view())),
-    path('/api/accessnodes/<int:accessnode_id>', require_http_methods(["PUT","DELETE"])(access_nodes.AccessNodesView.as_view())),
+    path('/api/accessnodes/<int:accessnode_id>', require_http_methods(["GET","PUT","DELETE"])(access_nodes.AccessNodesView.as_view())),
     path('/api/accessnodes/<int:accessnode_id>/accessports', require_http_methods(["GET","POST"])(access_node_access_ports.AccessNodeAccessPortsView.as_view())),
     
     path('/api/accessports', require_http_methods(["GET"])(access_ports.AccessPortsView.as_view())),

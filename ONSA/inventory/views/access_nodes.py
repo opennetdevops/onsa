@@ -6,9 +6,13 @@ from ..models import AccessNode
 import json
 
 class AccessNodesView(View):
-	def get(self, request):
+	def get(self, request, accessnode_id=None):
 
-		access_nodes = AccessNode.objects.all().values()
+		if accessnode_id is None:
+			access_nodes = AccessNode.objects.all().values()
+		else:
+			access_nodes = AccessNode.objects.filter(pk=accessnode_id).values()	
+
 		return JsonResponse(list(access_nodes), safe=False)
 
 	def post(self, request):
