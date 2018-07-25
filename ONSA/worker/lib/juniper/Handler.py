@@ -183,15 +183,15 @@ class VcpeHandler(Handler):
 			jinja_vars = {
 							"bridge_domain_id" : "",
 							"bridge_domain_description" : "",
-							"vxrail_ae_interface" : parameters['vxrail_ae_interface'],
-							"vxrail_logical_unit" : parameters['vxrail_logical_unit'],
-							"sco_ae_interface" : parameters['sco_ae_interface'],
-							"sco_logical_unit" : parameters['sco_logical_unit'],
-							"vxrail_interface_description" : "",
-							"sco_interface_description" : "",
-							"vxrail_vlan" : parameters['vxrail_vlan'],
-							"qinqOuterVlan" : parameters['qinqOuterVlan'],
-							"qinqInnerVlan" : parameters['qinqInnerVlan'],
+							"vmw_uplinkInterface" : parameters['vmw_uplinkInterface'],
+							"vmw_logicalUnit" : parameters['vmw_logicalUnit'],
+							"an_uplinkInterface" : parameters['an_uplinkInterface'],
+							"an_logicalUnit" : parameters['an_logicalUnit'],
+							"vmw_interface_description" : "",
+							"an_interface_description" : "",
+							"vmw_vlan" : parameters['vmw_vlan'],
+							"an_qinqOuterVlan" : parameters['an_qinqOuterVlan'],
+							"an_qinqInnerVlan" : parameters['an_qinqInnerVlan'],
 							"public_cidr" : parameters['public_cidr']
 						}
 			
@@ -201,10 +201,10 @@ class VcpeHandler(Handler):
 
 			jinja_vars = {
 							"bridge_domain_id" : "",
-							"vxrail_ae_interface" : parameters['vxrail_ae_interface'],
-							"vxrail_logical_unit" : parameters['vxrail_logical_unit'],
-							"sco_ae_interface" : parameters['sco_ae_interface'],
-							"sco_logical_unit" : parameters['sco_logical_unit'],
+							"vmw_uplinkInterface" : parameters['vmw_uplinkInterface'],
+							"vmw_logicalUnit" : parameters['vmw_logicalUnit'],
+							"an_uplinkInterface" : parameters['an_uplinkInterface'],
+							"an_logicalUnit" : parameters['an_logicalUnit'],
 							"public_cidr" : parameters['public_cidr']
 						}
 
@@ -223,12 +223,12 @@ class CpelessHandler(Handler):
 		dir = os.path.dirname(__file__)
 		if method == "set":			
 			jinja_vars = {
-							"sco_ae_interface" : parameters['sco_ae_interface'],
-							"sco_logical_unit" : parameters['sco_logical_unit'],
+							"an_uplinkInterface" : parameters['an_uplinkInterface'],
+							"an_logicalUnit" : parameters['an_logicalUnit'],
 							"sco_interface_description" : "",
 							"vrf_name" : parameters["vrf_name"],
-							"qinqOuterVlan" : parameters['qinqOuterVlan'],
-							"qinqInnerVlan" : parameters['qinqInnerVlan'],
+							"an_qinqOuterVlan" : parameters['an_qinqOuterVlan'],
+							"an_qinqInnerVlan" : parameters['an_qinqInnerVlan'],
 							"public_cidr" : parameters['public_cidr']
 						}
 			
@@ -237,8 +237,8 @@ class CpelessHandler(Handler):
 		elif method == "delete":
 
 			jinja_vars = {
-							"sco_ae_interface" : parameters['sco_ae_interface'],
-							"sco_logical_unit" : parameters['sco_logical_unit'],
+							"an_uplinkInterface" : parameters['an_uplinkInterface'],
+							"an_logicalUnit" : parameters['an_logicalUnit'],
 							"vrf_name" : parameters["vrf_name"]
 						}
 
