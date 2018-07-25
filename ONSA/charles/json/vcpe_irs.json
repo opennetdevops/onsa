@@ -33,7 +33,7 @@
             "datastoreId":"datastore-55"     // /inventory/api/locations/<LOCATION_ID>/virtualpods
          },
          "uplink":{
-            "portgroupId":"dvportgroup-456", // /inventory/api/locations/<LOCATION_ID>/virtualpods //uplinkPg
+            "portgroupId":"dvportgroup-456", // /inventory/api/locations/<LOCATION_ID>/virtualpods //uplinkPgId
             "primaryAddress":"100.64.0.3",
          },
          "downlink":{
