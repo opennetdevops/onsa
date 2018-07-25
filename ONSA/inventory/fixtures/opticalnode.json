@@ -1,0 +1,1 @@
+[{"pk":"1", "model": "inventory.opticalnode", "fields": {"name":"LAB-HOR-NID", "deviceType" : "OpticalNode", "mgmtIp" : "10.120.80.121", "location" : 2, "model" : "S3290-5", "serialNumber" : "CCCC3333CCCC", "client" : "Client01", "hwId" : "33"}}]
