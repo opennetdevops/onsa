@@ -1,0 +1,10 @@
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service compress-config
+!
+hostname AGC-CORE-CISCO
+!
