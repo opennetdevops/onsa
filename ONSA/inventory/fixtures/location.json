@@ -1,2 +1,2 @@
-[{"pk":"1", "model": "inventory.location", "fields": {"name":"HUB-CENTRO", "address" : ""}},
+[{"pk":"1", "model": "inventory.location", "fields": {"name":"CENTRO", "address" : ""}},
 {"pk":"2", "model": "inventory.location", "fields" : {"name":"LAB-HORNOS", "address":"Gral. Hornos 690"}}]
