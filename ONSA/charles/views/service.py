@@ -105,6 +105,16 @@ class ServiceView(View):
 		else:
 			return None
 
+	def get_router_node(location_id):
+		url= "/inventory/api/locations/"+ location_id + "/routernodes"
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]
+		else:
+			return None
+
 	def get_virtual_pod(location_id):
 		url= "/inventory/api/locations/"+ location_id + "/virtualpods"
 		rheaders = {'Content-Type': 'application/json'}
@@ -133,6 +143,7 @@ class ServiceView(View):
 		public_network = ServiceView.get_public_network(service.client_name,service.service_id,prefix)
 		location_id = str(ServiceView.get_location_id(service.location))
 		virtual_pod = ServiceView.get_virtual_pod(location_id)
+		router_node = ServiceView.get_router_node(location_id)
 		downlink_pg = ServiceView.get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
 
 		if ip_wan:
@@ -142,6 +153,7 @@ class ServiceView(View):
 				print(location_id)
 				print(virtual_pod)
 				print(downlink_pg)
+				print(router_node)
 			else:
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()
