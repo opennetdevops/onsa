@@ -1,0 +1,1 @@
+[{"pk":"1", "model": "inventory.accessport", "fields": {"client":"Client01", "description" : "vCPE IRS Testing", "accessNode" : 1, "used" : "False", "port" : "12"}}]

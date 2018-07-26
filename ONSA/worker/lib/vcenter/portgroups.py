@@ -75,5 +75,7 @@ def get_portgroups_all():
 	return portgroups
 
 
-print(get_portgroup_id("LAB_MGMT"))
-print(get_portgroup_id("LAB_Inside"))
+print(get_portgroup_id("PG-HOR-VCPE-UPLINK"))
+print(get_portgroup_id("PG-VCPE-IRS-VL3500"))
+print(get_portgroup_id("PG-VCPE-IRS-VL3501"))
+# print(get_portgroup_id("LAB_Inside"))

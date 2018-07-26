@@ -133,6 +133,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+# Fixtures
+FIXTURE_DIRS = (
+   '/inventory/fixtures/',
+   '/core/fixtures',
+)
+
 # Django REST Framework
 # http://www.django-rest-framework.org/api-guide/authentication/
 REST_FRAMEWORK = {
