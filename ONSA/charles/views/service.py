@@ -99,19 +99,31 @@ class ServiceView(View):
 		url= "/inventory/api/locations?name="+location_name
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
-		return json.loads(response.text)[0]['id']
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]['id']
+		else:
+			return None
 
 	def get_virtual_pod(location_id):
 		url= "/inventory/api/locations/"+ location_id + "/virtualpods"
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
-		return json.loads(response.text)[0]
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]
+		else:
+			return None
 
 	def get_virtual_pod_downlink_portgroup(virtual_pod_id):
 		url= "/inventory/api/virtualpods/"+ virtual_pod_id + "/portgroups?used=false"
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
-		return json.loads(response.text)[0]
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]
+		else:
+			return None
 
 	def existing_service(service_id):
 		return Service.objects.filter(service_id=service_id).count() is not 0
