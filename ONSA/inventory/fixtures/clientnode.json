@@ -1,2 +1,2 @@
-[{"pk":"1", "model": "inventory.clientnode", "fields": {"name":"CENTRO-CPE", "deviceType" : "ClientNode", "mgmtIp" : "", "location" : 1, "model" : "Cisco 891", "serialNumber" : "AAAA1111AAAA", "service" : "IRS"}},
-{"pk":"2", "model": "inventory.clientnode", "fields": {"name":"LAB-CPE", "deviceType" : "ClientNode", "mgmtIp" : "", "location" : 2, "model" : "Cisco 891", "serialNumber" : "BBBB2222BBBB", "service" : "IRS"}}]
+[{"pk":"1", "model": "inventory.clientnode", "fields": {"name":"CENTRO-CPE", "deviceType" : "ClientNode", "mgmtIP" : "", "location" : 1, "model" : "Cisco 891", "serialNumber" : "AAAA1111AAAA", "service" : "IRS"}},
+{"pk":"2", "model": "inventory.clientnode", "fields": {"name":"LAB-CPE", "deviceType" : "ClientNode", "mgmtIP" : "", "location" : 2, "model" : "Cisco 891", "serialNumber" : "BBBB2222BBBB", "service" : "IRS"}}]

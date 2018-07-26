@@ -1,4 +1,4 @@
 [{"pk":"1", "model": "inventory.logicalunit", "fields": {"logical_unit_id":15000}},
 {"pk":"2", "model": "inventory.logicalunit", "fields" : {"logical_unit_id" : 15001}},
-{"pk":"3", "model": "inventory.logicalunit", "fields" : {"logical_unit_id" : 15002}}
+{"pk":"3", "model": "inventory.logicalunit", "fields" : {"logical_unit_id" : 15002}},
 {"pk":"4", "model": "inventory.logicalunit", "fields" : {"logical_unit_id" : 15003}}]

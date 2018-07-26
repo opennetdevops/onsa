@@ -136,8 +136,7 @@ STATIC_URL = '/static/'
 
 # Fixtures
 FIXTURE_DIRS = (
-   '/inventory/fixtures/',
-   '/core/fixtures',
+   BASE_DIR + '/inventory/fixtures/',
 )
 
 # Django REST Framework
