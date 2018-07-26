@@ -14,6 +14,7 @@ class ServiceStatuses(Enum):
 
 class ServiceView(View):
 	IPAM_BASE = "http://10.120.78.90"
+	INVENTORY_BASE = "http://localhost:8000"
 
 	def get(self, request, service_id=None):
 		if service_id is None:
@@ -94,18 +95,41 @@ class ServiceView(View):
 		else:
 			return None
 
+	def get_location_id(location_name):
+		url= "/inventory/api/locations?name="+location_name
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		return json.loads(response.text)[0]['id']
+
+	def get_virtual_pod(location_id):
+		url= "/inventory/api/locations/"+ location_id + "/virtualpods"
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		return json.loads(response.text)[0]
+
+	def get_virtual_pod_downlink_portgroup(virtual_pod_id):
+		url= "/inventory/api/virtualpods/"+ virtual_pod_id + "/portgroups?used=false"
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		return json.loads(response.text)[0]
+
 	def existing_service(service_id):
 		return Service.objects.filter(service_id=service_id).count() is not 0
-
 
 	def generate_vcpe_irs_request(service,prefix):
 		ip_wan = ServiceView.get_ip_wan_nsx(service.location,service.client_name,service.service_id)
 		public_network = ServiceView.get_public_network(service.client_name,service.service_id,prefix)
+		location_id = str(ServiceView.get_location_id(service.location))
+		virtual_pod = ServiceView.get_virtual_pod(location_id)
+		downlink_pg = ServiceView.get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
 
 		if ip_wan:
 			if public_network:
 				print(ip_wan)
 				print(public_network)
+				print(location_id)
+				print(virtual_pod)
+				print(downlink_pg)
 			else:
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()
