@@ -10,10 +10,10 @@ class AccessNodesView(View):
 
 		if accessnode_id is None:
 			access_nodes = AccessNode.objects.all().values()
+			return JsonResponse(list(access_nodes), safe=False)
 		else:
-			access_nodes = AccessNode.objects.filter(pk=accessnode_id).values()	
-
-		return JsonResponse(list(access_nodes), safe=False)
+			access_node = AccessNode.objects.filter(pk=accessnode_id).values()[0]	
+			return JsonResponse(access_node, safe=False)
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))

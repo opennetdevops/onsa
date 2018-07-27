@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views import View
 from ..models import Service
 from enum import Enum
+from pprint import pprint
 import requests
 import json
 
@@ -54,6 +55,68 @@ class ServiceView(View):
 		data = serializers.serialize('json', service)
 		return HttpResponse(data, content_type='application/json')
 
+	def generate_vcpe_irs_request(service,prefix):
+		ip_wan = ServiceView.get_ip_wan_nsx(service.location,service.client_name,service.service_id)
+		public_network = ServiceView.get_public_network(service.client_name,service.service_id,prefix)
+		location_id = str(ServiceView.get_location_id(service.location))
+		virtual_pod = ServiceView.get_virtual_pod(location_id)
+		router_node = ServiceView.get_router_node(location_id)
+		downlink_pg = ServiceView.get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
+		router_node_id = str(router_node['id'])
+		free_logical_units = ServiceView.get_free_logical_units(router_node_id)
+		free_access_port = ServiceView.get_free_access_port(location_id)
+		access_port_id = str(free_access_port['id'])
+		access_node_id = str(free_access_port['accessNode_id'])
+		access_node = ServiceView.get_access_node(access_node_id)
+		free_vlan_tag = ServiceView.get_free_vlan_tag(access_port_id)
+
+		response = {
+	   "client":service.client_name,
+	   "service_type":service.service_type,
+	   "service_id":service.service_id,
+	   "tasks_type":"CREATE",
+	   "devices":[
+	      {  
+	         "model":router_node['model'],
+	         "parameters":{
+	            "mgmt_ip":router_node['mgmtIP'],    
+	            "vmw_uplinkInterface":virtual_pod['uplinkInterface'], 
+	            "vmw_logicalUnit":free_logical_units[0]['logical_unit_id'],  
+	            "vmw_vlan":downlink_pg['vlan_tag'],           
+	            "an_uplinkInterface":access_node['uplinkInterface'],  
+	            "an_logicalUnit":free_logical_units[1]['logical_unit_id'],   
+	            "an_qinqOuterVlan":access_node['qinqOuterVlan'],      
+	            "an_qinqInnerVlan":free_vlan_tag['vlan_tag'],     
+	            "public_cidr":public_network
+	         }
+	      },
+	      {  "model":virtual_pod['model'],
+	         "parameters":{
+	            "datacenterMoid":virtual_pod['datacenterId'], 
+	            "resourcePoolId":virtual_pod['resourcePoolId'], 
+	            "datastoreId":virtual_pod['datastoreId'],     
+			        "uplink":{
+			          "portgroupId":virtual_pod['uplinkPgId'], 
+			          "primaryAddress":ip_wan
+			         },
+			         "downlink":{
+			         	"portgroupId":downlink_pg['dvportgroup_id']
+			         }
+	         }
+	      }
+	   ]
+		}
+
+		#TODO: check if API returns empty values and do rollback
+		if ip_wan:
+			if public_network:
+				#Call worker
+				pprint(response)
+			else:
+				service.service_state = ServiceStatuses['ERROR'].value
+				service.save()
+				print("Not possible service")		
+		
 
 	def get_ipam_authentication_token():
 		url = "/api/authenticate"
@@ -135,27 +198,46 @@ class ServiceView(View):
 		else:
 			return None
 
+	def get_free_logical_units(router_node_id):
+		url= "/inventory/api/routernodes/" + router_node_id + "/logicalunits?used=false"
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		#TODO check minimum size = 2
+		if json_response:
+			return json_response
+		else:
+			return None
+
+	def get_free_access_port(location_id):
+		url= "/inventory/api/locations/"+ location_id + "/accessports?used=false"
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]
+		else:
+			return None
+
+	def get_access_node(access_node_id):
+		url= "/inventory/api/accessnodes/"+ access_node_id 
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response
+		else:
+			return None
+
+	def get_free_vlan_tag(access_port_id):
+		url= "/inventory/api/accessports/"+ access_port_id + "/vlantags?used=false"
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.INVENTORY_BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]
+		else:
+			return None
+
 	def existing_service(service_id):
 		return Service.objects.filter(service_id=service_id).count() is not 0
-
-	def generate_vcpe_irs_request(service,prefix):
-		ip_wan = ServiceView.get_ip_wan_nsx(service.location,service.client_name,service.service_id)
-		public_network = ServiceView.get_public_network(service.client_name,service.service_id,prefix)
-		location_id = str(ServiceView.get_location_id(service.location))
-		virtual_pod = ServiceView.get_virtual_pod(location_id)
-		router_node = ServiceView.get_router_node(location_id)
-		downlink_pg = ServiceView.get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
-
-		if ip_wan:
-			if public_network:
-				print(ip_wan)
-				print(public_network)
-				print(location_id)
-				print(virtual_pod)
-				print(downlink_pg)
-				print(router_node)
-			else:
-				service.service_state = ServiceStatuses['ERROR'].value
-				service.save()
-				print("Not possible service")		
-		
