@@ -32,8 +32,8 @@ class WorkerView(View):
 
 		"""
 
-		service = Service(service_id=data['metadata']['service_id'],
-						  service_type=data['metadata']['service_type'],
+		service = Service(service_id=data['service_id'],
+						  service_type=data['service_type'],
 						  service_state="IN_PROGRESS")
 		service.save()
 

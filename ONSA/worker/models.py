@@ -10,7 +10,7 @@ from background_task import background
 
 from itertools import chain
 import requests
-
+from pprint import pprint
 import json
 
 
@@ -33,13 +33,14 @@ class Service(models.Model):
 		
 	@background(schedule=5)
 	def deploy(service_id):
+
 		my_service = Service.objects.get(service_id=service_id)
 
-		if service_type.split("_")[0] == "vcpe":
+		if my_service.service_type.split("_")[0] == "vcpe":
 			tasks = list(chain(NsxTask.objects.filter(service=my_service), MxVcpeTask.objects.filter(service=my_service)))
-		elif service_type.split("_")[0] == "cpeless":
+		elif my_service.service_type.split("_")[0] == "cpeless":
 			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
-		elif service_type.split("_")[0] == "cpe":
+		elif my_service.service_type.split("_")[0] == "cpe":
 			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
 
 		executed_tasks = []
