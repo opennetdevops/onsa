@@ -1,5 +1,4 @@
 import jinja2
-from .nsx_rest import *
 from ..common.render import render
 
 from netmiko import ConnectHandler
@@ -40,6 +39,6 @@ class TransitionHandler(object):
 			self.path += "delete.conf"
 
 		# Clossing connection    
-    	net_connect.disconnect()
+		net_connect.disconnect()
 		pass
 		
