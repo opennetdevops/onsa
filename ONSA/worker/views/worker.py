@@ -41,9 +41,10 @@ class WorkerView(View):
 		Creates all of the tasks associated with
 		the service requested.
 		"""
+		op_type = data['op_type']
 
 		for device in data['devices']:
-			task = Task.factory(device['model'], service.service_type, service, device['parameters'])
+			task = Task.factory(device['model'], op_type, service.service_type, service, device['parameters'])
 			task.save()
 
 		"""
@@ -51,4 +52,4 @@ class WorkerView(View):
 		"""
 		service.deploy(service_id=service.service_id)
 
-		return HttpResponse("")
+		return HttpResponse(status=202)

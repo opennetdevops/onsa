@@ -9,9 +9,13 @@ from pprint import pprint
 class Handler(object):
 
 	@property
-	def factory(self, service_type, mgmt_ip):
-		if service_type == "MX_VCPE": return VcpeHandler(service_type, mgmt_ip)
-		elif service_type == "MX_CPELESS": return CpelessHandler(service_type, mgmt_ip)
+	def factory(self, service_type):
+		if service_type == "vcpe_irs":
+			return VcpeHandler(service_type)
+		elif service_type == "cpeless_irs" or service_type == "cpeless_mpls": 
+			return CpelessHandler(service_type)
+		elif service_type == "cpe_irs" or service_type == "cpe_mpls":
+			return CpeHandler(service_type)
 
 	def _open_conn(mgmt_ip):
 
@@ -173,9 +177,8 @@ class Handler(object):
 
 
 class VcpeHandler(Handler):
-	def __init__(self, service_type, mgmt_ip):
-		self.path = "../../templates/mx104/vcpe/%s/" % service_type
-		self.mgmt_ip = mgmt_ip
+	def __init__(self, service_type):
+		self.path = "../../templates/mx104/vcpe/%s/" % service_type.split("_")[1]
 
 	def _generate_params(method, parameters):
 		dir = os.path.dirname(__file__)
@@ -217,7 +220,7 @@ class VcpeHandler(Handler):
 
 class CpelessHandler(Handler):
 	def __init__(self, service_type):
-		self.path = "../templates/mx104/cpeless/%s/" % service_type
+		self.path = "../templates/mx104/cpeless/%s/" % service_type.split("_")[1]
 
 	def _generate_params(method, parameters):
 		dir = os.path.dirname(__file__)
@@ -241,6 +244,26 @@ class CpelessHandler(Handler):
 							"an_logicalUnit" : parameters['an_logicalUnit'],
 							"vrf_name" : parameters["vrf_name"]
 						}
+
+			self.path += "delete.conf"
+
+		template = os.path.join(dir, self.path)
+
+		return "SUCCESS", template, jinja_vars
+
+class CpeHandler(Handler):
+	def __init__(self, service_type):
+		self.path = "../templates/mx104/cpe/%s/" % service_type.split("_")[1]
+		
+	def _generate_params(method, parameters):
+		dir = os.path.dirname(__file__)
+		if method == "set":			
+			jinja_vars = {}
+			
+			self.path += "set.conf"
+
+		elif method == "delete":
+			jinja_vars = {}
 
 			self.path += "delete.conf"
 
