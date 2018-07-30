@@ -80,6 +80,8 @@ class TaskChoices(Enum):
 	MX_VCPE = "MX_VCPE"
 	NSX_VCPE = "NSX_VCPE"
 	NSX_MPLS = "NSX_MPLS"
+	SCO = "SCO"
+	NID = "NID"
 
 
 class Task(models.Model):
@@ -197,3 +199,42 @@ class NsxTask(Task):
 			self.task_state = TaskStates['ERROR'].value
 		else:
 			self.task_state = TaskStates['ROLLBACKED'].value
+
+
+class ScoTransitionTask(Task):
+	
+	class Meta:
+		proxy = True
+
+	objects = ManagerTaskNsx()
+
+	def get_queryset(self):
+		return super(NsxTask, self).get_queryset().filter(
+			task_type=TaskChoices['SCO'].value)
+
+
+	def run_task(self):
+		handler = TransitionHandler()
+
+
+	def rollback(self):
+		handler = TransitionHandler()
+
+
+class NidTransitionTask(Task):
+
+	class Meta:
+		proxy = True
+
+	objects = ManagerTaskNsx()
+
+	def get_queryset(self):
+		return super(NsxTask, self).get_queryset().filter(
+			task_type=TaskChoices['NID'].value)
+
+	def run_task(self):
+		handler = TransitionHandler()
+
+
+	def rollback(self):
+		handler = TransitionHandler()
