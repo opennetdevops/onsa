@@ -238,7 +238,7 @@ class ScoTransitionTask(Task):
 
 	def rollback(self):
 		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
-		handler.configure_tn()
+		handler.configure_tn("set", self.params)
 
 
 class NidTransitionTask(Task):
@@ -250,9 +250,9 @@ class NidTransitionTask(Task):
 
 	def run_task(self):
 		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
-		handler.configure_tn()
+		handler.configure_tn(self.params)
 
 
 	def rollback(self):
 		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
-		handler.configure_tn()
+		handler.configure_tn(self.params)
