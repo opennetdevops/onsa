@@ -155,7 +155,7 @@ class MxVcpeTask(Task):
 			self.task_state = TaskStates['ERROR'].value
 		else:
 			self.task_state = TaskStates['COMPLETED'].value
-			self.params = params
+			# self.params = parameters
 
 	def rollback(self):
 		handler = Handler.factory(service_type=self.service.service_type)
@@ -177,7 +177,7 @@ class MxCpelessIrsTask(Task):
 			self.task_state = TaskStates['ERROR'].value
 		else:
 			self.task_state = TaskStates['COMPLETED'].value
-			self.params = parameters
+			# self.params = parameters
 
 	def rollback(self):
 		pass

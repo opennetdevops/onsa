@@ -8,8 +8,7 @@ from pprint import pprint
 
 class Handler(object):
 
-	@property
-	def factory(self, service_type):
+	def factory(service_type):
 		if service_type == "vcpe_irs":
 			return VcpeHandler(service_type)
 		elif service_type == "cpeless_irs" or service_type == "cpeless_mpls": 
