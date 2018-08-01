@@ -32,8 +32,9 @@ def job():
         "service_state":"PENDING",
         "service_type":service['service_type'],
         "client_id":service['client_id'],
-        "client_name":clientData[0]['name'], 
-        "location":"CENTRO" #todo no need, charles will know this... eventually?
+        "client_name":clientData[0]['name'],
+        "prefix": service['public_prefix'],
+        "location":"LAB" #todo no need, charles will know this... eventually?
         }
         # print("DEBUG: ",data)
 
@@ -58,7 +59,7 @@ def check_job():
         # print(service)
         r = requests.get(CHARLES_URL + "/" + service['service_id'])
         data = r.json()
-        if not data[0]['service_state'] == "REQUESTED":
+        if not data['service_state'] == "REQUESTED":
             newdata = {
             "service_state":data['service_state']
             }

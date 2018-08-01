@@ -12,7 +12,7 @@ from itertools import chain
 import requests
 from pprint import pprint
 import json
-
+import time
 
 CHARLES = "http://localhost:8000"
 
@@ -23,7 +23,7 @@ class ServiceStates(Enum):
 
 
 class Service(models.Model):
-	
+	client_name = models.CharField(max_length=50)
 	service_id = models.CharField(max_length=50)
 	service_type = models.CharField(max_length=50)
 	service_state = models.CharField(max_length=50)
@@ -43,6 +43,8 @@ class Service(models.Model):
 		elif my_service.service_type.split("_")[0] == "cpe":
 			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
 
+		print(tasks)
+
 		executed_tasks = []
 
 		my_service.service_state = "COMPLETED"
@@ -61,6 +63,7 @@ class Service(models.Model):
 				my_service.service_state = "ERROR"            
 				break
 		
+		print(executed_tasks)
 		my_service.save()
 
 		"""
@@ -102,17 +105,17 @@ class Task(models.Model):
 	def factory(model, op_type, service_type, service, parameters):
 		if service_type.split("_")[0] == "vcpe":
 			if model.lower() == "mx104":
-				return MxVcpeTask(service=service, task_state=TaskStates['IN_PROGRESS'],task_type=TaskChoices['MX_VCPE'].value, op_type=op_type, params=parameters)
+				return MxVcpeTask(service=service, task_state=TaskStates['IN_PROGRESS'].value,task_type=TaskChoices['MX_VCPE'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "nsx":
-				return NsxTask(service=service, task_state=TaskStates['IN_PROGRESS'], task_type=TaskChoices['NSX_VCPE'].value, op_type=op_type, params=parameters)
+				return NsxTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['NSX_VCPE'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "s4224":
-				return ScoTransitionTask(service=service, task_state=TaskStates['IN_PROGRESS'], task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
+				return ScoTransitionTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "s3290-5":
-				return ScoTransitionTask(service=service, task_state=TaskStates['IN_PROGRESS'], task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
+				return ScoTransitionTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
 
 		elif service_type.split("_")[0] == "cpeless":
 			if model.lower() == "mx104" and service_type.split("_")[1] == "irs":
-				return MxCpelessIrsTask(service=service, task_state=TaskStates['IN_PROGRESS'], task_type=TaskChoices['MX_CPELESS'].value, op_type=op_type,  params=parameters)
+				return MxCpelessIrsTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['MX_CPELESS'].value, op_type=op_type,  params=parameters)
 
 class ManagerTaskMx(models.Manager):
 	def get_queryset(self):
@@ -148,18 +151,29 @@ class MxVcpeTask(Task):
 
 	def run_task(self):
 		handler = Handler.factory(service_type=self.service.service_type)
-		# status, parameters = handler.configure_mx(self.params, "set")
-		status = True
+
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
+
+		status, parameters = handler.configure_mx(params, "set")
 
 		if status is not True:
 			self.task_state = TaskStates['ERROR'].value
 		else:
 			self.task_state = TaskStates['COMPLETED'].value
-			# self.params = parameters
+			self.params = parameters
 
 	def rollback(self):
 		handler = Handler.factory(service_type=self.service.service_type)
-		if handler.configure_mx(self.params, "delete") is True:
+		
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
+
+		if handler.configure_mx(params, "delete") is True:
 			self.task_state = TaskStates['ROLLBACKED'].value
 
 class MxCpelessIrsTask(Task):
@@ -180,12 +194,11 @@ class MxCpelessIrsTask(Task):
 			# self.params = parameters
 
 	def rollback(self):
-		pass
 		# handler = CpelessHandler("irs")
 
 		# status, parameters = handler.configure_mx(self.params, "delete")
 		# if status is True:
-		# 	self.task_state = TaskStates['ROLLBACKED'].value
+		self.task_state = TaskStates['ROLLBACKED'].value
 
 class NsxTask(Task):
 	
@@ -196,21 +209,34 @@ class NsxTask(Task):
 
 	def run_task(self):
 		handler = NsxHandler()
+		
+		self.task_state = TaskStates['COMPLETED'].value
 
-		# status_code, create_edge_config =  handler.create_edge(self.params)
-		# if status_code != 204:
-		# 	self.task_state = TaskStates['ERROR'].value
-		# 	return
-		# status_code, add_gateway_config = handler.add_gateway("VCPE-Test")
+		# params = self.params
+		# edge_name = self.service.client_name+"-"+self.service.service_id
+		# """
+		# Creates NSX Edge
+		# """
+		# status_code, create_edge_config =  handler.create_edge(params, edge_name=edge_name)
+
 		# if status_code != 201:
 		# 	self.task_state = TaskStates['ERROR'].value
-		# 	return
 
-		# configuration = {'create_edge_config' : create_edge_config,
+		# time.sleep(60)
+
+		# # """
+		# # Add gateway to NSX Edge
+		# # """
+		# status_code, add_gateway_config = handler.add_gateway(edge_name)
+
+		# if status_code != 204:
+		# 	self.task_state = TaskStates['ERROR'].value
+
+		# parameters = {'create_edge_config' : create_edge_config,
 		# 				'add_gateway_config' : add_gateway_config}
 
 		# self.params = parameters
-		self.task_state = TaskStates['COMPLETED'].value
+
 
 	def rollback(self):
 		handler = NsxHandler()

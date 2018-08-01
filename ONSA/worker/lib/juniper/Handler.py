@@ -2,9 +2,11 @@ from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import *
 import jinja2
-import logging, sys
+import logging, sys, os
 
 from pprint import pprint
+
+from ..common.render import render
 
 class Handler(object):
 
@@ -32,7 +34,7 @@ class Handler(object):
 		
 		return dev, status
 
-	def _close_conn():
+	def _close_conn(dev):
 		# End the NETCONF session and close the connection
 		logging.info("Closing NETCONF session")
 		dev.close()
@@ -95,6 +97,9 @@ class Handler(object):
 
 	def _commit_config(dev):
 		logging.info("Committing the configuration")
+
+		status = True
+		
 		try:
 			dev.timeout=120
 			commit_result = dev.cu.commit()
@@ -112,14 +117,6 @@ class Handler(object):
 				logging.error( "Error: Unable to unlock configuration")
 				dev.close()
 				status = False
-
-		logging.info( "Unlocking the configuration")
-		try:
-			 dev.cu.unlock()
-			 status = True
-		except UnlockError:
-			 logging.error( "Error: Unable to unlock configuration")
-			 status = False
 
 		return status
 
@@ -155,36 +152,53 @@ class Handler(object):
 
 	def configure_mx(self, mx_parameters, method):
 
+		print("************")
+		print(method.upper())
+
 		status = True
 
 		dev, outcome = Handler._open_conn(mx_parameters['mgmt_ip'])
-		status &= outcome
+		status &= bool(outcome)
+		print(status)
 		outcome = Handler._lock_config(dev)
-		status &= outcome
-		outcome, template_rac_file, parameters = Handler._generate_params(method, parameters)
-		status &= outcome		
-		outcome = Handler._load_config(dev, template_rac_file, parameters)
-		status &= outcome
-		outcome = Handler._commit_config(dev)
-		status &= outcome
-		outcome = Handler._unlock_config(dev)
-		status &= outcome
-		outcome = Handler._close_conn(dev)
-		status &= outcome
+		status &= bool(outcome)
+		print(status)
 
-		return status, parameters
+		outcome, template_rac_file, parameters = self._generate_params(method, mx_parameters)
+		status &= bool(outcome)
+		print(status)		
+		outcome = Handler._load_config(dev, template_rac_file, parameters)
+		status &= bool(outcome)
+		print(status)
+		outcome = Handler._commit_config(dev)
+		status &= bool(outcome)
+		print(status)
+		outcome = Handler._unlock_config(dev)
+		status &= bool(outcome)
+		print(status)
+		outcome = Handler._close_conn(dev)
+		status &= bool(outcome)
+
+		print(status)
+
+
+
+		return bool(status), parameters
 
 
 class VcpeHandler(Handler):
 	def __init__(self, service_type):
 		self.path = "../../templates/mx104/vcpe/%s/" % service_type.split("_")[1]
 
-	def _generate_params(method, parameters):
+	def _generate_params(self, method, parameters):
 		dir = os.path.dirname(__file__)
+
+		bridge_domain_id = parameters['service_type'] + "-" + parameters['client_name']+ "-" + parameters["service_id"]
+
 		if method == "set":			
 			jinja_vars = {
-							"bridge_domain_id" : "",
-							"bridge_domain_description" : "",
+							"bridge_domain_id" : bridge_domain_id,
+							"bridge_domain_description" : "asdsadsa",
 							"vmw_uplinkInterface" : parameters['vmw_uplinkInterface'],
 							"vmw_logicalUnit" : parameters['vmw_logicalUnit'],
 							"an_uplinkInterface" : parameters['an_uplinkInterface'],
@@ -202,7 +216,7 @@ class VcpeHandler(Handler):
 		elif method == "delete":
 
 			jinja_vars = {
-							"bridge_domain_id" : "",
+							"bridge_domain_id" : bridge_domain_id,
 							"vmw_uplinkInterface" : parameters['vmw_uplinkInterface'],
 							"vmw_logicalUnit" : parameters['vmw_logicalUnit'],
 							"an_uplinkInterface" : parameters['an_uplinkInterface'],
@@ -221,7 +235,7 @@ class CpelessHandler(Handler):
 	def __init__(self, service_type):
 		self.path = "../templates/mx104/cpeless/%s/" % service_type.split("_")[1]
 
-	def _generate_params(method, parameters):
+	def _generate_params(self, method, parameters):
 		dir = os.path.dirname(__file__)
 		if method == "set":			
 			jinja_vars = {
@@ -254,7 +268,7 @@ class CpeHandler(Handler):
 	def __init__(self, service_type):
 		self.path = "../templates/mx104/cpe/%s/" % service_type.split("_")[1]
 		
-	def _generate_params(method, parameters):
+	def _generate_params(self, method, parameters):
 		dir = os.path.dirname(__file__)
 		if method == "set":			
 			jinja_vars = {}

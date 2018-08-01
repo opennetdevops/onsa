@@ -11,7 +11,6 @@ import json
 import ipaddress
 import os
 
-
 class NsxHandler(object):
 
 	def _get_edge_id_by_name(name):
@@ -34,7 +33,7 @@ class NsxHandler(object):
 
 		return r.status_code
 
-	def create_edge(self, params):
+	def create_edge(self, params, **kwargs):
 
 		"""
 		Loading vars
@@ -42,8 +41,8 @@ class NsxHandler(object):
 
 		edge_vars = {
 						"datacenterMoid" : params['datacenterMoid'],
-						"name" : "VCPE-Test",
-						"description" : "VCPE-Description",
+						"name" : kwargs['edge_name'],
+						"description" : "vCPE-" + kwargs['edge_name'],
 						"appliances" : {
 										"applianceSize" : "xlarge",
 										"appliance" : {
@@ -55,7 +54,7 @@ class NsxHandler(object):
 									"name" : "Uplink",
 									"type" : "Uplink",
 									"portgroupId" : params['uplink']['portgroupId'],
-									"primaryAddress" : params['uplink']['primaryAddress'],
+									"primaryAddress" : params['uplink']['primaryAddress'].split("/")[0],
 									"subnetMask" : "255.255.254.0",
 									"mtu" : "1500",
 									"isConnected" : "true"},
@@ -64,7 +63,7 @@ class NsxHandler(object):
 									"type" : "Internal",
 									"portgroupId" : params['downlink']['portgroupId'],
 									"primaryAddress" : str(list(ipaddress.ip_network(params['downlink']['public_cidr']).hosts())[0]),
-									"subnetMask" : "255.255.255.0",
+									"subnetMask" : str(ipaddress.ip_network(params['downlink']['public_cidr']).netmask),
 									"mtu" : "1500",
 									"isConnected" : "true"}],
 
@@ -82,8 +81,8 @@ class NsxHandler(object):
 		nsx_edge_xml = os.path.join(dir, '../../templates/edge/vcpe/irs/create.j2')
 		data = render(nsx_edge_xml, edge_vars)
 
-		# rheaders = {'Content-Type': 'application/xml'}
-  		# r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		rheaders = {'Content-Type': 'application/xml'}
+		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 		status_code = 204
 		return r.status_code, edge_vars
 
@@ -94,6 +93,8 @@ class NsxHandler(object):
 
 	def add_gateway(self, edge_name):
 		edge_id = NsxHandler._get_edge_id_by_name(edge_name)
+
+		print("edge_id:%s" % edge_id)
 
 		jinja_vars = {
 						"description" : "description",
@@ -106,9 +107,9 @@ class NsxHandler(object):
 		nsx_static_json = os.path.join(dir, '../../templates/edge/vcpe/irs/default_route.j2')
 		data = render(nsx_static_json, jinja_vars) 
 
-		# rheaders = {'Content-Type': 'application/json'}
-  		# r = requests.put(MANAGER + "/api/4.0/edges/%s" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
-		status_code = 201
+		rheaders = {'Content-Type': 'application/json'}
+		r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		status_code = r.status_code
 		return status_code, jinja_vars
 
 	

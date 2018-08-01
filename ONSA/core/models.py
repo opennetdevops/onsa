@@ -35,7 +35,7 @@ class Service(models.Model):
     )
     
     SERVICE_TYPES = (
-    ("PUBLIC_IRS_VCPE", "PUBLIC_IRS_VCPE"),
+    ("vcpe_irs", "vcpe_irs"),
     ("MPLS", "MPLS"),
     ("VPLS", "VPLS"),
     ("PUBLIC_IRS_CPELESS", "PUBLIC_IRS_CPELESS"),
@@ -57,7 +57,7 @@ class ServiceFactory(Service):
 
     def create(**kwargs):
         print(kwargs)
-        if kwargs['service_type'] == "PUBLIC_IRS_VCPE":
+        if kwargs['service_type'] == "vcpe_irs":
             return PublicIrsService.objects.create(**kwargs)
         elif kwargs['service_type'] == "PUBLIC_IRS_CPELESS":
             return CpeLessIrsService.objects.create(**kwargs)
@@ -87,12 +87,12 @@ class ServiceFactory(Service):
 class PublicIrsService (Service):
     
     edge_name = models.CharField(max_length=50,blank=True)
-    ip_wan = models.GenericIPAddressField() 
+    ip_wan = models.GenericIPAddressField(blank=True, null=True) 
     public_prefix = models.PositiveSmallIntegerField()
-    cpe_port = models.OneToOneField(CpePort, on_delete=models.SET_NULL,null=True)
+    cpe_port = models.OneToOneField(CpePort, on_delete=models.SET_NULL,null=True, blank=True)
 
     def __str__(self):
-        return "Public IRS Service" + self.edge_name
+        return self.service_id
 
 
 

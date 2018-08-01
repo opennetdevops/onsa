@@ -20,10 +20,10 @@ class ServiceView(View):
 	def get(self, request, service_id=None):
 		if service_id is None:
 			services = Service.objects.all().values()
+			return JsonResponse(list(services), safe=False)
 		else:
-			services = Service.objects.filter(service_id=service_id).values()
-			
-		return JsonResponse(list(services), safe=False)
+			service = Service.objects.filter(service_id=service_id).values()[0]
+			return JsonResponse(service, safe=False)
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
@@ -74,7 +74,6 @@ class ServiceView(View):
 	   "client":service.client_name,
 	   "service_type":service.service_type,
 	   "service_id":service.service_id,
-	   "tasks_type":"",
 	   "op_type":"CREATE",
 	   "devices":[
 	      {  
@@ -101,7 +100,8 @@ class ServiceView(View):
 			          "primaryAddress":ip_wan
 			         },
 			         "downlink":{
-			         	"portgroupId":downlink_pg['dvportgroup_id']
+			         	"portgroupId":downlink_pg['dvportgroup_id'],
+			         	"public_cidr":public_network
 			         }
 	         }
 	      }
