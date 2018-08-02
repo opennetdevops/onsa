@@ -152,12 +152,13 @@ class MxVcpeTask(Task):
 	def run_task(self):
 		handler = Handler.factory(service_type=self.service.service_type)
 
-		params = self.params
-		params['service_id'] = self.service.service_id
-		params['service_type'] = self.service.service_type
-		params['client_name'] = self.service.client_name
+		# params = self.params
+		# params['service_id'] = self.service.service_id
+		# params['service_type'] = self.service.service_type
+		# params['client_name'] = self.service.client_name
 
-		status, parameters = handler.configure_mx(params, "set")
+		# status, parameters = handler.configure_mx(params, "set")
+		status = True
 
 		if status is not True:
 			self.task_state = TaskStates['ERROR'].value
@@ -168,10 +169,10 @@ class MxVcpeTask(Task):
 	def rollback(self):
 		handler = Handler.factory(service_type=self.service.service_type)
 		
-		params = self.params
-		params['service_id'] = self.service.service_id
-		params['service_type'] = self.service.service_type
-		params['client_name'] = self.service.client_name
+		# params = self.params
+		# params['service_id'] = self.service.service_id
+		# params['service_type'] = self.service.service_type
+		# params['client_name'] = self.service.client_name
 
 		if handler.configure_mx(params, "delete") is True:
 			self.task_state = TaskStates['ROLLBACKED'].value
@@ -258,13 +259,23 @@ class ScoTransitionTask(Task):
 
 
 	def run_task(self):
-		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
-		handler.configure_tn()
+
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
+
+		handler = TransitionHandler(params['mgmt_ip'], params['model'])
+		status = handler.configure_tn("set", params)
+		if status is True:
+			self.task_state = TaskStates['COMPLETED'].value
+		else:
+			self.task_state = TaskStates['ERROR'].value
 
 
 	def rollback(self):
 		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
-		handler.configure_tn("set", self.params)
+		handler.configure_tn("delete", self.params)
 
 
 class NidTransitionTask(Task):

@@ -39,6 +39,14 @@
          "downlink":{
             "portgroupId":"dvportgroup-999", // **5
          }
+      },
+      {  
+         "model":"s4224",
+         "parameters":{
+            "mgmt_ip" : "",
+            "service_vlan": "",
+            "client_port": "" 
+         }
       }
    ]
 }

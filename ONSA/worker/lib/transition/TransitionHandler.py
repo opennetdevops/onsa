@@ -47,7 +47,7 @@ class TransitionHandler(object):
 		elif method == "delete":
 			self.path += "delete.conf"
 
-		config = TransitionHandler._generate_params(params)
+		config = self._generate_params(params)
 
 		net_connect.send_config_set(config)
 		
