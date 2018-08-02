@@ -36,8 +36,10 @@ class Service(models.Model):
 
 		my_service = Service.objects.get(service_id=service_id)
 
+		print(my_service.service_id)
+
 		if my_service.service_type.split("_")[0] == "vcpe":
-			tasks = list(chain(NsxTask.objects.filter(service=my_service), MxVcpeTask.objects.filter(service=my_service)))
+			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service), NsxTask.objects.filter(service=my_service), ScoTransitionTask.objects.filter(service=my_service)))
 		elif my_service.service_type.split("_")[0] == "cpeless":
 			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
 		elif my_service.service_type.split("_")[0] == "cpe":
@@ -96,8 +98,8 @@ class Task(models.Model):
 	task_state = models.CharField(default="Creating", max_length=50, blank=True)
 	task_type = models.CharField(max_length=30)
 	op_type = models.CharField(max_length=30)
+	model = models.CharField(max_length=30)
 	params = JSONField()
-
 
 	def __str__(self):
 		return self.service.service_id
@@ -105,17 +107,17 @@ class Task(models.Model):
 	def factory(model, op_type, service_type, service, parameters):
 		if service_type.split("_")[0] == "vcpe":
 			if model.lower() == "mx104":
-				return MxVcpeTask(service=service, task_state=TaskStates['IN_PROGRESS'].value,task_type=TaskChoices['MX_VCPE'].value, op_type=op_type, params=parameters)
+				return MxVcpeTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value,task_type=TaskChoices['MX_VCPE'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "nsx":
-				return NsxTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['NSX_VCPE'].value, op_type=op_type, params=parameters)
+				return NsxTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['NSX_VCPE'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "s4224":
-				return ScoTransitionTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
+				return ScoTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "s3290-5":
-				return ScoTransitionTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
+				return ScoTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
 
 		elif service_type.split("_")[0] == "cpeless":
 			if model.lower() == "mx104" and service_type.split("_")[1] == "irs":
-				return MxCpelessIrsTask(service=service, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['MX_CPELESS'].value, op_type=op_type,  params=parameters)
+				return MxCpelessIrsTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['MX_CPELESS'].value, op_type=op_type,  params=parameters)
 
 class ManagerTaskMx(models.Manager):
 	def get_queryset(self):
@@ -129,17 +131,17 @@ class ManagerTaskNsx(models.Manager):
 
 class ManagerTaskCpeless(models.Manager):
 	def get_queryset(self):
-		return super(ManagerTaskNsx, self).get_queryset().filter(
+		return super(ManagerTaskCpeless, self).get_queryset().filter(
 			task_type=TaskChoices['MX_CPELESS'].value)
 
 class ManagerTaskSco(models.Manager):
 	def get_queryset(self):
-		return super(ManagerTaskNsx, self).get_queryset().filter(
+		return super(ManagerTaskSco, self).get_queryset().filter(
 			task_type=TaskChoices['SCO'].value)
 
 class ManagerTaskNid(models.Manager):
 	def get_queryset(self):
-		return super(ManagerTaskNsx, self).get_queryset().filter(
+		return super(ManagerTaskNid, self).get_queryset().filter(
 			task_type=TaskChoices['NID'].value)
 
 class MxVcpeTask(Task):
@@ -257,25 +259,25 @@ class ScoTransitionTask(Task):
 
 	objects = ManagerTaskSco()
 
-
 	def run_task(self):
 
 		params = self.params
 		params['service_id'] = self.service.service_id
 		params['service_type'] = self.service.service_type
-		params['client_name'] = self.service.client_name
+		params['client'] = self.service.client_name
 
-		handler = TransitionHandler(params['mgmt_ip'], params['model'])
-		status = handler.configure_tn("set", params)
+		handler = TransitionHandler(params['mgmt_ip'])
+		status = handler.configure_tn("set", self.model, params)
+
 		if status is True:
 			self.task_state = TaskStates['COMPLETED'].value
+			self.params = params
 		else:
 			self.task_state = TaskStates['ERROR'].value
 
-
 	def rollback(self):
-		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
-		handler.configure_tn("delete", self.params)
+		handler = TransitionHandler(self.params['mgmt_ip'])
+		handler.configure_tn("delete", self.model, self.params)
 
 
 class NidTransitionTask(Task):
@@ -286,10 +288,10 @@ class NidTransitionTask(Task):
 	objects = ManagerTaskNid()
 
 	def run_task(self):
-		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
+		handler = TransitionHandler(self.params['mgmt_ip'])
 		handler.configure_tn(self.params)
 
 
 	def rollback(self):
-		handler = TransitionHandler(self.params['mgmt_ip'], self.params['model'])
+		handler = TransitionHandler(self.params['mgmt_ip'])
 		handler.configure_tn(self.params)

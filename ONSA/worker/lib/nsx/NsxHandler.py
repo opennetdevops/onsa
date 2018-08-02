@@ -78,7 +78,7 @@ class NsxHandler(object):
 		"""
 
 		dir = os.path.dirname(__file__)
-		nsx_edge_xml = os.path.join(dir, '../../templates/edge/vcpe/irs/create.j2')
+		nsx_edge_xml = os.path.join(dir, '../../templates/vmware/edge/vcpe/irs/create.j2')
 		data = render(nsx_edge_xml, edge_vars)
 
 		rheaders = {'Content-Type': 'application/xml'}
@@ -104,7 +104,7 @@ class NsxHandler(object):
 					}
 
 		dir = os.path.dirname(__file__)
-		nsx_static_json = os.path.join(dir, '../../templates/edge/vcpe/irs/default_route.j2')
+		nsx_static_json = os.path.join(dir, '../../templates/vmware/edge/vcpe/irs/default_route.j2')
 		data = render(nsx_static_json, jinja_vars) 
 
 		rheaders = {'Content-Type': 'application/json'}
