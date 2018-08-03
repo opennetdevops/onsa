@@ -47,7 +47,17 @@
             "service_vlan": "",
             "client_port": "" 
          }
+      },
+      {  
+         "model":"s3290-5",
+         "parameters":{
+            "mgmt_ip" : "",
+            "bandwidth": "",
+            "service_vlan": "",
+            "client_port": "" 
+         }
       }
+
    ]
 }
 

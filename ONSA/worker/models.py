@@ -39,11 +39,15 @@ class Service(models.Model):
 		print(my_service.service_id)
 
 		if my_service.service_type.split("_")[0] == "vcpe":
-			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service), NsxTask.objects.filter(service=my_service), ScoTransitionTask.objects.filter(service=my_service)))
-		elif my_service.service_type.split("_")[0] == "cpeless":
-			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
-		elif my_service.service_type.split("_")[0] == "cpe":
-			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
+			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service),
+							   NsxTask.objects.filter(service=my_service),
+							   ScoTransitionTask.objects.filter(service=my_service),
+							   NidTransitionTask.objects.filter(service=my_service)))
+
+		# elif my_service.service_type.split("_")[0] == "cpeless":
+		# 	tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
+		# elif my_service.service_type.split("_")[0] == "cpe":
+		# 	tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
 
 		print(tasks)
 
@@ -113,7 +117,7 @@ class Task(models.Model):
 			elif model.lower() == "s4224":
 				return ScoTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "s3290-5":
-				return ScoTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
+				return NidTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['NID'].value, op_type=op_type, params=parameters)
 
 		elif service_type.split("_")[0] == "cpeless":
 			if model.lower() == "mx104" and service_type.split("_")[1] == "irs":
@@ -288,10 +292,24 @@ class NidTransitionTask(Task):
 	objects = ManagerTaskNid()
 
 	def run_task(self):
+
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client'] = self.service.client_name
+
 		handler = TransitionHandler(self.params['mgmt_ip'])
-		handler.configure_tn(self.params)
+		status = handler.configure_tn("set", self.model, params)
+
+
+
+		if status is True:
+			self.task_state = TaskStates['COMPLETED'].value
+			self.params = params
+		else:
+			self.task_state = TaskStates['ERROR'].value
 
 
 	def rollback(self):
 		handler = TransitionHandler(self.params['mgmt_ip'])
-		handler.configure_tn(self.params)
+		handler.configure_tn("delete", self.model, self.params)

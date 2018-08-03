@@ -34,8 +34,6 @@ class TransitionHandler(object):
 
 		params['port_description'] = params['client'] + "-" + params['service_type'] + "-" + params['service_id']
 
-		pprint(params)
-
 		lines = open(self.path,'r').read().splitlines()
 
 		config = []
@@ -71,8 +69,6 @@ class TransitionHandler(object):
 		print(self.path)
 
 		config = self._generate_params(params)
-
-
 
 		output = net_connect.send_config_set(config)
 
