@@ -18,32 +18,42 @@ class Handler(object):
 		elif service_type == "cpe_irs" or service_type == "cpe_mpls":
 			return CpeHandler(service_type)
 
-	def _open_conn(mgmt_ip):
+	def _open_conn(self, mgmt_ip):
 
 		logging.basicConfig(level=logging.INFO)
 		dev = Device(host=mgmt_ip, user="lab", password="lab123", port=443)
+
+
+
 		try:
 			logging.info("Openning NETCONF connection to device")
 			dev.open()
+
 		except Exception as err:
 			logging.error("Cannot connect to device:%s", err)
 			status = False
+
+
 
 		dev.bind(cu=Config)
 		status = True
 		
 		return dev, status
 
-	def _close_conn(dev):
+	def _close_conn(self, dev):
 		# End the NETCONF session and close the connection
 		logging.info("Closing NETCONF session")
+		
+
+
 		dev.close()
 		return True
 
-	def _lock_config(dev):
+	def _lock_config(self, dev):
 
 		# Lock the configuration
 		logging.info("Locking the configuration")
+
 		try:
 			dev.cu.lock()
 		except LockError:
@@ -55,19 +65,22 @@ class Handler(object):
 
 		return status
 
-	def _unlock_config(dev):
+	def _unlock_config(sefl, dev):
+		status = False
 
 		logging.info( "Unlocking the configuration")
+
 		try:
 			 dev.cu.unlock()
 			 status = True
+
 		except UnlockError:
 			 logging.error( "Error: Unable to unlock configuration")
-			 status = False
+
 
 		return status
 
-	def _load_config(dev, template, parameters):
+	def _load_config(self, dev, template, parameters):
 
 		status = True
 
@@ -75,11 +88,9 @@ class Handler(object):
 		try:
 			dev.cu.load(template_path=template, merge=True, template_vars=parameters, format="set")
 			dev.cu.pdiff()
-
 		except ValueError as err:
 			logging.error("Error: %s", err.message)
 			status = False
-
 		except Exception as err:
 			if err.rsp.find('.//ok') is None:
 				rpc_msg = err.rsp.findtext('.//error-message')
@@ -95,57 +106,48 @@ class Handler(object):
 
 		return status
 
-	def _commit_config(dev):
+	def _commit_config(self, dev):
 		logging.info("Committing the configuration")
 
-		status = True
+		status = False
 		
 		try:
 			dev.timeout=120
 			commit_result = dev.cu.commit()
 			# Show that the commit worked True means it worked, false means it failed
 			logging.debug( "Commit result: %s",commit_result)
+			status = True
 
 		except (CommitError, RpcTimeoutError) as e:
 			logging.error( "Error: Unable to commit configuration")
-			logging.error( "Unlocking the configuration")
-			logging.error(e)
-			try:
-				dev.cu.unlock()
-				status = False
-			except UnlockError:
-				logging.error( "Error: Unable to unlock configuration")
-				dev.close()
-				status = False
 
 		return status
 
-	def _rollback_config(dev):
+	def _rollback_config(self, dev):
 		try:
 			print ("Rolling back the configuration")
 			dev.cu.rollback(rb_id=0)
 			print ("Committing the configuration")
-			return False
+			return True
 		except RpcError as err:
 		   print ("Unable to rollback configuration changes: {0}".format(err))
-
-		return True
+		   return False
 
 	
-	def rollback_mx(self):
+	def rollback_mx(self, dev):
 		status = True
 
 		dev, outcome = Handler._open_conn()
 		status &= outcome
-		outcome = Handler._lock_config(dev)
+		outcome = self._lock_config(dev)
 		status &= outcome
-		outcome = Handler._rollback_config(dev)
+		outcome = self._rollback_config(dev)
 		status &= outcome		
-		outcome = Handler._commit_config(dev)
+		outcome = self._commit_config(dev)
 		status &= outcome
-		outcome = Handler._unlock_config(dev)
+		outcome = self._unlock_config(dev)
 		status &= outcome
-		outcome = Handler._close_conn(dev)
+		outcome = self._close_conn(dev)
 		status &= outcome
 
 		return status, parameters
@@ -157,26 +159,26 @@ class Handler(object):
 
 		status = True
 
-		dev, outcome = Handler._open_conn(mx_parameters['mgmt_ip'])
+		dev, outcome = self._open_conn(mx_parameters['mgmt_ip'])
 		status &= bool(outcome)
 		print(status)
-		outcome = Handler._lock_config(dev)
+		outcome = self._lock_config(dev)
 		status &= bool(outcome)
 		print(status)
 
 		outcome, template_rac_file, parameters = self._generate_params(method, mx_parameters)
 		status &= bool(outcome)
 		print(status)		
-		outcome = Handler._load_config(dev, template_rac_file, parameters)
+		outcome = self._load_config(dev, template_rac_file, parameters)
 		status &= bool(outcome)
 		print(status)
-		outcome = Handler._commit_config(dev)
+		outcome = self._commit_config(dev)
 		status &= bool(outcome)
 		print(status)
-		outcome = Handler._unlock_config(dev)
+		outcome = self._unlock_config(dev)
 		status &= bool(outcome)
 		print(status)
-		outcome = Handler._close_conn(dev)
+		outcome = self._close_conn(dev)
 		status &= bool(outcome)
 
 		print(status)

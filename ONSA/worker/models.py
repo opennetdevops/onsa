@@ -43,12 +43,6 @@ class Service(models.Model):
 							   NsxTask.objects.filter(service=my_service),
 							   ScoTransitionTask.objects.filter(service=my_service),
 							   NidTransitionTask.objects.filter(service=my_service)))
-			# tasks = list(chain(NidTransitionTask.objects.filter(service=my_service)))
-
-		# elif my_service.service_type.split("_")[0] == "cpeless":
-		# 	tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
-		# elif my_service.service_type.split("_")[0] == "cpe":
-		# 	tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
 
 		print(tasks)
 
@@ -57,6 +51,7 @@ class Service(models.Model):
 		my_service.service_state = "COMPLETED"
 
 		for task in tasks:
+			print(task.task_type)
 			task.run_task()
 			task.save()
 			if task.task_state == "COMPLETED":
@@ -248,9 +243,11 @@ class NsxTask(Task):
 
 	def rollback(self):
 		handler = NsxHandler()
-		status_code = handler.delete_edge("VCPE-Test")
-		self.task_state = TaskStates['ROLLBACKED'].value
 
+		edge_name = self.service.client_name+"-"+self.service.service_id
+
+		status_code = handler.delete_edge(edge_name)
+		
 		if status_code is not 200:
 			self.task_state = TaskStates['ERROR'].value
 		else:
