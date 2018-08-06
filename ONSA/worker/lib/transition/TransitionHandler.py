@@ -26,11 +26,9 @@ class TransitionHandler(object):
 		'global_delay_factor': 1
 		}
 
-
 		self.path = "../../templates/transition/"
 
 	def _generate_params(self, params):
-
 
 		params['port_description'] = params['client'] + "-" + params['service_type'] + "-" + params['service_id']
 
@@ -50,6 +48,7 @@ class TransitionHandler(object):
 	def configure_tn(self, method, model, params):
 
 		self.path += model
+		self.path += "/" + params["service_type"].split("_")[0] + "/" + params["service_type"].split("_")[1]
 
 		dir = os.path.dirname(__file__)
 

@@ -39,10 +39,11 @@ class Service(models.Model):
 		print(my_service.service_id)
 
 		if my_service.service_type.split("_")[0] == "vcpe":
-			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service),
-							   NsxTask.objects.filter(service=my_service),
-							   ScoTransitionTask.objects.filter(service=my_service),
-							   NidTransitionTask.objects.filter(service=my_service)))
+			# tasks = list(chain(MxVcpeTask.objects.filter(service=my_service),
+			# 				   NsxTask.objects.filter(service=my_service),
+			# 				   ScoTransitionTask.objects.filter(service=my_service),
+			# 				   NidTransitionTask.objects.filter(service=my_service)))
+			tasks = list(chain(NidTransitionTask.objects.filter(service=my_service)))
 
 		# elif my_service.service_type.split("_")[0] == "cpeless":
 		# 	tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
