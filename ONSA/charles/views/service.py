@@ -215,6 +215,17 @@ class ServiceView(View):
 		else:
 			return None
 
+	def use_portgroup(portgroup_id):
+		url= "/inventory/api/portgroups/" + portgroup_id
+		rheaders = {'Content-Type': 'application/json'}
+		data = {"used":True}
+		response = requests.put(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response
+		else:
+			return None
+
 	def get_free_logical_units(router_node_id):
 		url= "/inventory/api/routernodes/" + router_node_id + "/logicalunits?used=false"
 		rheaders = {'Content-Type': 'application/json'}
@@ -252,7 +263,7 @@ class ServiceView(View):
 		url= "/inventory/api/accessports/" + access_port_id
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"used":True}
-		response = requests.post(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.put(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response
