@@ -111,9 +111,18 @@ class ServiceView(View):
          "parameters":{
             "mgmt_ip" : access_node['mgmtIP'],
             "service_vlan": free_vlan_tag['vlan_tag'],
-            "client_port": free_access_port['port']
-         }
-      }
+            "client_port": free_access_port['port'],
+            "bandwith":"10"
+          }
+      	},
+      	{  
+	        "model":"s3290-5",
+	        "parameters":{
+	        "mgmt_ip" : "10.120.80.121",
+	        "bandwidth": "10",
+	        "service_vlan": free_vlan_tag['vlan_tag']
+		      }
+		    }
 	   ]
 		}
 

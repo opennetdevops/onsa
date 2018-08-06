@@ -188,7 +188,7 @@ class Handler(object):
 
 class VcpeHandler(Handler):
 	def __init__(self, service_type):
-		self.path = "../templates/juniper/mx104/vcpe/%s/" % service_type.split("_")[1]
+		self.path = "../../templates/juniper/mx104/vcpe/%s/" % service_type.split("_")[1]
 
 	def _generate_params(self, method, parameters):
 		dir = os.path.dirname(__file__)
@@ -233,7 +233,7 @@ class VcpeHandler(Handler):
 
 class CpelessHandler(Handler):
 	def __init__(self, service_type):
-		self.path = "../templates/juniper/mx104/cpeless/%s/" % service_type.split("_")[1]
+		self.path = "../../templates/juniper/mx104/cpeless/%s/" % service_type.split("_")[1]
 
 	def _generate_params(self, method, parameters):
 		dir = os.path.dirname(__file__)
@@ -266,7 +266,7 @@ class CpelessHandler(Handler):
 
 class CpeHandler(Handler):
 	def __init__(self, service_type):
-		self.path = "../templates/juniper/mx104/cpe/%s/" % service_type.split("_")[1]
+		self.path = "../../templates/juniper/mx104/cpe/%s/" % service_type.split("_")[1]
 		
 	def _generate_params(self, method, parameters):
 		dir = os.path.dirname(__file__)

@@ -20,8 +20,8 @@ class PortgroupView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         portgroup = Portgroup.objects.filter(pk=portgroup_id)
         portgroup.update(**data)
-        my_portgroup = portgroup.values()
-        return JsonResponse(list(my_portgroup), safe=False)
+        my_portgroup = portgroup.values()[0]
+        return JsonResponse(my_portgroup, safe=False)
 
 
     def post(self, request):

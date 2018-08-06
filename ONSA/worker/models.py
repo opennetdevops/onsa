@@ -39,11 +39,11 @@ class Service(models.Model):
 		print(my_service.service_id)
 
 		if my_service.service_type.split("_")[0] == "vcpe":
-			# tasks = list(chain(MxVcpeTask.objects.filter(service=my_service),
-			# 				   NsxTask.objects.filter(service=my_service),
-			# 				   ScoTransitionTask.objects.filter(service=my_service),
-			# 				   NidTransitionTask.objects.filter(service=my_service)))
-			tasks = list(chain(NidTransitionTask.objects.filter(service=my_service)))
+			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service),
+							   NsxTask.objects.filter(service=my_service),
+							   ScoTransitionTask.objects.filter(service=my_service),
+							   NidTransitionTask.objects.filter(service=my_service)))
+			# tasks = list(chain(NidTransitionTask.objects.filter(service=my_service)))
 
 		# elif my_service.service_type.split("_")[0] == "cpeless":
 		# 	tasks = list(chain(MxVcpeTask.objects.filter(service=my_service)))
@@ -159,13 +159,12 @@ class MxVcpeTask(Task):
 	def run_task(self):
 		handler = Handler.factory(service_type=self.service.service_type)
 
-		# params = self.params
-		# params['service_id'] = self.service.service_id
-		# params['service_type'] = self.service.service_type
-		# params['client_name'] = self.service.client_name
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
 
-		# status, parameters = handler.configure_mx(params, "set")
-		status = True
+		status, parameters = handler.configure_mx(params, "set")
 
 		if status is not True:
 			self.task_state = TaskStates['ERROR'].value
@@ -176,10 +175,10 @@ class MxVcpeTask(Task):
 	def rollback(self):
 		handler = Handler.factory(service_type=self.service.service_type)
 		
-		# params = self.params
-		# params['service_id'] = self.service.service_id
-		# params['service_type'] = self.service.service_type
-		# params['client_name'] = self.service.client_name
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
 
 		if handler.configure_mx(params, "delete") is True:
 			self.task_state = TaskStates['ROLLBACKED'].value
@@ -193,20 +192,21 @@ class MxCpelessIrsTask(Task):
 
 	def run_task(self):
 		handler = Handler.factory(service_type=self.service.service_type)
-		# status, parameters = handler.configure_mx(self.params, "set")
-		status = True
+		status, parameters = handler.configure_mx(self.params, "set")
+		# status = True
 		if status is not True:
 			self.task_state = TaskStates['ERROR'].value
 		else:
 			self.task_state = TaskStates['COMPLETED'].value
-			# self.params = parameters
+			self.params = parameters
 
 	def rollback(self):
-		# handler = CpelessHandler("irs")
+		handler = CpelessHandler("irs")
 
-		# status, parameters = handler.configure_mx(self.params, "delete")
-		# if status is True:
-		self.task_state = TaskStates['ROLLBACKED'].value
+		status, parameters = handler.configure_mx(self.params, "delete")
+		
+		if status is True:
+			self.task_state = TaskStates['ROLLBACKED'].value
 
 class NsxTask(Task):
 	
@@ -220,41 +220,41 @@ class NsxTask(Task):
 		
 		self.task_state = TaskStates['COMPLETED'].value
 
-		# params = self.params
-		# edge_name = self.service.client_name+"-"+self.service.service_id
+		params = self.params
+		edge_name = self.service.client_name+"-"+self.service.service_id
+		"""
+		Creates NSX Edge
+		"""
+		status_code, create_edge_config =  handler.create_edge(params, edge_name=edge_name)
+
+		if status_code != 201:
+			self.task_state = TaskStates['ERROR'].value
+
+		time.sleep(60)
+
 		# """
-		# Creates NSX Edge
+		# Add gateway to NSX Edge
 		# """
-		# status_code, create_edge_config =  handler.create_edge(params, edge_name=edge_name)
+		status_code, add_gateway_config = handler.add_gateway(edge_name)
 
-		# if status_code != 201:
-		# 	self.task_state = TaskStates['ERROR'].value
+		if status_code != 204:
+			self.task_state = TaskStates['ERROR'].value
 
-		# time.sleep(60)
+		parameters = {'create_edge_config' : create_edge_config,
+						'add_gateway_config' : add_gateway_config}
 
-		# # """
-		# # Add gateway to NSX Edge
-		# # """
-		# status_code, add_gateway_config = handler.add_gateway(edge_name)
-
-		# if status_code != 204:
-		# 	self.task_state = TaskStates['ERROR'].value
-
-		# parameters = {'create_edge_config' : create_edge_config,
-		# 				'add_gateway_config' : add_gateway_config}
-
-		# self.params = parameters
+		self.params = parameters
 
 
 	def rollback(self):
 		handler = NsxHandler()
-		# status_code = handler.delete_edge("VCPE-Test")
+		status_code = handler.delete_edge("VCPE-Test")
 		self.task_state = TaskStates['ROLLBACKED'].value
 
-		# if status_code is not 200:
-		# 	self.task_state = TaskStates['ERROR'].value
-		# else:
-		# 	self.task_state = TaskStates['ROLLBACKED'].value
+		if status_code is not 200:
+			self.task_state = TaskStates['ERROR'].value
+		else:
+			self.task_state = TaskStates['ROLLBACKED'].value
 
 
 class ScoTransitionTask(Task):
