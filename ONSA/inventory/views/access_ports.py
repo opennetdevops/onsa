@@ -14,10 +14,10 @@ class AccessPortsView(View):
 
     def put(self, request, accessport_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-
         access_port = AccessPort.objects.filter(pk=accessport_id)
         access_port.update(**data)
         my_access_port = access_port.values()
+        
         return JsonResponse(list(my_access_port), safe=False)
 
 

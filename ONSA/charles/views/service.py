@@ -242,7 +242,7 @@ class ServiceView(View):
 	def use_port(access_port_id):
 		url= "/inventory/api/accessports/" + access_port_id
 		rheaders = {'Content-Type': 'application/json'}
-		data = {"userd":True}
+		data = {"used":True}
 		response = requests.post(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
