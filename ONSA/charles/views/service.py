@@ -90,21 +90,30 @@ class ServiceView(View):
 	            "public_cidr":public_network
 	         }
 	      },
-	      {  "model":virtual_pod['model'],
-	         "parameters":{
-	            "datacenterMoid":virtual_pod['datacenterId'], 
-	            "resourcePoolId":virtual_pod['resourcePoolId'], 
-	            "datastoreId":virtual_pod['datastoreId'],     
-			        "uplink":{
-			          "portgroupId":virtual_pod['uplinkPgId'], 
-			          "primaryAddress":ip_wan
-			         },
-			         "downlink":{
-			         	"portgroupId":downlink_pg['dvportgroup_id'],
-			         	"public_cidr":public_network
-			         }
+	      {  
+	      	"model":virtual_pod['model'],
+          "parameters":{
+            "datacenterMoid":virtual_pod['datacenterId'], 
+            "resourcePoolId":virtual_pod['resourcePoolId'], 
+            "datastoreId":virtual_pod['datastoreId'],     
+		        "uplink":{
+		          "portgroupId":virtual_pod['uplinkPgId'], 
+		          "primaryAddress":ip_wan
+		        },
+		         "downlink":{
+		         	"portgroupId":downlink_pg['dvportgroup_id'],
+		         	"public_cidr":public_network
+		         }
 	         }
-	      }
+	      },
+	      {  
+         "model":access_node['model'],
+         "parameters":{
+            "mgmt_ip" : access_node['mgmtIP'],
+            "service_vlan": free_vlan_tag['vlan_tag'],
+            "client_port": free_access_port['port']
+         }
+      }
 	   ]
 		}
 
