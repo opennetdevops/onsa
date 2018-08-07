@@ -126,7 +126,34 @@ class Task(models.Model):
 	Output: Task instance - type Object
 	"""
 	# def factoryv2(meta_fields, parameters):
-	#	pass
+	#	if meta_fields['device_type'] == "RouterNode":
+	#		return RouterNodeTask(service=meta_fields['service'],
+								  # model=meta_fields['model'],
+								  # task_state=TaskStates['IN_PROGRESS'],
+								  # task_type=TaskChoices['RouterNode'].value,
+								  # op_type="CREATE",
+								  # params=parameters)
+	#	elif meta_fields['device_type'] == "AccessNode":
+	#		return AccessNodeTask(service=meta_fields['service'],
+								  # model=meta_fields['model'],
+								  # task_state=TaskStates['IN_PROGRESS'],
+								  # task_type=TaskChoices['AccessNode'].value,
+								  # op_type="CREATE",
+								  # params=parameters)
+	#	elif meta_fields['device_type'] == "OpticalNode":
+	#		return OpticalNodeTask(service=meta_fields['service'],
+								  # model=meta_fields['model'],
+								  # task_state=TaskStates['IN_PROGRESS'],
+								  # task_type=TaskChoices['OpticalNode'].value,
+								  # op_type="CREATE",
+								  # params=parameters)
+	#	elif meta_fields['device_type'] == "ClientNode":
+	#		return ClientNodeTask(service=meta_fields['service'],
+								  # model=meta_fields['model'],
+								  # task_state=TaskStates['IN_PROGRESS'],
+								  # task_type=TaskChoices['ClientNode'].value,
+								  # op_type="CREATE",
+								  # params=parameters)
 
 
 	def factory(model, op_type, service_type, service, parameters):
