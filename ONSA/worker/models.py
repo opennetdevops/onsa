@@ -91,6 +91,10 @@ class TaskChoices(Enum):
 	NSX_MPLS = "NSX_MPLS"
 	SCO = "SCO"
 	NID = "NID"
+	RouterNode = "RouterNode"
+	AccessNode = "AccessNode"
+	OpticalNode = "OpticalNode"
+	ClientNode = "ClientNode"
 
 
 class Task(models.Model):
@@ -103,6 +107,27 @@ class Task(models.Model):
 
 	def __str__(self):
 		return self.service.service_id
+
+	"""
+	Task factory.
+		TASK1 -> RouterNodeTask
+		TASK2 -> AccessNodeTask
+		TASK3 -> OpticalNodeTask
+		TASK4 -> ClientNodeTask
+
+	Input:
+		1. meta_fields type dict
+			{"model" : "",
+			"strategy" : "",
+			"service_type" : ""}
+		2. parameters type dict
+			configuration parameters for template
+
+	Output: Task instance - type Object
+	"""
+	# def factoryv2(meta_fields, parameters):
+	#	pass
+
 
 	def factory(model, op_type, service_type, service, parameters):
 		if service_type.split("_")[0] == "vcpe":
@@ -144,6 +169,28 @@ class ManagerTaskNid(models.Manager):
 		return super(ManagerTaskNid, self).get_queryset().filter(
 			task_type=TaskChoices['NID'].value)
 
+class ManagerRouterNodeTask(models.Manager):
+	def get_queryset(self):
+		return super(ManagerRouterNodeTask, self).get_queryset().filter(
+			task_type=TaskChoices['RouterNode'].value)
+
+class ManagerAccessNodeTask(models.Manager):
+	def get_queryset(self):
+		return super(ManagerAccessNodeTask, self).get_queryset().filter(
+			task_type=TaskChoices['AccessNode'].value)
+
+class ManagerOpticalNodeTask(models.Manager):
+	def get_queryset(self):
+		return super(ManagerOpticalNodeTask, self).get_queryset().filter(
+			task_type=TaskChoices['OpticalNode'].value)
+
+class ManagerClientNodeTask(models.Manager):
+	def get_queryset(self):
+		return super(ManagerClientNodeTask, self).get_queryset().filter(
+			task_type=TaskChoices['ClientNode'].value)
+
+
+
 class MxVcpeTask(Task):
 
 	class Meta:
@@ -159,13 +206,12 @@ class MxVcpeTask(Task):
 		params['service_type'] = self.service.service_type
 		params['client_name'] = self.service.client_name
 
-		status, parameters = handler.configure_mx(params, "set")
+		status = handler.configure_mx(params, "set")[0]
 
 		if status is not True:
 			self.task_state = TaskStates['ERROR'].value
 		else:
 			self.task_state = TaskStates['COMPLETED'].value
-			self.params = parameters
 
 	def rollback(self):
 		handler = Handler.factory(service_type=self.service.service_type)
@@ -222,6 +268,8 @@ class NsxTask(Task):
 		"""
 		status_code, create_edge_config =  handler.create_edge(params, edge_name=edge_name)
 
+		print(status_code)
+
 		if status_code != 201:
 			self.task_state = TaskStates['ERROR'].value
 
@@ -231,6 +279,8 @@ class NsxTask(Task):
 		# Add gateway to NSX Edge
 		# """
 		status_code, add_gateway_config = handler.add_gateway(edge_name)
+
+		print(status_code)
 
 		if status_code != 204:
 			self.task_state = TaskStates['ERROR'].value
@@ -311,3 +361,57 @@ class NidTransitionTask(Task):
 	def rollback(self):
 		handler = TransitionHandler(self.params['mgmt_ip'])
 		handler.configure_tn("delete", self.model, self.params)
+
+
+class RouterNodeTask(Task):
+
+	class Meta:
+		proxy = True
+
+	objects = ManagerRouterNodeTask()
+
+	def run_task(self):
+		pass
+
+	def run_rollback(self):
+		pass
+
+
+class AccessNodeTask(Task):
+
+	class Meta:
+		proxy = True
+
+	objects = ManagerAccessNodeTask()
+
+	def run_task(self):
+		pass
+
+	def run_rollback(self):
+		pass
+
+class OpticalNodeTask(Task):
+
+	class Meta:
+		proxy = True
+
+	objects = ManagerOpticalNodeTask()
+
+	def run_task(self):
+		pass
+
+	def run_rollback(self):
+		pass
+
+class ClientNodeTask(Task):
+
+	class Meta:
+		proxy = True
+
+	objects = ManagerClientNodeTask()
+
+	def run_task(self):
+		pass
+
+	def run_rollback(self):
+		pass
