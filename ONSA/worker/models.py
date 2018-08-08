@@ -43,6 +43,14 @@ class Service(models.Model):
 							   NsxTask.objects.filter(service=my_service),
 							   ScoTransitionTask.objects.filter(service=my_service),
 							   NidTransitionTask.objects.filter(service=my_service)))
+		elif my_service.service_type.split("_")[0] == "cpeless":
+			tasks = list(chain(MxCpelessTask.objects.filter(service=my_service),
+							   ScoTransitionTask.objects.filter(service=my_service),
+							   NidTransitionTask.objects.filter(service=my_service)))
+		elif my_service.service_type.split("_")[0] == "cpe":
+			tasks = list(chain(MxCpeTask.objects.filter(service=my_service),
+							   ScoTransitionTask.objects.filter(service=my_service),
+							   NidTransitionTask.objects.filter(service=my_service)))
 
 		print(tasks)
 
@@ -91,11 +99,6 @@ class TaskChoices(Enum):
 	NSX_MPLS = "NSX_MPLS"
 	SCO = "SCO"
 	NID = "NID"
-	RouterNode = "RouterNode"
-	AccessNode = "AccessNode"
-	OpticalNode = "OpticalNode"
-	ClientNode = "ClientNode"
-
 
 class Task(models.Model):
 	service = models.ForeignKey(Service, on_delete=models.CASCADE)
@@ -169,7 +172,7 @@ class Task(models.Model):
 
 		elif service_type.split("_")[0] == "cpeless":
 			if model.lower() == "mx104" and service_type.split("_")[1] == "irs":
-				return MxCpelessIrsTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['MX_CPELESS'].value, op_type=op_type,  params=parameters)
+				return MxCpelessTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['MX_CPELESS'].value, op_type=op_type,  params=parameters)
 
 class ManagerTaskMx(models.Manager):
 	def get_queryset(self):
@@ -251,7 +254,7 @@ class MxVcpeTask(Task):
 		if handler.configure_mx(params, "delete") is True:
 			self.task_state = TaskStates['ROLLBACKED'].value
 
-class MxCpelessIrsTask(Task):
+class MxCpelessTask(Task):
 
 	class Meta:
 		proxy = True
@@ -260,20 +263,28 @@ class MxCpelessIrsTask(Task):
 
 	def run_task(self):
 		handler = Handler.factory(service_type=self.service.service_type)
-		status, parameters = handler.configure_mx(self.params, "set")
-		# status = True
+
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
+
+		status = handler.configure_mx(params, "set")[0]
+
 		if status is not True:
 			self.task_state = TaskStates['ERROR'].value
 		else:
 			self.task_state = TaskStates['COMPLETED'].value
-			self.params = parameters
 
 	def rollback(self):
-		handler = CpelessHandler("irs")
-
-		status, parameters = handler.configure_mx(self.params, "delete")
+		handler = Handler.factory(service_type=self.service.service_type)
 		
-		if status is True:
+		params = self.params
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
+
+		if handler.configure_mx(params, "delete") is True:
 			self.task_state = TaskStates['ROLLBACKED'].value
 
 class NsxTask(Task):
@@ -300,7 +311,7 @@ class NsxTask(Task):
 		if status_code != 201:
 			self.task_state = TaskStates['ERROR'].value
 
-		time.sleep(60)
+		time.sleep(45)
 
 		# """
 		# Add gateway to NSX Edge
@@ -388,57 +399,3 @@ class NidTransitionTask(Task):
 	def rollback(self):
 		handler = TransitionHandler(self.params['mgmt_ip'])
 		handler.configure_tn("delete", self.model, self.params)
-
-
-class RouterNodeTask(Task):
-
-	class Meta:
-		proxy = True
-
-	objects = ManagerRouterNodeTask()
-
-	def run_task(self):
-		pass
-
-	def run_rollback(self):
-		pass
-
-
-class AccessNodeTask(Task):
-
-	class Meta:
-		proxy = True
-
-	objects = ManagerAccessNodeTask()
-
-	def run_task(self):
-		pass
-
-	def run_rollback(self):
-		pass
-
-class OpticalNodeTask(Task):
-
-	class Meta:
-		proxy = True
-
-	objects = ManagerOpticalNodeTask()
-
-	def run_task(self):
-		pass
-
-	def run_rollback(self):
-		pass
-
-class ClientNodeTask(Task):
-
-	class Meta:
-		proxy = True
-
-	objects = ManagerClientNodeTask()
-
-	def run_task(self):
-		pass
-
-	def run_rollback(self):
-		pass
