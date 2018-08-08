@@ -3,6 +3,7 @@ from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import *
 import jinja2
 import logging, sys, os
+import ipaddress
 
 from pprint import pprint
 
@@ -239,15 +240,18 @@ class CpelessHandler(Handler):
 
 	def _generate_params(self, method, parameters):
 		dir = os.path.dirname(__file__)
-		if method == "set":			
+		if method == "set":	
+
+			description = parameters['client_name'] + "-" + parameters['service_type'] + "-" + parameters['service_id']
+
 			jinja_vars = {
 							"an_uplinkInterface" : parameters['an_uplinkInterface'],
 							"an_logicalUnit" : parameters['an_logicalUnit'],
-							"sco_interface_description" : "",
+							"description" : description,
 							"vrf_name" : parameters["vrf_name"],
 							"an_qinqOuterVlan" : parameters['an_qinqOuterVlan'],
 							"an_qinqInnerVlan" : parameters['an_qinqInnerVlan'],
-							"public_cidr" : parameters['public_cidr']
+							"public_cidr" : str(list(ipaddress.ip_network(parameters['public_cidr']).hosts())[0])
 						}
 			
 			self.path += "set.conf"

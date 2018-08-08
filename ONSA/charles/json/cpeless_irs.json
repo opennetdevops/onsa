@@ -5,19 +5,31 @@
   "tasks_type" : "CREATE",
   "devices" : [{"model" : "MX104",
 				"parameters" : {
-							"sco_ae_interface" : "a1",
-							"sco_logical_unit" : "10",
+							"mgmt_ip" : "10.120.80.61",
+							"an_uplinkInterface" : "a1",
+							"an_logicalUnit" : "1",
 							"vrf_name" : "INTERNET",
-							"qinqOuterVlan" : "10",
-							"qinqInnerVlan" : "999",
+							"an_qinqOuterVlan" : "100",
+							"an_qinqInnerVlan" : "555",
 							"public_cidr" : "181.10.10.0/29"
 							}
-				}]
+				},
+				{  
+				     "model":"s4224",
+				     "parameters":{
+				        "mgmt_ip" : "",
+				        "service_vlan": "",
+				        "client_port": "" 
+				     }
+			    },
+			    {  
+			         "model":"s3290-5",
+			         "parameters":{
+			            "mgmt_ip" : "",
+			            "bandwidth": "",
+			            "service_vlan": "",
+			            "client_port": "" 
+			         }
+			    }
+			]
 }
-
-
-
-
-
-
-

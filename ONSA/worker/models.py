@@ -111,55 +111,10 @@ class Task(models.Model):
 	def __str__(self):
 		return self.service.service_id
 
-	"""
-	Task factory.
-		TASK1 -> RouterNodeTask
-		TASK2 -> AccessNodeTask
-		TASK3 -> OpticalNodeTask
-		TASK4 -> ClientNodeTask
-
-	Input:
-		1. meta_fields type dict
-			{"model" : "",
-			"strategy" : "",
-			"service_type" : ""}
-		2. parameters type dict
-			configuration parameters for template
-
-	Output: Task instance - type Object
-	"""
-	# def factoryv2(meta_fields, parameters):
-	#	if meta_fields['device_type'] == "RouterNode":
-	#		return RouterNodeTask(service=meta_fields['service'],
-								  # model=meta_fields['model'],
-								  # task_state=TaskStates['IN_PROGRESS'],
-								  # task_type=TaskChoices['RouterNode'].value,
-								  # op_type="CREATE",
-								  # params=parameters)
-	#	elif meta_fields['device_type'] == "AccessNode":
-	#		return AccessNodeTask(service=meta_fields['service'],
-								  # model=meta_fields['model'],
-								  # task_state=TaskStates['IN_PROGRESS'],
-								  # task_type=TaskChoices['AccessNode'].value,
-								  # op_type="CREATE",
-								  # params=parameters)
-	#	elif meta_fields['device_type'] == "OpticalNode":
-	#		return OpticalNodeTask(service=meta_fields['service'],
-								  # model=meta_fields['model'],
-								  # task_state=TaskStates['IN_PROGRESS'],
-								  # task_type=TaskChoices['OpticalNode'].value,
-								  # op_type="CREATE",
-								  # params=parameters)
-	#	elif meta_fields['device_type'] == "ClientNode":
-	#		return ClientNodeTask(service=meta_fields['service'],
-								  # model=meta_fields['model'],
-								  # task_state=TaskStates['IN_PROGRESS'],
-								  # task_type=TaskChoices['ClientNode'].value,
-								  # op_type="CREATE",
-								  # params=parameters)
-
-
 	def factory(model, op_type, service_type, service, parameters):
+
+		print(service_type)
+
 		if service_type.split("_")[0] == "vcpe":
 			if model.lower() == "mx104":
 				return MxVcpeTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value,task_type=TaskChoices['MX_VCPE'].value, op_type=op_type, params=parameters)
@@ -169,10 +124,13 @@ class Task(models.Model):
 				return ScoTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
 			elif model.lower() == "s3290-5":
 				return NidTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['NID'].value, op_type=op_type, params=parameters)
-
 		elif service_type.split("_")[0] == "cpeless":
-			if model.lower() == "mx104" and service_type.split("_")[1] == "irs":
+			if model.lower() == "mx104":
 				return MxCpelessTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['MX_CPELESS'].value, op_type=op_type,  params=parameters)
+			elif model.lower() == "s4224":
+				return ScoTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['SCO'].value, op_type=op_type, params=parameters)
+			elif model.lower() == "s3290-5":
+				return NidTransitionTask(service=service, model=model, task_state=TaskStates['IN_PROGRESS'].value, task_type=TaskChoices['NID'].value, op_type=op_type, params=parameters)
 
 class ManagerTaskMx(models.Manager):
 	def get_queryset(self):
@@ -386,8 +344,6 @@ class NidTransitionTask(Task):
 
 		handler = TransitionHandler(self.params['mgmt_ip'])
 		status = handler.configure_tn("set", self.model, params)
-
-
 
 		if status is True:
 			self.task_state = TaskStates['COMPLETED'].value
