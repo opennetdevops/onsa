@@ -65,7 +65,6 @@ class RouterNode(Device): #MX
 class ClientNode(Device):
     serialNumber = models.CharField(max_length=50, blank=True)
     client = models.CharField(max_length=50, blank=True)
-    service = models.CharField(max_length=50, blank=True) #TODO Services (plural, multiple)
 
     def __str__(self):
         return self.serialNumber
@@ -132,7 +131,7 @@ class AccessPort(models.Model):
 class VlanTag(models.Model):
     vlan_tag = models.CharField(max_length=50,  unique=True)
     vlan_tag.null = True
-    accessPorts = models.ManyToManyField(AccessPort, blank=True)
+    accessPorts = models.ManyToManyField(AccessPort, blank=True, through='VlantagAccessports')
 
     def __str__(self):
         return self.vlan_tag
@@ -224,4 +223,20 @@ class LogicalUnit(models.Model):
         logical_unit = LogicalUnit(logical_unit_id=logical_unit_id)
         logical_unit.save()
         return
+
+class VlantagAccessports(models.Model):
+    vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
+    accessport = models.ForeignKey(AccessPort, models.DO_NOTHING)
+    serviceid = models.CharField(max_length=50, unique=True, blank=True)
+    sn_client_node = models.CharField(max_length=50)
+    client_node_port = models.CharField(max_length=50)
+    bandwidth = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'inventory_vlantag_accessPorts'
+        unique_together = (('vlantag', 'accessport'),)
+
+    def __str__(self):
+        return self.accessport.accessNode.name + " - Port: " +self.accessport.port + \
+        " - Vlan: " + self.vlantag.vlan_tag + " - Service Id: " + self.serviceid
 

@@ -2,7 +2,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
 
-from ..models import VlanTag, AccessPort
+from ..models import VlanTag, AccessPort, VlantagAccessports
 
 import json
 
@@ -24,8 +24,12 @@ class AccessPortVlanTagsView(View):
         access_port = AccessPort.objects.get(pk=accessport_id)
         vlan_tag = data['vlan_tag'] 
         vlan_tag = VlanTag.objects.get(vlan_tag=vlan_tag)
-        vlan_tag.accessPorts.add(access_port)
-        vlan_tag.save()
+        if 'sn_client_node' in data.keys():
+            a = VlantagAccessports(vlantag=vlan_tag, accessport = access_port, serviceid=data['service_id'],
+                sn_client_node=data['sn_client_node'], client_node_port=data['client_node_port'], bandwidth=data['bandwidth'] )
+        else:
+            a = VlantagAccessports(vlantag=vlan_tag, accessport = access_port, serviceid=data['service_id'],bandwidth=data['bandwidth'])
+        a.save()
         return JsonResponse(data, safe=False)
 
 
