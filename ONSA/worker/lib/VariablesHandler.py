@@ -15,7 +15,9 @@ class VariablesHandler:
 
 		name = parms['service.client_name']+"-"+params['service.service_id']
 
-	 	new_params = {
+		new_params =  {}
+
+	 	create_params = {
 					"datacenterMoid" : params['datacenterMoid'],
 					"name" : name,
 					"description" : "vCPE-" + name,
@@ -49,6 +51,15 @@ class VariablesHandler:
 
 				}
 
+		gateway_params = {
+						"description" : "description",
+						"vnic" : "0",
+						"gatewayAddress" : "100.64.0.1",
+						"mtu" : "1500"
+					}
+
+		new_params['create_params'] = create_params
+		new_params['gateway_params'] = gateway_params
 
 		return new_params
 

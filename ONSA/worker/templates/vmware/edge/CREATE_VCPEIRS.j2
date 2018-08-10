@@ -1,3 +1,4 @@
+{% if create_params is defined %}
 <edge>
   <datacenterMoid>{{ datacenterMoid }}</datacenterMoid>
   <name>{{ name }}</name>
@@ -33,3 +34,17 @@
     <remoteAccess>{{ cliSettings.remoteAccess }}</remoteAccess>
   </cliSettings>
 </edge>
+{% end %}
+
+
+{% if gateway_params is defined  %}
+{
+  "defaultRoute": 
+  {
+    "description": "{{ description }}",
+    "vnic": "{{ vnic }}",
+    "gatewayAddress": "{{ gatewayAddress }}",
+    "mtu": "{{ mtu }}"  
+  }
+}
+{% end %}

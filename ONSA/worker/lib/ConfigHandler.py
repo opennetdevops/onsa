@@ -4,10 +4,24 @@ from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import *
 import ipaddress
+import requests
+
+def get_edge_id_by_name(name):
+	rheaders = {'Accept': 'application/json'}
+
+	r = requests.get(MANAGER + "/api/4.0/edges", auth=(USER, PASS), verify=False, headers=rheaders)
+
+	r_dict = json.loads(r.text)	
+	allEdges = r_dict['edgePage']['data']
+
+	for edge in allEdges:
+		if edge['name'] == name:
+			return edge['id']
+
+	return ""
 
 
 class ConfigHandler:
-
 	def pyez(parameters, template_path):
 
 		logging.basicConfig(level=logging.INFO)
@@ -98,4 +112,25 @@ class ConfigHandler:
 		net_connect.disconnect()
 
 	def nsx(parameters, template_path):
-		pass
+		dir = os.path.dirname(__file__)
+		nsx_edge_xml = os.path.join(dir, template_path)
+
+		params = {'create_params' : parameters['create_params']}
+
+		data = render(nsx_edge_xml, params)
+
+		rheaders = {'Content-Type': 'application/xml'}
+		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+
+		sleep(45)
+
+		edge_id = get_edge_id_by_name(parameters['create_params']['name'])
+		nsx_static_json = os.path.join(dir, template_path)
+
+		params = {'gateway_params' : parameters['gateway_params']}
+
+		data = render(nsx_static_json, params) 
+
+		rheaders = {'Content-Type': 'application/json'}
+		r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		status_code = r.status_code
