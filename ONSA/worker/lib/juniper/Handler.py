@@ -7,7 +7,7 @@ import ipaddress
 
 from pprint import pprint
 
-from ..common.render import render
+# from ..common.render import render
 
 class Handler(object):
 
