@@ -169,9 +169,6 @@ class Migration(migrations.Migration):
                 ('accessport', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='inventory.AccessPort')),
                 ('vlantag', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='inventory.VlanTag')),
             ],
-            options={
-                'db_table': 'inventory_vlantag_accessPorts',
-            },
         ),
         migrations.AddField(
             model_name='vlantag',

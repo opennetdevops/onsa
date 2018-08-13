@@ -227,13 +227,12 @@ class LogicalUnit(models.Model):
 class VlantagAccessports(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     accessport = models.ForeignKey(AccessPort, models.DO_NOTHING)
-    serviceid = models.CharField(max_length=50, blank=True)
+    serviceid = models.CharField(max_length=50, blank=True, unique=True)
     sn_client_node = models.CharField(max_length=50)
     client_node_port = models.CharField(max_length=50)
     bandwidth = models.CharField(max_length=50)
 
     class Meta:
-        db_table = 'inventory_vlantag_accessPorts'
         unique_together = (('vlantag', 'accessport'),)
 
     def __str__(self):
