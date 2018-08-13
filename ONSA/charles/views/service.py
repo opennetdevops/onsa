@@ -31,7 +31,7 @@ class ServiceView(View):
 		bandwith = data.pop('bandwith')
 		service_id = data['service_id']
 
-		#CHECK if exists (RETRY option LA VILLA)
+		#Check if exists (retry support)
 		if ServiceView.existing_service(service_id):
 			service = Service.objects.filter(service_id=service_id)
 			service.update(**data)
@@ -63,8 +63,17 @@ class ServiceView(View):
 		virtual_pod = ServiceView.get_virtual_pod(location_id)
 		router_node = ServiceView.get_router_node(location_id)
 		downlink_pg = ServiceView.get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
+		
+		#Use porgroup
+		ServiceView.use_portgroup(downlink_pg['id'])
+
 		router_node_id = str(router_node['id'])
 		free_logical_units = ServiceView.get_free_logical_units(router_node_id)
+
+		#Add logicals unit to routernode
+		ServiceView.add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
+		ServiceView.add_logical_unit_to_router_node(router_node_id,free_logical_units[1]['logical_unit_id'])
+
 		free_access_port = ServiceView.get_free_access_port(location_id)
 		access_port_id = str(free_access_port['id'])
 		access_node_id = str(free_access_port['accessNode_id'])
