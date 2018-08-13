@@ -1,20 +1,16 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 
-
-from .lib import ConfigHandler
-from .lib.juniper.Handler import Handler
-from .lib.nsx.NsxHandler import NsxHandler
-from .lib.transition.TransitionHandler import TransitionHandler
-from enum import Enum
-
-from background_task import background
-
-from itertools import chain
-import requests
-from pprint import pprint
 import json
 import time
+import requests
+
+from enum import Enum
+from background_task import background
+from pprint import pprint
+
+from .lib import ConfigHandler, VariablesHandler
+
 
 CHARLES = "http://localhost:8000"
 
@@ -40,19 +36,13 @@ class Service(models.Model):
 
 		print(my_service.service_id)
 
-		if my_service.service_type.split("_")[0] == "vcpe":
-			tasks = list(chain(MxVcpeTask.objects.filter(service=my_service),
-							   NsxTask.objects.filter(service=my_service),
-							   ScoTransitionTask.objects.filter(service=my_service),
-							   NidTransitionTask.objects.filter(service=my_service)))
-		elif my_service.service_type.split("_")[0] == "cpeless":
-			tasks = list(chain(MxCpelessTask.objects.filter(service=my_service),
-							   ScoTransitionTask.objects.filter(service=my_service),
-							   NidTransitionTask.objects.filter(service=my_service)))
-		elif my_service.service_type.split("_")[0] == "cpe":
-			tasks = list(chain(MxCpeTask.objects.filter(service=my_service),
-							   ScoTransitionTask.objects.filter(service=my_service),
-							   NidTransitionTask.objects.filter(service=my_service)))
+		# if my_service.service_type.split("_")[0] == "vcpe":
+		# 	tasks = list(chain(MxVcpeTask.objects.filter(service=my_service),
+		# 					   NsxTask.objects.filter(service=my_service),
+		# 					   ScoTransitionTask.objects.filter(service=my_service),
+		# 					   NidTransitionTask.objects.filter(service=my_service)))
+
+		tasks = Task.objects.filter(service=my_service)
 
 		print(tasks)
 
@@ -61,7 +51,6 @@ class Service(models.Model):
 		my_service.service_state = "COMPLETED"
 
 		for task in tasks:
-			print(task.task_type)
 			task.run_task()
 			task.save()
 			if task.task_state == "COMPLETED":
@@ -117,8 +106,9 @@ class Task(models.Model):
 
 	def run_task(self):
 
-		path = "/templates/" + self.model.upper() + "/" + self.strategy.upper() + "/" + self.op_type.upper() + \
-			"_" + self.service.service_type.upper()
+		# Replace vmware for self.vendor.lower()
+		path = "/templates/" + "vmware" + "/" + self.model + "/" + self.op_type.upper() + \
+			"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
 
 		params_generator = getattr(VariablesHandler.VariablesHandler, self.model + "_" + self.service.service_type)
 
@@ -128,15 +118,13 @@ class Task(models.Model):
 		params['client_name'] = self.service.client_name
 
 		params = params_generator(params)
-
+		
 		config_handler = getattr(ConfigHandler.ConfigHandler, self.strategy)
 
-		status = config_handler(params)
+		status = config_handler(params, path)
 
-		if status is not True:
-			self.task_state = TaskStates['ERROR'].value
-		else:
-			self.task_state = TaskStates['COMPLETED'].value
+		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
+			
 
 # 	def rollback(self):
 # 		handler = Handler.factory(service_type=self.service.service_type)

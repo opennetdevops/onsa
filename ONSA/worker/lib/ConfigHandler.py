@@ -1,10 +1,16 @@
+import os
+import ipaddress
+import requests
+
 from netmiko import ConnectHandler
 from jinja2 import Template
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import *
-import ipaddress
-import requests
+from pprint import pprint
+from .nsx.nsx_rest import *
+from .common.render import render
+
 
 def get_edge_id_by_name(name):
 	rheaders = {'Accept': 'application/json'}
@@ -112,25 +118,41 @@ class ConfigHandler:
 		net_connect.disconnect()
 
 	def nsx(parameters, template_path):
-		dir = os.path.dirname(__file__)
-		nsx_edge_xml = os.path.join(dir, template_path)
+
+		dir = os.path.dirname(os.path.abspath(__file__))
+		t_path = os.path.join(dir, template_path)
 
 		params = {'create_params' : parameters['create_params']}
 
-		data = render(nsx_edge_xml, params)
+		print(t_path)
+
+		pprint(params)
+
+		data = render(t_path, params)
 
 		rheaders = {'Content-Type': 'application/xml'}
 		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 
+		if r.status_code == 201:
+			status = True
+
 		sleep(45)
 
 		edge_id = get_edge_id_by_name(parameters['create_params']['name'])
-		nsx_static_json = os.path.join(dir, template_path)
+
+		print(nsx_static_json)
 
 		params = {'gateway_params' : parameters['gateway_params']}
 
-		data = render(nsx_static_json, params) 
+		pprint(params)
+
+		data = render(t_path, params)
 
 		rheaders = {'Content-Type': 'application/json'}
 		r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 		status_code = r.status_code
+
+		if r.status_code == 204:
+			status &= True
+
+		return status

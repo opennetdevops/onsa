@@ -45,7 +45,11 @@ class WorkerView(View):
 		op_type = data['op_type']
 
 		for device in data['devices']:
-			task = Task.factory(device['model'], op_type, service.service_type, service, device['parameters'])
+			task = Task(service=service,
+						model=device['model'],
+						op_type=op_type,
+						strategy=data['strategy'],
+						params=device['parameters'])
 			task.save()
 
 		"""

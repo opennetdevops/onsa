@@ -1,3 +1,5 @@
+import ipaddress
+
 class VariablesHandler:
 
 	def mx104_vcpeirs(params):
@@ -11,13 +13,13 @@ class VariablesHandler:
 		return params
 
 
-	def nsx_vcpeirs(params):
+	def nsx_vcpe_irs(params):
 
-		name = parms['service.client_name']+"-"+params['service.service_id']
+		name = params['client_name']+"-"+params['service_id']
 
 		new_params =  {}
 
-	 	create_params = {
+		create_params = {
 					"datacenterMoid" : params['datacenterMoid'],
 					"name" : name,
 					"description" : "vCPE-" + name,
