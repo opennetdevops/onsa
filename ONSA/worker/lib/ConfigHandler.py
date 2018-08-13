@@ -2,6 +2,7 @@ import os
 import ipaddress
 import requests
 import json
+import logging
 
 from netmiko import ConnectHandler
 from jinja2 import Template
@@ -12,8 +13,6 @@ from pprint import pprint
 from .nsx.nsx_rest import *
 from .common.render import render
 from time import sleep
-
-
 
 
 def get_edge_id_by_name(name):
@@ -32,10 +31,11 @@ def get_edge_id_by_name(name):
 
 
 class ConfigHandler:
+
 	def pyez(parameters, template_path):
 
 		logging.basicConfig(level=logging.INFO)
-		dev = Device(host=mgmt_ip, user="lab", password="lab123", port=443)
+		dev = Device(host=parameters['mgmt_ip'], user="lab", password="lab123", port=443)
 		dev.bind(cu=Config)
 
 		try:
@@ -51,13 +51,12 @@ class ConfigHandler:
 		except LockError:
 			logging.error("Error: Unable to lock configuration")
 			dev.close()
-
+			return False
 		try:
 			dev.cu.load(template_path=template_path, merge=True, template_vars=parameters, format="set")
 			dev.cu.pdiff()
 		except ValueError as err:
 			logging.error("Error: %s", err.message)
-			status = False
 		except Exception as err:
 			if err.rsp.find('.//ok') is None:
 				rpc_msg = err.rsp.findtext('.//error-message')
@@ -65,10 +64,12 @@ class ConfigHandler:
 
 			logging.info("Unlocking the configuration")
 			try:
-					dev.cu.unlock()
+				dev.cu.unlock()
 			except UnlockError:
 					logging.error("Error: Unable to unlock configuration")
 			dev.close()
+			return False
+
 
 		logging.info("Committing the configuration")
 		try:
@@ -78,8 +79,10 @@ class ConfigHandler:
 			logging.debug( "Commit result: %s",commit_result)
 		except (CommitError, RpcTimeoutError) as e:
 			logging.error( "Error: Unable to commit configuration")
+			print(e)
 			dev.cu.unlock()
-			dev.cu.close()
+			dev.close()
+			return False
 
 		logging.info( "Unlocking the configuration")
 		try:
@@ -90,8 +93,11 @@ class ConfigHandler:
 		logging.info("Closing NETCONF session")
 		dev.close()
 
+		return True
 
-	def transition(parameters, template_path):
+
+	def ssh(parameters, template_path):
+
 		my_device = {
 		'host': parameters['mgmt_ip'],
 		'username': "lab",
@@ -100,26 +106,23 @@ class ConfigHandler:
 		'global_delay_factor': 1
 		}
 
-		params['port_description'] = params['client'] + "-" + params['service_type'] + "-" + params['service_id']
-
-		dir = os.path.dirname(__file__)
-		path = os.path.join(dir, template_path)
-
-		lines = open(path,'r').read().splitlines()
+		lines = open(template_path,'r').read().splitlines()
 
 		config = []
 
 		for line in lines:
 			template = Template(line)
-			config.append(template.render(**params))
+			config.append(template.render(**parameters))
 
-		net_connect = ConnectHandler(**my_device)
-		output = net_connect.send_config_set(config)
+		pprint(config)
 
-		print(output)
+		# net_connect = ConnectHandler(**my_device)
+		# output = net_connect.send_config_set(config)
+
+		# print(output)
 		
-		# Clossing connection    
-		net_connect.disconnect()
+		# # Clossing connection    
+		# net_connect.disconnect()
 
 	def nsx(parameters, template_path):
 

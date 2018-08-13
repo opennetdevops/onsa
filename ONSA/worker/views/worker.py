@@ -42,14 +42,10 @@ class WorkerView(View):
 		Creates all of the tasks associated with
 		the service requested.
 		"""
-		op_type = data['op_type']
-
 		for device in data['devices']:
 			task = Task(service=service,
-						model=device['model'],
-						op_type=op_type,
-						strategy=data['strategy'],
-						params=device['parameters'])
+						op_type=data['op_type'],
+						device=device)
 			task.save()
 
 		"""

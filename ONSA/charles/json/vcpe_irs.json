@@ -1,43 +1,37 @@
-#100.64.0.0/23  WAN_NSX_CENTRO red de hosts
-#181.30.31.0/24 PUBLIC_ONSA no es de hosts
-
 {
    "client":"Starbucks",
    "service_type":"vcpe_irs_28",
    "service_id":"0987654321",
-   "tasks_type":"",
+   "op_type":"",
    "devices":[
-      {  //me falta vxrail vxrail_ae_interface vxrail_logical_unit vxrail_vlan
-         // sco_ae_interface sco_logical_unit qinqOuterVlan qinqInnerVlan
-         // location_id -> virtual_pods , routernodes, accessPort
-         // routernodes -> logicalUnit
-         // accessPort -> acccessNode y VlanTag (innerVlan)
-         "model":"MX104",
-         "parameters":{
-            "mgmt_ip":"10.120.104.13",    // /inventory/api/locations/<LOCATION_ID>/routernodes 
-            "vmw_uplinkInterface":"ae1",  // /inventory/api/locations/<LOCATION_ID>/virtualpods **4
-            "vmw_logicalUnit":"100",  // /inventory/api/routernodes/<ROUTERNODE_ID>/logicalunits?used=false
-            "vmw_vlan":"10",           // /inventory/api/virtualpods/<VMWPOD_ID>/portgroups?used=false **5 / vlan_tag
-            "an_uplinkInterface":"ae1",  // /inventory/api/locations/<LOCATION_ID>/accessports?used=false **1
-            "an_logicalUnit":"24",   // /inventory/api/routernodes/<ROUTERNODE_ID>/logicalunits?used=false
-            "an_qinqOuterVlan":"24",      // /inventory/api/accessnodes/<ACCESSNODE_ID> **2
-            "an_qinqInnerVlan":"555",     // /inventory/api/accessports/<ACCESPORT_ID>/vlantags?used=false **3
+      {     "vendor" : "juniper",
+            "model":"MX104",
+            "strategy" : "",
+            "parameters":{
+            "mgmt_ip":"",   
+            "vmw_uplinkInterface":"",
+            "vmw_logicalUnit":"",  
+            "vmw_vlan":"",           
+            "an_uplinkInterface":"",  
+            "an_logicalUnit":"",   
+            "an_qinqOuterVlan":"",      
+            "an_qinqInnerVlan":"", 
             "public_cidr":"181.1.0.0/28"
          }
       },
-      {  //me falta downlink
+      {  
          "model":"NSX",
          "parameters":{
-            "datacenterMoid":"datacenter-2", // /inventory/api/locations/<LOCATION_ID>/virtualpods
-            "resourcePoolId":"resgroup-44",  // /inventory/api/locations/<LOCATION_ID>/virtualpods
-            "datastoreId":"datastore-55"     // /inventory/api/locations/<LOCATION_ID>/virtualpods
+            "datacenterMoid":"datacenter-2", 
+            "resourcePoolId":"resgroup-44",  
+            "datastoreId":"datastore-55" 
          },
          "uplink":{
-            "portgroupId":"dvportgroup-456", // /inventory/api/locations/<LOCATION_ID>/virtualpods //uplinkPgId
+            "portgroupId":"dvportgroup-456",
             "primaryAddress":"100.64.0.3",
          },
          "downlink":{
-            "portgroupId":"dvportgroup-999", // **5
+            "portgroupId":"dvportgroup-999",
          }
       },
       {  

@@ -88,44 +88,34 @@ class OperationType(Enum):
 	UPDATE = "UPDATE"
 	DELETE = "DELETE"
 
-class ServiceType(Enum):
-	pass
-
-class Strategy(Enum):
-	pass
-
 class Task(models.Model):
 	service = models.ForeignKey(Service, on_delete=models.CASCADE)
-	task_state = models.CharField(default="Creating", max_length=50, blank=True)
+	task_state = models.CharField(max_length=50, blank=True)
 	op_type = models.CharField(max_length=30)
-	model = models.CharField(max_length=30)
-	strategy = models.CharField(max_length=30)
-	params = JSONField()
+	device = JSONField()
 
 	def __str__(self):
 		return self.service.service_id
 
 	def run_task(self):
 		dir = os.path.dirname(os.path.abspath(__file__))
-		# Replace vmware for self.vendor.lower()
-		path = "templates/" + "vmware" + "/" + self.model + "/" + self.op_type.upper() + \
+		path = "templates/" + self.device['vendor'] + "/" + self.device['model'] + "/" + self.op_type.upper() + \
 			"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
 
-		print(dir)
 		path = os.path.join(dir, path)
-		print("ACA")
 		print(path)
+		params_generator = getattr(VariablesHandler.VariablesHandler, self.device['model'].replace('-','_') + "_" + self.service.service_type)
 
-		params_generator = getattr(VariablesHandler.VariablesHandler, self.model + "_" + self.service.service_type)
-
-		params = self.params
+		params = self.device['parameters']
 		params['service_id'] = self.service.service_id
 		params['service_type'] = self.service.service_type
 		params['client_name'] = self.service.client_name
 
-		params = params_generator(params)
+		params, strategy = params_generator(params)
 
-		config_handler = getattr(ConfigHandler.ConfigHandler, self.strategy)
+		pprint(params)
+
+		config_handler = getattr(ConfigHandler.ConfigHandler, strategy)
 
 		status = config_handler(params, path)
 

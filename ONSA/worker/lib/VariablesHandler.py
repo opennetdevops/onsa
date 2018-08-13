@@ -2,7 +2,7 @@ import ipaddress
 
 class VariablesHandler:
 
-	def mx104_vcpeirs(params):
+	def mx104_vcpe_irs(params):
 		bridge_domain_id = params['service_type'] + "-" + params['client_name']+ "-" + params["service_id"]
 
 		params['bridge_domain_id'] = bridge_domain_id
@@ -10,8 +10,9 @@ class VariablesHandler:
 		params['vmw_interface_description'] = "Another description"
 		params['an_interface_description'] = "Well, another one"
 
-		return params
+		strategy = 'pyez'
 
+		return params, strategy
 
 	def nsx_vcpe_irs(params):
 
@@ -63,25 +64,34 @@ class VariablesHandler:
 		new_params['create_params'] = create_params
 		new_params['gateway_params'] = gateway_params
 
-		return new_params
+		strategy = 'nsx'
+
+		return new_params, strategy
 
 	def s4224_vcpe_irs(params):
-		params['port_description'] = params['client'] + "-" + params['service_type'] + "-" + params['service_id']
-		return params
+		params['port_description'] = params['client_name'] + "-" + params['service_type'] + "-" + params['service_id']
+		strategy = 'ssh'
+		return params, strategy
 
 	def s3290_5_vcpe_irs(params):
-		params['port_description'] = params['client'] + "-" + params['service_type'] + "-" + params['service_id']
-		return params
+		params['port_description'] = params['client_name'] + "-" + params['service_type'] + "-" + params['service_id']
+		strategy = 'ssh'
+
+		return params, strategy
 
 	def mx104_cpeless_irs(params):
-		pass
+		params['description'] = "Description"
+		params['public_cidr'] = str(list(ipaddress.ip_network(params['public_cidr']).hosts())[0]) + "/" + params['public_cidr'].split("/")[1]
+		strategy = 'pyez'
+
+		return params, strategy
 
 	def s4224_cpeless_irs(params):
-		params['port_description'] = params['client'] + "-" + params['service_type'] + "-" + params['service_id']
+		params['port_description'] = params['client_name'] + "-" + params['service_type'] + "-" + params['service_id']
 		return params
 
 	def s3290_5_cpeless_irs(params):
-		params['port_description'] = params['client'] + "-" + params['service_type'] + "-" + params['service_id']
+		params['port_description'] = params['client_name'] + "-" + params['service_type'] + "-" + params['service_id']
 		return params
 
 	def mx104_cpeless_mpls(params):
