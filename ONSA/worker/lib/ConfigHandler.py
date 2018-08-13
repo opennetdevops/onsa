@@ -1,6 +1,7 @@
 import os
 import ipaddress
 import requests
+import json
 
 from netmiko import ConnectHandler
 from jinja2 import Template
@@ -10,6 +11,9 @@ from jnpr.junos.exception import *
 from pprint import pprint
 from .nsx.nsx_rest import *
 from .common.render import render
+from time import sleep
+
+
 
 
 def get_edge_id_by_name(name):
@@ -119,16 +123,9 @@ class ConfigHandler:
 
 	def nsx(parameters, template_path):
 
-		dir = os.path.dirname(os.path.abspath(__file__))
-		t_path = os.path.join(dir, template_path)
-
 		params = {'create_params' : parameters['create_params']}
 
-		print(t_path)
-
-		pprint(params)
-
-		data = render(t_path, params)
+		data = render(template_path, params)
 
 		rheaders = {'Content-Type': 'application/xml'}
 		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
@@ -140,13 +137,8 @@ class ConfigHandler:
 
 		edge_id = get_edge_id_by_name(parameters['create_params']['name'])
 
-		print(nsx_static_json)
-
 		params = {'gateway_params' : parameters['gateway_params']}
-
-		pprint(params)
-
-		data = render(t_path, params)
+		data = render(template_path, params)
 
 		rheaders = {'Content-Type': 'application/json'}
 		r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)

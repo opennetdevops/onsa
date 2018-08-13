@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import JSONField
 import json
 import time
 import requests
+import os
 
 from enum import Enum
 from background_task import background
@@ -105,10 +106,15 @@ class Task(models.Model):
 		return self.service.service_id
 
 	def run_task(self):
-
+		dir = os.path.dirname(os.path.abspath(__file__))
 		# Replace vmware for self.vendor.lower()
-		path = "/templates/" + "vmware" + "/" + self.model + "/" + self.op_type.upper() + \
+		path = "templates/" + "vmware" + "/" + self.model + "/" + self.op_type.upper() + \
 			"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
+
+		print(dir)
+		path = os.path.join(dir, path)
+		print("ACA")
+		print(path)
 
 		params_generator = getattr(VariablesHandler.VariablesHandler, self.model + "_" + self.service.service_type)
 
@@ -118,12 +124,14 @@ class Task(models.Model):
 		params['client_name'] = self.service.client_name
 
 		params = params_generator(params)
-		
+
 		config_handler = getattr(ConfigHandler.ConfigHandler, self.strategy)
 
 		status = config_handler(params, path)
 
 		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
+
+		print(self.task_state)
 			
 
 # 	def rollback(self):
