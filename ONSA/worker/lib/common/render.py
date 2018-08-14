@@ -3,27 +3,33 @@ import ipaddress
 
 from jinja2 import Environment, FileSystemLoader
 
-def _host_query():
-	pass
+def host(value):
 
-def ipaddr(value, query=''):
+	print("asdasda: " + value)
+	network = ipaddress.ip_network(value)
+	print(network)
 
-	query_func_map = {
-						'address' : _ip_query,
-						'host' : _host_query,
-						'net' : _net_query
-	}
+	return list(ipaddress.ip_network(value).hosts())[0]
 
-	query = query_func_map[value]
 
-	return query()
+def net(value):
+	return ipaddress.ip_network(value)
 
+def ip(value):
+	return ipaddress.ip_address(value)
+
+def netmask(value):
+	return value.netmask
 
 def render(tpl_path, context):
     path, filename = os.path.split(tpl_path)
     env = Environment(loader=FileSystemLoader(path or './'))
+    
+    env.filters['net'] = net
+    env.filters['ip'] = ip
+    env.filters['host'] = host
+    env.filters['netmask'] = netmask
 
-    template = env.get_template(filename)
-    template.globals['ipaddr'] = ipaddr
+    template = env.get_template(filename) 
     
     return template.render(context)
