@@ -137,7 +137,7 @@ class ConfigHandler:
 			status = True
 
 		sleep(45)
-
+		
 		edge_id = get_edge_id_by_name(parameters['create_params']['name'])
 
 		params = {'gateway_params' : parameters['gateway_params']}

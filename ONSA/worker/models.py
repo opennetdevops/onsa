@@ -11,7 +11,7 @@ from background_task import background
 from pprint import pprint
 
 from .lib import ConfigHandler, VariablesHandler
-
+from .lib.common.render import render
 
 CHARLES = "http://localhost:8000"
 
@@ -26,6 +26,7 @@ class Service(models.Model):
 	service_id = models.CharField(max_length=50)
 	service_type = models.CharField(max_length=50)
 	service_state = models.CharField(max_length=50)
+	parameters = JSONField()
 
 	def __str__(self):
 		return self.service_id
@@ -78,6 +79,13 @@ class OperationType(Enum):
 	UPDATE = "UPDATE"
 	DELETE = "DELETE"
 
+class Strategy(Enum):
+	juniper = "pyez"
+	vmware = "nsx"
+	transition = "ssh"
+	huawei = "netconf"
+	cisco = "netconf"
+
 class Task(models.Model):
 	service = models.ForeignKey(Service, on_delete=models.CASCADE)
 	task_state = models.CharField(max_length=50, blank=True)
@@ -89,29 +97,39 @@ class Task(models.Model):
 
 	def run_task(self):
 		dir = os.path.dirname(os.path.abspath(__file__))
-		path = "templates/" + self.device['vendor'] + "/" + self.device['model'] + "/" + self.op_type.upper() + \
+		template_path = "templates/" + self.device['vendor'] + "/" + self.device['model'] + "/" + self.op_type.upper() + \
 			"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
 
-		path = os.path.join(dir, path)
-		print(path)
-		params_generator = getattr(VariablesHandler.VariablesHandler, self.device['model'].replace('-','_') + "_" + self.service.service_type)
+		template_path = os.path.join(dir, template_path)
 
-		params = self.device['parameters']
+		variables_path = "variables/" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".json"
+		variables_path = os.path.join(dir, variables_path)
+
+		pprint(template_path)
+		pprint(variables_path)
+		
+		params = {}
+		params['parameters'] = self.service.parameters
+		params['parameters']['mgmt_ip'] = self.device['mgmt_ip']
 		params['service_id'] = self.service.service_id
 		params['service_type'] = self.service.service_type
 		params['client_name'] = self.service.client_name
-
-		params, strategy = params_generator(params, self.op_type)
+		params['trigger'] = False
 
 		pprint(params)
 
-		config_handler = getattr(ConfigHandler.ConfigHandler, strategy)
+		params = render(variables_path, params)
 
-		status = config_handler(params, path)
 
-		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
+		pprint(params)
 
-		print(self.task_state)
+		# config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
+
+		# status = config_handler(params, template_path)
+
+		# self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
+
+		# print(self.task_state)
 			
 
 	def rollback(self):

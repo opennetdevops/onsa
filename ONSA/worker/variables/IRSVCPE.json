@@ -1,0 +1,75 @@
+{     
+      {# Service variables #}
+      "mgmt_ip": "{{ mgmt_ip }}", 
+      "bandwidth": "{{ bandwidth }}",
+      "service_vlan": "{{ service_vlan }}",
+      "public_cidr": "{{ public_cidr }}",
+
+      {# Devices variables #}
+
+      {# MX104 variables #}
+      "vmw_uplinkInterface": "{{ vmw_uplinkInterface }}",
+      "vmw_logicalUnit": "{{ vmw_logicalUnit }}",  
+      "vmw_vlan": "{{ vmw_vlan }}",
+      "vmw_interface_description" : "A description",
+
+      "an_uplinkInterface": "{{ an_uplinkInterface }}",  
+      "an_logicalUnit": "{{ an_logicalUnit }}",  
+      "an_qinqOuterVlan": "{{ an_qinqOuterVlan }}",    
+      "an_qinqInnerVlan": "{{ an_qinqInnerVlan }}",
+      "an_interface_description" : "Ok, another description",
+      
+      "bridge_domain_id" : "{{ service_type }}-{{ client_name }}-{{ service_id }}",
+      "bridge_domain_description" : "Another one...",
+
+      {# NSX Edge variables #}
+      {% if trigger == False %}
+      "datacenterMoid" : "{{ datacenterMoid }}",
+      "edge_name" : "{{ client_name }}-{{ service_id }}",
+      "description" : "vCPE-{{ edge_name }}",
+      "applianceSize" : "xlarge",
+      "resourcePoolId" : "{{ resourcepool_id }}",
+      "datastoreId" : "{{ datastore_id }}",
+      "vnics" : [{"index" : "0",
+                        "name" : "Uplink",
+                        "type" : "Uplink",
+                        "portgroupId" : "{{ wan_portgroup_id }}",
+                        "primaryAddress" : "{{ wan_ip | ipaddr('host') | ipaddr('address') }}",
+                        "subnetMask" : "255.255.254.0",
+                        "mtu" : "1500",
+                        "isConnected" : "true"},
+                        {"index" : "1",
+                        "name" : "Internal",
+                        "type" : "Internal",
+                        "portgroupId" : "{{ lan_portgroup_id }}",
+                        "primaryAddress" : "{{ public_cidr | ipaddr('net') | ipaddr('1') }}",
+                        "subnetMask" : "{{ public_cidr | ipaddr('net') | ipaddr('netmask') }}",
+                        "mtu" : "1500",
+                        "isConnected" : "true"}],
+      "userName" : "admin",
+      "password" : "T3stC@s3NSx!",
+      "remoteAccess" : "true"
+      {% endif %}
+
+      {% if trigger == True %}
+      "gatewayVnicDescription" : "{{ gateway_vnic_description }}",
+      "gatewayVnic" : "0",
+      "gatewayAddress" : "100.64.0.1",
+      "gatewayVnicMtu" : "1500",
+      {% endif %}
+
+      {# Access Node variables #}
+      "an_client_port": "{{ an_client_port }}",
+
+      {# Optical Node variables #}
+      "on_client_port": "{{ on_client_port }}"" 
+
+      
+}
+
+
+
+
+      }
+
+}
