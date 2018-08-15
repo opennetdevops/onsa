@@ -63,19 +63,19 @@ class RouterNode(Device): #MX
         return self.name
 
 class ClientNode(Device):
-    serialNumber = models.CharField(max_length=50, blank=True)
+    serial_number = models.CharField(max_length=50, blank=True, unique=True)
     client = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return self.serialNumber
+        return self.serial_number
 
-class OpticalNode(Device):
-    serialNumber = models.CharField(max_length=50, blank=True)
-    client = models.CharField(max_length=50, blank=True)
-    hwId = models.CharField(max_length=50, blank=True)
+# class OpticalNode(Device):
+#     serial_number = models.CharField(max_length=50, blank=True)
+#     client = models.CharField(max_length=50, blank=True)
+#     hwId = models.CharField(max_length=50, blank=True)
     
-    def __str__(self):
-        return self.serialNumber
+#     def __str__(self):
+#         return self.serial_number
 
 class AccessPort(models.Model):
     description = models.CharField(max_length=50)
