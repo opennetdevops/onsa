@@ -116,11 +116,13 @@ class Task(models.Model):
 		params['trigger'] = False
 		params.update(self.service.parameters)
 
-		params = render(variables_path, params)
+		params = json.loads(render(variables_path, params))
+
+		pprint(params)
 
 		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
 
-		status = config_handler(params, template_path)
+		status = config_handler(template_path, params)
 
 		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
 
