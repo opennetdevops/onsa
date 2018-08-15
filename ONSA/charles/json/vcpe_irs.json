@@ -1,128 +1,26 @@
-{
-   "client":"Starbucks",
-   "service_type":"vcpe_irs_28",
-   "service_id":"0987654321",
-   "op_type":"",
-   "devices":[
-      {     "vendor" : "juniper",
-            "model":"MX104",
-            "strategy" : "",
-            "parameters":{
-            "mgmt_ip":"",   
-            "vmw_uplinkInterface":"",
-            "vmw_logicalUnit":"",  
+{ 
+  "client" : "",
+  "service_type" : "",
+  "service_id" : "",
+  "op_type" : "",
+  "parameters":{
+            "vmw_uplink_interface":"",
+            "vmw_logical_unit":"",  
             "vmw_vlan":"",           
-            "an_uplinkInterface":"",  
-            "an_logicalUnit":"",   
-            "an_qinqOuterVlan":"",      
-            "an_qinqInnerVlan":"", 
-            "public_cidr":"181.1.0.0/28"
-         }
-      },
-      {  
-         "model":"NSX",
-         "parameters":{
-            "datacenterMoid":"datacenter-2", 
-            "resourcePoolId":"resgroup-44",  
-            "datastoreId":"datastore-55" 
+            "an_uplink_interface":"",  
+            "an_logical_unit":"",   
+            "an_outer_vlan":"",      
+            "an_inner_vlan":"", 
+            "public_cidr":"",
+            "wan_ip" : "",
+            "bandwidth" : "",
+            "datacenter_id" : "",
+            "resgroup_id" : "",
+            "datastore_id" : "",
+            "wan_portgroup_id" : "",
+            "lan_portgroup_id" : "",
+            "an_client_port" : "",
+            "op_client_port" : ""
          },
-         "uplink":{
-            "portgroupId":"dvportgroup-456",
-            "primaryAddress":"100.64.0.3",
-         },
-         "downlink":{
-            "portgroupId":"dvportgroup-999",
-         }
-      },
-      {  
-         "model":"s4224",
-         "parameters":{
-            "mgmt_ip" : "",
-            "service_vlan": "",
-            "client_port": "" 
-         }
-      },
-      {  
-         "model":"s3290-5",
-         "parameters":{
-            "mgmt_ip" : "",
-            "bandwidth": "",
-            "service_vlan": "",
-            "client_port": "" 
-         }
-      }
-
-   ]
+  "devices" : [{"vendor": "","model" : "", "mgmt_ip":""}]
 }
-
-// **1 - Devuelve array de accessports, tiene AccessNode Id
-// Example:  /inventory/api/locations/2/accessports?used=false
-//[
-//     {
-//         "id": 2,                             // <--ACCESSPORT_ID to be used in /inventory/api/accessports/XXX/vlantags?used=false
-//         "description": "SCO CEN 7 - Port 2",
-//         "port": "eth1/2",
-//         "used": false,
-//         "accessNode_id": 1, //Use this to get the access Node
-//         "client": null
-//     },
-//
-// **2 - Devuelve array con 1 access node
-// Example: /inventory/api/accessnodes/1
-// [
-//     {
-//         "id": 1,
-//         "name": "SCO-some-07",
-//         "deviceType": "",
-//         "mgmtIP": "",
-//         "model": "",
-//         "location_id": 2,
-//         "uplinkInterface": "ae1",
-//         "accessNodeId": "7",
-//         "qinqOuterVlan": "7",
-//         "logicalUnitId": ""
-//     }
-// ]
-//
-// **3 - Devuelve array con vlan tags free o used (depende del query parameter)
-// Example: /inventory/api/accessports/1/vlantags?used=false
-// [
-//     {
-//         "id": 1,
-//         "vlan_tag": "1899"
-//     }
-// ]
-//
-// **4 - Devuelve array de virtual pods at location
-// Example: /inventory/api/locations/<LOCATION_ID>/virtualpods
-// [
-//     {
-//         "id": 1,
-//         "name": "AVALOS",
-//         "deviceType": "virtualpod",
-//         "mgmtIP": "10.120.110.9",
-//         "model": "VXRAIL",
-//         "location_id": 1,
-//         "transportZoneName": "CENTRO-TZ",
-//         "clusterName": "VCPE-CEN-HUB01",
-//         "datastoreId": "datastore-4554",
-//         "resourcePoolId": "resgroup-4887",
-//         "datacenterId": "datacenter-2",
-//         "uplinkPg": "PG-CEN-UPLINK",
-//         "uplinkPgId": "0",
-//         "uplinkInterface" : "ae1"
-//     }
-// ]
-// 
-// **5 -  Devuelve array de portgroups matching query parameter
-// Example: /inventory/api/virtualpods/2/portgroups?used=false
-// [
-//     {
-//         "id": 1,
-//         "vlan_tag": "1802",
-//         "name": "PG-02",
-//         "virtualVmwPod_id": 2,
-//         "used": false,
-//         "dvportgroup_id": "dvportgroup-457"
-//     }
-// ]

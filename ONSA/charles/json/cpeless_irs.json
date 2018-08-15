@@ -1,35 +1,26 @@
 { 
-  "client" : "Cliente01",
-  "service_type" : "cpeless-irs",
-  "service_id" : "1",
-  "tasks_type" : "CREATE",
-  "devices" : [{"model" : "MX104",
-				"parameters" : {
-							"mgmt_ip" : "10.120.80.61",
-							"an_uplinkInterface" : "a1",
-							"an_logicalUnit" : "1",
-							"vrf_name" : "INTERNET",
-							"an_qinqOuterVlan" : "100",
-							"an_qinqInnerVlan" : "555",
-							"public_cidr" : "181.10.10.0/29"
-							}
-				},
-				{  
-				     "model":"s4224",
-				     "parameters":{
-				        "mgmt_ip" : "",
-				        "service_vlan": "",
-				        "client_port": "" 
-				     }
-			    },
-			    {  
-			         "model":"s3290-5",
-			         "parameters":{
-			            "mgmt_ip" : "",
-			            "bandwidth": "",
-			            "service_vlan": "",
-			            "client_port": "" 
-			         }
-			    }
-			]
-}
+  "client" : "",
+  "service_type" : "",
+  "service_id" : "",
+  "op_type" : "",
+  "parameters":{
+            "vmw_uplink_interface":"",
+            "vmw_logical_unit":"",  
+            "vmw_vlan":"",           
+            "an_uplink_interface":"",  
+            "an_logical_unit":"",   
+            "an_outer_vlan":"",      
+            "an_inner_vlan":"", 
+            "public_cidr":"",
+            "wan_ip" : "",
+            "bandwidth" : "",
+            "datacenter_id" : "",
+            "resgroup_id" : "",
+            "datastore_id" : "",
+            "wan_portgroup_id" : "",
+            "lan_portgroup_id" : "",
+            "an_client_port" : "",
+            "op_client_port" : ""
+         },
+  "devices" : [{"vendor": "","model" : "", "mgmt_ip":""}]
+} // ToDo: Change keywords

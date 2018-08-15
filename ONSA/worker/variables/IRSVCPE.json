@@ -2,21 +2,20 @@
       {# Service variables #}
       "mgmt_ip": "{{ mgmt_ip }}", 
       "bandwidth": "{{ bandwidth }}",
-      "service_vlan": "{{ service_vlan }}",
       "public_cidr": "{{ public_cidr }}",
 
       {# Devices variables #}
 
       {# MX104 variables #}
-      "vmw_uplinkInterface": "{{ vmw_uplinkInterface }}",
-      "vmw_logicalUnit": "{{ vmw_logicalUnit }}",  
+      "vmw_uplink_interface": "{{ vmw_uplink_interface }}",
+      "vmw_logical_unit": "{{ vmw_logical_unit }}",  
       "vmw_vlan": "{{ vmw_vlan }}",
       "vmw_interface_description" : "A description",
 
-      "an_uplinkInterface": "{{ an_uplinkInterface }}",  
-      "an_logicalUnit": "{{ an_logicalUnit }}",  
-      "an_qinqOuterVlan": "{{ an_qinqOuterVlan }}",    
-      "an_qinqInnerVlan": "{{ an_qinqInnerVlan }}",
+      "an_uplink_interface": "{{ an_uplink_interface }}",  
+      "an_logical_unit": "{{ an_logical_unit }}",  
+      "an_outer_vlan": "{{ an_outer_vlan }}",    
+      "an_inner_vlan": "{{ an_inner_vlan }}",
       "an_interface_description" : "Ok, another description",
       
       "bridge_domain_id" : "{{ service_type }}-{{ client_name }}-{{ service_id }}",
@@ -24,35 +23,35 @@
 
       {# NSX Edge variables #}
       {% if trigger == False %}
-      "datacenterMoid" : "{{ datacenterMoid }}",
+      "datacenter_id" : "{{ datacenter_id }}",
       "edge_name" : "{{ client_name }}-{{ service_id }}",
       "description" : "vCPE-{{ edge_name }}",
-      "applianceSize" : "xlarge",
-      "resourcePoolId" : "{{ resourcepool_id }}",
-      "datastoreId" : "{{ datastore_id }}",
+      "appliance_size" : "xlarge",
+      "resgroup_id" : "{{ resgroup_id }}",
+      "datastore_id" : "{{ datastore_id }}",
       "vnics" : [{"index" : "0",
                         "name" : "Uplink",
                         "type" : "Uplink",
-                        "portgroupId" : "{{ wan_portgroup_id }}",
-                        "primaryAddress" : "{{ wan_ip | host() | ip() }}",
-                        "subnetMask" : "255.255.254.0",
+                        "portgroup_id" : "{{ wan_portgroup_id }}",
+                        "primary_address" : "{{ wan_ip | host() | ip() }}",
+                        "netmask" : "255.255.254.0",
                         "mtu" : "1500",
-                        "isConnected" : "true"},
+                        "is_connected" : "true"},
                         {"index" : "1",
                         "name" : "Internal",
                         "type" : "Internal",
-                        "portgroupId" : "{{ lan_portgroup_id }}",
-                        "primaryAddress" : "{{ public_cidr | net() | host() }}",
-                        "subnetMask" : "{{ public_cidr | net() | netmask() }}",
+                        "portgroup_id" : "{{ lan_portgroup_id }}",
+                        "primary_address" : "{{ public_cidr | net() | host() }}",
+                        "netmask" : "{{ public_cidr | net() | netmask() }}",
                         "mtu" : "1500",
-                        "isConnected" : "true"}],
+                        "is_connected" : "true"}],
       "userName" : "admin",
       "password" : "T3stC@s3NSx!",
       "remoteAccess" : "true"
       {% endif %}
 
       {% if trigger == True %}
-      "gatewayVnicDescription" : "{{ gateway_vnic_description }}",
+      "gatewayVnicDescription" : "",
       "gatewayVnic" : "0",
       "gatewayAddress" : "100.64.0.1",
       "gatewayVnicMtu" : "1500",
