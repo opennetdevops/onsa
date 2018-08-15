@@ -10,7 +10,7 @@ from enum import Enum
 from background_task import background
 from pprint import pprint
 
-from .lib import ConfigHandler, VariablesHandler
+from .lib import ConfigHandler
 from .lib.common.render import render
 
 CHARLES = "http://localhost:8000"
@@ -109,27 +109,22 @@ class Task(models.Model):
 		pprint(variables_path)
 		
 		params = {}
-		params['parameters'] = self.service.parameters
-		params['parameters']['mgmt_ip'] = self.device['mgmt_ip']
+		params['mgmt_ip'] = self.device['mgmt_ip']
 		params['service_id'] = self.service.service_id
 		params['service_type'] = self.service.service_type
 		params['client_name'] = self.service.client_name
 		params['trigger'] = False
-
-		pprint(params)
+		params.update(self.service.parameters)
 
 		params = render(variables_path, params)
 
+		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
 
-		pprint(params)
+		status = config_handler(params, template_path)
 
-		# config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
+		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
 
-		# status = config_handler(params, template_path)
-
-		# self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
-
-		# print(self.task_state)
+		print(self.task_state)
 			
 
 	def rollback(self):

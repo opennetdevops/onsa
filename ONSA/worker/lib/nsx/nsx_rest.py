@@ -9,7 +9,5 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
 context.verify_mode = ssl.CERT_NONE
 
-
-MANAGER = 'https://10.120.80.21'
 USER = 'admin'
 PASS = 'Nsx.2018!'

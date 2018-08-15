@@ -1,8 +1,8 @@
 {     
       {# Service variables #}
-      "mgmt_ip": "{{ mgmt_ip }}", 
-      "bandwidth": "{{ bandwidth }}",
-      "public_cidr": "{{ public_cidr }}",
+      "mgmt_ip": {{ mgmt_ip }}, 
+      "bandwidth": {{ bandwidth }},
+      "public_cidr": {{ public_cidr }},
 
       {# Devices variables #}
 
@@ -14,8 +14,8 @@
 
       "an_uplink_interface": "{{ an_uplink_interface }}",  
       "an_logical_unit": "{{ an_logical_unit }}",  
-      "an_outer_vlan": "{{ an_outer_vlan }}",    
-      "an_inner_vlan": "{{ an_inner_vlan }}",
+      "provider_vlan": "{{ provider_vlan }}",    
+      "service_vlan": "{{ service_vlan }}",
       "an_interface_description" : "Ok, another description",
       
       "bridge_domain_id" : "{{ service_type }}-{{ client_name }}-{{ service_id }}",
@@ -33,16 +33,16 @@
                         "name" : "Uplink",
                         "type" : "Uplink",
                         "portgroup_id" : "{{ wan_portgroup_id }}",
-                        "primary_address" : "{{ wan_ip | host() | ip() }}",
+                        "primary_address" : {{ wan_ip | ip() }},
                         "netmask" : "255.255.254.0",
                         "mtu" : "1500",
-                        "is_connected" : "true"},
-                        {"index" : "1",
+                        "is_connected" : "true",
+                        "index" : "1",
                         "name" : "Internal",
                         "type" : "Internal",
-                        "portgroup_id" : "{{ lan_portgroup_id }}",
-                        "primary_address" : "{{ public_cidr | net() | host() }}",
-                        "netmask" : "{{ public_cidr | net() | netmask() }}",
+                        "portgroup_id" : {{ lan_portgroup_id }},
+                        "primary_address" : {{ public_cidr | net() | host() }},
+                        "netmask" : {{ public_cidr | net() | netmask() }},
                         "mtu" : "1500",
                         "is_connected" : "true"}],
       "userName" : "admin",
@@ -65,9 +65,6 @@
 
       
 }
-
-
-
 
       }
 
