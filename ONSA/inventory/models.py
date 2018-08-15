@@ -22,6 +22,7 @@ class Device(models.Model):
     mgmtIP = models.CharField(max_length=50, blank=True)
     # TODO Change IP to dict() with type key and IP value
     model = models.CharField(max_length=50, blank=True)
+    vendor = models.CharField(max_length=50, blank=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE) 
 
     class Meta:
@@ -224,6 +225,7 @@ class LogicalUnit(models.Model):
         logical_unit.save()
         return
 
+#TODO change name to something related to services
 class VlantagAccessports(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     accessport = models.ForeignKey(AccessPort, models.DO_NOTHING)

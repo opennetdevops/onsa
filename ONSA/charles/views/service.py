@@ -28,7 +28,9 @@ class ServiceView(View):
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 		prefix = data.pop('prefix')
-		bandwith = data.pop('bandwith')
+		bandwidth = data.pop('bandwidth')
+		client_node_sn = data.pop('client_node_sn')
+		client_node_port = data.pop('client_node_port')
 		service_id = data['service_id']
 
 		#Check if exists (retry support)
@@ -42,11 +44,10 @@ class ServiceView(View):
 		service.service_state = ServiceStatuses['REQUESTED'].value
 		service.save()
 		
-
 		if service.service_type == "vcpe_irs" :
-			ServiceView.generate_vcpe_irs_request(service,prefix)
+			ServiceView.generate_vcpe_irs_request(service,prefix,bandwidth,client_node_sn,client_node_port)
+			response = {"message" : "Service requested"}
 
-		response = {"message" : "Service requested"}
 		return JsonResponse(response)
 
 	def put(self, request, service_id):
@@ -56,16 +57,17 @@ class ServiceView(View):
 		data = serializers.serialize('json', service)
 		return HttpResponse(data, content_type='application/json')
 
-	def generate_vcpe_irs_request(service,prefix):
+	def generate_vcpe_irs_request(service,prefix,bandwidth,client_node_sn,client_node_port):
 		ip_wan = ServiceView.get_ip_wan_nsx(service.location,service.client_name,service.service_id)
 		public_network = ServiceView.get_public_network(service.client_name,service.service_id,prefix)
 		location_id = str(ServiceView.get_location_id(service.location))
 		virtual_pod = ServiceView.get_virtual_pod(location_id)
 		router_node = ServiceView.get_router_node(location_id)
 		downlink_pg = ServiceView.get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
-		
+
 		#Use porgroup
-		ServiceView.use_portgroup(downlink_pg['id'])
+		portgroup_id = str(downlink_pg['id'])
+		ServiceView.use_portgroup(portgroup_id)
 
 		router_node_id = str(router_node['id'])
 		free_logical_units = ServiceView.get_free_logical_units(router_node_id)
@@ -75,72 +77,58 @@ class ServiceView(View):
 		ServiceView.add_logical_unit_to_router_node(router_node_id,free_logical_units[1]['logical_unit_id'])
 
 		free_access_port = ServiceView.get_free_access_port(location_id)
+		print( free_access_port)
 		access_port_id = str(free_access_port['id'])
+
+		#Mark access port as used
+		ServiceView.use_port(access_port_id)
 		access_node_id = str(free_access_port['accessNode_id'])
 		access_node = ServiceView.get_access_node(access_node_id)
 		free_vlan_tag = ServiceView.get_free_vlan_tag(access_port_id)
 
-		config = {
-	   "client":service.client_name,
-	   "service_type":service.service_type,
-	   "service_id":service.service_id,
-	   "op_type":"CREATE",
-	   "bandwith":bandwith,
-	   "devices":[
-	      {  
-	         "model":router_node['model'],
-	         "parameters":{
-	            "mgmt_ip":router_node['mgmtIP'],    
-	            "vmw_uplinkInterface":virtual_pod['uplinkInterface'], 
-	            "vmw_logicalUnit":free_logical_units[0]['logical_unit_id'],  
-	            "vmw_vlan":downlink_pg['vlan_tag'],           
-	            "an_uplinkInterface":access_node['uplinkInterface'],  
-	            "an_logicalUnit":free_logical_units[1]['logical_unit_id'],   
-	            "an_qinqOuterVlan":access_node['qinqOuterVlan'],      
-	            "an_qinqInnerVlan":free_vlan_tag['vlan_tag'],     
-	            "public_cidr":public_network
-	         }
-	      },
-	      {  
-	      	"model":virtual_pod['model'],
-          "parameters":{
-            "datacenterMoid":virtual_pod['datacenterId'], 
-            "resourcePoolId":virtual_pod['resourcePoolId'], 
-            "datastoreId":virtual_pod['datastoreId'],     
-		        "uplink":{
-		          "portgroupId":virtual_pod['uplinkPgId'], 
-		          "primaryAddress":ip_wan
-		        },
-		         "downlink":{
-		         	"portgroupId":downlink_pg['dvportgroup_id'],
-		         	"public_cidr":public_network
-		         }
-	         }
-	      },
-	      {  
-         "model":access_node['model'],
-         "parameters":{
-            "mgmt_ip" : access_node['mgmtIP'],
-            "service_vlan": free_vlan_tag['vlan_tag'],
-            "client_port": free_access_port['port'],
-          }
-      	},
-      	{  
-	        "model":"s3290-5",
-	        "parameters":{
-	        "mgmt_ip" : "10.120.80.121",
-	        "service_vlan": free_vlan_tag['vlan_tag']
-		      }
-		    }
-	   ]
+		#Add vlan tag to access port, serviceid,bandwidth, device SN
+		ServiceView.add_vlan_tag_to_access_port(free_vlan_tag['vlan_tag'],access_port_id,service.service_id,client_node_sn,client_node_port,bandwidth)
+
+		#Get client node by SN
+		client_node = ServiceView.get_client_node(client_node_sn)
+
+		config = { 
+		  "client": service.client_name,
+		  "service_type":service.service_type,
+		  "service_id":service.service_id,
+		  "op_type" : "CREATE",
+		  "parameters":{
+		            "vmw_uplink_interface":virtual_pod['uplinkInterface'],
+		            "vmw_logical_unit":free_logical_units[0]['logical_unit_id'],  
+		            "vmw_vlan":downlink_pg['vlan_tag'],           
+		            "an_uplink_interface":access_node['uplinkInterface'],  
+		            "an_logical_unit":free_logical_units[1]['logical_unit_id'],   
+		            "provider_vlan":access_node['qinqOuterVlan'],      
+		            "service_vlan":free_vlan_tag['vlan_tag'], 
+		            "public_cidr":public_network,
+		            "wan_ip":ip_wan,
+		            "bandwidth": bandwidth,
+		            "datacenter_id":virtual_pod['datacenterId'] ,
+		            "resgroup_id": virtual_pod['resourcePoolId'],
+		            "datastore_id": virtual_pod['datastoreId'],
+		            "wan_portgroup_id": virtual_pod['uplinkPgId'],
+		            "lan_portgroup_id": downlink_pg['dvportgroup_id'],
+		            "an_client_port": free_access_port['port'],
+		            "op_client_port": client_node_port
+		         },
+		  "devices" : [{"vendor":router_node['model'],"model":router_node['vendor'],"mgmt_ip":router_node['mgmtIP']},
+		  	{"vendor":access_node['model'],"model":access_node['vendor'],"mgmt_ip":access_node['mgmtIP']},
+		  	{"vendor":client_node['model'],"model":client_node['vendor'],"mgmt_ip":client_node['mgmtIP']},
+		  	{"vendor":virtual_pod['model'],"model":virtual_pod['vendor'],"mgmt_ip":virtual_pod['mgmtIP']},
+		  ]
 		}
 
 		#TODO: check if API returns empty values and do rollback
 		if ip_wan:
 			if public_network:
-				#Call worker
 				pprint(config)
-				ServiceView.configure_service(config)
+				#Call worker
+				# ServiceView.configure_service(config)
 			else:
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()
@@ -220,6 +208,16 @@ class ServiceView(View):
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response[0]
+		else:
+			return None
+
+	def get_client_node(client_node_sn):
+		url= "/inventory/api/clientnodes?sn="+client_node_sn
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response
 		else:
 			return None
 
@@ -308,10 +306,14 @@ class ServiceView(View):
 		else:
 			return None
 
-	def add_vlan_tag_to_access_port(vlan_tag,access_port_id):
+	def add_vlan_tag_to_access_port(vlan_tag,access_port_id,service_id,client_node_sn,client_node_port,bandwidth):
 		url= "/inventory/api/accessports/"+ access_port_id + "/vlantags"
 		rheaders = {'Content-Type': 'application/json'}
-		data = {"vlan_tag":vlan_tag}
+		data = {"vlan_tag":vlan_tag,
+						"service_id":service_id,
+						"client_node_sn":client_node_sn,
+						"client_node_port":client_node_port,
+						"bandwidth":bandwidth}
 		response = requests.post(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
