@@ -22,7 +22,6 @@ class ClientNodesView(View):
             client_node = ClientNode.objects.filter(serial_number=sn).values()[0]
             return JsonResponse(client_node, safe=False)
 
-
     def put(self, request, client_node_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         client_node = ClientNode.objects.filter(pk=client_node_id)
