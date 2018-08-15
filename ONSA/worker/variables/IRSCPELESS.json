@@ -1,0 +1,20 @@
+{     
+      {# Service variables #}
+      "mgmt_ip" : "{{ mgmt_ip }}", 
+      "bandwidth" : "{{ bandwidth }}",
+      "public_cidr" : "{{ public_cidr }}",
+      "vrf_name" : "{{ vrf_name }}"
+      "service_vlan": "{{ service_vlan }}",
+
+      {# Devices variables #}
+      {# MX104 variables #}
+      "an_uplink_interface": "{{ an_uplink_interface }}",  
+      "an_logical_unit": "{{ an_logical_unit }}",  
+      "provider_vlan": "{{ provider_vlan }}",    
+      "an_interface_description" : "Ok, another description", 
+ 
+      {# Access Node variables #}
+      "an_client_port": "{{ an_client_port }}",
+      {# Optical Node variables #}
+      "on_client_port": "{{ on_client_port }}"
+}

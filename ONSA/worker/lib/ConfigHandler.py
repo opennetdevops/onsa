@@ -98,25 +98,29 @@ class ConfigHandler:
 		return True
 
 
-	def ssh(parameters, template_path):
+	def ssh(template_path, params):
 
 		my_device = {
-		'host': parameters['mgmt_ip'],
+		'host': params['mgmt_ip'],
 		'username': "lab",
 		'password': "lab123",
 		'device_type': 'cisco_ios',
 		'global_delay_factor': 1
 		}
 
-		lines = open(template_path,'r').read().splitlines()
+		data = render(template_path, params)
 
-		config = []
+		print(data)
 
-		for line in lines:
-			template = Template(line)
-			config.append(template.render(**parameters))
+		# lines = open(template_path,'r').read().splitlines()
 
-		pprint(config)
+		# config = []
+
+		# for line in lines:
+		# 	template = Template(line)
+		# 	config.append(template.render(**params))
+
+		# pprint(config)
 
 		# net_connect = ConnectHandler(**my_device)
 		# output = net_connect.send_config_set(config)
@@ -125,31 +129,37 @@ class ConfigHandler:
 		
 		# # Clossing connection    
 		# net_connect.disconnect()
+		return True
 
-	def nsx(parameters, template_path):
+	def nsx(template_path, params):
 
-		params = {'create_params' : parameters['create_params']}
+		params['trigger'] = False
 
 		data = render(template_path, params)
 
-		rheaders = {'Content-Type': 'application/xml'}
-		r = requests.post('https://' + parameters['mgmt_ip'] + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		print(data)
 
-		if r.status_code == 201:
-			status = True
+		# rheaders = {'Content-Type': 'application/xml'}
+		# r = requests.post('https://' + params['mgmt_ip'] + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+
+		# if r.status_code == 201:
+		# 	status = True
 
 		sleep(45)
 		
-		edge_id = get_edge_id_by_name(parameters['create_params']['name'])
+		# edge_id = get_edge_id_by_name(params['edge_name'])
 
-		params = {'gateway_params' : parameters['gateway_params']}
+		params['trigger'] = True
 		data = render(template_path, params)
 
-		rheaders = {'Content-Type': 'application/json'}
-		r = requests.put('https://' + parameters['mgmt_ip'] + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
-		status_code = r.status_code
+		print(data)
 
-		if r.status_code == 204:
-			status &= True
+		# rheaders = {'Content-Type': 'application/json'}
+		# r = requests.put('https://' + parameters['mgmt_ip'] + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		# status_code = r.status_code
 
+		# if r.status_code == 204:
+		# 	status &= True
+
+		status = True
 		return status

@@ -20,7 +20,6 @@
       "bridge_domain_description" : "Another one...",
 
       {# NSX Edge variables #}
-      {% if trigger == False %}
       "datacenter_id" : "{{ datacenter_id }}",
       "edge_name" : "{{ client_name }}-{{ service_id }}",
       "description" : "vCPE-{{ edge_name }}",
@@ -43,19 +42,19 @@
                         "netmask" : "{{ public_cidr | net() | netmask() }}",
                         "mtu" : "1500",
                         "is_connected" : "true"}],
-      "userName" : "admin",
+      "username" : "admin",
       "password" : "T3stC@s3NSx!",
-      "remoteAccess" : "true",
-      {% endif %}
-      {% if trigger == True %}
-      "gatewayVnicDescription" : "",
-      "gatewayVnic" : "0",
-      "gatewayAddress" : "100.64.0.1",
-      "gatewayVnicMtu" : "1500",
-      {% endif %}
+      "remote_access" : "true",
+
+      "gw_vnic_description" : "Gateway description",
+      "gw_vnic" : "0",
+      "gw_address" : "100.64.0.1",
+      "gw_vnic_mtu" : "1500",
       
       {# Access Node variables #}
       "an_client_port": "{{ an_client_port }}",
+      "an_port_description" : "One description",
       {# Optical Node variables #}
-      "on_client_port": "{{ on_client_port }}"
+      "on_client_port": "{{ on_client_port }}",
+      "on_port_description" : "Another description"
 }

@@ -113,12 +113,13 @@ class Task(models.Model):
 		params['service_id'] = self.service.service_id
 		params['service_type'] = self.service.service_type
 		params['client_name'] = self.service.client_name
-		params['trigger'] = False
+
+
+		print(params['client_name'])
+
 		params.update(self.service.parameters)
 
 		params = json.loads(render(variables_path, params))
-
-		pprint(params)
 
 		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
 
