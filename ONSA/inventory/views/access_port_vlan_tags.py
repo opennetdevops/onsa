@@ -21,14 +21,18 @@ class AccessPortVlanTagsView(View):
 
     def post(self, request, accessport_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        access_port = AccessPort.objects.get(pk=accessport_id)
-        vlan_tag = data['vlan_tag'] 
+        
+        vlan_tag = data['vlan_tag']
+        service_id = data['service_id']
+        client_node_sn = data['client_node_sn']
+        client_node_port = data['client_node_port']
+        bandwidth = data['bandwidth']
+
         vlan_tag = VlanTag.objects.get(vlan_tag=vlan_tag)
-        if 'sn_client_node' in data.keys():
-            a = VlantagAccessports(vlantag=vlan_tag, accessport = access_port, serviceid=data['service_id'],
-                sn_client_node=data['sn_client_node'], client_node_port=data['client_node_port'], bandwidth=data['bandwidth'] )
-        else:
-            a = VlantagAccessports(vlantag=vlan_tag, accessport = access_port, serviceid=data['service_id'],bandwidth=data['bandwidth'])
+        access_port = AccessPort.objects.get(pk=accessport_id)
+
+        a = VlantagAccessports(vlantag=vlan_tag, accessport=access_port, serviceid=service_id, 
+            bandwidth=bandwidth, client_node_port=client_node_port, client_node_sn=client_node_sn )
         a.save()
         return JsonResponse(data, safe=False)
 
