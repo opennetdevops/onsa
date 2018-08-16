@@ -96,7 +96,7 @@ class Task(models.Model):
 
 	def run_task(self):
 		dir = os.path.dirname(os.path.abspath(__file__))
-		template_path = "templates/" + self.device['vendor'] + "/" + self.device['model'] + "/" + self.op_type.upper() + \
+		template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
 			"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
 
 		template_path = os.path.join(dir, template_path)
