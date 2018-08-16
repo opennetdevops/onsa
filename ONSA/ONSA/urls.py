@@ -22,6 +22,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 
 urlpatterns = [
+    url(r'^select2/', include('django_select2.urls')),
     path('admin', admin.site.urls),
     path('core', include('core.urls')),
     path('inventory', include('inventory.urls')),
