@@ -110,6 +110,8 @@ class ConfigHandler:
 
 		data = render(template_path, params)
 
+		# print(data)
+
 		config = data.splitlines()
 
 		# print(config)

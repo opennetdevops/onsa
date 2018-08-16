@@ -96,8 +96,12 @@ class Task(models.Model):
 
 	def run_task(self):
 		dir = os.path.dirname(os.path.abspath(__file__))
-		template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
-			"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
+
+		if self.device['vendor'] == 'transition':
+			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + "_L2SERVICE.CONF"
+		else:	
+			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
+				"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
 
 		template_path = os.path.join(dir, template_path)
 
@@ -114,6 +118,8 @@ class Task(models.Model):
 		params['client_name'] = self.service.client_name
 
 		params.update(self.service.parameters)
+
+		# pprint(params)
 
 		params = json.loads(render(variables_path, params))
 
