@@ -3,6 +3,7 @@
       "mgmt_ip": "{{ mgmt_ip }}", 
       "bandwidth": "{{ bandwidth }}",
       "public_cidr": "{{ public_cidr }}",
+      "client_name" : "{{ client_name }}",
 
       {# Devices variables #}
 

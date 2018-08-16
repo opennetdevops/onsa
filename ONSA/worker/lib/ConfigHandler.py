@@ -33,67 +33,67 @@ def get_edge_id_by_name(name):
 class ConfigHandler:
 
 	def pyez(template_path, parameters):
+		
+		# print(render(template_path, parameters))
 
-		print(render(template_path, parameters))
+		logging.basicConfig(level=logging.INFO)
+		dev = Device(host=parameters['mgmt_ip'], user="lab", password="lab123", port=443)
+		dev.bind(cu=Config)
 
-		# logging.basicConfig(level=logging.INFO)
-		# dev = Device(host=parameters['mgmt_ip'], user="lab", password="lab123", port=443)
-		# dev.bind(cu=Config)
-
-		# try:
-		# 	logging.info("Openning NETCONF connection to device")
-		# 	dev.open()
-		# except Exception as err:
-		# 	logging.error("Cannot connect to device:%s", err)
-
-
-		# logging.info("Locking the configuration")
-		# try:
-		# 	dev.cu.lock()
-		# except LockError:
-		# 	logging.error("Error: Unable to lock configuration")
-		# 	dev.close()
-		# 	return False
-		# try:
-		# 	dev.cu.load(template_path=template_path, merge=True, template_vars=parameters, format="set")
-		# 	dev.cu.pdiff()
-		# except ValueError as err:
-		# 	logging.error("Error: %s", err.message)
-		# except Exception as err:
-		# 	if err.rsp.find('.//ok') is None:
-		# 		rpc_msg = err.rsp.findtext('.//error-message')
-		# 		logging.error("Unable to load configuration changes: %s", rpc_msg)
-
-		# 	logging.info("Unlocking the configuration")
-		# 	try:
-		# 		dev.cu.unlock()
-		# 	except UnlockError:
-		# 			logging.error("Error: Unable to unlock configuration")
-		# 	dev.close()
-		# 	return False
+		try:
+			logging.info("Openning NETCONF connection to device")
+			dev.open()
+		except Exception as err:
+			logging.error("Cannot connect to device:%s", err)
 
 
-		# logging.info("Committing the configuration")
-		# try:
-		# 	dev.timeout=120
-		# 	commit_result = dev.cu.commit()
-		# 	# Show that the commit worked True means it worked, false means it failed
-		# 	logging.debug( "Commit result: %s",commit_result)
-		# except (CommitError, RpcTimeoutError) as e:
-		# 	logging.error( "Error: Unable to commit configuration")
-		# 	print(e)
-		# 	dev.cu.unlock()
-		# 	dev.close()
-		# 	return False
+		logging.info("Locking the configuration")
+		try:
+			dev.cu.lock()
+		except LockError:
+			logging.error("Error: Unable to lock configuration")
+			dev.close()
+			return False
+		try:
+			dev.cu.load(template_path=template_path, merge=True, template_vars=parameters, format="set")
+			dev.cu.pdiff()
+		except ValueError as err:
+			logging.error("Error: %s", err.message)
+		except Exception as err:
+			if err.rsp.find('.//ok') is None:
+				rpc_msg = err.rsp.findtext('.//error-message')
+				logging.error("Unable to load configuration changes: %s", rpc_msg)
 
-		# logging.info( "Unlocking the configuration")
-		# try:
-		# 	 dev.cu.unlock()
-		# except UnlockError:
-		# 	 logging.error( "Error: Unable to unlock configuration")
+			logging.info("Unlocking the configuration")
+			try:
+				dev.cu.unlock()
+			except UnlockError:
+					logging.error("Error: Unable to unlock configuration")
+			dev.close()
+			return False
 
-		# logging.info("Closing NETCONF session")
-		# dev.close()
+
+		logging.info("Committing the configuration")
+		try:
+			dev.timeout=120
+			commit_result = dev.cu.commit()
+			# Show that the commit worked True means it worked, false means it failed
+			logging.debug( "Commit result: %s",commit_result)
+		except (CommitError, RpcTimeoutError) as e:
+			logging.error( "Error: Unable to commit configuration")
+			print(e)
+			dev.cu.unlock()
+			dev.close()
+			return False
+
+		logging.info( "Unlocking the configuration")
+		try:
+			 dev.cu.unlock()
+		except UnlockError:
+			 logging.error( "Error: Unable to unlock configuration")
+
+		logging.info("Closing NETCONF session")
+		dev.close()
 
 		return True
 
@@ -110,25 +110,15 @@ class ConfigHandler:
 
 		data = render(template_path, params)
 
-		print(data)
+		config = data.splitlines()
 
-		# lines = open(template_path,'r').read().splitlines()
+		net_connect = ConnectHandler(**my_device)
+		output = net_connect.send_config_set(config)
 
-		# config = []
-
-		# for line in lines:
-		# 	template = Template(line)
-		# 	config.append(template.render(**params))
-
-		# pprint(config)
-
-		# net_connect = ConnectHandler(**my_device)
-		# output = net_connect.send_config_set(config)
-
-		# print(output)
+		print(output)
 		
 		# # Clossing connection    
-		# net_connect.disconnect()
+		net_connect.disconnect()
 		return True
 
 	def nsx(template_path, params):
@@ -137,29 +127,28 @@ class ConfigHandler:
 
 		data = render(template_path, params)
 
-		print(data)
+		# print(data)
 
-		# rheaders = {'Content-Type': 'application/xml'}
-		# r = requests.post('https://' + params['mgmt_ip'] + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		rheaders = {'Content-Type': 'application/xml'}
+		r = requests.post('https://' + params['mgmt_ip'] + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 
-		# if r.status_code == 201:
-		# 	status = True
+		if r.status_code == 201:
+			status = True
 
 		sleep(45)
 		
-		# edge_id = get_edge_id_by_name(params['edge_name'])
+		edge_id = get_edge_id_by_name(params['edge_name'])
 
 		params['trigger'] = True
 		data = render(template_path, params)
 
-		print(data)
+		# print(data)
 
-		# rheaders = {'Content-Type': 'application/json'}
-		# r = requests.put('https://' + parameters['mgmt_ip'] + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
-		# status_code = r.status_code
+		rheaders = {'Content-Type': 'application/json'}
+		r = requests.put('https://' + parameters['mgmt_ip'] + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		status_code = r.status_code
 
-		# if r.status_code == 204:
-		# 	status &= True
+		if r.status_code == 204:
+			status &= True
 
-		status = True
 		return status

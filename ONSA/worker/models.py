@@ -20,7 +20,6 @@ class ServiceStates(Enum):
 	COMPLETED = "COMPLETED"
 	ERROR = "ERROR"
 
-
 class Service(models.Model):
 	client_name = models.CharField(max_length=50)
 	service_id = models.CharField(max_length=50)
@@ -113,9 +112,6 @@ class Task(models.Model):
 		params['service_id'] = self.service.service_id
 		params['service_type'] = self.service.service_type
 		params['client_name'] = self.service.client_name
-
-
-		print(params['client_name'])
 
 		params.update(self.service.parameters)
 
