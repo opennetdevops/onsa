@@ -10,9 +10,14 @@ def host(value):
 def net(value):
 	return ipaddress.ip_network(value)
 
-def ip(value):
-	value = value.split("/")[0]
+def address(value):
 	return ipaddress.ip_address(value)
+
+def ip(value):
+	return value.network_address
+
+def prefix(value):
+	return value.prefixlen
 
 def netmask(value):
 	return value.netmask
@@ -25,6 +30,8 @@ def render(tpl_path, context):
 	env.filters['ip'] = ip
 	env.filters['host'] = host
 	env.filters['netmask'] = netmask
+	env.filters['prefix'] = prefix
+	env.filters['address'] = address
 
 	template = env.get_template(filename) 
 	

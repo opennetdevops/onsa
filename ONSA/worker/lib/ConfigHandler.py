@@ -34,66 +34,66 @@ class ConfigHandler:
 
 	def pyez(template_path, parameters):
 		
-		# print(render(template_path, parameters))
+		print(render(template_path, parameters))
 
-		logging.basicConfig(level=logging.INFO)
-		dev = Device(host=parameters['mgmt_ip'], user="lab", password="lab123", port=443)
-		dev.bind(cu=Config)
+		# logging.basicConfig(level=logging.INFO)
+		# dev = Device(host=parameters['mgmt_ip'], user="lab", password="lab123", port=443)
+		# dev.bind(cu=Config)
 
-		try:
-			logging.info("Openning NETCONF connection to device")
-			dev.open()
-		except Exception as err:
-			logging.error("Cannot connect to device:%s", err)
-
-
-		logging.info("Locking the configuration")
-		try:
-			dev.cu.lock()
-		except LockError:
-			logging.error("Error: Unable to lock configuration")
-			dev.close()
-			return False
-		try:
-			dev.cu.load(template_path=template_path, merge=True, template_vars=parameters, format="set")
-			dev.cu.pdiff()
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
-		except Exception as err:
-			if err.rsp.find('.//ok') is None:
-				rpc_msg = err.rsp.findtext('.//error-message')
-				logging.error("Unable to load configuration changes: %s", rpc_msg)
-
-			logging.info("Unlocking the configuration")
-			try:
-				dev.cu.unlock()
-			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
-			dev.close()
-			return False
+		# try:
+		# 	logging.info("Openning NETCONF connection to device")
+		# 	dev.open()
+		# except Exception as err:
+		# 	logging.error("Cannot connect to device:%s", err)
 
 
-		logging.info("Committing the configuration")
-		try:
-			dev.timeout=120
-			commit_result = dev.cu.commit()
-			# Show that the commit worked True means it worked, false means it failed
-			logging.debug( "Commit result: %s",commit_result)
-		except (CommitError, RpcTimeoutError) as e:
-			logging.error( "Error: Unable to commit configuration")
-			print(e)
-			dev.cu.unlock()
-			dev.close()
-			return False
+		# logging.info("Locking the configuration")
+		# try:
+		# 	dev.cu.lock()
+		# except LockError:
+		# 	logging.error("Error: Unable to lock configuration")
+		# 	dev.close()
+		# 	return False
+		# try:
+		# 	dev.cu.load(template_path=template_path, merge=True, template_vars=parameters, format="set")
+		# 	dev.cu.pdiff()
+		# except ValueError as err:
+		# 	logging.error("Error: %s", err.message)
+		# except Exception as err:
+		# 	if err.rsp.find('.//ok') is None:
+		# 		rpc_msg = err.rsp.findtext('.//error-message')
+		# 		logging.error("Unable to load configuration changes: %s", rpc_msg)
 
-		logging.info( "Unlocking the configuration")
-		try:
-			 dev.cu.unlock()
-		except UnlockError:
-			 logging.error( "Error: Unable to unlock configuration")
+		# 	logging.info("Unlocking the configuration")
+		# 	try:
+		# 		dev.cu.unlock()
+		# 	except UnlockError:
+		# 			logging.error("Error: Unable to unlock configuration")
+		# 	dev.close()
+		# 	return False
 
-		logging.info("Closing NETCONF session")
-		dev.close()
+
+		# logging.info("Committing the configuration")
+		# try:
+		# 	dev.timeout=120
+		# 	commit_result = dev.cu.commit()
+		# 	# Show that the commit worked True means it worked, false means it failed
+		# 	logging.debug( "Commit result: %s",commit_result)
+		# except (CommitError, RpcTimeoutError) as e:
+		# 	logging.error( "Error: Unable to commit configuration")
+		# 	print(e)
+		# 	dev.cu.unlock()
+		# 	dev.close()
+		# 	return False
+
+		# logging.info( "Unlocking the configuration")
+		# try:
+		# 	 dev.cu.unlock()
+		# except UnlockError:
+		# 	 logging.error( "Error: Unable to unlock configuration")
+
+		# logging.info("Closing NETCONF session")
+		# dev.close()
 
 		return True
 
@@ -112,13 +112,15 @@ class ConfigHandler:
 
 		config = data.splitlines()
 
-		net_connect = ConnectHandler(**my_device)
-		output = net_connect.send_config_set(config)
+		print(config)
 
-		print(output)
+		# net_connect = ConnectHandler(**my_device)
+		# output = net_connect.send_config_set(config)
+
+		# print(output)
 		
-		# # Clossing connection    
-		net_connect.disconnect()
+		# # # Clossing connection    
+		# net_connect.disconnect()
 		return True
 
 	def nsx(template_path, params):

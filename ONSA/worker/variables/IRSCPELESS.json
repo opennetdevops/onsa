@@ -1,9 +1,10 @@
 {     
       {# Service variables #}
+      "client_name" : "{{ client_name }}",
       "mgmt_ip" : "{{ mgmt_ip }}", 
       "bandwidth" : "{{ bandwidth }}",
       "public_cidr" : "{{ public_cidr }}",
-      "vrf_name" : "{{ vrf_name }}"
+      "vrf_name" : "INTERNET",
       "service_vlan": "{{ service_vlan }}",
 
       {# Devices variables #}
@@ -11,10 +12,14 @@
       "an_uplink_interface": "{{ an_uplink_interface }}",  
       "an_logical_unit": "{{ an_logical_unit }}",  
       "provider_vlan": "{{ provider_vlan }}",    
-      "an_interface_description" : "Ok, another description", 
+      "an_interface_description" : "Ok, another description",
+      "public_gateway" : "{{  public_cidr | host() }}",
+      "public_prefix" : "{{ public_cidr | net() | prefix() }}",
  
       {# Access Node variables #}
       "an_client_port": "{{ an_client_port }}",
+      "an_port_description": "{{ an_client_port }}",
       {# Optical Node variables #}
-      "on_client_port": "{{ on_client_port }}"
+      "on_client_port": "{{ on_client_port }}",
+      "on_port_description": "{{ an_client_port }}"
 }

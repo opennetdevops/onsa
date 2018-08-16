@@ -31,7 +31,7 @@
                         "name" : "Uplink",
                         "type" : "Uplink",
                         "portgroup_id" : "{{ wan_portgroup_id }}",
-                        "primary_address" : "{{ wan_ip | ip() }}",
+                        "primary_address" : "{{ wan_ip | net() | ip() }}",
                         "netmask" : "255.255.254.0",
                         "mtu" : "1500",
                         "is_connected" : "true"},
