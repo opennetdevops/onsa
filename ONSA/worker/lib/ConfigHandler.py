@@ -15,10 +15,10 @@ from .common.render import render
 from time import sleep
 
 
-def get_edge_id_by_name(name):
+def get_edge_id_by_name(name, **kwargs):
 	rheaders = {'Accept': 'application/json'}
 
-	r = requests.get(MANAGER + "/api/4.0/edges", auth=(USER, PASS), verify=False, headers=rheaders)
+	r = requests.get(kwargs['manager'] + "/api/4.0/edges", auth=(USER, PASS), verify=False, headers=rheaders)
 
 	r_dict = json.loads(r.text)	
 	allEdges = r_dict['edgePage']['data']
@@ -123,6 +123,8 @@ class ConfigHandler:
 
 	def nsx(template_path, params):
 
+		MANAGER = 'https://' + params['mgmt_ip'] 
+
 		params['trigger'] = False
 
 		data = render(template_path, params)
@@ -130,14 +132,14 @@ class ConfigHandler:
 		# print(data)
 
 		rheaders = {'Content-Type': 'application/xml'}
-		r = requests.post('https://' + params['mgmt_ip'] + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 
 		if r.status_code == 201:
 			status = True
 
 		sleep(45)
 		
-		edge_id = get_edge_id_by_name(params['edge_name'])
+		edge_id = get_edge_id_by_name(params['edge_name'], manager=Manager)
 
 		params['trigger'] = True
 		data = render(template_path, params)
