@@ -46,7 +46,10 @@ class ServiceView(View):
 		
 		if service.service_type == "vcpe_irs" :
 			ServiceView.generate_vcpe_irs_request(service,prefix,bandwidth,client_node_sn,client_node_port)
-			response = {"message" : "Service requested"}
+		if service.service_type == "cpeless_irs":
+			ServiceView.generate_cpeless_irs_request(service,prefix,bandwidth,client_node_sn,client_node_port)
+
+		response = {"message" : "Service requested"}
 
 		return JsonResponse(response)
 
@@ -56,6 +59,64 @@ class ServiceView(View):
 		service.update(**data)
 		data = serializers.serialize('json', service)
 		return HttpResponse(data, content_type='application/json')
+
+
+	def generate_cpeless_irs_request(service,prefix,bandwidth,client_node_sn,client_node_port):
+		public_network = ServiceView.get_public_network(service.client_name,service.service_id,prefix)
+		location_id = str(ServiceView.get_location_id(service.location))
+		virtual_pod = ServiceView.get_virtual_pod(location_id)
+		router_node = ServiceView.get_router_node(location_id)
+		router_node_id = str(router_node['id'])
+		free_logical_units = ServiceView.get_free_logical_units(router_node_id)
+
+		#Add logicals unit to routernode
+		ServiceView.add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
+
+		free_access_port = ServiceView.get_free_access_port(location_id)
+		access_port_id = str(free_access_port['id'])
+
+		#Mark access port as used
+		ServiceView.use_port(access_port_id)
+		access_node_id = str(free_access_port['accessNode_id'])
+		access_node = ServiceView.get_access_node(access_node_id)
+		free_vlan_tag = ServiceView.get_free_vlan_tag(access_port_id)
+
+		#Add vlan tag to access port, serviceid,bandwidth, device SN
+		ServiceView.add_vlan_tag_to_access_port(free_vlan_tag['vlan_tag'],access_port_id,service.service_id,client_node_sn,client_node_port,bandwidth)
+
+		#Get client node by SN
+		client_node = ServiceView.get_client_node(client_node_sn)
+
+		config = { 
+		  "client" : service.client_name,
+		  "service_type" : service.service_type,
+		  "service_id" : service.service_id,
+		  "op_type" : "CREATE",
+		  "parameters":{        
+		            "an_uplink_interface":access_node['uplinkInterface'],  
+		            "an_logical_unit":free_logical_units[0]['logical_unit_id'],   
+		            "provider_vlan":access_node['qinqOuterVlan'],      
+		            "service_vlan":free_vlan_tag['vlan_tag'], 
+		            "public_cidr":public_network,
+		            "bandwidth" : bandwidth,
+		            "an_client_port" : free_access_port['port'],
+		            "on_client_port" : client_node_port
+		         },
+		  "devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
+		  	{"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
+		  	{"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']},
+		  ]
+		}
+
+		#TODO: check if API returns empty values and do rollback
+		if public_network:
+			pprint(config)
+			#Call worker
+			ServiceView.configure_service(config)
+		else:
+			service.service_state = ServiceStatuses['ERROR'].value
+			service.save()
+			print("Not possible service")		
 
 	def generate_vcpe_irs_request(service,prefix,bandwidth,client_node_sn,client_node_port):
 		ip_wan = ServiceView.get_ip_wan_nsx(service.location,service.client_name,service.service_id)
