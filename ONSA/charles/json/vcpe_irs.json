@@ -20,7 +20,7 @@
             "wan_portgroup_id" : "",
             "lan_portgroup_id" : "",
             "an_client_port" : "",
-            "op_client_port" : ""
+            "on_client_port" : ""
          },
   "devices" : [{"vendor": "","model" : "", "mgmt_ip":""}]
 }

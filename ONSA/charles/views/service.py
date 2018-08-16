@@ -114,12 +114,12 @@ class ServiceView(View):
 		            "wan_portgroup_id": virtual_pod['uplinkPgId'],
 		            "lan_portgroup_id": downlink_pg['dvportgroup_id'],
 		            "an_client_port": free_access_port['port'],
-		            "op_client_port": client_node_port
+		            "on_client_port": client_node_port
 		         },
-		  "devices" : [{"vendor":router_node['model'],"model":router_node['vendor'],"mgmt_ip":router_node['mgmtIP']},
-		  	{"vendor":access_node['model'],"model":access_node['vendor'],"mgmt_ip":access_node['mgmtIP']},
-		  	{"vendor":client_node['model'],"model":client_node['vendor'],"mgmt_ip":client_node['mgmtIP']},
-		  	{"vendor":virtual_pod['model'],"model":virtual_pod['vendor'],"mgmt_ip":virtual_pod['mgmtIP']},
+		  "devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
+		  	{"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
+		  	{"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']},
+		  	{"vendor":virtual_pod['vendor'],"model":virtual_pod['model'],"mgmt_ip":virtual_pod['mgmtIP']},
 		  ]
 		}
 
@@ -128,7 +128,7 @@ class ServiceView(View):
 			if public_network:
 				pprint(config)
 				#Call worker
-				# ServiceView.configure_service(config)
+				ServiceView.configure_service(config)
 			else:
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()

@@ -128,28 +128,29 @@ class ConfigHandler:
 		params['trigger'] = False
 
 		data = render(template_path, params)
-
-		# print(data)
+		status = False
+		print(data)
 
 		rheaders = {'Content-Type': 'application/xml'}
 		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 
+		print(r.status_code)
 		if r.status_code == 201:
 			status = True
 
 		sleep(45)
 		
-		edge_id = get_edge_id_by_name(params['edge_name'], manager=Manager)
+		edge_id = get_edge_id_by_name(params['edge_name'], manager=MANAGER)
 
 		params['trigger'] = True
 		data = render(template_path, params)
 
-		# print(data)
+		print(data)
 
 		rheaders = {'Content-Type': 'application/json'}
-		r = requests.put('https://' + parameters['mgmt_ip'] + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+		r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 		status_code = r.status_code
-
+		print(r.status_code)
 		if r.status_code == 204:
 			status &= True
 
