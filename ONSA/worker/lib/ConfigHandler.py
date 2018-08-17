@@ -123,7 +123,7 @@ class ConfigHandler:
 		
 		# # Clossing connection    
 		net_connect.disconnect()
-		return True
+		return False
 
 	def nsx(template_path, params):
 

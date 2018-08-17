@@ -133,4 +133,38 @@ class Task(models.Model):
 			
 
 	def rollback(self):
-		pass
+
+		print("DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe")
+
+		dir = os.path.dirname(os.path.abspath(__file__))
+
+		if self.device['vendor'] == 'transition':
+			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_L2SERVICE.CONF"
+		else:	
+			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
+
+		template_path = os.path.join(dir, template_path)
+
+		variables_path = "variables/" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".json"
+		variables_path = os.path.join(dir, variables_path)
+
+		pprint(template_path)
+		pprint(variables_path)
+		
+		params = {}
+		params['mgmt_ip'] = self.device['mgmt_ip']
+		params['service_id'] = self.service.service_id
+		params['service_type'] = self.service.service_type
+		params['client_name'] = self.service.client_name
+
+		params.update(self.service.parameters)
+
+		params = json.loads(render(variables_path, params))
+
+		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
+
+		status = config_handler(template_path, params)
+
+		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['ROLLBACKED'].value
+
+		print(self.task_state)
