@@ -5,6 +5,8 @@ import json
 import logging
 
 from netmiko import ConnectHandler
+from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
+
 from jinja2 import Template
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
@@ -108,22 +110,20 @@ class ConfigHandler:
 		'global_delay_factor': 1
 		}
 
-		data = render(template_path, params)
+		config = render(template_path, params).splitlines()
 
-		# print(data)
+		try:
+			net_connect = ConnectHandler(**my_device)
+			output = net_connect.send_config_set(config)
+	    
+			net_connect.disconnect()		
+			status = True
+	
+		except (NetMikoTimeoutException, NetMikoAuthenticationException):
+			status = False
 
-		config = data.splitlines()
-
-		# print(config)
-
-		net_connect = ConnectHandler(**my_device)
-		output = net_connect.send_config_set(config)
-
-		print(output)
+		return status
 		
-		# # Clossing connection    
-		net_connect.disconnect()
-		return False
 
 	def nsx(template_path, params):
 
@@ -133,7 +133,6 @@ class ConfigHandler:
 
 		data = render(template_path, params)
 		status = False
-		print(data)
 
 		rheaders = {'Content-Type': 'application/xml'}
 		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
@@ -148,8 +147,6 @@ class ConfigHandler:
 
 		params['trigger'] = True
 		data = render(template_path, params)
-
-		print(data)
 
 		rheaders = {'Content-Type': 'application/json'}
 		r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)

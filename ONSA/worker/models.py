@@ -70,7 +70,8 @@ class Service(models.Model):
 class TaskStates(Enum):
 	IN_PROGRESS = "IN_PROGRESS"
 	COMPLETED = "COMPLETED"
-	ROLLBACKED = "ROLLBACKED"
+	NO_ROLLBACK = "NO_ROLLBACK"
+	ROLLBACK = "ROLLBACK"
 	ERROR = "ERROR"
 
 class OperationType(Enum):
@@ -165,6 +166,6 @@ class Task(models.Model):
 
 		status = config_handler(template_path, params)
 
-		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['ROLLBACKED'].value
+		self.task_state = TaskStates['NO_ROLLBACK'].value if status is not True else TaskStates['ROLLBACK'].value
 
 		print(self.task_state)
