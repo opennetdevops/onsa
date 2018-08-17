@@ -44,10 +44,9 @@ class ServiceCpeRelationForm(ModelForm):
 
 
 
-    # class Meta:
-    #     model = ServiceCpeRelations
-    #     fields = ('client', 'product_identifier', 'public_network')
-    #     labels = {
-    #         'public_network' : 'Network',
-    #         'product_identifier' : 'ID'
-    #     }
+    class Meta:
+        model = ServiceCpeRelations
+        fields = ('cpe', 'cpe_port', 'service', 'bandwidth', 'prefix' , 'vrf')
+        labels = {
+            'service' : 'ID Producto'
+        }

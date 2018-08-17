@@ -3,7 +3,7 @@ import time
 import requests
 import json
 
-CORE_URL = "http://127.0.0.1:8000/core/api/services"
+CORE_URL = "http://127.0.0.1:8000/core/api/pending_services"
 CORE_CLIENT_URL = "http://127.0.0.1:8000/core/api/clients"
 CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
 

@@ -18,6 +18,7 @@ urlpatterns = [
     path('/api/clients', require_http_methods(["GET","POST"])(client.ClientView.as_view())),
     path('/api/clients/<int:client_id>', require_http_methods(["GET"])(client.ClientView.as_view())),
     path('/api/pending_services', require_http_methods(["GET"])(pending_services.PendingServiceView.as_view())),
+    path('/api/pending_services/<str:service_id>', require_http_methods(["GET","PUT"])(pending_services.PendingServiceView.as_view())),
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

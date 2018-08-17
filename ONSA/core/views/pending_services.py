@@ -10,15 +10,25 @@ import json
 
 class PendingServiceView(View):
 
-    def get(self, request):
+    def get(self, request, service_id=None):
         state = request.GET.get('state', '')
 
-        if not state:
-            s = ServiceCpeRelations.objects.all().values()
-        else:
-            s = ServiceCpeRelations.objects.filter(service_state=state).values()
+        if service_id is None:
+            if not state:
+                s = ServiceCpeRelations.objects.all().values()
+            else:
+                s = ServiceCpeRelations.objects.filter(service_state=state).values()
 
-        return JsonResponse(list(s), safe=False)
+            return JsonResponse(list(s), safe=False)
+        else:
+            s = ServiceCpeRelations.objects.filter(service__service_id=service_id).values()[0]
+            return JsonResponse(s, safe=False)
+
+    def put(self, request, service_id):
+        data = json.loads(request.body.decode(encoding='UTF-8'))
+        service = ServiceCpeRelations.objects.get(service__service_id = service_id)
+        service.update(**data)
+        return JsonResponse(data, safe=False)
 
 
 

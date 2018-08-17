@@ -1,7 +1,7 @@
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from ..models import Service, ServiceCpeRelations
+from ..models import Service
 from enum import Enum
 from itertools import chain
 import json
@@ -21,9 +21,9 @@ class ServiceView(View):
         if service_id is None:
             if state in [ServiceStates['PENDING'].value, ServiceStates['ERROR'].value,
             ServiceStates['REQUESTED'].value, ServiceStates['COMPLETED'].value]:    
-                services = ServiceCpeRelations.objects.filter(service__service_state=state).values()
+                services = Service.objects.filter(service_state=state).values()
             else:
-                services = ServiceCpeRelations.objects.all().values()
+                services = Service.objects.all().values()
             return JsonResponse(list(services), safe=False)
 
         else:

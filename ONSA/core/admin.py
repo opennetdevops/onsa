@@ -5,25 +5,31 @@ from .forms import *
 from ipaddress import *
 
 
+def service_type(self):
+    return self.service.service_type
+
+
 class ServiceCpeRelationsAdmin(admin.ModelAdmin):
     form = ServiceCpeRelationForm
 
-    list_display = ('cpe_port', 'service', 'bandwidth', 'prefix' , 'vrf')
+    list_display = ('client', 'service', service_type, 'client_node_sn', 'client_node_port', 'bandwidth')
     # list_filter = ('client')
     actions = ['delete_selected']
 
-    exclude = ('client', 'client_node_sn', 'client_node_port')
+    exclude = ('client', 'client_node_sn', 'client_node_port', 'bandwidth', 'prefix' , 'vrf')
 
 
 
     def save_model(self, request, obj, form, change):
         obj.client = obj.service.client.name
-        obj.bandwidth = form.cleaned_data['bandwidth']
-        obj.public_network = form.cleaned_data['public_network']
-        obj.prefix = form.cleaned_data['prefix']
-        obj.vrf = form.cleaned_data['vrf']
-
-
+        obj.bandwidth = obj.service.bandwidth
+        obj.prefix = obj.service.prefix
+        obj.vrf = obj.service.vrf
+        obj.service_state = "PENDING"
+        obj.service_identifier = obj.service.product_identifier
+        obj.client_node_sn = obj.cpe_port.cpe.serial_number
+        obj.client_node_port = obj.cpe_port.name
+        obj.service_type = obj.service.service_type
 
         super(ServiceCpeRelationsAdmin, self).save_model(request, obj, form, change)
   

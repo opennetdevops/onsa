@@ -116,6 +116,7 @@ class ServiceCpeRelations(models.Model):
     client = models.CharField(max_length=50, blank=True)
     service_state = models.CharField(max_length=50, blank=True)
     service_identifier = models.CharField(max_length=50, blank=True)
+    service_type = models.CharField(max_length=50, blank=True)
 
     class Meta:
         unique_together = (('cpe_port', 'service'),)
