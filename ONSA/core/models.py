@@ -35,14 +35,14 @@ class Service(models.Model):
     
     SERVICE_TYPES = (
     ("vcpe_irs", "vcpe_irs"),
-    ("MPLS", "MPLS"),
-    ("VPLS", "VPLS"),
-    ("PUBLIC_IRS_CPELESS", "PUBLIC_IRS_CPELESS"),
+    ("mpls", "mpls"),
+    ("vpls", "vpls"),
+    ("cpeless_irs", "cpeless_irs"),
     )
 
     service_type = models.CharField(max_length=30,
                   choices=SERVICE_TYPES,
-                  default="PUBLIC_IRS_CPELESS")
+                  default="cpeless_irs")
 
     service_state = models.CharField(max_length=15,
                   choices=SERVICE_STATE_CHOICES,
@@ -66,7 +66,7 @@ class VcpeManager(models.Manager):
 
 class CpeLessIrsManager(models.Manager):
     def get_queryset(self):
-        return super(FeatureManager, self).get_queryset().filter(service_type='PUBLIC_IRS_CPELESS')
+        return super(FeatureManager, self).get_queryset().filter(service_type='cpeless_irs')
 
 class MplsManager(models.Manager):
     def get_queryset(self):
