@@ -1,0 +1,1 @@
+python3 manage.py flush && python3 manage.py loaddata inventory/fixtures/* core/fixtures/* && python3 manage.py createsuperuser

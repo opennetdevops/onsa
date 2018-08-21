@@ -7,7 +7,7 @@ import logging
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
 
-from urllib3.exceptions import HTTPError
+from requests.exceptions import HTTPError
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
@@ -136,6 +136,9 @@ class ConfigHandler:
 		MANAGER = 'https://' + params['mgmt_ip'] 
 		params['trigger'] = False
 		data = render(template_path, params)
+
+
+		print(data)
 
 		status = True
 

@@ -1,13 +1,10 @@
 from django.db import models
 
-
-
 class Client(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
-
 
 
 class Cpe(models.Model):
@@ -20,12 +17,9 @@ class Cpe(models.Model):
         return self.serial_number
 
 
-
-
-
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
-    service_id = models.CharField(max_length=50, unique=True)
+    # service_id = models.CharField(max_length=50, unique=True)
     product_identifier = models.CharField(max_length=50)
     bandwidth = models.PositiveSmallIntegerField()
     vrf = models.CharField(max_length=50, blank=True)
@@ -55,8 +49,7 @@ class Service(models.Model):
                   default="PENDING")
 
     def __str__(self):
-        return "Service Id: " + self.service_id
-
+        return "SERVICE_ID: " + str(self.pk)
 
 class CpePort(models.Model):
     name = models.CharField(max_length=50)
@@ -88,7 +81,6 @@ class VcpePublicIrsService (Service):
         proxy = True
 
 
-
 class CpeLessIrsService(Service):
     objects = CpeLessIrsManager()    
 
@@ -104,18 +96,21 @@ class MplsService(Service):
         proxy = True
 
 
-
 class ServiceCpeRelations(models.Model):
     cpe_port = models.ForeignKey(CpePort, models.DO_NOTHING)
     service = models.ForeignKey(Service, models.DO_NOTHING)
+    client = models.ForeignKey(Client, models.DO_NOTHING)
+    
+    client_name = models.CharField(max_length=50, blank=True)
     client_node_sn = models.CharField(max_length=50)
     client_node_port = models.CharField(max_length=50)
+    
     bandwidth = models.CharField(max_length=50, blank=True)
     prefix = models.CharField(max_length=50, blank=True)
     vrf = models.CharField(max_length=50, blank=True)
-    client = models.CharField(max_length=50, blank=True)
+    
     service_state = models.CharField(max_length=50, blank=True)
-    service_identifier = models.CharField(max_length=50, blank=True)
+    product_identifier = models.CharField(max_length=50, blank=True)
     service_type = models.CharField(max_length=50, blank=True)
 
     class Meta:
@@ -123,7 +118,7 @@ class ServiceCpeRelations(models.Model):
 
     def __str__(self):
         return self.cpe_port.cpe.serial_number + " - Port: " + self.cpe_port.name + \
-        " - Service Id: " + self.service.service_id
+        " - Service Id: " + str(self.service.pk)
 
 
 

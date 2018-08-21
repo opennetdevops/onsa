@@ -21,13 +21,16 @@ class PendingServiceView(View):
 
             return JsonResponse(list(s), safe=False)
         else:
-            s = ServiceCpeRelations.objects.filter(service__service_id=service_id).values()[0]
+            s = ServiceCpeRelations.objects.filter(service__pk=service_id).values()[0]
             return JsonResponse(s, safe=False)
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        service = ServiceCpeRelations.objects.get(service__service_id = service_id)
+        service = Service.objects.filter(pk=service_id)
+        service_relation = ServiceCpeRelations.objects.filter(service__pk=service_id)
+        service_relation.update(**data)
         service.update(**data)
+
         return JsonResponse(data, safe=False)
 
 

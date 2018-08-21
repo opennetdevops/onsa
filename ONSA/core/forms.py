@@ -42,11 +42,9 @@ class ServiceCpeRelationForm(ModelForm):
     cpe_port.widget.attrs['data-width'] = '14em'
 
 
-
-
     class Meta:
         model = ServiceCpeRelations
-        fields = ('cpe', 'cpe_port', 'service', 'bandwidth', 'prefix' , 'vrf')
+        fields = ('cpe', 'cpe_port', 'service')
         labels = {
             'service' : 'ID Producto'
         }
