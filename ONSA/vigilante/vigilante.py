@@ -67,7 +67,7 @@ def check_job():
             newdata = {
             "service_state":data['service_state']
             }
-            p = requests.put(CORE_URL + "/" + service['service_id'], data = json.dumps(newdata), headers=rheaders)
+            p = requests.put(CORE_URL + "/" + str(service['service_id']), data = json.dumps(newdata), headers=rheaders)
 
 
 

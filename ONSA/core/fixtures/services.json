@@ -1,0 +1,1 @@
+[{"model": "core.service", "pk": 1, "fields": {"client": 1, "product_identifier" : "123", "bandwidth" : "100", "prefix" : 29}}]
