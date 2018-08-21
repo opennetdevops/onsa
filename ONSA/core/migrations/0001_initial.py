@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('vrf', models.CharField(blank=True, max_length=50)),
                 ('prefix', models.CharField(blank=True, max_length=50)),
                 ('public_network', models.CharField(blank=True, max_length=50)),
-                ('service_type', models.CharField(choices=[('vcpe_irs', 'vcpe_irs'), ('MPLS', 'MPLS'), ('VPLS', 'VPLS'), ('PUBLIC_IRS_CPELESS', 'PUBLIC_IRS_CPELESS')], default='PUBLIC_IRS_CPELESS', max_length=30)),
+                ('service_type', models.CharField(choices=[('vcpe_irs', 'vcpe_irs'), ('MPLS', 'MPLS'), ('VPLS', 'VPLS'), ('cpeless_irs', 'cpeless_irs')], default='cpeless_irs', max_length=30)),
                 ('service_state', models.CharField(choices=[('PENDING', 'PENDING'), ('REQUESTED', 'REQUESTED'), ('COMPLETED', 'COMPLETED'), ('ERROR', 'ERROR')], default='PENDING', max_length=15)),
                 ('client', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='core.Client')),
             ],

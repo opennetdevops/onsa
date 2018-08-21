@@ -27,7 +27,7 @@ class ServiceView(View):
             return JsonResponse(list(services), safe=False)
 
         else:
-            s = Service.objects.get(service_id=service_id)
+            s = Service.objects.filter(pk=service_id).values()[0]
             return JsonResponse(s, safe=False)
 
 
