@@ -21,7 +21,8 @@ class ServiceCpeRelationsAdmin(admin.ModelAdmin):
 
 
     def save_model(self, request, obj, form, change):
-        obj.client = obj.service.client.name
+        obj.client = obj.service.client
+        obj.client_name = obj.service.client.name
         obj.bandwidth = obj.service.bandwidth
         obj.prefix = obj.service.prefix
         obj.vrf = obj.service.vrf
