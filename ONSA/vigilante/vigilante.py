@@ -30,7 +30,6 @@ def job():
 
         data = {
         "service_id":service['service_id'],
-        "service_state":service['service_state'],
         "service_type":service['service_type'],
         "client_id":service['client_id'],
         "client_name":clientData[0]['name'],
