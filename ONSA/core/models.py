@@ -19,7 +19,7 @@ class Cpe(models.Model):
 
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
-    # service_id = models.CharField(max_length=50, unique=True)
+    id = models.CharField(primary_key=True, max_length=50, unique=True)
     product_identifier = models.CharField(max_length=50)
     bandwidth = models.PositiveSmallIntegerField()
     vrf = models.CharField(max_length=50, blank=True)
