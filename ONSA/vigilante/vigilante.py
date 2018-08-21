@@ -3,6 +3,8 @@ import time
 import requests
 import json
 
+from pprint import pprint
+
 CORE_URL = "http://127.0.0.1:8000/core/api/pending_services"
 CORE_CLIENT_URL = "http://127.0.0.1:8000/core/api/clients"
 CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
@@ -14,8 +16,7 @@ rheaders = {'Content-Type': 'application/json'}
 
 def check_url_services(url,state):
     r = requests.get(CORE_URL + "?state=" + state)
-    data = r.json()
-    # print(data)
+    data = r.json()    
     return data
 
 def job():
@@ -29,14 +30,18 @@ def job():
 
         data = {
         "service_id":service['service_id'],
-        "service_state":"PENDING",
+        "service_state":service['service_state'],
         "service_type":service['service_type'],
         "client_id":service['client_id'],
         "client_name":clientData[0]['name'],
-        "prefix": service['public_prefix'],
-        "location":"LAB" #todo no need, charles will know this... eventually?
+        "prefix": service['prefix'],
+        "location":"LAB", #todo no need, charles will know this... eventually?
+        "client_node_port" : service['client_node_port'],
+        "client_node_sn" : service['client_node_sn'],
+        "bandwidth" : service['bandwidth']
         }
-        # print("DEBUG: ",data)
+
+        pprint(data)
 
         r = requests.post(CHARLES_URL, data = json.dumps(data), headers=rheaders)
         #if 200 --> PUT core to change service state to REQUESTED
@@ -48,7 +53,7 @@ def job():
             data = {
             "service_state":"ERROR"
             }
-        r = requests.put(CORE_URL + "/" + service['service_id'], data = json.dumps(data), headers=rheaders)
+        r = requests.put(CORE_URL + "/" + str(service['service_id']), data = json.dumps(data), headers=rheaders)
 
 
 def check_job():
@@ -57,7 +62,7 @@ def check_job():
 
     for service in s:
         # print(service)
-        r = requests.get(CHARLES_URL + "/" + service['service_id'])
+        r = requests.get(CHARLES_URL + "/" + str(service['service_id']))
         data = r.json()
         if not data['service_state'] == "REQUESTED":
             newdata = {
