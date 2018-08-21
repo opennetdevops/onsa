@@ -7,10 +7,13 @@ import logging
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
 
-from jinja2 import Template
+from urllib3.exceptions import HTTPError
+
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
-from jnpr.junos.exception import *
+from jnpr.junos.exception import CommitError, RpcTimeoutError, ConnectError, ConnectAuthError, ConfigLoadError
+
+from jinja2 import Template
 from pprint import pprint
 from .nsx.nsx_rest import *
 from .common.render import render
@@ -21,6 +24,7 @@ def get_edge_id_by_name(name, **kwargs):
 	rheaders = {'Accept': 'application/json'}
 
 	r = requests.get(kwargs['manager'] + "/api/4.0/edges", auth=(USER, PASS), verify=False, headers=rheaders)
+	r.raise_for_status()
 
 	r_dict = json.loads(r.text)	
 	allEdges = r_dict['edgePage']['data']
@@ -45,7 +49,7 @@ class ConfigHandler:
 		try:
 			logging.info("Openning NETCONF connection to device")
 			dev.open()
-		except Exception as err:
+		except (ConnectError, ConnectAuthError) as err:
 			logging.error("Cannot connect to device:%s", err)
 
 
@@ -61,16 +65,15 @@ class ConfigHandler:
 			dev.cu.pdiff()
 		except ValueError as err:
 			logging.error("Error: %s", err.message)
-		except Exception as err:
-			if err.rsp.find('.//ok') is None:
-				rpc_msg = err.rsp.findtext('.//error-message')
-				logging.error("Unable to load configuration changes: %s", rpc_msg)
+		except ConfigLoadError as err:
+			logging.error("Unable to load configuration changes: %s", err)
 
 			logging.info("Unlocking the configuration")
 			try:
 				dev.cu.unlock()
 			except UnlockError:
-					logging.error("Error: Unable to unlock configuration")
+				logging.error("Error: Unable to unlock configuration")
+			
 			dev.close()
 			return False
 
@@ -94,8 +97,11 @@ class ConfigHandler:
 		except UnlockError:
 			 logging.error( "Error: Unable to unlock configuration")
 
-		logging.info("Closing NETCONF session")
-		dev.close()
+		try:
+			logging.info("Closing NETCONF session")
+			dev.close()
+		except ConnectClosedError as err:
+			logging.info("Error: Unable to close connection. %s", err)
 
 		return True
 
@@ -128,31 +134,29 @@ class ConfigHandler:
 	def nsx(template_path, params):
 
 		MANAGER = 'https://' + params['mgmt_ip'] 
-
 		params['trigger'] = False
-
-		data = render(template_path, params)
-		status = False
-
-		rheaders = {'Content-Type': 'application/xml'}
-		r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
-
-		print(r.status_code)
-		if r.status_code == 201:
-			status = True
-
-		sleep(45)
-		
-		edge_id = get_edge_id_by_name(params['edge_name'], manager=MANAGER)
-
-		params['trigger'] = True
 		data = render(template_path, params)
 
-		rheaders = {'Content-Type': 'application/json'}
-		r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
-		status_code = r.status_code
-		print(r.status_code)
-		if r.status_code == 204:
-			status &= True
+		status = True
+
+		try:
+			rheaders = {'Content-Type': 'application/xml'}
+			r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+			r.raise_for_status()
+
+			sleep(45)
+			
+			edge_id = get_edge_id_by_name(params['edge_name'], manager=MANAGER)
+
+			params['trigger'] = True
+			data = render(template_path, params)
+
+			rheaders = {'Content-Type': 'application/json'}
+			r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+			r.raise_for_status()
+
+		except HTTPError:
+			print("FAILED!")
+			status = False
 
 		return status
