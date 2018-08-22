@@ -132,7 +132,7 @@ class AccessPort(models.Model):
 class VlanTag(models.Model):
     vlan_tag = models.CharField(max_length=50,  unique=True)
     vlan_tag.null = True
-    accessPorts = models.ManyToManyField(AccessPort, blank=True, through='VlantagAccessports')
+    access_nodes = models.ManyToManyField(AccessNode, blank=True, through='Services')
 
     def __str__(self):
         return self.vlan_tag
@@ -226,18 +226,19 @@ class LogicalUnit(models.Model):
         return
 
 #TODO change name to something related to services
-class VlantagAccessports(models.Model):
+class Services(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
-    accessport = models.ForeignKey(AccessPort, models.DO_NOTHING)
+    access_node = models.ForeignKey(AccessNode, models.DO_NOTHING)
     serviceid = models.CharField(max_length=50, blank=True, unique=True)
     client_node_sn = models.CharField(max_length=50)
     client_node_port = models.CharField(max_length=50)
     bandwidth = models.CharField(max_length=50)
+    access_port_id = models.CharField(max_length=50)
 
     class Meta:
-        unique_together = (('vlantag', 'accessport'),)
+        unique_together = (('vlantag', 'access_node'),)
 
     def __str__(self):
-        return self.accessport.accessNode.name + " - Port: " +self.accessport.port + \
+        return self.access_node.name + \
         " - Vlan: " + self.vlantag.vlan_tag + " - Service Id: " + self.serviceid
 

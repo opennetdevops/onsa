@@ -1,20 +1,25 @@
 from pprint import pprint
 import requests
 import json
+from ..views.service import *
+
+IPAM_BASE = "http://10.120.78.90"
+BASE = "http://localhost:8000"
 
 class ServiceHandler():
+
 	def _configure_service(config):
 		url = "/worker/api/services"
 		rheaders = {'Content-Type': 'application/json'}
 		data = config
-		response = requests.post(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.post(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 
 	def _get_ipam_authentication_token():
 		url = "/api/authenticate"
 		rheaders = {'Content-Type': 'application/json'}
 		#App User
 		data = {"email":"malvarez@lab.fibercorp.com.ar", "password":"Matias.2015"}
-		response = requests.post(ServiceView.IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.post(IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		return json.loads(response.text)['auth_token']
 
 
@@ -22,11 +27,11 @@ class ServiceHandler():
 		description = client_name + "-" + service_id
 		#"Searchin by owner prefix=WAN_NSX"
 		owner = "WAN_NSX_" + location
-		token = ServiceView.get_ipam_authentication_token()
+		token = ServiceHandler._get_ipam_authentication_token()
 		url = "/api/networks/assign_ip"
 		rheaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
 		data = { "description" : description, "owner" : owner,"ip_version" : 4 }
-		response = requests.post(ServiceView.IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.post(IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if "network" in json_response:
 			return json_response["network"]
@@ -36,12 +41,12 @@ class ServiceHandler():
 	def _get_public_network(client_name,service_id,mask):
 		description = client_name + "-" + service_id
 		owner = "PUBLIC_ONSA"
-		token = ServiceView.get_ipam_authentication_token()
+		token = ServiceHandler._get_ipam_authentication_token()
 		url = "/api/networks/assign_subnet"
 		rheaders = {'Content-Type': 'application/json',
 			'Authorization': 'Bearer ' + token}
 		data = {"description":description,"owner":owner,"ip_version":4,"mask":mask}
-		response = requests.post(ServiceView.IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.post(IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if "network" in json_response:
 			return json_response["network"]
@@ -51,7 +56,7 @@ class ServiceHandler():
 	def _get_location_id(location_name):
 		url= "/inventory/api/locations?name="+location_name
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response[0]['id']
@@ -61,7 +66,7 @@ class ServiceHandler():
 	def _get_router_node(location_id):
 		url= "/inventory/api/locations/"+ location_id + "/routernodes"
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response[0]
@@ -71,7 +76,7 @@ class ServiceHandler():
 	def _get_virtual_pod(location_id):
 		url= "/inventory/api/locations/"+ location_id + "/virtualpods"
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response[0]
@@ -81,7 +86,7 @@ class ServiceHandler():
 	def _get_client_node(client_node_sn):
 		url= "/inventory/api/clientnodes?sn="+client_node_sn
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response
@@ -91,7 +96,7 @@ class ServiceHandler():
 	def _get_virtual_pod_downlink_portgroup(virtual_pod_id):
 		url= "/inventory/api/virtualpods/"+ virtual_pod_id + "/portgroups?used=false"
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response[0]
@@ -102,7 +107,7 @@ class ServiceHandler():
 		url= "/inventory/api/portgroups/" + portgroup_id
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"used":True}
-		response = requests.put(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.put(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response
@@ -112,7 +117,7 @@ class ServiceHandler():
 	def _get_free_logical_units(router_node_id):
 		url= "/inventory/api/routernodes/" + router_node_id + "/logicalunits?used=false"
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		#TODO check minimum size = 2
 		if json_response:
@@ -124,7 +129,7 @@ class ServiceHandler():
 		url= "/inventory/api/routernodes/" + router_node_id + "/logicalunits"
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"logical_unit_id":logical_unit_id}
-		response = requests.post(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.post(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response
@@ -135,7 +140,7 @@ class ServiceHandler():
 	def _get_free_access_port(location_id):
 		url= "/inventory/api/locations/"+ location_id + "/accessports?used=false"
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response[0]
@@ -146,7 +151,7 @@ class ServiceHandler():
 		url= "/inventory/api/accessports/" + access_port_id
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"used":True}
-		response = requests.put(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		response = requests.put(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response
@@ -156,7 +161,7 @@ class ServiceHandler():
 	def _get_access_node(access_node_id):
 		url= "/inventory/api/accessnodes/"+ access_node_id 
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response
@@ -164,32 +169,30 @@ class ServiceHandler():
 			return None
 
 	def _get_free_vlan_tag(access_port_id):
-		url= "/inventory/api/accessports/"+ access_port_id + "/vlantags?used=false"
+		url= "/inventory/api/accessnodes/"+ access_port_id + "/vlantags?used=false"
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(ServiceView.BASE + url, auth = None, verify = False, headers = rheaders)
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response[0]
 		else:
 			return None
 
-	def _add_vlan_tag_to_access_port(vlan_tag,access_port_id,service_id,client_node_sn,client_node_port,bandwidth):
-		url= "/inventory/api/accessports/"+ access_port_id + "/vlantags"
+	def _add_vlan_tag_to_access_node(vlan_tag,access_node_id,access_port_id,service_id,client_node_sn,client_node_port,bandwidth):
+		url= "/inventory/api/accessnodes/"+ access_node_id + "/vlantags"
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"vlan_tag":vlan_tag,
 						"service_id":service_id,
 						"client_node_sn":client_node_sn,
 						"client_node_port":client_node_port,
-						"bandwidth":bandwidth}
-		response = requests.post(ServiceView.BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+						"bandwidth":bandwidth,
+						"access_port_id":access_port_id}
+		response = requests.post(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
 			return json_response
 		else:
 			return None
-
-	def _existing_service(service_id):
-		return Service.objects.filter(service_id=service_id).count() is not 0
 
 	def generate_cpeless_irs_request(params):
 
@@ -220,14 +223,15 @@ class ServiceHandler():
 		ServiceHandler._use_port(access_port_id)
 		access_node_id = str(free_access_port['accessNode_id'])
 		access_node = ServiceHandler._get_access_node(access_node_id)
-		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_port_id)
+		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN
-		ServiceHandler._add_vlan_tag_to_access_port(free_vlan_tag['vlan_tag'],
+		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+												access_node_id,
 												access_port_id,
 												service_id,
 												client_node_sn,
-												client_node_port
+												client_node_port,
 												bandwidth)
 
 		#Get client node by SN
@@ -258,7 +262,7 @@ class ServiceHandler():
 		if public_network:
 			pprint(config)
 			#Call worker
-			ServiceHandler._configure_service(config)
+			# ServiceHandler._configure_service(config)
 		else:
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()
@@ -302,10 +306,11 @@ class ServiceHandler():
 		ServiceHandler._use_port(access_port_id)
 		access_node_id = str(free_access_port['accessNode_id'])
 		access_node = ServiceHandler._get_access_node(access_node_id)
-		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_port_id)
+		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN
-		ServiceHandler._add_vlan_tag_to_access_port(free_vlan_tag['vlan_tag'],
+		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+													access_node_id,
 													access_port_id,
 													service_id,
 													client_node_sn,
@@ -350,7 +355,7 @@ class ServiceHandler():
 			if public_network:
 				pprint(config)
 				#Call worker
-				ServiceHandler._configure_service(config)
+				# ServiceHandler._configure_service(config)
 			else:
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()
