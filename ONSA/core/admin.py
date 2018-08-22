@@ -8,25 +8,44 @@ from ipaddress import *
 def service_type(self):
     return self.service.service_type
 
+def service_bandwidth(self):
+    return self.service.bandwidth
+
+def service_vrf(self):
+    return self.service.vrf
+
+def service_id(self):
+    return self.service.pk
+
+def client_name(self):
+    return self.client.name
+
+def client_node_sn(self):
+    return self.cpe_port.cpe.serial_number
+
+def client_node_port(self):
+    return self.cpe_port.name
+
 
 class ServiceCpeRelationsAdmin(admin.ModelAdmin):
     form = ServiceCpeRelationForm
 
-    list_display = ('client', 'service', service_type, 'client_node_sn', 'client_node_port', 'bandwidth')
+    list_display = (client_name, service_id, service_type, client_node_sn, client_node_port, service_bandwidth)
     # list_filter = ('client')
     actions = ['delete_selected']
 
-    exclude = ('client', 'client_node_sn', 'client_node_port', 'bandwidth', 'prefix' , 'vrf')
+    # exclude = ('client', 'client_node_sn', 'client_node_port', 'bandwidth', 'prefix' , service_vrf)
 
 
 
     def save_model(self, request, obj, form, change):
-        obj.client = obj.service.client.name
+        obj.client = obj.service.client
+        obj.client_name = obj.service.client.name
         obj.bandwidth = obj.service.bandwidth
         obj.prefix = obj.service.prefix
         obj.vrf = obj.service.vrf
-        obj.service_state = "PENDING"
-        obj.service_identifier = obj.service.product_identifier
+        obj.service_state = obj.service.service_state
+        obj.product_identifier = obj.service.product_identifier
         obj.client_node_sn = obj.cpe_port.cpe.serial_number
         obj.client_node_port = obj.cpe_port.name
         obj.service_type = obj.service.service_type
@@ -58,8 +77,10 @@ class ClientAdmin (admin.ModelAdmin):
 class ServiceAdmin(admin.ModelAdmin):
     # form = IrsServiceForm
 
-    list_display = ('client', 'service_id', 'product_identifier', 'bandwidth', 'public_network', 'prefix' , 'vrf')
+    list_display = ('client', 'product_identifier', 'bandwidth')
     actions = ['delete_selected']
+
+    exclude = ['vrf']
 
     def save_model(self, request, obj, form, change):
         # client = Client.objects.get(name=form.cleaned_data['client'])

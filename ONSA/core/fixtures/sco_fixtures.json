@@ -1,1 +1,0 @@
-[{"model": "nsx.sco", "pk": 1, "fields": {"name": "SCO-CEN-01", "hub": 1, "qinqOuterVlan" : 24,"sco_ae_interface":"ae24"}}]

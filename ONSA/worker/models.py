@@ -135,8 +135,6 @@ class Task(models.Model):
 
 	def rollback(self):
 
-		print("DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe")
-
 		dir = os.path.dirname(os.path.abspath(__file__))
 
 		if self.device['vendor'] == 'transition':
