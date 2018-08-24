@@ -52,6 +52,10 @@ urlpatterns = [
     path('/api/clientnodes/<str:client_node_sn>/clientports', require_http_methods(["GET","POST"])(client_node_client_ports.ClientNodeClientPortsView.as_view())),
     path('/api/clientnodes/<str:client_node_sn>/clientports/<int:client_port_id>', require_http_methods(["GET","PUT", "DELETE"])(client_node_client_ports.ClientNodeClientPortsView.as_view())),
     path('/api/clientnodes/clientports/<int:client_port_id>', require_http_methods(["GET","PUT","POST","DELETE"])(client_node_ports.ClientNodePortsView.as_view())),
+
+
+
+
     
     path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","DELETE"])(logical_units.LogicalUnitsView.as_view())),
     path('/api/logicalunits', require_http_methods(["GET","POST"])(logical_units.LogicalUnitsView.as_view()))
