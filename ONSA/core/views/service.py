@@ -42,6 +42,8 @@ class ServiceView(View):
     # client_id: 23,
     # service_type: "IRS",
     # id: "ASD1119900001",
+    # ...
+    # }
     #
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
@@ -74,7 +76,7 @@ class ServiceView(View):
     def _get_free_access_port(location_id):
         url= INVENTORY_URL + "locations/"+ location_id + "/accessports?used=false"
         rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
+        response = requests.get(url, auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)
         if json_response:
             return json_response[0]
@@ -85,7 +87,7 @@ class ServiceView(View):
     def _get_location_id(location_name):
         url= INVENTORY_URL + "locations?name="+location_name
         rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
+        response = requests.get(url, auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)
         if json_response:
             return json_response[0]['id']
@@ -96,7 +98,7 @@ class ServiceView(View):
         url= INVENTORY_URL + "accessports/" + access_port_id
         rheaders = {'Content-Type': 'application/json'}
         data = {"used":True}
-        response = requests.put(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+        response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)
         if json_response:
             return json_response

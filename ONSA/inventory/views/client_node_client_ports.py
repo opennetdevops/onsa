@@ -8,10 +8,11 @@ import json
 
 class ClientNodeClientPortsView(View):
     def get(self, request, client_node_sn, client_port_id=None):
+        used = request.GET.get('used', '')
 
-        if client_port_id is not None:
-            client_port = ClientNodePort.objects.filter(pk=client_port_id, client_node=client_node_sn).values()[0]
-            return JsonResponse(client_port, safe=False)
+        if used:
+            client_port = ClientNodePort.objects.filter(client_node=client_node_sn, used=used).values()
+            return JsonResponse(list(client_port), safe=False)
 
         else:
             client_ports = ClientNodePort.objects.filter(client_node=client_node_sn).values()

@@ -8,7 +8,10 @@ import json
 
 from pprint import pprint
 
-
+INVENTORY_URL = "http://127.0.0.1:8000/inventory/api/"
+CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
+BASE = "http://127.0.0.1:8000/"
+CORE_URL = "http://127.0.0.1:8000/core/api/"
 
 class PendingServiceView(View):
 
@@ -51,18 +54,27 @@ class PendingServiceView(View):
 
             return JsonResponse(service_info, safe=False)
 
-
+    #Pre: JSON with following format
+    #{ 
+    # cpe_sn: "",
+    # service_id: 23
+    # }
+    #
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         
-        #data['sn']
-        #GET CPE from inventory
+        #Get CPE from inventory
+        cpe_port = self._get_free_cpe_port(data['sn'])
+        cpe_port_id = cpe_port['id']
 
+        service_relation = ServiceCpeRelations(cpe_port=cpe_port_id,service=data['service_id'])
+        service_relation.save()
 
-        service = ServiceCpeRelations.create(**data)
-        service.service_state = ServiceStates['REQUESTED'].value
+        service = self._get_service(data['service_id'])
+        service.service_state = "REQUESTED" #TODO use enum or similar but not hardcode
         service.save()
-        response = {"message" : "Service requested"}
+
+        response = {"message" : "Service - CPE relation requested"}
         return JsonResponse(response)
 
 
@@ -75,6 +87,26 @@ class PendingServiceView(View):
         service.update(**data)
 
         return JsonResponse(data, safe=False)
+
+    def _get_free_cpe_port(cpe_id):
+        url= INVENTORY_URL + "clientnodes/" + cpe_id + "/clientports/?used=false"
+        rheaders = {'Content-Type': 'application/json'}
+        response = requests.get(url, auth = None, verify = False, headers = rheaders)
+        json_response = json.loads(response.text)
+        if json_response:
+            return json_response[0]
+        else:
+            return None
+
+    def _get_service(service_id):
+        url= CORE_URL + service_id
+        rheaders = {'Content-Type': 'application/json'}
+        response = requests.get(url, auth = None, verify = False, headers = rheaders)
+        json_response = json.loads(response.text)
+        if json_response:
+            return json_response[0]
+        else:
+            return None
 
 
 
