@@ -64,28 +64,29 @@ class RouterNode(Device): #MX
         return self.name
 
 class ClientNode(Device):
-    serial_number = models.CharField(max_length=50, blank=True, unique=True)
+    serial_number = models.CharField(primary_key=True, max_length=50, blank=True, unique=True)
     client = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.serial_number
 
-# class OpticalNode(Device):
-#     serial_number = models.CharField(max_length=50, blank=True)
-#     client = models.CharField(max_length=50, blank=True)
-#     hwId = models.CharField(max_length=50, blank=True)
-    
-#     def __str__(self):
-#         return self.serial_number
+
+class ClientNodePort(Device):
+    interface_name = models.CharField(max_length=50, blank=True)
+    client_node = models.ForeignKey(ClientNode, on_delete=models.CASCADE)
+    used = models.BooleanField(default=False)
+    service_id = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.interface_name
+
+
 
 class AccessPort(models.Model):
-    description = models.CharField(max_length=50)
     port = models.CharField(max_length=50)
     port.null = True
     used = models.BooleanField(default=False)
     accessNode = models.ForeignKey(AccessNode, on_delete=models.CASCADE)
-    client = models.CharField(max_length=50, blank=True)
-    client.null = True
 
 
     def __str__(self):
@@ -212,7 +213,6 @@ class LogicalUnit(models.Model):
         return str(self.logical_unit_id)
 
     def initialize():
-        #TODO GLOBAL VARIABLE
         logical_units_per_location = 100
         initial_logical_unit_id = 10000
 
@@ -225,7 +225,7 @@ class LogicalUnit(models.Model):
         logical_unit.save()
         return
 
-#TODO change name to something related to services
+
 class Services(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     access_node = models.ForeignKey(AccessNode, models.DO_NOTHING)

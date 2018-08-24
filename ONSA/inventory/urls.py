@@ -11,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 from .views import devices, portgroups, virtualpods, locations, router_nodes, access_nodes, access_ports
 from .views import router_node_logical_units, logical_units, location_access_nodes, location_router_nodes
 from .views import access_node_access_ports, location_access_ports, access_node_vlan_tags, locations_virtual_pod
-from .views import virtualpod_portgroups, client_nodes, vlan_tags
+from .views import virtualpod_portgroups, client_nodes, vlan_tags, client_node_client_ports, client_node_ports
 
 urlpatterns = [ 
     path('/api/login', obtain_jwt_token),
@@ -48,8 +48,12 @@ urlpatterns = [
     path('/api/vlantags', require_http_methods(["GET","POST"])(vlan_tags.VlanTagsView.as_view())),
 
     path('/api/clientnodes', require_http_methods(["GET","POST"])(client_nodes.ClientNodesView.as_view())),
-    path('/api/clientnodes/<int:client_node_id>', require_http_methods(["GET","PUT", "DELETE"])(client_nodes.ClientNodesView.as_view())),
-    
+    path('/api/clientnodes/<str:client_node_sn>', require_http_methods(["GET","PUT", "DELETE"])(client_nodes.ClientNodesView.as_view())),
+    path('/api/clientnodes/<str:client_node_sn>/clientports', require_http_methods(["GET","POST"])(client_node_client_ports.ClientNodeClientPortsView.as_view())),
+    path('/api/clientnodes/<str:client_node_sn>/clientports/<int:client_port_id>', require_http_methods(["GET","PUT", "DELETE"])(client_node_client_ports.ClientNodeClientPortsView.as_view())),
+    path('/api/clientnodes/clientports/<int:client_port_id>', require_http_methods(["GET","PUT","POST","DELETE"])(client_node_ports.ClientNodePortsView.as_view())),
+
+
     
     path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","DELETE"])(logical_units.LogicalUnitsView.as_view())),
     path('/api/logicalunits', require_http_methods(["GET","POST"])(logical_units.LogicalUnitsView.as_view()))
