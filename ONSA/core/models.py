@@ -25,6 +25,8 @@ class Service(models.Model):
     vrf = models.CharField(max_length=50, blank=True)
     prefix = models.CharField(max_length=50, blank=True)
     public_network = models.CharField(max_length=50, blank=True)
+    access_node = models.CharField(max_length=50, blank=True)
+    access_node_port = models.CharField(max_length=50, blank=True)
     
     SERVICE_STATE_CHOICES = (
     ("PENDING", "PENDING"),
@@ -39,6 +41,17 @@ class Service(models.Model):
     ("vpls", "vpls"),
     ("cpeless_irs", "cpeless_irs"),
     )
+
+    LOCATION_CHOICES = (
+    ("CENTRO", "CENTRO"),
+    ("RETIRO", "RETIRO"),
+    ("SANTA_FE", "SANTA_FE"),
+    ("PALERMO", "PALERMO")
+    )
+
+    location = models.CharField(max_length=30,
+                  choices=LOCATION_CHOICES,
+                  default="cpeless_irs")
 
     service_type = models.CharField(max_length=30,
                   choices=SERVICE_TYPES,

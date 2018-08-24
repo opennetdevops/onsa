@@ -51,6 +51,20 @@ class PendingServiceView(View):
 
             return JsonResponse(service_info, safe=False)
 
+    def post(self, request):
+        data = json.loads(request.body.decode(encoding='UTF-8'))
+        
+        #data['sn']
+        #GET CPE from inventory
+
+
+        service = ServiceCpeRelations.create(**data)
+        service.service_state = ServiceStates['REQUESTED'].value
+        service.save()
+        response = {"message" : "Service requested"}
+        return JsonResponse(response)
+
+
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         service = Service.objects.filter(pk=service_id)

@@ -10,6 +10,7 @@ class ServiceStates(Enum):
     PENDING = "PENDING"
     REQUESTED = "REQUESTED"
     COMPLETED = "COMPLETED"
+    IN_CONSTRUCTION = "IN_CONSTRUCTION"
     ERROR = "ERROR"
 
 
@@ -20,7 +21,8 @@ class ServiceView(View):
 
         if service_id is None:
             if state in [ServiceStates['PENDING'].value, ServiceStates['ERROR'].value,
-            ServiceStates['REQUESTED'].value, ServiceStates['COMPLETED'].value]:    
+            ServiceStates['REQUESTED'].value, ServiceStates['COMPLETED'].value,
+            ServiceStates['IN_CONSTRUCTION']].value:    
                 services = Service.objects.filter(service_state=state).values()
             else:
                 services = Service.objects.all().values()
@@ -33,13 +35,20 @@ class ServiceView(View):
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+        
+        #GET access_port from inventory
+        
+        #PUT to inventory to set access_port used 
+
+
         service = Service.create(**data)
-        service.service_state = ServiceStates['REQUESTED'].value
+        service.service_state = ServiceStates['IN_CONSTRUCTION'].value
         service.save()
         response = {"message" : "Service requested"}
         return JsonResponse(response)
 
     def put(self, request, service_id):
+        #To change state only
         data = json.loads(request.body.decode(encoding='UTF-8'))
         service = Service.objects.get(service_id)
         service.update(**data)
