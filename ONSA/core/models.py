@@ -99,19 +99,6 @@ class MplsService(Service):
 class ServiceCpeRelations(models.Model):
     cpe_port = models.ForeignKey(CpePort, models.DO_NOTHING)
     service = models.ForeignKey(Service, models.DO_NOTHING)
-    client = models.ForeignKey(Client, models.DO_NOTHING)
-    
-    client_name = models.CharField(max_length=50, blank=True)
-    client_node_sn = models.CharField(max_length=50)
-    client_node_port = models.CharField(max_length=50)
-    
-    bandwidth = models.CharField(max_length=50, blank=True)
-    prefix = models.CharField(max_length=50, blank=True)
-    vrf = models.CharField(max_length=50, blank=True)
-    
-    service_state = models.CharField(max_length=50, blank=True)
-    product_identifier = models.CharField(max_length=50, blank=True)
-    service_type = models.CharField(max_length=50, blank=True)
 
     class Meta:
         unique_together = (('cpe_port', 'service'),)

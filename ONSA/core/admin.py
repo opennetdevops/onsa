@@ -15,10 +15,10 @@ def service_vrf(self):
     return self.service.vrf
 
 def service_id(self):
-    return self.service.pk
+    return self.service.id
 
 def client_name(self):
-    return self.client.name
+    return self.service.client.name
 
 def client_node_sn(self):
     return self.cpe_port.cpe.serial_number
@@ -31,36 +31,16 @@ class ServiceCpeRelationsAdmin(admin.ModelAdmin):
     form = ServiceCpeRelationForm
 
     list_display = (client_name, service_id, service_type, client_node_sn, client_node_port, service_bandwidth)
-    # list_filter = ('client')
     actions = ['delete_selected']
 
-    # exclude = ('client', 'client_node_sn', 'client_node_port', 'bandwidth', 'prefix' , service_vrf)
-
-
-
     def save_model(self, request, obj, form, change):
-        obj.client = obj.service.client
-        obj.client_name = obj.service.client.name
-        obj.bandwidth = obj.service.bandwidth
-        obj.prefix = obj.service.prefix
-        obj.vrf = obj.service.vrf
-        obj.service_state = obj.service.service_state
-        obj.product_identifier = obj.service.product_identifier
-        obj.client_node_sn = obj.cpe_port.cpe.serial_number
-        obj.client_node_port = obj.cpe_port.name
-        obj.service_type = obj.service.service_type
-
         super(ServiceCpeRelationsAdmin, self).save_model(request, obj, form, change)
-  
-        
+          
     def delete_model(self, request, obj):
         obj.delete()
 
-
     def delete_selected(self, request, obj):
-
         for o in obj.all():
-            # delete object
             o.delete()
 
 
