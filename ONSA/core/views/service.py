@@ -26,7 +26,7 @@ class ServiceView(View):
         if service_id is None:
             if state in [ServiceStates['PENDING'].value, ServiceStates['ERROR'].value,
             ServiceStates['REQUESTED'].value, ServiceStates['COMPLETED'].value,
-            ServiceStates['IN_CONSTRUCTION']].value:    
+            ServiceStates['IN_CONSTRUCTION'].value]:    
                 services = Service.objects.filter(service_state=state).values()
             else:
                 services = Service.objects.all().values()
@@ -49,10 +49,12 @@ class ServiceView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         
         #GET Location ID
-        location_id = self._get_location_id(data['location'])
+        print(data['location'])
+        location_id = _get_location_id(data['location'])
+        print(location_id)
 
         #GET access_port from inventory
-        free_access_port = self._get_free_access_port(location_id)
+        free_access_port = _get_free_access_port(location_id)
         access_port_id = str(free_access_port['id'])
 
         #PUT to inventory to set access_port used
@@ -73,37 +75,37 @@ class ServiceView(View):
         service.update(**data)
         return JsonResponse(data, safe=False)
 
-    def _get_free_access_port(location_id):
-        url= INVENTORY_URL + "locations/"+ location_id + "/accessports?used=false"
-        rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(url, auth = None, verify = False, headers = rheaders)
-        json_response = json.loads(response.text)
-        if json_response:
-            return json_response[0]
-        else:
-            return None
+def _get_free_access_port(location_id):
+    url= INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
+    else:
+        return None
 
 
-    def _get_location_id(location_name):
-        url= INVENTORY_URL + "locations?name="+location_name
-        rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(url, auth = None, verify = False, headers = rheaders)
-        json_response = json.loads(response.text)
-        if json_response:
-            return json_response[0]['id']
-        else:
-            return None
+def _get_location_id(location_name):
+    url= INVENTORY_URL + "locations?name="+location_name
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]['id']
+    else:
+        return None
 
-    def _use_port(access_port_id):
-        url= INVENTORY_URL + "accessports/" + access_port_id
-        rheaders = {'Content-Type': 'application/json'}
-        data = {"used":True}
-        response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-        json_response = json.loads(response.text)
-        if json_response:
-            return json_response
-        else:
-            return None
+def _use_port(access_port_id):
+    url= INVENTORY_URL + "accessports/" + access_port_id
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"used":True}
+    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
 
 
 

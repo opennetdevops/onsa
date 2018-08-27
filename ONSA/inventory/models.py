@@ -71,7 +71,7 @@ class ClientNode(Device):
         return self.serial_number
 
 
-class ClientNodePort(Device):
+class ClientNodePort(models.Model):
     interface_name = models.CharField(max_length=50, blank=True)
     client_node = models.ForeignKey(ClientNode, on_delete=models.CASCADE)
     used = models.BooleanField(default=False)

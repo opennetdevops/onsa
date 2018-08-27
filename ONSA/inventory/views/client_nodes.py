@@ -10,7 +10,7 @@ class ClientNodesView(View):
     def get(self, request, client_node_sn=None):
 
         if not client_node_sn is None:
-            client_node = ClientNode.objects.filter(pk=client_node_sn).values()[0]
+            client_node = ClientNode.objects.filter(serial_number=client_node_sn).values()[0]
             return JsonResponse(client_node, safe=False)
 
         else:
@@ -21,7 +21,7 @@ class ClientNodesView(View):
 
     def put(self, request, client_node_sn):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        client_node = ClientNode.objects.filter(pk=client_node_sn)
+        client_node = ClientNode.objects.filter(serial_number=client_node_sn)
         client_node.update(**data)
         my_client_node = client_node.values()[0]
         return JsonResponse(my_client_node, safe=False)
@@ -35,7 +35,7 @@ class ClientNodesView(View):
 
 
     def delete(self, request, client_node_sn):
-        client_node = ClientNode.objects.filter(pk=client_node_sn)
+        client_node = ClientNode.objects.filter(serial_number=client_node_sn)
         client_node.delete()
         data = {"Message" : "Client Node deleted successfully"}
         return JsonResponse(data)

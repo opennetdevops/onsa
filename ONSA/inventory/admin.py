@@ -23,6 +23,7 @@ admin.site.register(VlanTag)
 admin.site.register(AccessPort)
 #admin.site.register(OpticalNode)
 admin.site.register(ClientNode)
+admin.site.register(ClientNodePort)
 admin.site.register(RouterNode)
 admin.site.register(AccessNode)
 
