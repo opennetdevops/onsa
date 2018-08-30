@@ -15,36 +15,36 @@ from django_select2.forms import (
 
 
 
-class ServiceCpeRelationForm(ModelForm):
+# class ServiceCpeRelationForm(ModelForm):
 
-    cpe = forms.ModelChoiceField(
-        queryset=Cpe.objects.all(),
-        label="Cpe",
-        widget=ModelSelect2Widget(
-            model=Cpe,
-            search_fields=['name__icontains'],
+#     cpe = forms.ModelChoiceField(
+#         queryset=Cpe.objects.all(),
+#         label="Cpe",
+#         widget=ModelSelect2Widget(
+#             model=Cpe,
+#             search_fields=['name__icontains'],
 
-        )
-    )
+#         )
+#     )
 
-    cpe_port = forms.ModelChoiceField(
-        queryset=CpePort.objects.all(),
-        label="CPE_Port",
-        widget=ModelSelect2Widget(
-            model=CpePort,
-            search_fields=['name__icontains'],
-            dependent_fields={'cpe': 'cpe'},
-            max_results=500,
-        )
-    )
+#     cpe_port = forms.ModelChoiceField(
+#         queryset=CpePort.objects.all(),
+#         label="CPE_Port",
+#         widget=ModelSelect2Widget(
+#             model=CpePort,
+#             search_fields=['name__icontains'],
+#             dependent_fields={'cpe': 'cpe'},
+#             max_results=500,
+#         )
+#     )
 
-    cpe.widget.attrs['data-width'] = '14em'
-    cpe_port.widget.attrs['data-width'] = '14em'
+#     cpe.widget.attrs['data-width'] = '14em'
+#     cpe_port.widget.attrs['data-width'] = '14em'
 
 
-    class Meta:
-        model = ServiceCpeRelations
-        fields = ('cpe', 'cpe_port', 'service')
-        labels = {
-            'service' : 'ID Producto'
-        }
+#     class Meta:
+#         model = ServiceCpeRelations
+#         fields = ('cpe', 'cpe_port', 'service')
+#         labels = {
+#             'service' : 'ID Producto'
+#         }

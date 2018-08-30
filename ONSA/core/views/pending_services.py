@@ -1,7 +1,7 @@
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from ..models import Service, ServiceCpeRelations
+from ..models import Service
 from enum import Enum
 import json
 import requests
@@ -22,38 +22,12 @@ class PendingServiceView(View):
         if service_id is None:
             services_info = []
 
-            s = ServiceCpeRelations.objects.all() if not state else ServiceCpeRelations.objects.filter(service__service_state=state)
-
-            for relation in s:
-                info = { 'client_name' : relation.service.client.name,
-                                     'client_node_sn' : relation.cpe_port.cpe.serial_number,
-                                     'client_node_port' : relation.cpe_port.name,
-                                     'bandwidth' : relation.service.bandwidth,
-                                     'prefix' : relation.service.prefix,
-                                     'vrf' : relation.service.vrf,
-                                     'service_state' : relation.service.service_state,
-                                     'product_identifier' : relation.service.product_identifier,
-                                     'service_type' : relation.service.service_type,
-                                     'service_id' : relation.service.id }
-
-                services_info.append(info)
-
-            return JsonResponse(services_info, safe=False)
+            s = Service.objects.all().values() if not state else Service.objects.filter(service_state=state).values()
+            return JsonResponse(list(s), safe=False)
 
         else:
-            s = ServiceCpeRelations.objects.get(service__pk=service_id)
-
-            service_info = { 'client_name' : s.service.client.name,
-                             'client_node_sn' : s.cpe_port.cpe.serial_number,
-                             'client_node_port' : s.cpe_port.name,
-                             'bandwidth' : s.service.bandwidth,
-                             'prefix' : s.service.prefix,
-                             'vrf' : s.service.vrf,
-                             'service_state' : s.service.service_state,
-                             'product_identifier' : s.service.product_identifier,
-                             'service_type' : s.service.service_type }
-
-            return JsonResponse(service_info, safe=False)
+            s = Service.objects.filter(pk=service_id).values()[0]
+            return JsonResponse(s, safe=False)
 
     #Pre: JSON with following format
     #{ 
@@ -63,17 +37,33 @@ class PendingServiceView(View):
     #
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+        cpe_id = data['cpe_sn']
+
+        service = Service.objects.get(id=data['service_id'])
         
         #Get CPE from inventory
-        cpe_port = _get_free_cpe_port(data['cpe_sn'])
+        cpe_data = _get_cpe(cpe_id)
+
+        #update inventory with Cpe Client
+        if cpe_data is not None:
+            cpe_data['client'] = service.client.name
+            _update_cpe(cpe_id, cpe_data)
+        else:
+            response = {"message" : "Service - CPE relation POST failed"}
+            return JsonResponse(response)
+
+        #Create ports - and assign one
+        cpe_port = _get_free_cpe_port(cpe_id)
         cpe_port_id = cpe_port['id']
 
-        service_relation = ServiceCpeRelations(cpe_port=cpe_port_id,service=data['service_id'])
-        service_relation.save()
+        #Assign CPE Port (mark as used)
+        _use_port(cpe_id, cpe_port_id)
 
-        service = _get_service(data['service_id'])
+        #update service
+        service.client_node_sn = cpe_id
+        service.client_node_port = cpe_port['interface_name']
 
-        r = _request_charles_service(service_relation)
+        r = _request_charles_service(service)
 
         if r.ok:
             service.service_state = "REQUESTED" #TODO use enum or similar but not hardcode
@@ -97,7 +87,7 @@ class PendingServiceView(View):
         return JsonResponse(data, safe=False)
 
 def _get_free_cpe_port(cpe_id):
-    url= INVENTORY_URL + "clientnodes/" + cpe_id + "/clientports/?used=false"
+    url= INVENTORY_URL + "clientnodes/" + cpe_id + "/clientports?used=False"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -105,6 +95,27 @@ def _get_free_cpe_port(cpe_id):
         return json_response[0]
     else:
         return None
+
+def _get_cpe(cpe_id):
+    url= INVENTORY_URL + "clientnodes/" + cpe_id
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def _update_cpe(cpe_id, data):
+    url= INVENTORY_URL + "clientnodes/" + cpe_id
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 
 def _get_service(service_id):
     url= CORE_URL + service_id
@@ -116,26 +127,40 @@ def _get_service(service_id):
     else:
         return None
 
-def _request_charles_service(service_relation):
-        data = { 'data_model' : {
-                                "service_id" : service_relation['service'],
-                                "service_type" : service_relation['service'].service_type,
-                                "client_id" : service_relation['service'].client,
-                                "client_name" : service_relation['service'].client.name,
-                                "location": service_relation['service'].location
-                            },
-                "prefix" : service_relation['service'].prefix,
-                "client_node_port" : service_relation['cpe_port'],
-                "client_node_sn" : service_relation['cpe_port'].cpe.serial_number,
-                "bandwidth" : service_relation['service'].bandwidth
-        }
+def _request_charles_service(service):
+    rheaders = {'Content-Type': 'application/json'}
+    data = { 'data_model' : {
+                            "service_id" : service.id,
+                            "service_type" : service.service_type,
+                            "client_id" : service.client.id,
+                            "client_name" : service.client.name,
+                            "location": service.location
+                        },
+            "access_port_id": service.access_node_port,
+            "access_node_id": service.access_node,
+            "prefix" : service.prefix,
+            "client_node_port" : service.client_node_port,
+            "client_node_sn" : service.client_node_sn,
+            "bandwidth" : service.bandwidth
+    }
 
-        pprint(data)
+    pprint(data)
 
-        r = requests.post(CHARLES_URL, data = json.dumps(data), headers=rheaders)
-        return r
+    r = requests.post(CHARLES_URL, data = json.dumps(data), headers=rheaders)
+    print("r:", r)
+    return r
 
-
+def _use_port(client_node_id, client_port_id):
+    url= INVENTORY_URL + "clientnodes/" + str(client_node_id) + "/clientports/" + str(client_port_id)
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"used":True}
+    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    print(response.text)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
 
 
 

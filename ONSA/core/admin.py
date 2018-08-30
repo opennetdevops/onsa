@@ -27,21 +27,21 @@ def client_node_port(self):
     return self.cpe_port.name
 
 
-class ServiceCpeRelationsAdmin(admin.ModelAdmin):
-    form = ServiceCpeRelationForm
+# class ServiceCpeRelationsAdmin(admin.ModelAdmin):
+#     form = ServiceCpeRelationForm
 
-    list_display = (client_name, service_id, service_type, client_node_sn, client_node_port, service_bandwidth)
-    actions = ['delete_selected']
+#     list_display = (client_name, service_id, service_type, client_node_sn, client_node_port, service_bandwidth)
+#     actions = ['delete_selected']
 
-    def save_model(self, request, obj, form, change):
-        super(ServiceCpeRelationsAdmin, self).save_model(request, obj, form, change)
+#     def save_model(self, request, obj, form, change):
+#         super(ServiceCpeRelationsAdmin, self).save_model(request, obj, form, change)
           
-    def delete_model(self, request, obj):
-        obj.delete()
+#     def delete_model(self, request, obj):
+#         obj.delete()
 
-    def delete_selected(self, request, obj):
-        for o in obj.all():
-            o.delete()
+#     def delete_selected(self, request, obj):
+#         for o in obj.all():
+#             o.delete()
 
 
 
@@ -79,8 +79,8 @@ class ServiceAdmin(admin.ModelAdmin):
 # Register
 
 admin.site.register(Client,ClientAdmin)
-admin.site.register(Cpe)
-admin.site.register(CpePort)
+# admin.site.register(Cpe)
+# admin.site.register(CpePort)
 admin.site.register(Service, ServiceAdmin)
-admin.site.register(ServiceCpeRelations, ServiceCpeRelationsAdmin)
+# admin.site.register(ServiceCpeRelations, ServiceCpeRelationsAdmin)
 

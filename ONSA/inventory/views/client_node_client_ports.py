@@ -9,6 +9,7 @@ import json
 class ClientNodeClientPortsView(View):
     def get(self, request, client_node_sn, client_port_id=None):
         used = request.GET.get('used', '')
+        # print("some")
 
         if used:
             client_port = ClientNodePort.objects.filter(client_node=client_node_sn, used=used).values()
@@ -22,10 +23,12 @@ class ClientNodeClientPortsView(View):
 
     def put(self, request, client_node_sn, client_port_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        client_port = ClientNodePort.objects.filter(client_node=client_node_sn)
+        client_port = ClientNodePort.objects.filter(client_node=client_node_sn, pk=client_port_id)
         client_port.update(**data)
-        my_client_node = client_port.values()[0]
-        return JsonResponse(my_client_node, safe=False)
+        
+        my_client_node = client_port[0]
+        my_client_node.save()
+        return JsonResponse(list(client_port.values()), safe=False)
 
 
     def post(self, request):

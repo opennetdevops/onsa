@@ -84,7 +84,7 @@ class ServiceHandler():
 			return None
 
 	def _get_client_node(client_node_sn):
-		url= "/inventory/api/clientnodes?sn="+client_node_sn
+		url= "/inventory/api/clientnodes/"+client_node_sn
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -208,7 +208,6 @@ class ServiceHandler():
 
 		public_network = ServiceHandler._get_public_network(client_name,service_id,prefix)
 		location_id = str(ServiceHandler._get_location_id(location))
-		virtual_pod = ServiceHandler._get_virtual_pod(location_id)
 		router_node = ServiceHandler._get_router_node(location_id)
 		router_node_id = str(router_node['id'])
 		free_logical_units = ServiceHandler._get_free_logical_units(router_node_id)
@@ -216,12 +215,13 @@ class ServiceHandler():
 		#Add logicals unit to routernode
 		ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
 
-		free_access_port = ServiceHandler._get_free_access_port(location_id)
-		access_port_id = str(free_access_port['id'])
+		# free_access_port = ServiceHandler._get_free_access_port(location_id)
+		access_port_id = params['access_port_id']
+		access_node_id = params['access_node_id']
 
 		#Mark access port as used
-		ServiceHandler._use_port(access_port_id)
-		access_node_id = str(free_access_port['accessNode_id'])
+		# ServiceHandler._use_port(access_port_id)
+		# access_node_id = str(free_access_port['accessNode_id'])
 		access_node = ServiceHandler._get_access_node(access_node_id)
 		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 
@@ -236,6 +236,8 @@ class ServiceHandler():
 
 		#Get client node by SN
 		client_node = ServiceHandler._get_client_node(client_node_sn)
+		# print("CN:",client_node)
+
 
 		config = {
 				   "client" : client_name,

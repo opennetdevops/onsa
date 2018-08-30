@@ -37,12 +37,14 @@ class ServiceView(View):
             return JsonResponse(s, safe=False)
 
     #Pre: JSON with following format
-    #{ 
-    # location: "CENTRO",
-    # client_id: 23,
-    # service_type: "IRS",
-    # id: "ASD1119900001",
-    # ...
+    # { 
+    #  "location": "LAB",
+    #  "client_id": 1,
+    #  "service_type": "cpeless_irs",
+    #  "id": "SVC001",
+    #  "bandwidth": "10",
+    #  "product_identifier":"PI0001",
+    #  "prefix":"29"
     # }
     #
     def post(self, request):
@@ -56,13 +58,14 @@ class ServiceView(View):
         #GET access_port from inventory
         free_access_port = _get_free_access_port(location_id)
         access_port_id = str(free_access_port['id'])
+        print(access_port_id)
 
         #PUT to inventory to set access_port used
-        self._use_port(access_port_id)
+        _use_port(access_port_id)
 
         data['access_node_port'] = access_port_id
         data['access_node'] = str(free_access_port['accessNode_id'])
-        service = Service.create(**data)
+        service = Service.objects.create(**data)
         service.service_state = ServiceStates['IN_CONSTRUCTION'].value
         service.save()
         response = {"message" : "Service requested"}
