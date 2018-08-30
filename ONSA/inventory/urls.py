@@ -41,7 +41,7 @@ urlpatterns = [
     path('/api/accessnodes/<int:accessnode_id>/accessports', require_http_methods(["GET","POST"])(access_node_access_ports.AccessNodeAccessPortsView.as_view())),
     
     path('/api/accessports', require_http_methods(["GET"])(access_ports.AccessPortsView.as_view())),
-    path('/api/accessports/<int:accessport_id>', require_http_methods(["PUT","DELETE"])(access_ports.AccessPortsView.as_view())),
+    path('/api/accessports/<int:accessport_id>', require_http_methods(["GET","PUT","DELETE"])(access_ports.AccessPortsView.as_view())),
     path('/api/accessnodes/<int:access_node_id>/vlantags', require_http_methods(["GET","POST"])(access_node_vlan_tags.AccesNodeVlanTagsView.as_view())),
     path('/api/accessnodes/<int:access_node_id>/vlantags/<int:vlan_tag>', require_http_methods(["DELETE"])(access_node_vlan_tags.AccesNodeVlanTagsView.as_view())),
 

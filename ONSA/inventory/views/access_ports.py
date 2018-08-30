@@ -7,9 +7,13 @@ from ..models import AccessPort
 import json
 
 class AccessPortsView(View):
-    def get(self, request):
-        access_ports = AccessPort.objects.all().values()
-        return JsonResponse(list(access_ports), safe=False)
+    def get(self, request, accessport_id=None):
+        if accessport_id is None:
+            access_ports = AccessPort.objects.all().values()
+            return JsonResponse(list(access_ports), safe=False)
+        else:
+            access_port = AccessPort.objects.filter(pk=accessport_id).values()[0]   
+            return JsonResponse(access_port, safe=False)
 
 
     def put(self, request, accessport_id):

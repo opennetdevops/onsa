@@ -194,6 +194,19 @@ class ServiceHandler():
 		else:
 			return None
 
+	def _get_access_node_port(access_port_id):
+		url= "/inventory/api/accessports/"+ access_port_id 
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response
+		else:
+			return None
+
+
+
+
 	def generate_cpeless_irs_request(params):
 
 		client_name = params['data_model']['client_name']
@@ -224,6 +237,7 @@ class ServiceHandler():
 		# access_node_id = str(free_access_port['accessNode_id'])
 		access_node = ServiceHandler._get_access_node(access_node_id)
 		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
+		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN
 		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
@@ -281,6 +295,8 @@ class ServiceHandler():
 		bandwidth  = params['bandwidth']
 		client_node_sn = params['client_node_sn']
 		client_node_port = params['client_node_port']
+		access_port_id = params['access_port_id']
+		access_node_id = params['access_node_id']
 
 		ip_wan = ServiceHandler._get_ip_wan_nsx(location, client_name, service_id)
 		public_network = ServiceHandler._get_public_network(client_name, service_id, prefix)
@@ -288,6 +304,9 @@ class ServiceHandler():
 		virtual_pod = ServiceHandler._get_virtual_pod(location_id)
 		router_node = ServiceHandler._get_router_node(location_id)
 		downlink_pg = ServiceHandler._get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
+
+		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
+
 
 		#Use porgroup
 		portgroup_id = str(downlink_pg['id'])
@@ -301,13 +320,13 @@ class ServiceHandler():
 		ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[1]['logical_unit_id'])
 
 		free_access_port = ServiceHandler._get_free_access_port(location_id)
-		print( free_access_port)
-		access_port_id = str(free_access_port['id'])
+		# print( free_access_port)
+		# access_port_id = str(free_access_port['id'])
 
 		#Mark access port as used
-		ServiceHandler._use_port(access_port_id)
-		access_node_id = str(free_access_port['accessNode_id'])
-		access_node = ServiceHandler._get_access_node(access_node_id)
+		# ServiceHandler._use_port(access_port_id)
+		# access_node_id = str(free_access_port['accessNode_id'])
+		# access_node = ServiceHandler._get_access_node(access_node_id)
 		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN

@@ -8,16 +8,6 @@ class Client(models.Model):
         return self.name
 
 
-# class Cpe(models.Model):
-#     serial_number = models.CharField(primary_key=True,max_length=50)
-#     model = models.CharField(max_length=50)
-#     ip_management = models.CharField(max_length=50, blank=True)
-#     name = models.CharField(max_length=50, blank=True) 
-
-#     def __str__(self):
-#         return self.serial_number
-
-
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     id = models.CharField(primary_key=True, max_length=50, unique=True)
@@ -68,14 +58,6 @@ class Service(models.Model):
     def __str__(self):
         return "SERVICE_ID: " + str(self.pk)
 
-# class CpePort(models.Model):
-#     name = models.CharField(max_length=50)
-#     description = models.CharField(max_length=50, blank=True)
-#     cpe = models.ForeignKey(Cpe, on_delete=models.CASCADE, null=True)
-#     services = models.ManyToManyField(Service, blank=True, through='ServiceCpeRelations')
-
-#     def __str__(self):
-#         return "CPE: " + self.cpe.name + " - CPE Port: " + self.name
 
 class VcpeManager(models.Manager):
     def get_queryset(self):
@@ -110,20 +92,6 @@ class MplsService(Service):
 
     class Meta:
         proxy = True
-
-
-# class ServiceCpeRelations(models.Model):
-#     cpe_port = models.ForeignKey(CpePort, models.DO_NOTHING)
-#     service = models.ForeignKey(Service, models.DO_NOTHING)
-
-#     class Meta:
-#         unique_together = (('cpe_port', 'service'),)
-
-#     def __str__(self):
-#         return self.cpe_port.cpe.serial_number + " - Port: " + self.cpe_port.name + \
-#         " - Service Id: " + str(self.service.pk)
-
-
 
 
 
