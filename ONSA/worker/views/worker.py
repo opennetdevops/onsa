@@ -3,11 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views import View
 
 from pprint import pprint
-
 from itertools import chain
-
 from ..models import Service, Task
-
 import json
 
 class WorkerView(View):
