@@ -53,13 +53,13 @@ class ServiceHandler():
 		else:
 			return None
 
-	def _get_location_id(location_name):
+	def _get_location(location_name):
 		url= "/inventory/api/locations?name="+location_name
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
-			return json_response[0]['id']
+			return json_response[0]
 		else:
 			return None
 
@@ -210,7 +210,7 @@ class ServiceHandler():
 	def generate_cpeless_irs_request(params):
 
 		client_name = params['data_model']['client_name']
-		location = params['data_model']['location']
+		location_name = params['data_model']['location']
 		service_id = params['data_model']['service_id']
 		service_type = params['data_model']['service_type']
 
@@ -220,7 +220,9 @@ class ServiceHandler():
 		client_node_port = params['client_node_port']
 
 		public_network = ServiceHandler._get_public_network(client_name,service_id,prefix)
-		location_id = str(ServiceHandler._get_location_id(location))
+		location = ServiceHandler._get_location(location_name)
+		location_id = str(location['id'])
+		pop_size = location['pop_size']
 		router_node = ServiceHandler._get_router_node(location_id)
 		router_node_id = str(router_node['id'])
 		free_logical_units = ServiceHandler._get_free_logical_units(router_node_id)
@@ -258,7 +260,8 @@ class ServiceHandler():
 		  		   "service_type" : service_type,
 		  		   "service_id" : service_id,
 		  		   "op_type" : "CREATE",
-		  		   "parameters" : {        
+		  		   "parameters" : {
+		  		   			"pop_size" : pop_size,       
 									"an_uplink_interface" : access_node['uplinkInterface'],  
 									"an_logical_unit" : free_logical_units[0]['logical_unit_id'],   
 									"provider_vlan" : access_node['qinqOuterVlan'],      
@@ -287,7 +290,7 @@ class ServiceHandler():
 	def generate_vcpe_irs_request(params):		
 
 		client_name = params['data_model']['client_name']
-		location = params['data_model']['location']
+		location_name = params['data_model']['location']
 		service_id = params['data_model']['service_id']
 		service_type = params['data_model']['service_type']
 
@@ -300,7 +303,9 @@ class ServiceHandler():
 
 		ip_wan = ServiceHandler._get_ip_wan_nsx(location, client_name, service_id)
 		public_network = ServiceHandler._get_public_network(client_name, service_id, prefix)
-		location_id = str(ServiceHandler._get_location_id(location))
+		location = ServiceHandler._get_location(location_name)
+		location_id = str(location['id'])
+		pop_size = location['pop_size']
 		virtual_pod = ServiceHandler._get_virtual_pod(location_id)
 		router_node = ServiceHandler._get_router_node(location_id)
 		downlink_pg = ServiceHandler._get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
@@ -347,6 +352,7 @@ class ServiceHandler():
 				  "service_id" : service_id,
 				  "op_type" : "CREATE",
 				  "parameters":{
+				  		"pop_size" : pop_size,
 							"vmw_uplink_interface" : virtual_pod['uplinkInterface'],
 							"vmw_logical_unit" : free_logical_units[0]['logical_unit_id'],  
 							"vmw_vlan" : downlink_pg['vlan_tag'],           
