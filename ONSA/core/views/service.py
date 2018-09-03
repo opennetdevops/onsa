@@ -74,7 +74,7 @@ class ServiceView(View):
     def put(self, request, service_id):
         #To change state only
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        service = Service.objects.get(service_id)
+        service = Service.objects.filter(id=service_id)
         service.update(**data)
         return JsonResponse(data, safe=False)
 

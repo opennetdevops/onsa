@@ -77,14 +77,6 @@ class PendingServiceView(View):
 
 
 
-    def put(self, request, service_id):
-        data = json.loads(request.body.decode(encoding='UTF-8'))
-        service = Service.objects.filter(pk=service_id)
-        service_relation = ServiceCpeRelations.objects.filter(service__pk=service_id)
-        service_relation.update(**data)
-        service.update(**data)
-
-        return JsonResponse(data, safe=False)
 
 def _get_free_cpe_port(cpe_id):
     url= INVENTORY_URL + "clientnodes/" + cpe_id + "/clientports?used=False"

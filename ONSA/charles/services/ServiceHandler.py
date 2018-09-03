@@ -262,14 +262,16 @@ class ServiceHandler():
 		  		   "op_type" : "CREATE",
 		  		   "parameters" : {
 		  		   			"pop_size" : pop_size,       
-									"an_uplink_interface" : access_node['uplinkInterface'],  
+									"an_uplink_interface" : access_node['uplinkInterface'],
+									"an_uplink_ports" :   access_node['uplink_ports'],
 									"an_logical_unit" : free_logical_units[0]['logical_unit_id'],   
 									"provider_vlan" : access_node['qinqOuterVlan'],      
 									"service_vlan" : free_vlan_tag['vlan_tag'], 
 									"public_cidr" : public_network,
 									"bandwidth" : bandwidth,
 									"an_client_port" : free_access_port['port'],
-									"on_client_port" : client_node_port
+									"on_client_port" : client_node_port,
+									"on_uplink_port" : client_node['uplink_port']
 								},
 
 				 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
@@ -281,7 +283,7 @@ class ServiceHandler():
 		if public_network:
 			pprint(config)
 			#Call worker
-			# ServiceHandler._configure_service(config)
+			ServiceHandler._configure_service(config)
 		else:
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()
@@ -357,6 +359,7 @@ class ServiceHandler():
 							"vmw_logical_unit" : free_logical_units[0]['logical_unit_id'],  
 							"vmw_vlan" : downlink_pg['vlan_tag'],           
 							"an_uplink_interface" : access_node['uplinkInterface'],  
+							"an_uplink_ports" :   access_node['uplink_ports'],
 							"an_logical_unit" : free_logical_units[1]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
@@ -369,7 +372,8 @@ class ServiceHandler():
 							"wan_portgroup_id" : virtual_pod['uplinkPgId'],
 							"lan_portgroup_id" : downlink_pg['dvportgroup_id'],
 							"an_client_port" : free_access_port['port'],
-							"on_client_port" : client_node_port
+							"on_client_port" : client_node_port,
+							"on_uplink_port" : client_node['uplink_port']
 						 },
 				  "devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
 							   {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
@@ -382,7 +386,7 @@ class ServiceHandler():
 			if public_network:
 				pprint(config)
 				#Call worker
-				# ServiceHandler._configure_service(config)
+				ServiceHandler._configure_service(config)
 			else:
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()
