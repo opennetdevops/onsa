@@ -225,20 +225,26 @@ class LogicalUnit(models.Model):
         logical_unit.save()
         return
 
+class Vrf(models.Model):
+    locations = models.ManyToManyField(Location, blank=True) 
+    rt = models.CharField(primary_key=True, max_length=50)
+    service_id = models.CharField(max_length=50)
+
 
 class Services(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     access_node = models.ForeignKey(AccessNode, models.DO_NOTHING)
-    serviceid = models.CharField(max_length=50, blank=True, unique=True)
+    service_id = models.CharField(max_length=50, blank=True, unique=True)
     client_node_sn = models.CharField(max_length=50)
     client_node_port = models.CharField(max_length=50)
     bandwidth = models.CharField(max_length=50)
     access_port_id = models.CharField(max_length=50)
+    site_id = models.CharField(max_length=50)
 
     class Meta:
         unique_together = (('vlantag', 'access_node'),)
 
     def __str__(self):
         return self.access_node.name + \
-        " - Vlan: " + self.vlantag.vlan_tag + " - Service Id: " + self.serviceid
+        " - Vlan: " + self.vlantag.vlan_tag + " - Service Id: " + self.service_id
 

@@ -52,11 +52,11 @@ urlpatterns = [
     path('/api/clientnodes/<str:client_node_sn>/clientports', require_http_methods(["GET","POST"])(client_node_client_ports.ClientNodeClientPortsView.as_view())),
     path('/api/clientnodes/<str:client_node_sn>/clientports/<int:client_port_id>', require_http_methods(["GET","PUT", "DELETE"])(client_node_client_ports.ClientNodeClientPortsView.as_view())),
     path('/api/clientnodes/clientports/<int:client_port_id>', require_http_methods(["GET","PUT","POST","DELETE"])(client_node_ports.ClientNodePortsView.as_view())),
-
-
-
-
     
     path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","DELETE"])(logical_units.LogicalUnitsView.as_view())),
     path('/api/logicalunits', require_http_methods(["GET","POST"])(logical_units.LogicalUnitsView.as_view()))
+
+    path('/api/vrf', require_http_methods(["GET","POST"])(vrf.VrfView.as_view())),
+    path('/api/vrf/<int:vrf_id>', require_http_methods(["GET","PUT", "DELETE"])(vrf.VrfView.as_view())),
+
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
