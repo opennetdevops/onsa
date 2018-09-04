@@ -1,7 +1,7 @@
 from django.db import models
 
 class Location(models.Model):
-    name = models.CharField(max_length=50, blank=True)  #HUB
+    name = models.CharField(max_length=50, blank=True, unique=True, null=True)  #HUB
     address = models.CharField(max_length=50, blank=True)
     pop_size =  models.CharField(max_length=50, blank=True)
 
@@ -231,13 +231,13 @@ class LogicalUnit(models.Model):
 class Vrf(models.Model):
     locations = models.ManyToManyField(Location, blank=True) 
     rt = models.CharField(primary_key=True, max_length=50)
-    service_id = models.CharField(max_length=50)
+    service_id = models.CharField(max_length=50, unique=True)
 
 
 class Services(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     access_node = models.ForeignKey(AccessNode, models.DO_NOTHING)
-    service_id = models.CharField(max_length=50, blank=True, unique=True)
+    service_id = models.CharField(max_length=50, blank=True, unique=True, null=True)
     client_node_sn = models.CharField(max_length=50)
     client_node_port = models.CharField(max_length=50)
     bandwidth = models.CharField(max_length=50)
