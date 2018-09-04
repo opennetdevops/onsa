@@ -6,6 +6,7 @@
       "public_cidr" : "{{ public_cidr }}",
       "vrf_name" : "INTERNET",
       "service_vlan": "{{ service_vlan }}",
+      "pop_size": "{{ pop_size }}",
 
       {# Devices variables #}
       {# MX104 variables #}
@@ -19,7 +20,10 @@
       {# Access Node variables #}
       "an_client_port": "{{ an_client_port }}",
       "an_port_description": "{{ an_client_port }}",
+      "an_uplink_ports": "{{ an_uplink_ports }}",
+
       {# Optical Node variables #}
       "on_client_port": "{{ on_client_port }}",
-      "on_port_description": "{{ an_client_port }}"
+      "on_port_description": "{{ on_client_port }}",
+      "on_client_port": "{{ on_client_port }}"
 }

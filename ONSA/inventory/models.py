@@ -2,7 +2,8 @@ from django.db import models
 
 class Location(models.Model):
     name = models.CharField(max_length=50, blank=True)  #HUB
-    address = models.CharField(max_length=50, blank=True) 
+    address = models.CharField(max_length=50, blank=True)
+    pop_size =  models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.name
@@ -31,6 +32,7 @@ class Device(models.Model):
 
 class AccessNode(Device): #SCO
     uplinkInterface = models.CharField(max_length=50) #AE del lado del MX
+    uplink_ports = models.CharField(max_length=50, blank=True)
     accessNodeId = models.CharField(max_length=4) 
     qinqOuterVlan = models.CharField(max_length=50)
     logicalUnitId = models.CharField(max_length=50)
@@ -66,6 +68,7 @@ class RouterNode(Device): #MX
 class ClientNode(Device):
     serial_number = models.CharField(primary_key=True, max_length=50, blank=True, unique=True)
     client = models.CharField(max_length=50, blank=True)
+    uplink_port = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.serial_number

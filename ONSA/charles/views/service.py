@@ -8,6 +8,7 @@ from pprint import pprint
 import requests
 import json
 
+CORE_URL = "http://127.0.0.1:8000/core/api/services"
 
 class ServiceStatuses(Enum):
     REQUESTED = "REQUESTED"
@@ -51,6 +52,14 @@ class ServiceView(View):
 		service = Service.objects.filter(service_id=service_id)
 		service.update(**data)
 		data = serializers.serialize('json', service)
+
+		#Update service status in core
+		data = {
+			"service_state":service[0].service_state
+		}
+		rheaders = {'Content-Type': 'application/json'}
+		r = requests.put(CORE_URL + "/" + str(service_id), data = json.dumps(data), headers=rheaders)
+
 		return HttpResponse(data, content_type='application/json')
 
 	def existing_service(service_id):
