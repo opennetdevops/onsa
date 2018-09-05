@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'charles.apps.CharlesConfig',
     'django_select2',
     'background_task',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 APPEND_SLASH=False
@@ -159,3 +162,12 @@ JWT_AUTH = {
 }
 
 MAX_ATTEMPTS = 0
+
+
+# CORS Headers
+CORS_ORIGIN_WHITELIST = (
+    'google.com',
+    'localhost:8000',
+    'localhost:3000',
+    '127.0.0.1:9000'
+)
