@@ -232,6 +232,7 @@ class Vrf(models.Model):
     locations = models.ManyToManyField(Location, blank=True) 
     rt = models.CharField(primary_key=True, max_length=50)
     service_id = models.CharField(max_length=50, unique=True)
+    used = models.BooleanField(default=False)
 
 
 class Services(models.Model):

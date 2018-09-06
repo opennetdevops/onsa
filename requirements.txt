@@ -16,3 +16,4 @@ djangorestframework>=3.8.2
 djangorestframework-jwt>=1.11.0
 psycopg2-binary
 django-background-tasks
+django-cors-headers
