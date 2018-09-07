@@ -233,8 +233,8 @@ class Vrf(models.Model):
     rt = models.CharField(primary_key=True, max_length=50)
     # service_id = models.CharField(max_length=50, unique=True)
     used = models.BooleanField(default=False)
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True)
+    description = models.CharField(max_length=50, null=True)
 
 
 class Services(models.Model):
