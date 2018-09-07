@@ -22,10 +22,10 @@ urlpatterns = [
     path('/api/pending_services/<str:service_id>', require_http_methods(["GET","PUT"])(pending_services.PendingServiceView.as_view())),
     
     path('/api/locations', require_http_methods(["GET","DELETE"])(wrapper.LocationsView.as_view())),
-    path('/api/accessports', require_http_methods(["GET","DELETE"])(wrapper.VlansView.as_view())),
-    path('/api/logicalunits', require_http_methods(["GET","DELETE"])(wrapper.LogicalUnitsView.as_view())),
-    path('/api/ipam/network', require_http_methods(["GET","DELETE"])(wrapper.IpamView.as_view())),
-    path('/api/vlans', require_http_methods(["GET","DELETE"])(wrapper.VlansView.as_view())),
+    path('/api/accessports', require_http_methods(["GET", "POST","DELETE"])(wrapper.AccessPortsView.as_view())),
+    path('/api/logicalunits', require_http_methods(["GET", "POST","DELETE"])(wrapper.LogicalUnitsView.as_view())),
+    path('/api/ipam/network', require_http_methods(["GET",  "POST", "DELETE"])(wrapper.IpamView.as_view())),
+    path('/api/vlans', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VlansView.as_view())),
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

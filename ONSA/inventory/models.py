@@ -239,9 +239,9 @@ class Services(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     access_node = models.ForeignKey(AccessNode, models.DO_NOTHING)
     service_id = models.CharField(max_length=50, blank=True, unique=True, null=True)
-    client_node_sn = models.CharField(max_length=50)
-    client_node_port = models.CharField(max_length=50)
-    bandwidth = models.CharField(max_length=50)
+    client_node_sn = models.CharField(max_length=50, null=True)
+    client_node_port = models.CharField(max_length=50, null=True)
+    bandwidth = models.CharField(max_length=50, null=True)
     access_port_id = models.CharField(max_length=50)
     site_id = models.CharField(max_length=50)
 

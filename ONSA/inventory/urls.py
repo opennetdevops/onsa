@@ -32,7 +32,7 @@ urlpatterns = [
     path('/api/portgroups/<int:portgroup_id>', require_http_methods(["GET","PUT", "DELETE"])(portgroups.PortgroupView.as_view())),
     
     path('/api/routernodes', require_http_methods(["GET","POST"])(router_nodes.RouterNodesView.as_view())),
-    path('/api/routernodes/<int:routernode_id>', require_http_methods(["PUT","DELETE"])(router_nodes.RouterNodesView.as_view())),
+    path('/api/routernodes/<int:routernode_id>', require_http_methods(["GET", "PUT","DELETE"])(router_nodes.RouterNodesView.as_view())),
     path('/api/routernodes/<int:routernode_id>/logicalunits', require_http_methods(["GET","POST"])(router_node_logical_units.RouterNodeLogicalUnitsView.as_view())),
     path('/api/routernodes/<int:routernode_id>/logicalunits/<int:logicalunit_id>', require_http_methods(["DELETE"])(router_node_logical_units.RouterNodeLogicalUnitsView.as_view())),
     

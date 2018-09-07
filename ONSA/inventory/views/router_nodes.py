@@ -9,7 +9,13 @@ import json
 
 class RouterNodesView(View):
 
-	def get(self, request):
+	def get(self, request, routernode_id=None):
+
+		if routernode_id is not None:
+			router_nodes = RouterNode.objects.filter(id=routernode_id).values()[0]
+			return JsonResponse(router_nodes, safe=False)
+
+
 		router_nodes = RouterNode.objects.all().values()
 		return JsonResponse(list(router_nodes), safe=False)
 		

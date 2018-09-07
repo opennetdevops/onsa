@@ -180,3 +180,6 @@ CHALRES_URL = ONSA_URL + "/charles/api/"
 CORE_URL = ONSA_URL + "/charles/api/"
 INVENTORY_URL = ONSA_URL + "/inventory/api/"
 WORKER_URL = ONSA_URL + "/worker/api/"
+
+
+IPAM_URL = "http://10.120.78.90"
