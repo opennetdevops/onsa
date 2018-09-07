@@ -171,3 +171,12 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
     '127.0.0.1:9000'
 )
+
+
+# ONSA Variables
+ONSA_URL = "http://localhost:8000"
+
+CHALRES_URL = ONSA_URL + "/charles/api/"
+CORE_URL = ONSA_URL + "/charles/api/"
+INVENTORY_URL = ONSA_URL + "/inventory/api/"
+WORKER_URL = ONSA_URL + "/worker/api/"

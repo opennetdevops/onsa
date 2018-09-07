@@ -1,4 +1,4 @@
-from django.core import serializers
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from ..models import Service
@@ -6,9 +6,9 @@ from enum import Enum
 import json
 import requests
 
-INVENTORY_URL = "http://127.0.0.1:8000/inventory/api/"
-CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
-BASE = "http://127.0.0.1:8000/"
+# INVENTORY_URL = "http://127.0.0.1:8000/inventory/api/"
+# CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
+# BASE = "http://127.0.0.1:8000/"
 
 class ServiceStates(Enum):
     PENDING = "PENDING"
@@ -79,7 +79,7 @@ class ServiceView(View):
         return JsonResponse(data, safe=False)
 
 def _get_free_access_port(location_id):
-    url= INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
+    url= settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -90,7 +90,7 @@ def _get_free_access_port(location_id):
 
 
 def _get_location_id(location_name):
-    url= INVENTORY_URL + "locations?name="+location_name
+    url= settings.INVENTORY_URL + "locations?name="+location_name
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -100,7 +100,7 @@ def _get_location_id(location_name):
         return None
 
 def _use_port(access_port_id):
-    url= INVENTORY_URL + "accessports/" + access_port_id
+    url= settings.INVENTORY_URL + "accessports/" + access_port_id
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
