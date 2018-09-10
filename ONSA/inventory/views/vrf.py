@@ -13,10 +13,10 @@ class VrfView(View):
             vrf = Vrf.objects.filter(rt=vrf_id).values()[0]
             return JsonResponse(vrf, safe=False)
 
-        service_id = request.GET.get('service_id')
+        name = request.GET.get('name')
 
-        if service_id is not None:
-            vrfs = Vrf.objects.filter(service_id=service_id)
+        if name is not None:
+            vrfs = Vrf.objects.filter(name=name)
         else:
             vrfs = Vrf.objects.all().values()
             

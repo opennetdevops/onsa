@@ -232,9 +232,8 @@ class LogicalUnit(models.Model):
 class Vrf(models.Model):
     locations = models.ManyToManyField(Location, blank=True) 
     rt = models.CharField(primary_key=True, max_length=50)
-    # service_id = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True, null=True, blank=True)
     used = models.BooleanField(default=False)
-    name = models.CharField(max_length=50, null=True)
     description = models.CharField(max_length=50, null=True)
 
 
