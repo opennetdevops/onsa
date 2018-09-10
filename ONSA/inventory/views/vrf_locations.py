@@ -21,24 +21,16 @@ class VrfLocationsView(View):
             return JsonResponse(list(vrf.locations.all()), safe=False)
 
 
-
-            
-        return JsonResponse(list(vrfs), safe=False)
-
-    def put(self, request, location_id=None):
-        data = json.loads(request.body.decode(encoding='UTF-8'))
+    def put(self, request, location_id):
         location = Location.objects.get(pk=location_id)
         vrf = Vrf.objects.get(rt=vrf_id)
-        vrf.add(locations=location)
+        vrf.locations.add(location)
         return JsonResponse(vrf.values()[0], safe=False)
 
 
-      
-
-
-    def delete(self, request, vrf_id):
-# TODO
-        # vrf = Vrf.objects.filter(rt=vrf_id)
-        # vrf.delete()
-        data = {"Message" : "Virtual Pod deleted successfully"}
+    def delete(self, request, vrf_id, location_id):
+        vrf = Vrf.objects.filter(rt=vrf_id)
+        location = Location.objects.get(pk=location_id)
+        vrf.locations.remove(location)
+        data = {"Message" : "Location deleted successfully from vrf"}
         return JsonResponse(data, safe=False)
