@@ -1,0 +1,20 @@
+{ 
+  "client" : "",
+  "service_type" : "",
+  "service_id" : "",
+  "op_type" : "",
+  "parameters":{        
+            "an_uplink_interface":"",  
+            "an_logical_unit":"",   
+            "provider_vlan":"",      
+            "service_vlan":"", 
+            "bandwidth" : "",
+            "an_client_port" : "",
+            "on_client_port" : "",
+            "vrf_exists": "", //Boolean
+            "vrf_name": "",
+            "vrf_id": "",
+            "pop_size":""
+         },
+  "devices" : [{"vendor": "","model" : "", "mgmt_ip":"", "loopback":""}]
+}

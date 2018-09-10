@@ -13,20 +13,24 @@ class VrfView(View):
             vrf = Vrf.objects.filter(rt=vrf_id).values()[0]
             return JsonResponse(vrf, safe=False)
 
-        service_id = request.GET.get('service_id')
+        name = request.GET.get('name')
 
-        if service_id is not None:
-            vrfs = Vrf.objects.filter(service_id=service_id)
+        if name is not None:
+            if Vrf.objects.filter(name=name).count() is not 0:
+                vrf = Vrf.objects.filter(name=name).values()[0]
+                return JsonResponse(vrf, safe=False)
+            else:
+                return JsonResponse({}, safe=False)
         else:
             vrfs = Vrf.objects.all().values()
-            
-        return JsonResponse(list(vrfs), safe=False)
+            return JsonResponse(list(vrfs), safe=False)
 
     def put(self, request, vrf_id=None):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        location = Location.objects.get(name=data['location_name'])
-        vrf = Vrf.objects.get(rt=vrf_id)
-        vrf.add(locations=location)
+
+        vrf = Vrf.objects.filter(rt=vrf_id)
+        vrf.update(**data)
+        
         return JsonResponse(vrf.values()[0], safe=False)
 
 
