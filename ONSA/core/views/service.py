@@ -5,6 +5,7 @@ from ..models import Service, Client
 from enum import Enum
 import json
 import requests
+from pprint import pprint
 
 # INVENTORY_URL = "http://127.0.0.1:8000/inventory/api/"
 # CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
@@ -49,6 +50,8 @@ class ServiceView(View):
     #
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+
+        pprint(data)
 
         #GET Client ID
         client = data.pop('client')

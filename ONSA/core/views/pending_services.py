@@ -6,7 +6,6 @@ from enum import Enum
 import json
 import requests
 
-
 from pprint import pprint
 
 INVENTORY_URL = "http://127.0.0.1:8000/inventory/api/"
