@@ -72,7 +72,7 @@ class ServiceView(View):
         return JsonResponse(response)
 
     def put(self, request, service_id):
-        #To change state only
+        #To change state adn public_network/wan_ip
         data = json.loads(request.body.decode(encoding='UTF-8'))
         service = Service.objects.filter(id=service_id)
         service.update(**data)

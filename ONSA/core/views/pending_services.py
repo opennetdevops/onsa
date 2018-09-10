@@ -38,6 +38,7 @@ class PendingServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         cpe_id = data['cpe_sn']
+        vrf_name = data['vrf_name']
 
         service = Service.objects.get(id=data['service_id'])
         
@@ -61,6 +62,7 @@ class PendingServiceView(View):
 
         #update service
         service.client_node_sn = cpe_id
+        service.vrf_name = vrf_name
         service.client_node_port = cpe_port['interface_name']
 
         r = _request_charles_service(service)
@@ -121,7 +123,26 @@ def _get_service(service_id):
 
 def _request_charles_service(service):
     rheaders = {'Content-Type': 'application/json'}
-    data = { 'data_model' : {
+
+    if service.vrf_name is not '':
+
+        data = { 'data_model' : {
+                                "service_id" : service.id,
+                                "service_type" : service.service_type,
+                                "client_id" : service.client.id,
+                                "client_name" : service.client.name,
+                                "location": service.location
+                            },
+                "vrf_name": service.vrf_name,
+                "access_port_id": service.access_node_port,
+                "access_node_id": service.access_node,
+                "prefix" : service.prefix,
+                "client_node_port" : service.client_node_port,
+                "client_node_sn" : service.client_node_sn,
+                "bandwidth" : service.bandwidth
+        }
+    else:
+            data = { 'data_model' : {
                             "service_id" : service.id,
                             "service_type" : service.service_type,
                             "client_id" : service.client.id,
@@ -134,7 +155,7 @@ def _request_charles_service(service):
             "client_node_port" : service.client_node_port,
             "client_node_sn" : service.client_node_sn,
             "bandwidth" : service.bandwidth
-    }
+        }
 
     pprint(data)
 

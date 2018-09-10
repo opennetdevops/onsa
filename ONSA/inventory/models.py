@@ -52,6 +52,7 @@ class AccessNode(Device): #SCO
 
 class RouterNode(Device): #MX
     privateWanIp = models.GenericIPAddressField(null=True, blank=True) #IP for WAN Virtual CPE
+    loopback = models.GenericIPAddressField(null=True, blank=True) 
 
 
     def get_free_logical_units(self):

@@ -10,9 +10,10 @@ class Service(models.Model):
     id = models.CharField(primary_key=True, max_length=50, unique=True)
     product_identifier = models.CharField(max_length=50)
     bandwidth = models.PositiveSmallIntegerField()
-    vrf = models.CharField(max_length=50, blank=True)
+    vrf_name = models.CharField(max_length=50, blank=True)
     prefix = models.CharField(max_length=50, blank=True)
     public_network = models.CharField(max_length=50, blank=True)
+    wan_ip = models.CharField(max_length=50, blank=True)
     access_node = models.CharField(max_length=50, blank=True)
     access_node_port = models.CharField(max_length=50, blank=True)
     client_node_sn = models.CharField(max_length=50, blank=True)
@@ -26,27 +27,16 @@ class Service(models.Model):
     ("ERROR", "ERROR")
     )
     
-    SERVICE_TYPES = (
-    ("vcpe_irs", "vcpe_irs"),
-    ("mpls", "mpls"),
-    ("vpls", "vpls"),
-    ("cpeless_irs", "cpeless_irs"),
-    )
+    # cpeless_irs
+    # vcpe_irs
+    # cpe_mpls
+    # cpe_vpls 
+    # cpe_irs
+    # 
 
-    LOCATION_CHOICES = (
-    ("CENTRO", "CENTRO"),
-    ("RETIRO", "RETIRO"),
-    ("SANTA_FE", "SANTA_FE"),
-    ("PALERMO", "PALERMO")
-    )
+    location = models.CharField(max_length=30)
 
-    location = models.CharField(max_length=30,
-                  choices=LOCATION_CHOICES,
-                  default="cpeless_irs")
-
-    service_type = models.CharField(max_length=30,
-                  choices=SERVICE_TYPES,
-                  default="cpeless_irs")
+    service_type = models.CharField(max_length=30)
 
     service_state = models.CharField(max_length=15,
                   choices=SERVICE_STATE_CHOICES,
