@@ -136,7 +136,6 @@ class ServiceHandler():
 		else:
 			return None
 
-
 	def _get_free_access_port(location_id):
 		url= "/inventory/api/locations/"+ location_id + "/accessports?used=false"
 		rheaders = {'Content-Type': 'application/json'}
@@ -204,11 +203,28 @@ class ServiceHandler():
 		else:
 			return None
 
+	def _get_vrf(vrf_name):
+		url = "/inventory/api/vrfs?" + "name=" + vrf_name
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]
+		else:
+			return None
 
+	def _vrf_exists_in_location(vrf_id,location_id):
+		url = "/api/vrfs/" + vrf_id + "/locations/" + location_id
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response["exists"]
+		else:
+			return None
 
-
+	#Generate Services methods
 	def generate_cpeless_irs_request(params):
-
 		client_name = params['data_model']['client_name']
 		location_name = params['data_model']['location']
 		service_id = params['data_model']['service_id']
@@ -253,7 +269,6 @@ class ServiceHandler():
 		#Get client node by SN
 		client_node = ServiceHandler._get_client_node(client_node_sn)
 		# print("CN:",client_node)
-
 
 		config = {
 				   "client" : client_name,
@@ -307,13 +322,11 @@ class ServiceHandler():
 		public_network = ServiceHandler._get_public_network(client_name, service_id, prefix)
 		location = ServiceHandler._get_location(location_name)
 		location_id = str(location['id'])
-		pop_size = location['pop_size']
 		virtual_pod = ServiceHandler._get_virtual_pod(location_id)
 		router_node = ServiceHandler._get_router_node(location_id)
 		downlink_pg = ServiceHandler._get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
 
 		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
-
 
 		#Use porgroup
 		portgroup_id = str(downlink_pg['id'])
@@ -325,10 +338,6 @@ class ServiceHandler():
 		#Add logicals unit to routernode
 		ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
 		ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[1]['logical_unit_id'])
-
-		free_access_port = ServiceHandler._get_free_access_port(location_id)
-		# print( free_access_port)
-		# access_port_id = str(free_access_port['id'])
 
 		#Mark access port as used
 		# ServiceHandler._use_port(access_port_id)
@@ -354,7 +363,6 @@ class ServiceHandler():
 				  "service_id" : service_id,
 				  "op_type" : "CREATE",
 				  "parameters":{
-				  		"pop_size" : pop_size,
 							"vmw_uplink_interface" : virtual_pod['uplinkInterface'],
 							"vmw_logical_unit" : free_logical_units[0]['logical_unit_id'],  
 							"vmw_vlan" : downlink_pg['vlan_tag'],           
@@ -391,3 +399,78 @@ class ServiceHandler():
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()
 				print("Not possible service")
+
+	def generate_cpe_mpls_request(params):
+		client_name = params['data_model']['client_name']
+		location_name = params['data_model']['location']
+		service_id = params['data_model']['service_id']
+		service_type = params['data_model']['service_type']
+
+		bandwidth  = params['bandwidth']
+		client_node_sn = params['client_node_sn']
+		client_node_port = params['client_node_port']
+		access_port_id = params['access_port_id']
+		access_node_id = params['access_node_id']
+		vrf_name = params['vrf_name']
+
+		#Get Location by name
+		location = ServiceHandler._get_location(location_name)
+		location_id = str(location['id'])
+		pop_size = location['pop_size']
+
+		router_node = ServiceHandler._get_router_node(location_id)
+		router_node_id = str(router_node['id'])
+		free_logical_units = ServiceHandler._get_free_logical_units(router_node_id)
+
+		access_node = ServiceHandler._get_access_node(access_node_id)
+		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
+		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
+
+		#Add vlan tag to access port, serviceid,bandwidth, device SN
+		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+													access_node_id,
+													access_port_id,
+													service_id,
+													client_node_sn,
+													client_node_port,
+													bandwidth)
+
+		client_node = ServiceHandler._get_client_node(client_node_sn)
+
+		vrf = ServiceHandler._get_vrf(vrf_name)
+		vrf_id = str(vrf["rt"])
+		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
+
+		config = {
+		   "client" : client_name,
+  		   "service_type" : service_type,
+  		   "service_id" : service_id,
+  		   "op_type" : "CREATE",
+  		   "parameters" : {
+  		   			"pop_size" : pop_size,       
+							"an_uplink_interface" : access_node['uplinkInterface'],
+							"an_logical_unit" : free_logical_units[0]['logical_unit_id'],   
+							"provider_vlan" : access_node['qinqOuterVlan'],      
+							"service_vlan" : free_vlan_tag['vlan_tag'], 
+							"bandwidth" : bandwidth,
+							"an_client_port" : free_access_port['port'],
+							"on_client_port" : client_node_port,
+							"vrf_exists": vrf_exists,
+            	"vrf_name": vrf['name'],
+            	"vrf_id": vrf['rt'],
+						},
+
+		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP'], "loopback":router_node['loopback']},
+						 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
+						 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
+
+		#Make validations
+		check_params = True
+		if check_params:
+			pprint(config)
+			#Call worker
+			ServiceHandler._configure_service(config)
+		else:
+			service.service_state = ServiceStatuses['ERROR'].value
+			service.save()
+			print("Not possible service")
