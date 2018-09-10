@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from ..models import Service
+from ..models import Service, Client
 from enum import Enum
 import json
 import requests
@@ -49,6 +49,11 @@ class ServiceView(View):
     #
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+
+        #GET Client ID
+        client = data.pop('client')
+        client_id = Client.objects.filter(name=client).values()[0]['id']
+        data['client_id'] = client_id
         
         #GET Location ID
         print(data['location'])
@@ -87,7 +92,6 @@ def _get_free_access_port(location_id):
         return json_response[0]
     else:
         return None
-
 
 def _get_location_id(location_name):
     url= settings.INVENTORY_URL + "locations?name="+location_name
