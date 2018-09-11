@@ -4,23 +4,22 @@
   "service_id" : "",
   "op_type" : "",
   "parameters":{
-            "vmw_uplink_interface":"",
-            "vmw_logical_unit":"",  
+            "vrf_name":"",
+            "vrf_id":"",  
             "vmw_vlan":"",           
-            "an_uplink_interface":"",  
-            "an_logical_unit":"",   
-            "an_outer_vlan":"",      
-            "an_inner_vlan":"", 
-            "public_cidr":"",
+            "loopback":"",  
+            "an_uplink_interface":"",   
+            "client_logical_unit":"",      
+            "provider_vlan":"", 
+            "service_vlan":"",
             "wan_ip" : "",
-            "bandwidth" : "",
-            "datacenter_id" : "",
-            "resgroup_id" : "",
-            "datastore_id" : "",
-            "wan_portgroup_id" : "",
-            "lan_portgroup_id" : "",
+            "public_cidr" : "",
             "an_client_port" : "",
-            "op_client_port" : ""
+            "op_client_port" : "",
+            "bandwidth": "",
+            "pop_size": ""
          },
-  "devices" : [{"vendor": "","model" : "", "mgmt_ip":""}]
-} // ToDo: Change keywords
+  "devices" : [{"vendor": "juniper","model" : "mx104", "mgmt_ip":""},
+               {"vendor": "transition","model" : "s4224", "mgmt_ip":""},
+               {"vendor": "transition","model" : "s3290-5", "mgmt_ip":""}]
+} 

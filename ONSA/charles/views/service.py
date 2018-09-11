@@ -64,3 +64,4 @@ class ServiceView(View):
 
 	def existing_service(service_id):
 		return Service.objects.filter(service_id=service_id).count() is not 0
+		

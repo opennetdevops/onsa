@@ -1,0 +1,36 @@
+{     
+      {# Service variables #}
+      "client_name": "{{ client_name }}",
+      "mgmt_ip": "{{ mgmt_ip }}", 
+      "bandwidth": "{{ bandwidth }}",
+      "public_cidr": "{{ public_cidr }}",
+      "pop_size": "{{ pop_size }}",
+
+      {# Devices variables #}
+      {# MX104 variables #}
+      "vrf_name": "{{ vrf_name }}",
+      "loopback": "{{ loopback }}",
+      "vpn_id": "{{ vpn_id }}",
+      "an_uplink_interface": "{{ an_uplink_interface }}",  
+      "an_logical_unit": "{{ an_logical_unit }}",
+      "an_logical_unit": "{{ client_logical_unit }}",  
+      "provider_vlan": "{{ provider_vlan }}", 
+      "service_vlan": "{{ service_vlan }}",   
+      "an_interface_description" : "Ok, another description",
+      "public_gateway": "{{  public_cidr | host() }}",
+      "public_prefix": "{{ public_cidr | net() | prefix() }}",
+      "wan_ip": "{{ wan_ip }}",
+      "client_wan_ip": "{{ client_wan_ip }}",
+      "description": "{{ description }}",
+      "client_as_number": "{{ client_as_number }}"
+ 
+      {# Access Node variables #}
+      "an_client_port": "{{ an_client_port }}",
+      "an_port_description": "{{ an_client_port }}",
+      "an_uplink_ports": "{{ an_uplink_ports }}",
+
+      {# Optical Node variables #}
+      "on_client_port": "{{ on_client_port }}",
+      "on_port_description": "{{ on_client_port }}",
+      "on_client_port": "{{ on_client_port }}"
+}
