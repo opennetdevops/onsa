@@ -7,11 +7,11 @@ from ipaddress import *
 
 # class NsxPublicIrsAdmin(admin.ModelAdmin):
 #     # form = IrsServiceForm
-#     # list_display = ('public_network','client','edge_name','hub', 'sco', 'sco_port', 'product_identifier')
+#     # list_display = ('client_network','client','edge_name','hub', 'sco', 'sco_port', 'product_identifier')
 #     # list_filter = ('client', 'edge_name')
 #     actions = ['delete_selected']
 
-#     exclude = ('edge_name', 'portgroup', 'public_network')
+#     exclude = ('edge_name', 'portgroup', 'client_network')
 
 #     def save_model(self, request, obj, form, change):
 

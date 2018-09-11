@@ -12,7 +12,7 @@ class Service(models.Model):
     bandwidth = models.PositiveSmallIntegerField()
     vrf_name = models.CharField(max_length=50, blank=True)
     prefix = models.CharField(max_length=50, blank=True)
-    public_network = models.CharField(max_length=50, blank=True)
+    client_network = models.CharField(max_length=50, blank=True)
     wan_ip = models.CharField(max_length=50, blank=True)
     access_node = models.CharField(max_length=50, blank=True)
     access_node_port = models.CharField(max_length=50, blank=True)

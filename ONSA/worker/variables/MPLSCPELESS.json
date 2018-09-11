@@ -3,7 +3,7 @@
       "client_name" : "{{ client_name }}",
       "mgmt_ip" : "{{ mgmt_ip }}", 
       "bandwidth" : "{{ bandwidth }}",
-      "public_cidr" : "{{ public_cidr }}",
+      "client_cidr" : "{{ client_cidr }}",
       "pop_size": "{{ pop_size }}",
 
       {# Devices variables #}
@@ -18,8 +18,8 @@
       "provider_vlan": "{{ provider_vlan }}",
       "service_vlan": "{{ service_vlan }}",    
       "an_interface_description" : "Ok, another description",
-      "public_gateway" : "{{  public_cidr | host() }}",
-      "public_prefix" : "{{ public_cidr | net() | prefix() }}",
+      "client_gateway" : "{{  client_cidr | host() }}",
+      "client_prefix" : "{{ client_cidr | net() | prefix() }}",
  
       {# Access Node variables #}
       "an_client_port": "{{ an_client_port }}",
