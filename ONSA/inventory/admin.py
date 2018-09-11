@@ -26,7 +26,7 @@ admin.site.register(ClientNode)
 admin.site.register(ClientNodePort)
 admin.site.register(RouterNode)
 admin.site.register(AccessNode)
-
+admin.site.register(Vrf)
 admin.site.register(Portgroup)
 admin.site.register(Location)
 admin.site.register(VirtualVmwPod)

@@ -235,6 +235,7 @@ class Vrf(models.Model):
     name = models.CharField(max_length=50, unique=True, null=True, blank=True)
     used = models.BooleanField(default=False)
     description = models.CharField(max_length=50, null=True)
+    client = models.CharField(max_length=50, null=True, blank=True)
 
 
 class Services(models.Model):

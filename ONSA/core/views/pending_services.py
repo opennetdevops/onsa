@@ -38,7 +38,6 @@ class PendingServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         cpe_id = data['cpe_sn']
-        vrf_name = data['vrf_name']
 
         service = Service.objects.get(id=data['service_id'])
         
@@ -62,7 +61,6 @@ class PendingServiceView(View):
 
         #update service
         service.client_node_sn = cpe_id
-        service.vrf_name = vrf_name
         service.client_node_port = cpe_port['interface_name']
 
         r = _request_charles_service(service)

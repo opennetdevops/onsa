@@ -8,7 +8,6 @@
             "an_logical_unit":"",   
             "provider_vlan":"",      
             "service_vlan":"", 
-            "public_cidr":"",
             "bandwidth" : "",
             "an_client_port" : "",
             "on_client_port" : "",
