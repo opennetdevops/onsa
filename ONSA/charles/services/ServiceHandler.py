@@ -177,7 +177,7 @@ class ServiceHandler():
 		else:
 			return None
 
-	def _add_vlan_tag_to_access_node(vlan_tag,access_node_id,access_port_id,service_id,client_node_sn,client_node_port,bandwidth):
+	def _add_vlan_tag_to_access_node(vlan_tag,access_node_id,access_port_id,service_id,client_node_sn,client_node_port,bandwidth,vrf_id=None):
 		url= "/inventory/api/accessnodes/"+ access_node_id + "/vlantags"
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"vlan_tag":vlan_tag,
@@ -185,7 +185,8 @@ class ServiceHandler():
 						"client_node_sn":client_node_sn,
 						"client_node_port":client_node_port,
 						"bandwidth":bandwidth,
-						"access_port_id":access_port_id}
+						"access_port_id":access_port_id
+						"vrf_id": vrf_id}
 		response = requests.post(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
@@ -439,7 +440,8 @@ class ServiceHandler():
 													service_id,
 													client_node_sn,
 													client_node_port,
-													bandwidth)
+													bandwidth,
+													vrf_id)
 
 		client_node = ServiceHandler._get_client_node(client_node_sn)
 
@@ -527,7 +529,8 @@ class ServiceHandler():
 													service_id,
 													client_node_sn,
 													client_node_port,
-													bandwidth)
+													bandwidth,
+													vrf_id)
 
 		client_node = ServiceHandler._get_client_node(client_node_sn)
 
@@ -609,7 +612,8 @@ class ServiceHandler():
 													service_id,
 													client_node_sn,
 													client_node_port,
-													bandwidth)
+													bandwidth,
+													vrf_id)
 
 		client_node = ServiceHandler._get_client_node(client_node_sn)
 
