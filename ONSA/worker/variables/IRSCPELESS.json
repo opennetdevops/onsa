@@ -4,14 +4,15 @@
       "mgmt_ip" : "{{ mgmt_ip }}", 
       "bandwidth" : "{{ bandwidth }}",
       "public_cidr" : "{{ public_cidr }}",
-      "vrf_name" : "INTERNET",
-      "service_vlan": "{{ service_vlan }}",
-      "pop_size": "{{ pop_size }}",
+
 
       {# Devices variables #}
       {# MX104 variables #}
-      "an_uplink_interface": "{{ an_uplink_interface }}",  
-      "an_logical_unit": "{{ an_logical_unit }}",  
+      "vrf_name" : "INTERNET",
+      "service_vlan": "{{ service_vlan }}",
+      "pop_size": "{{ pop_size }}",
+      "an_uplink_interface": "{{ an_uplink_interface }}",
+      "logical_unit": "{{ logical_unit }}",  
       "provider_vlan": "{{ provider_vlan }}",    
       "an_interface_description" : "Ok, another description",
       "public_gateway" : "{{  public_cidr | host() }}",
