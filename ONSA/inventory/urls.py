@@ -57,9 +57,9 @@ urlpatterns = [
     path('/api/logicalunits/<int:logicalunit_id>', require_http_methods(["PUT","DELETE"])(logical_units.LogicalUnitsView.as_view())),
     path('/api/logicalunits', require_http_methods(["GET","POST"])(logical_units.LogicalUnitsView.as_view())),
 
-    path('/api/vrf', require_http_methods(["GET","POST"])(vrf.VrfView.as_view())),
-    path('/api/vrf/<int:vrf_id>', require_http_methods(["GET","PUT","DELETE"])(vrf.VrfView.as_view())),
-    path('/api/vrf/<int:vrf_id>/locations', require_http_methods(["GET"])(vrf_locations.VrfLocationsView.as_view())),
-    path('/api/vrf/<int:vrf_id>/locations/<int:location_id>', require_http_methods(["GET", "PUT", "DELETE"])(vrf_locations.VrfLocationsView.as_view())),
+    path('/api/vrfs', require_http_methods(["GET","POST"])(vrf.VrfView.as_view())),
+    path('/api/vrfs/<int:vrf_id>', require_http_methods(["GET","PUT","DELETE"])(vrf.VrfView.as_view())),
+    path('/api/vrfs/<int:vrf_id>/locations', require_http_methods(["GET"])(vrf_locations.VrfLocationsView.as_view())),
+    path('/api/vrfs/<int:vrf_id>/locations/<int:location_id>', require_http_methods(["GET", "PUT", "DELETE"])(vrf_locations.VrfLocationsView.as_view())),
 
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

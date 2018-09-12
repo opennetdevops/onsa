@@ -8,29 +8,35 @@ import json
 
 class VrfView(View):
     def get(self, request, vrf_id=None):
-
         if vrf_id is not None:
             vrf = Vrf.objects.filter(rt=vrf_id).values()[0]
             return JsonResponse(vrf, safe=False)
-
         name = request.GET.get('name')
-
+        client = request.GET.get('client')
+       
         if name is not None:
             if Vrf.objects.filter(name=name).count() is not 0:
                 vrf = Vrf.objects.filter(name=name).values()[0]
                 return JsonResponse(vrf, safe=False)
             else:
                 return JsonResponse({}, safe=False)
+       
+        elif client is not None:
+            if Vrf.objects.filter(client=client).count() is not 0:
+                vrf = Vrf.objects.filter(client=client).values()
+                return JsonResponse(list(vrf), safe=False)
+            else:
+                return JsonResponse({}, safe=False)
+
         else:
             vrfs = Vrf.objects.all().values()
             return JsonResponse(list(vrfs), safe=False)
 
+
     def put(self, request, vrf_id=None):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-
         vrf = Vrf.objects.filter(rt=vrf_id)
         vrf.update(**data)
-        
         return JsonResponse(vrf.values()[0], safe=False)
 
 

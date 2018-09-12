@@ -45,7 +45,8 @@ class ServiceView(View):
     #  "id": "SVC001",
     #  "bandwidth": "10",
     #  "product_identifier":"PI0001",
-    #  "prefix":"29"
+    #  "prefix":"29",
+    #  "vrf_name" : ''
     # }
     #
     def post(self, request):
@@ -55,7 +56,8 @@ class ServiceView(View):
 
         #GET Client ID
         client = data.pop('client')
-        client_id = Client.objects.filter(name=client).values()[0]['id']
+        client_obj = Client.objects.filter(name=client).values()[0]
+        client_id = client_obj['id']
         data['client_id'] = client_id
         
         #GET Location ID
@@ -68,8 +70,22 @@ class ServiceView(View):
         access_port_id = str(free_access_port['id'])
         print(access_port_id)
 
+
         #PUT to inventory to set access_port used
         _use_port(access_port_id)
+
+
+        #Create VRF
+        if data['vrf_name'] is '':
+            #Get client VRFs
+            vrfs = _get_client_vrfs(client_obj['name'])
+            #Create VRF
+            vrf_name = "VRF-" + client_obj['name'] + str(len(vrfs)+1)
+            _create_vrf(vrf_name)
+            #TODO VRF based on service type
+            
+        else:
+            service.vrf_name = data['vrf_name']
 
         data['access_node_port'] = access_port_id
         data['access_node'] = str(free_access_port['accessNode_id'])
@@ -80,7 +96,7 @@ class ServiceView(View):
         return JsonResponse(response)
 
     def put(self, request, service_id):
-        #To change state adn public_network/wan_ip
+        #To change state and client_network/wan_ip
         data = json.loads(request.body.decode(encoding='UTF-8'))
         service = Service.objects.filter(id=service_id)
         service.update(**data)
@@ -117,6 +133,15 @@ def _use_port(access_port_id):
     else:
         return None
 
+def _get_client_vrfs(client_name):
+    url= settings.INVENTORY_URL + "vrfs?client="+client_name
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
 
 
 

@@ -246,7 +246,7 @@ def test(request):
 
 #         for publicservice in PublicIrsService.objects.all():
 #             data["publicservices"].append({"client" : publicservice.client.name,
-#                                            "public_network" : publicservice.public_network.ip+"/"+str(publicservice.public_network.prefix),
+#                                            "client_network" : publicservice.client_network.ip+"/"+str(publicservice.client_network.prefix),
 #                                            "edge_name" : publicservice.edge_name,
 #                                            "hub" : publicservice.portgroup.hub.name,
 #                                            "sco" : publicservice.sco_port.sco.name,
@@ -266,7 +266,7 @@ def test(request):
 #         pg = Portgroup.assign_free_pg_from_hub(hub)
 #         wan_ip = IpWan.assign_free_wan_ip_from_hub(hub)
 #         sco_port = ScoPort.assign_free_port_from_sco(sco)
-#         public_network = IpPublicSegment.assign_free_public_ip()
+#         client_network = IpPublicSegment.assign_free_public_ip()
 
 #         vxrail_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(hub)
 #         sco_logical_unit = LogicalUnit.assign_free_logical_unit_at_hub(hub)
@@ -275,13 +275,13 @@ def test(request):
 #                                portgroup=pg,
 #                                ip_wan=wan_ip.network,
 #                                sco_port=sco_port,
-#                                public_network=public_network,
+#                                client_network=client_network,
 #                                vxrail_logical_unit=vxrail_logical_unit.logical_unit_id,
 #                                sco_logical_unit=sco_logical_unit.logical_unit_id,
 #                                client=client,
 #                                product_identifier=data["product_identifier"])
 
-#         client_network = ip_network(obj.public_network.ip + "/" + str(obj.public_network.prefix))
+#         client_network = ip_network(obj.client_network.ip + "/" + str(obj.client_network.prefix))
         
 
 #         jinja_vars = {
@@ -334,7 +334,7 @@ def test(request):
 #                         'vxrail_ae_interface' : hub.vxrail_ae_interface,
 #                         'sco_ae_interface': sco.sco_ae_interface,
 #                         'qinqOuterVlan': sco.qinqOuterVlan,
-#                         "public_network_ip" : str(client_network),
+#                         "client_network_ip" : str(client_network),
 #                         "ip_wan" : obj.ip_wan}
 
 #         # configure_mx(mx_parameters, "set")
@@ -365,7 +365,7 @@ def test(request):
 #             IpWan.unassign_ip(service.ip_wan)
 
 #             # set public segment to unused
-#             service.public_network.unassign()
+#             service.client_network.unassign()
 
 #             # delete edge
 #             # nsx_edge_delete_by_name(service.edge_name)
@@ -379,8 +379,8 @@ def test(request):
 #                             'sco_logical_unit' : service.sco_logical_unit,
 #                             'vxrail_ae_interface' : service.portgroup.hub.vxrail_ae_interface,
 #                             'sco_ae_interface': service.sco_port.sco.sco_ae_interface,
-#                             "public_network_ip" : str(ip_network(service.public_network.ip)) + "/" + \
-#                                                   str(service.public_network.prefix)}
+#                             "client_network_ip" : str(ip_network(service.client_network.ip)) + "/" + \
+#                                                   str(service.client_network.prefix)}
 
 #             # configure_mx(mx_parameters, "delete")
 

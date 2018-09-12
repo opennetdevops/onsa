@@ -67,7 +67,7 @@ class ServiceAdmin(admin.ModelAdmin):
         # service_id = form.cleaned_data['service_id']
         # product_identifier = form.cleaned_data['product_identifier']
         # bandwidth = form.cleaned_data['bandwidth']
-        # public_network = form.cleaned_data['public_network']
+        # client_network = form.cleaned_data['client_network']
         # prefix = form.cleaned_data['prefix']
         # vrf = form.cleaned_data['vrf']
 
