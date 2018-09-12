@@ -278,8 +278,8 @@ class ServiceHandler():
 		  		   "parameters" : {
 		  		   			"pop_size" : pop_size,       
 									"an_uplink_interface" : access_node['uplinkInterface'],
-									"an_uplink_ports" :   access_node['uplink_ports'],
-									"an_logical_unit" : free_logical_units[0]['logical_unit_id'],   
+									"an_uplink_ports" : access_node['uplink_ports'],
+									"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 									"provider_vlan" : access_node['qinqOuterVlan'],      
 									"service_vlan" : free_vlan_tag['vlan_tag'], 
 									"public_cidr" : client_network,
@@ -412,6 +412,7 @@ class ServiceHandler():
 		access_port_id = params['access_port_id']
 		access_node_id = params['access_node_id']
 		vrf_name = params['vrf_name']
+		client_cidr = client_network + "/" + prefix
 
 		#Get Location by name
 		location = ServiceHandler._get_location(location_name)
@@ -449,10 +450,11 @@ class ServiceHandler():
   		   "parameters" : {
   		   			"pop_size" : pop_size,       
 							"an_uplink_interface" : access_node['uplinkInterface'],
-							"an_logical_unit" : free_logical_units[0]['logical_unit_id'],   
+							"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
 							"bandwidth" : bandwidth,
+							"client_cidr" : client_cidr,
 							"an_client_port" : free_access_port['port'],
 							"on_client_port" : client_node_port,
 							"vrf_exists": vrf_exists,
@@ -531,7 +533,7 @@ class ServiceHandler():
   		   "parameters" : {
   		   			"pop_size" : pop_size,       
 							"an_uplink_interface" : access_node['uplinkInterface'],
-							"an_logical_unit" : free_logical_units[0]['logical_unit_id'],   
+							"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
 							"bandwidth" : bandwidth,

@@ -4,8 +4,6 @@
       "mgmt_ip": "{{ mgmt_ip }}", 
       "bandwidth": "{{ bandwidth }}",
       "client_cidr": "{{ client_cidr }}",
-     
-
       {# Devices variables #}
       {# MX104 variables #}
       "pop_size": "{{ pop_size }}",
