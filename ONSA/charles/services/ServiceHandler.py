@@ -209,7 +209,7 @@ class ServiceHandler():
 		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
-			return json_response[0]
+			return json_response
 		else:
 			return None
 
@@ -484,12 +484,15 @@ class ServiceHandler():
 		service_type = params['data_model']['service_type']
 
 		client_network = params['client_network']
+		prefix = params['prefix']
 		bandwidth  = params['bandwidth']
 		client_node_sn = params['client_node_sn']
 		client_node_port = params['client_node_port']
 		access_port_id = params['access_port_id']
 		access_node_id = params['access_node_id']
 		vrf_name = params['vrf_name']
+
+		client_cidr = client_network + "/" + prefix
 
 		#Get Location by name
 		location = ServiceHandler._get_location(location_name)
@@ -532,7 +535,7 @@ class ServiceHandler():
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
 							"bandwidth" : bandwidth,
-							"client_cidr" : client_network,
+							"client_cidr" : client_cidr,
 							"an_client_port" : free_access_port['port'],
 							"on_client_port" : client_node_port,
 							"vrf_exists": vrf_exists,
@@ -549,7 +552,7 @@ class ServiceHandler():
 		if check_params:
 			pprint(config)
 			#Call worker
-			ServiceHandler._configure_service(config)
+			#ServiceHandler._configure_service(config)
 		else:
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()

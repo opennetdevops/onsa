@@ -13,6 +13,7 @@ class VrfView(View):
             return JsonResponse(vrf, safe=False)
         name = request.GET.get('name')
         client = request.GET.get('client')
+        used = request.GET.get('used')
        
         if name is not None:
             if Vrf.objects.filter(name=name).count() is not 0:
@@ -28,12 +29,16 @@ class VrfView(View):
             else:
                 return JsonResponse({}, safe=False)
 
+        elif used is not None:
+            vrfs = Vrf.objects.filter(used=used).values()
+            return JsonResponse(list(vrfs), safe=False)
+
         else:
             vrfs = Vrf.objects.all().values()
             return JsonResponse(list(vrfs), safe=False)
 
 
-    def put(self, request, vrf_id=None):
+    def put(self, request, vrf_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         vrf = Vrf.objects.filter(rt=vrf_id)
         vrf.update(**data)

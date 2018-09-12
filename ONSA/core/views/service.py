@@ -46,7 +46,8 @@ class ServiceView(View):
     #  "bandwidth": "10",
     #  "product_identifier":"PI0001",
     #  "prefix":"29",
-    #  "vrf_name" : ''
+    #  "vrf_name" : '' // xPLS
+    #  "client_network" : "192.168.0.0" // MPLS L3
     # }
     #
     def post(self, request):
@@ -76,19 +77,30 @@ class ServiceView(View):
 
 
         #Create VRF
-        if data['vrf_name'] is '':
+        #todo rewrite splitting service type
+        if data['vrf_name'] is '' and data['service_type'].split('_')[1] == "mpls":
             #Get client VRFs
             vrfs = _get_client_vrfs(client_obj['name'])
             #Create VRF
-            vrf_name = "VRF-" + client_obj['name'] + str(len(vrfs)+1)
-            _create_vrf(vrf_name)
+            if vrfs is not None:
+                vrf_name = "VRF-" + client_obj['name'] + "-" + str(len(vrfs)+1)
+            else:
+                vrf_name = "VRF-" + client_obj['name'] + "-1"
+            vrf = _get_free_vrf()
+            print(vrf)
+            if vrf is not None:
+                _use_vrf(vrf['rt'],vrf_name, client_obj['name'])
+                data['vrf_name'] = vrf_name
+            else:
+                print("ERROR NON VRF AVAILABLE")
+                #todo release port
+                #TODO HANDLE ERROR
             #TODO VRF based on service type
-            
-        else:
-            service.vrf_name = data['vrf_name']
 
         data['access_node_port'] = access_port_id
         data['access_node'] = str(free_access_port['accessNode_id'])
+
+
         service = Service.objects.create(**data)
         service.service_state = ServiceStates['IN_CONSTRUCTION'].value
         service.save()
@@ -137,6 +149,29 @@ def _get_client_vrfs(client_name):
     url= settings.INVENTORY_URL + "vrfs?client="+client_name
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
+def _get_free_vrf():
+    url= settings.INVENTORY_URL + "vrfs?used=False"
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
+    else:
+        return None
+
+
+def _use_vrf(vrf_id, vrf_name, client_name):
+    url= settings.INVENTORY_URL + "vrfs/" + vrf_id
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"used":True, "name": vrf_name, "client": client_name}
+    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     if json_response:
         return json_response

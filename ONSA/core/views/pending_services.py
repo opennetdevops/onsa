@@ -118,11 +118,28 @@ def _get_service(service_id):
     else:
         return None
 
-def _request_charles_service(service):
-    rheaders = {'Content-Type': 'application/json'}
+def _generate_json_data(service):
 
-    if service.vrf_name is not '':
-
+#todo use enum or X
+    if service.service_type == "cpeless_mpls":
+        data = { 'data_model' : {
+                            "service_id" : service.id,
+                            "service_type" : service.service_type,
+                            "client_id" : service.client.id,
+                            "client_name" : service.client.name,
+                            "location": service.location
+                        },
+                "access_port_id": service.access_node_port,
+                "access_node_id": service.access_node,
+                "client_network": service.client_network,
+                "prefix" : service.prefix,
+                "client_node_port" : service.client_node_port,
+                "client_node_sn" : service.client_node_sn,
+                "vrf_name" : service.vrf_name,
+                "bandwidth" : service.bandwidth
+        }
+            
+    else:
         data = { 'data_model' : {
                                 "service_id" : service.id,
                                 "service_type" : service.service_type,
@@ -130,7 +147,6 @@ def _request_charles_service(service):
                                 "client_name" : service.client.name,
                                 "location": service.location
                             },
-                "vrf_name": service.vrf_name,
                 "access_port_id": service.access_node_port,
                 "access_node_id": service.access_node,
                 "prefix" : service.prefix,
@@ -138,22 +154,18 @@ def _request_charles_service(service):
                 "client_node_sn" : service.client_node_sn,
                 "bandwidth" : service.bandwidth
         }
-    else:
-            data = { 'data_model' : {
-                            "service_id" : service.id,
-                            "service_type" : service.service_type,
-                            "client_id" : service.client.id,
-                            "client_name" : service.client.name,
-                            "location": service.location
-                        },
-            "access_port_id": service.access_node_port,
-            "access_node_id": service.access_node,
-            "prefix" : service.prefix,
-            "client_node_port" : service.client_node_port,
-            "client_node_sn" : service.client_node_sn,
-            "bandwidth" : service.bandwidth
-        }
+        
+        if service.vrf_name is not '':
+            data['vrf_name'] = vrf_name
 
+
+    return data
+
+
+def _request_charles_service(service):
+    rheaders = {'Content-Type': 'application/json'}
+
+    data = _generate_json_data(service)
     pprint(data)
 
     r = requests.post(CHARLES_URL, data = json.dumps(data), headers=rheaders)
