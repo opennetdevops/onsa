@@ -246,6 +246,7 @@ class Services(models.Model):
     client_node_port = models.CharField(max_length=50, null=True)
     bandwidth = models.CharField(max_length=50, null=True)
     access_port_id = models.CharField(max_length=50)
+    vrf_id = models.CharField(max_length=50)
     # site_id = models.CharField(max_length=50)
 
     class Meta:
