@@ -185,7 +185,7 @@ class ServiceHandler():
 						"client_node_sn":client_node_sn,
 						"client_node_port":client_node_port,
 						"bandwidth":bandwidth,
-						"access_port_id":access_port_id
+						"access_port_id":access_port_id,
 						"vrf_id": vrf_id}
 		response = requests.post(BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -324,10 +324,11 @@ class ServiceHandler():
 		access_port_id = params['access_port_id']
 		access_node_id = params['access_node_id']
 
-		ip_wan = ServiceHandler._get_ip_wan_nsx(location, client_name, service_id)
-		client_network = ServiceHandler._get_client_network(client_name, service_id, prefix)
 		location = ServiceHandler._get_location(location_name)
 		location_id = str(location['id'])
+
+		ip_wan = ServiceHandler._get_ip_wan_nsx(location_name, client_name, service_id)
+		client_network = ServiceHandler._get_client_network(client_name, service_id, prefix)
 		virtual_pod = ServiceHandler._get_virtual_pod(location_id)
 		router_node = ServiceHandler._get_router_node(location_id)
 		downlink_pg = ServiceHandler._get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
@@ -348,7 +349,7 @@ class ServiceHandler():
 		#Mark access port as used
 		# ServiceHandler._use_port(access_port_id)
 		# access_node_id = str(free_access_port['accessNode_id'])
-		# access_node = ServiceHandler._get_access_node(access_node_id)
+		access_node = ServiceHandler._get_access_node(access_node_id)
 		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN
@@ -400,7 +401,7 @@ class ServiceHandler():
 			if client_network:
 				pprint(config)
 				#Call worker
-				ServiceHandler._configure_service(config)
+				# ServiceHandler._configure_service(config)
 			else:
 				service.service_state = ServiceStatuses['ERROR'].value
 				service.save()
@@ -450,7 +451,7 @@ class ServiceHandler():
 		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
 
 		if not vrf_exists:
-			_add_location_to_vrf(location_id,vrf_id)
+			ServiceHandler._add_location_to_vrf(vrf_id,location_id)
 
 		#Missing as_number 
 
@@ -521,6 +522,12 @@ class ServiceHandler():
 		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
 
+		vrf = ServiceHandler._get_vrf(vrf_name)
+		vrf_id = str(vrf["rt"])
+		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
+
+		if not vrf_exists:
+			ServiceHandler._add_location_to_vrf(vrf_id,location_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN
 		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
@@ -534,12 +541,6 @@ class ServiceHandler():
 
 		client_node = ServiceHandler._get_client_node(client_node_sn)
 
-		vrf = ServiceHandler._get_vrf(vrf_name)
-		vrf_id = str(vrf["rt"])
-		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
-
-		if not vrf_exists:
-			_add_location_to_vrf(location_id,vrf_id)
 
 		config = {
 		   "client" : client_name,
@@ -604,6 +605,9 @@ class ServiceHandler():
 		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
 
+		vrf = ServiceHandler._get_vrf(vrf_name)
+		vrf_id = str(vrf["rt"])
+		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN
 		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
@@ -617,12 +621,9 @@ class ServiceHandler():
 
 		client_node = ServiceHandler._get_client_node(client_node_sn)
 
-		vrf = ServiceHandler._get_vrf(vrf_name)
-		vrf_id = str(vrf["rt"])
-		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
 
 		if not vrf_exists:
-			_add_location_to_vrf(location_id,vrf_id)
+			ServiceHandler._add_location_to_vrf(vrf_id,location_id)
 
 		config = {
 		   "client" : client_name,
@@ -657,4 +658,3 @@ class ServiceHandler():
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()
 			print("Not possible service")
-

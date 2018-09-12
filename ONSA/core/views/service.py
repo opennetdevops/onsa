@@ -11,6 +11,8 @@ from pprint import pprint
 # CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
 # BASE = "http://127.0.0.1:8000/"
 
+VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
+
 class ServiceStates(Enum):
     PENDING = "PENDING"
     REQUESTED = "REQUESTED"
@@ -78,21 +80,22 @@ class ServiceView(View):
 
         #Create VRF
         #todo rewrite splitting service type
-        if data['vrf_name'] is '' and data['service_type'].split('_')[1] == "mpls":
-            #Get client VRFs
-            vrfs = _get_client_vrfs(client_obj['name'])
-            #Create VRF
-            if vrfs is not None:
-                vrf_name = "VRF-" + client_obj['name'] + "-" + str(len(vrfs)+1)
-            else:
-                vrf_name = "VRF-" + client_obj['name'] + "-1"
-            vrf = _get_free_vrf()
-            print(vrf)
-            if vrf is not None:
-                _use_vrf(vrf['rt'],vrf_name, client_obj['name'])
-                data['vrf_name'] = vrf_name
-            else:
-                print("ERROR NON VRF AVAILABLE")
+        if 'vrf_name' in data.keys():
+            if data['vrf_name'] is '' and (data['service_type'] in VRF_SERVICES):
+                #Get client VRFs
+                vrfs = _get_client_vrfs(client_obj['name'])
+                #Create VRF
+                if vrfs is not None:
+                    vrf_name = "VRF-" + client_obj['name'] + "-" + str(len(vrfs)+1)
+                else:
+                    vrf_name = "VRF-" + client_obj['name'] + "-1"
+                vrf = _get_free_vrf()
+                print(vrf)
+                if vrf is not None:
+                    _use_vrf(vrf['rt'],vrf_name, client_obj['name'])
+                    data['vrf_name'] = vrf_name
+                else:
+                    print("ERROR NON VRF AVAILABLE")
                 #todo release port
                 #TODO HANDLE ERROR
             #TODO VRF based on service type

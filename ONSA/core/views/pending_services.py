@@ -13,6 +13,8 @@ CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
 BASE = "http://127.0.0.1:8000/"
 CORE_URL = "http://127.0.0.1:8000/core/api/"
 
+VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
+
 class PendingServiceView(View):
 
     def get(self, request, service_id=None):
@@ -120,44 +122,24 @@ def _get_service(service_id):
 
 def _generate_json_data(service):
 
-#todo use enum or X
-    if service.service_type == "cpeless_mpls":
-        data = { 'data_model' : {
-                            "service_id" : service.id,
-                            "service_type" : service.service_type,
-                            "client_id" : service.client.id,
-                            "client_name" : service.client.name,
-                            "location": service.location
-                        },
-                "access_port_id": service.access_node_port,
-                "access_node_id": service.access_node,
-                "client_network": service.client_network,
-                "prefix" : service.prefix,
-                "client_node_port" : service.client_node_port,
-                "client_node_sn" : service.client_node_sn,
-                "vrf_name" : service.vrf_name,
-                "bandwidth" : service.bandwidth
-        }
+    data = { 'data_model' : {
+                        "service_id" : service.id,
+                        "service_type" : service.service_type,
+                        "client_id" : service.client.id,
+                        "client_name" : service.client.name,
+                        "location": service.location
+                    },
+            "access_port_id": service.access_node_port,
+            "access_node_id": service.access_node,
+            "client_network": service.client_network,
+            "prefix" : service.prefix,
+            "client_node_port" : service.client_node_port,
+            "client_node_sn" : service.client_node_sn,
+            "bandwidth" : service.bandwidth
+    }
             
-    else:
-        data = { 'data_model' : {
-                                "service_id" : service.id,
-                                "service_type" : service.service_type,
-                                "client_id" : service.client.id,
-                                "client_name" : service.client.name,
-                                "location": service.location
-                            },
-                "access_port_id": service.access_node_port,
-                "access_node_id": service.access_node,
-                "prefix" : service.prefix,
-                "client_node_port" : service.client_node_port,
-                "client_node_sn" : service.client_node_sn,
-                "bandwidth" : service.bandwidth
-        }
-        
-        if service.vrf_name is not '':
-            data['vrf_name'] = vrf_name
-
+    if service.service_type in VRF_SERVICES:
+        data['vrf_name'] = service.vrf_name
 
     return data
 
