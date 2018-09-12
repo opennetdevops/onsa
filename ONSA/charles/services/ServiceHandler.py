@@ -223,6 +223,11 @@ class ServiceHandler():
 		else:
 			return None
 
+	def _add_location_to_vrf(vrf_id,location_id):
+		url = "/inventory/api/vrfs/" + vrf_id + "/locations/" + location_id
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.put(BASE + url, auth = None, verify = False, headers = rheaders)
+
 	#Generate Services methods
 	def generate_cpeless_irs_request(params):
 		client_name = params['data_model']['client_name']
@@ -442,6 +447,9 @@ class ServiceHandler():
 		vrf_id = str(vrf["rt"])
 		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
 
+		if not vrf_exists:
+			_add_location_to_vrf(location_id,vrf_id)
+
 		#Missing as_number 
 
 		config = {
@@ -527,6 +535,9 @@ class ServiceHandler():
 		vrf_id = str(vrf["rt"])
 		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
 
+		if not vrf_exists:
+			_add_location_to_vrf(location_id,vrf_id)
+
 		config = {
 		   "client" : client_name,
   		   "service_type" : service_type,
@@ -605,6 +616,9 @@ class ServiceHandler():
 		vrf = ServiceHandler._get_vrf(vrf_name)
 		vrf_id = str(vrf["rt"])
 		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
+
+		if not vrf_exists:
+			_add_location_to_vrf(location_id,vrf_id)
 
 		config = {
 		   "client" : client_name,
