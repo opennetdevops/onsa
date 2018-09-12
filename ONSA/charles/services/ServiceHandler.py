@@ -214,7 +214,7 @@ class ServiceHandler():
 			return None
 
 	def _vrf_exists_in_location(vrf_id,location_id):
-		url = "/api/vrfs/" + vrf_id + "/locations/" + location_id
+		url = "/inventory/api/vrfs/" + vrf_id + "/locations/" + location_id
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(BASE + url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -442,6 +442,8 @@ class ServiceHandler():
 		vrf_id = str(vrf["rt"])
 		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
 
+		#Missing as_number 
+
 		config = {
 		   "client" : client_name,
   		   "service_type" : service_type,
@@ -538,6 +540,84 @@ class ServiceHandler():
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
 							"bandwidth" : bandwidth,
 							"client_cidr" : client_cidr,
+							"an_client_port" : free_access_port['port'],
+							"on_client_port" : client_node_port,
+							"vrf_exists": vrf_exists,
+            	"vrf_name": vrf['name'],
+            	"vrf_id": vrf['rt'],
+						},
+
+		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP'], "loopback":router_node['loopback']},
+						 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
+						 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
+
+		#Make validations
+		check_params = True
+		if check_params:
+			pprint(config)
+			#Call worker
+			#ServiceHandler._configure_service(config)
+		else:
+			service.service_state = ServiceStatuses['ERROR'].value
+			service.save()
+			print("Not possible service")
+
+	def generate_vpls_request(params):
+		client_name = params['data_model']['client_name']
+		location_name = params['data_model']['location']
+		service_id = params['data_model']['service_id']
+		service_type = params['data_model']['service_type']
+
+		client_network = params['client_network']
+		prefix = params['prefix']
+		bandwidth  = params['bandwidth']
+		client_node_sn = params['client_node_sn']
+		client_node_port = params['client_node_port']
+		access_port_id = params['access_port_id']
+		access_node_id = params['access_node_id']
+		vrf_name = params['vrf_name']
+
+		#Get Location by name
+		location = ServiceHandler._get_location(location_name)
+		location_id = str(location['id'])
+		pop_size = location['pop_size']
+
+		router_node = ServiceHandler._get_router_node(location_id)
+		router_node_id = str(router_node['id'])
+		free_logical_units = ServiceHandler._get_free_logical_units(router_node_id)
+
+		access_node = ServiceHandler._get_access_node(access_node_id)
+		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
+		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
+
+
+		#Add vlan tag to access port, serviceid,bandwidth, device SN
+		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+													access_node_id,
+													access_port_id,
+													service_id,
+													client_node_sn,
+													client_node_port,
+													bandwidth)
+
+		client_node = ServiceHandler._get_client_node(client_node_sn)
+
+		vrf = ServiceHandler._get_vrf(vrf_name)
+		vrf_id = str(vrf["rt"])
+		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
+
+		config = {
+		   "client" : client_name,
+  		   "service_type" : service_type,
+  		   "service_id" : service_id,
+  		   "op_type" : "CREATE",
+  		   "parameters" : {
+  		   			"pop_size" : pop_size,       
+							"an_uplink_interface" : access_node['uplinkInterface'],
+							"logical_unit" : free_logical_units[0]['logical_unit_id'],   
+							"provider_vlan" : access_node['qinqOuterVlan'],      
+							"service_vlan" : free_vlan_tag['vlan_tag'], 
+							"bandwidth" : bandwidth,
 							"an_client_port" : free_access_port['port'],
 							"on_client_port" : client_node_port,
 							"vrf_exists": vrf_exists,
