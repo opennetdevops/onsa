@@ -608,7 +608,6 @@ class ServiceHandler():
 		service_type = params['data_model']['service_type']
 
 		client_network = params['client_network']
-		prefix = params['prefix']
 		bandwidth  = params['bandwidth']
 		client_node_sn = params['client_node_sn']
 		client_node_port = params['client_node_port']

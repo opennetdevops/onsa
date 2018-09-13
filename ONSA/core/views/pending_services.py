@@ -16,6 +16,7 @@ CORE_URL = "http://127.0.0.1:8000/core/api/"
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 AS_SERVICES = ['cpe_mpls']
 CLIENT_NETWORK_SERVICES = ['cpeless_mpls']
+PREFIX_SERVICES = ['cpeless_irs', 'vcpe_irs', 'cpeless_mpls']
 
 class PendingServiceView(View):
 
@@ -140,6 +141,8 @@ def _generate_json_data(service):
     
     if service.service_type in CLIENT_NETWORK_SERVICES:        
         data["client_network"] = service.client_network
+
+    if service.service_type in PREFIX_SERVICES:
         data["prefix"] = service.prefix
 
     if service.service_type in VRF_SERVICES:
