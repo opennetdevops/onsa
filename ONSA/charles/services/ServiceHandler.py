@@ -41,9 +41,11 @@ class ServiceHandler():
 			return None
 
 	
-	def _get_wan_mpls_network(client_name,service_id, mask):
+	def _get_wan_mpls_network(location,client_name,service_id):
+		#Default prefix setted by IDR
+		mask = 30
 		description = client_name + "-" + service_id
-		owner = "WAN_MPLS_ONSA"
+		owner = "WAN_MPLS_" + location
 		token = ServiceHandler._get_ipam_authentication_token()
 		url = "/api/networks/assign_subnet"
 		rheaders = {'Content-Type': 'application/json',
@@ -446,8 +448,7 @@ class ServiceHandler():
 		pop_size = location['pop_size']
 
 
-		#wan_cidr = ServiceHandler._get_wan_mpls_network(client_name, service_id, WAN_MPLS_MASK)
-		wan_cidr = "10.100.0.0/30"
+		wan_cidr = ServiceHandler._get_wan_mpls_network(location_name, client_name, service_id)
 
 		router_node = ServiceHandler._get_router_node(location_id)
 		router_node_id = str(router_node['id'])

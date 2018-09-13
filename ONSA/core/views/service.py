@@ -55,8 +55,6 @@ class ServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        pprint(data)
-
         #GET Client ID
         client = data.pop('client')
         client_obj = Client.objects.filter(name=client).values()[0]
@@ -64,19 +62,14 @@ class ServiceView(View):
         data['client_id'] = client_id
         
         #GET Location ID
-        print(data['location'])
         location_id = _get_location_id(data['location'])
-        print(location_id)
 
         #GET access_port from inventory
         free_access_port = _get_free_access_port(location_id)
         access_port_id = str(free_access_port['id'])
-        print(access_port_id)
-
 
         #PUT to inventory to set access_port used
         _use_port(access_port_id)
-
 
         #Create VRF
         #todo rewrite splitting service type
