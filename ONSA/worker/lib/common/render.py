@@ -7,6 +7,9 @@ from jinja2 import Environment, FileSystemLoader
 def host(value):
 	return list(ipaddress.ip_network(value).hosts())[0]
 
+def second(value):
+	return list(ipaddress.ip_network(value).hosts())[1]
+
 def net(value):
 	return ipaddress.ip_network(value)
 
@@ -32,6 +35,7 @@ def render(tpl_path, context):
 	env.filters['netmask'] = netmask
 	env.filters['prefix'] = prefix
 	env.filters['address'] = address
+	env.filters['second'] = second
 
 	template = env.get_template(filename) 
 	

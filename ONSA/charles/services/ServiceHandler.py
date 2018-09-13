@@ -6,6 +6,8 @@ from ..views.service import *
 IPAM_BASE = "http://10.120.78.90"
 BASE = "http://localhost:8000"
 
+WAN_MPLS_MASK = 30
+
 class ServiceHandler():
 
 	def _configure_service(config):
@@ -37,6 +39,23 @@ class ServiceHandler():
 			return json_response["network"]
 		else:
 			return None
+
+	
+	def _get_wan_mpls_network(client_name,service_id, mask):
+		description = client_name + "-" + service_id
+		owner = "WAN_MPLS_ONSA"
+		token = ServiceHandler._get_ipam_authentication_token()
+		url = "/api/networks/assign_subnet"
+		rheaders = {'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + token}
+		data = {"description":description,"owner":owner,"ip_version":4,"mask":mask}
+		response = requests.post(IPAM_BASE + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if "network" in json_response:
+			return json_response["network"]
+		else:
+			return None
+
 
 	def _get_client_network(client_name,service_id,mask):
 		description = client_name + "-" + service_id
@@ -419,12 +438,16 @@ class ServiceHandler():
 		access_port_id = params['access_port_id']
 		access_node_id = params['access_node_id']
 		vrf_name = params['vrf_name']
-		client_cidr = client_network + "/" + prefix
+		client_as = params['client_as']
 
 		#Get Location by name
 		location = ServiceHandler._get_location(location_name)
 		location_id = str(location['id'])
 		pop_size = location['pop_size']
+
+
+		#wan_cidr = ServiceHandler._get_wan_mpls_network(client_name, service_id, WAN_MPLS_MASK)
+		wan_cidr = "10.100.0.0/30"
 
 		router_node = ServiceHandler._get_router_node(location_id)
 		router_node_id = str(router_node['id'])
@@ -433,6 +456,16 @@ class ServiceHandler():
 		access_node = ServiceHandler._get_access_node(access_node_id)
 		free_vlan_tag = ServiceHandler._get_free_vlan_tag(access_node_id)
 		free_access_port = ServiceHandler._get_access_node_port(access_port_id)
+
+
+		client_node = ServiceHandler._get_client_node(client_node_sn)
+
+		vrf = ServiceHandler._get_vrf(vrf_name)
+		vrf_id = str(vrf["rt"])
+		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
+
+		if not vrf_exists:
+			ServiceHandler._add_location_to_vrf(vrf_id,location_id)
 
 		#Add vlan tag to access port, serviceid,bandwidth, device SN
 		ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
@@ -444,16 +477,6 @@ class ServiceHandler():
 													bandwidth,
 													vrf_id)
 
-		client_node = ServiceHandler._get_client_node(client_node_sn)
-
-		vrf = ServiceHandler._get_vrf(vrf_name)
-		vrf_id = str(vrf["rt"])
-		vrf_exists = ServiceHandler._vrf_exists_in_location(vrf_id,location_id)
-
-		if not vrf_exists:
-			ServiceHandler._add_location_to_vrf(vrf_id,location_id)
-
-		#Missing as_number 
 
 		config = {
 		   "client" : client_name,
@@ -461,18 +484,19 @@ class ServiceHandler():
   		   "service_id" : service_id,
   		   "op_type" : "CREATE",
   		   "parameters" : {
-  		   			"pop_size" : pop_size,       
+  		   					"pop_size" : pop_size,       
 							"an_uplink_interface" : access_node['uplinkInterface'],
 							"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
 							"bandwidth" : bandwidth,
-							"client_cidr" : client_cidr,
+							"client_as" : client_as,
 							"an_client_port" : free_access_port['port'],
 							"on_client_port" : client_node_port,
 							"vrf_exists": vrf_exists,
-            	"vrf_name": vrf['name'],
-            	"vrf_id": vrf['rt'],
+							"wan_cidr": wan_cidr,
+            				"vrf_name": vrf['name'],
+            				"vrf_id": vrf['rt']
 						},
 
 		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP'], "loopback":router_node['loopback']},

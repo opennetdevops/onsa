@@ -16,9 +16,9 @@
       "provider_vlan": "{{ provider_vlan }}", 
       "service_vlan": "{{ service_vlan }}",   
       "an_interface_description" : "Ok, another description",
-      "wan_ip": "{{  wan_cidr | host() }}",
+      "wan_ip": "{{  wan_cidr | host()  }}",
       "wan_prefix": "{{ wan_cidr | net() | prefix() }}",
-      "client_wan_ip": "{{ client_wan_ip }}",
+      "client_wan_ip": "{{ wan_cidr | second() }}",
       "description": "{{ description }}",
       "client_as_number": "{{ client_as_number }}",
  

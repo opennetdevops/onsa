@@ -123,9 +123,9 @@ class Task(models.Model):
 		params = json.loads(render(variables_path, params))
 		print(params)
 
-		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
+		#config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
 
-		status = config_handler(template_path, params)
+		#status = config_handler(template_path, params)
 
 		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
 

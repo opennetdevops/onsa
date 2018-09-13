@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 
 class Client(models.Model):
     name = models.CharField(max_length=50)
@@ -18,6 +20,9 @@ class Service(models.Model):
     access_node_port = models.CharField(max_length=50, blank=True)
     client_node_sn = models.CharField(max_length=50, blank=True)
     client_node_port = models.CharField(max_length=50, blank=True)
+    #TODO VARIABLE
+    autonomous_system = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(65000),MaxValueValidator(65500)])
+
 
     
     SERVICE_STATE_CHOICES = (
@@ -44,6 +49,7 @@ class Service(models.Model):
 
     def __str__(self):
         return "SERVICE_ID: " + str(self.pk)
+
 
 
 class VcpeManager(models.Manager):

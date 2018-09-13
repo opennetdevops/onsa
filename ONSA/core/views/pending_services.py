@@ -14,6 +14,8 @@ BASE = "http://127.0.0.1:8000/"
 CORE_URL = "http://127.0.0.1:8000/core/api/"
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
+AS_SERVICES = ['cpe_mpls']
+CLIENT_NETWORK_SERVICES = ['cpeless_mpls']
 
 class PendingServiceView(View):
 
@@ -131,15 +133,20 @@ def _generate_json_data(service):
                     },
             "access_port_id": service.access_node_port,
             "access_node_id": service.access_node,
-            "client_network": service.client_network,
-            "prefix" : service.prefix,
             "client_node_port" : service.client_node_port,
             "client_node_sn" : service.client_node_sn,
             "bandwidth" : service.bandwidth
     }
-            
+    
+    if service.service_type in CLIENT_NETWORK_SERVICES:        
+        data["client_network"] = service.client_network
+        data["prefix"] = service.prefix
+
     if service.service_type in VRF_SERVICES:
         data['vrf_name'] = service.vrf_name
+
+    if service.service_type in AS_SERVICES:
+        data['client_as'] = _assign_autonomous_system(service.vrf_name)   
 
     return data
 
@@ -165,6 +172,50 @@ def _use_port(client_node_id, client_port_id):
         return json_response
     else:
         return None
+
+def _assign_autonomous_system(vrf_name):    
+    list_as = list( Service.objects.filter(vrf_name=vrf_name).values('autonomous_system') )
+    print("list_as",list_as)
+    
+    if (len(list_as) == 1) and (list_as[0]['autonomous_system'] is None):
+        return 65000
+
+    ordered_list_as = sorted(list_as, key=lambda k: k['autonomous_system'])
+    last_as = int( ordered_list_as[-1]['autonomous_system'] )
+
+    if last_as <= 65500:
+        return (last_as + 1)
+    else:
+        while(1):
+            proposed_as = 65000
+            if proposed_as > 65500:
+                #TODO throw exception
+                return -1
+
+            if Service.objects.filter(vrf_name=vrf_name, autonomous_system=proposed_as).values().count():
+                proposed_as+=1
+            else:
+                return proposed_as
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
