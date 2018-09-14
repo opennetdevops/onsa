@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
@@ -7,8 +8,6 @@ from enum import Enum
 from pprint import pprint
 import requests
 import json
-
-CORE_URL = "http://127.0.0.1:8000/core/api/services"
 
 class ServiceStatuses(Enum):
     REQUESTED = "REQUESTED"
@@ -58,7 +57,8 @@ class ServiceView(View):
 			"service_state":service[0].service_state
 		}
 		rheaders = {'Content-Type': 'application/json'}
-		r = requests.put(CORE_URL + "/" + str(service_id), data = json.dumps(data), headers=rheaders)
+		url = settings.CORE_URL +"services/" + str(service_id)
+		r = requests.put(url, data = json.dumps(data), headers=rheaders)
 
 		return HttpResponse(data, content_type='application/json')
 

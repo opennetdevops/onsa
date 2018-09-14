@@ -7,10 +7,6 @@ import json
 import requests
 from pprint import pprint
 
-# INVENTORY_URL = "http://127.0.0.1:8000/inventory/api/"
-# CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
-# BASE = "http://127.0.0.1:8000/"
-
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 VPLS_SERVICES = ['vpls']
 

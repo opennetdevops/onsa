@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
@@ -7,11 +8,6 @@ import json
 import requests
 
 from pprint import pprint
-
-INVENTORY_URL = "http://127.0.0.1:8000/inventory/api/"
-CHARLES_URL = "http://127.0.0.1:8000/charles/api/services"
-BASE = "http://127.0.0.1:8000/"
-CORE_URL = "http://127.0.0.1:8000/core/api/"
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 AS_SERVICES = ['cpe_mpls']
@@ -82,7 +78,7 @@ class PendingServiceView(View):
         return JsonResponse(response)
 
 def _get_free_cpe_port(cpe_id):
-    url= INVENTORY_URL + "clientnodes/" + cpe_id + "/clientports?used=False"
+    url= settings.INVENTORY_URL + "clientnodes/" + cpe_id + "/clientports?used=False"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -92,7 +88,7 @@ def _get_free_cpe_port(cpe_id):
         return None
 
 def _get_cpe(cpe_id):
-    url= INVENTORY_URL + "clientnodes/" + cpe_id
+    url= settings.INVENTORY_URL + "clientnodes/" + cpe_id
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -102,7 +98,7 @@ def _get_cpe(cpe_id):
         return None
 
 def _update_cpe(cpe_id, data):
-    url= INVENTORY_URL + "clientnodes/" + cpe_id
+    url= settings.INVENTORY_URL + "clientnodes/" + cpe_id
     rheaders = {'Content-Type': 'application/json'}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -113,7 +109,7 @@ def _update_cpe(cpe_id, data):
 
 
 def _get_service(service_id):
-    url = CORE_URL + service_id
+    url = settings.CORE_URL + service_id
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -160,12 +156,12 @@ def _request_charles_service(service):
     data = _generate_json_data(service)
     pprint(data)
 
-    r = requests.post(CHARLES_URL, data = json.dumps(data), headers=rheaders)
+    r = requests.post(settings.CHARLES_URL, data = json.dumps(data), headers=rheaders)
     print("r:", r)
     return r
 
 def _use_port(client_node_id, client_port_id):
-    url= INVENTORY_URL + "clientnodes/" + str(client_node_id) + "/clientports/" + str(client_port_id)
+    url= settings.INVENTORY_URL + "clientnodes/" + str(client_node_id) + "/clientports/" + str(client_port_id)
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
