@@ -39,8 +39,8 @@ def get_edge_id_by_name(name, **kwargs):
 class ConfigHandler:
 
 	def pyez(template_path, parameters):
-		
-		# print(render(template_path, parameters))
+
+		pprint(render(template_path, parameters))
 
 		logging.basicConfig(level=logging.INFO)
 		dev = Device(host=parameters['mgmt_ip'], user="lab", password="lab123", port=443)

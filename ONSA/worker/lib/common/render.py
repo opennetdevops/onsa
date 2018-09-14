@@ -2,6 +2,8 @@ import os
 import ipaddress
 import json
 
+from pprint import pprint
+
 from jinja2 import Environment, FileSystemLoader
 
 def host(value):
@@ -37,6 +39,8 @@ def render(tpl_path, context):
 	env.filters['address'] = address
 	env.filters['second'] = second
 
-	template = env.get_template(filename) 
+	template = env.get_template(filename)
+
+	# pprint(template.render(context)) 
 	
 	return template.render(context)

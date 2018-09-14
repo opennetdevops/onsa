@@ -2,7 +2,7 @@
       {# Service variables #}
       "mgmt_ip": "{{ mgmt_ip }}", 
       "bandwidth": "{{ bandwidth }}",
-      "public_cidr": "{{ public_cidr }}",
+      "client_cidr": "{{ client_cidr }}",
       "client_name" : "{{ client_name }}",
 
       {# Devices variables #}
@@ -39,8 +39,8 @@
                         "name" : "Internal",
                         "type" : "Internal",
                         "portgroup_id" : "{{ lan_portgroup_id }}",
-                        "primary_address" : "{{ public_cidr | net() | host() }}",
-                        "netmask" : "{{ public_cidr | net() | netmask() }}",
+                        "primary_address" : "{{ client_cidr | net() | host() }}",
+                        "netmask" : "{{ client_cidr | net() | netmask() }}",
                         "mtu" : "1500",
                         "is_connected" : "true"}],
       "username" : "admin",

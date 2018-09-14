@@ -17,8 +17,8 @@
       "provider_vlan": "{{ provider_vlan }}",
       "service_vlan": "{{ service_vlan }}",    
       "an_interface_description" : "Ok, another description",
-      "client_gateway" : "{{  client_cidr | host() }}",
-      "client_prefix" : "{{ client_cidr | net() | prefix() }}",
+      "client_gateway": "{{  client_cidr | host() }}",
+      "client_prefix": "{{ client_cidr | net() | prefix() }}",
  
       {# Access Node variables #}
       "an_client_port": "{{ an_client_port }}",

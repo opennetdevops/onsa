@@ -15,6 +15,8 @@ from .lib.common.render import render
 
 CHARLES = "http://localhost:8000"
 
+
+
 class ServiceStates(Enum):
 	IN_PROGRESS = "IN_PROGRESS"
 	COMPLETED = "COMPLETED"
@@ -100,13 +102,17 @@ class Task(models.Model):
 
 		if self.device['vendor'] == 'transition':
 			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + "_L2SERVICE.CONF"
-		else:	
-			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
-				"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
+		else:
+			if self.service.service_type != "vpls":	
+				template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
+					"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
+			else:
+				template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
+					"_" + self.service.service_type.upper() + ".CONF"
 
 		template_path = os.path.join(dir, template_path)
 
-		variables_path = "variables/" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".json"
+		variables_path = "variables/" + self.service.service_type.upper() + ".json"
 		variables_path = os.path.join(dir, variables_path)
 
 		pprint(template_path)
@@ -122,11 +128,9 @@ class Task(models.Model):
 
 		params = json.loads(render(variables_path, params))
 
-		print (params)
-
 		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
 
-		#status = config_handler(template_path, params)
+		status = config_handler(template_path, params)
 
 		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
 
@@ -140,11 +144,14 @@ class Task(models.Model):
 		if self.device['vendor'] == 'transition':
 			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_L2SERVICE.CONF"
 		else:	
-			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
+			if self.service.service_type != "vpls":
+				template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
+			else:
+				template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_" + self.service.service_type.upper() + ".CONF"
 
 		template_path = os.path.join(dir, template_path)
 
-		variables_path = "variables/" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".json"
+		variables_path = "variables/" + self.service.service_type.upper() + ".json"
 		variables_path = os.path.join(dir, variables_path)
 
 		pprint(template_path)

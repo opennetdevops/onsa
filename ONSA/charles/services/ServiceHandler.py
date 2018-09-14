@@ -307,7 +307,7 @@ class ServiceHandler():
 									"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 									"provider_vlan" : access_node['qinqOuterVlan'],      
 									"service_vlan" : free_vlan_tag['vlan_tag'], 
-									"public_cidr" : client_network,
+									"client_cidr" : client_network,
 									"bandwidth" : bandwidth,
 									"an_client_port" : free_access_port['port'],
 									"on_client_port" : client_node_port,
@@ -397,7 +397,7 @@ class ServiceHandler():
 							"an_logical_unit" : free_logical_units[1]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
-							"public_cidr" : client_network,
+							"client_cidr" : client_network,
 							"wan_ip" : ip_wan,
 							"bandwidth" : bandwidth,
 							"datacenter_id" : virtual_pod['datacenterId'] ,
@@ -597,7 +597,7 @@ class ServiceHandler():
 		if check_params:
 			pprint(config)
 			#Call worker
-			#ServiceHandler._configure_service(config)
+			ServiceHandler._configure_service(config)
 		else:
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()
@@ -609,7 +609,6 @@ class ServiceHandler():
 		service_id = params['data_model']['service_id']
 		service_type = params['data_model']['service_type']
 
-		client_network = params['client_network']
 		bandwidth  = params['bandwidth']
 		client_node_sn = params['client_node_sn']
 		client_node_port = params['client_node_port']
@@ -679,7 +678,7 @@ class ServiceHandler():
 		if check_params:
 			pprint(config)
 			#Call worker
-			#ServiceHandler._configure_service(config)
+			ServiceHandler._configure_service(config)
 		else:
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()

@@ -33,12 +33,14 @@ class PendingServiceView(View):
             s = Service.objects.filter(pk=service_id).values()[0]
             return JsonResponse(s, safe=False)
 
-    #Pre: JSON with following format
-    #{ 
-    # cpe_sn: "",
-    # service_id: 23
-    # }
-    #
+    """
+    Pre: JSON with following format
+        { 
+            cpe_sn: "",
+            service_id: 23
+        }
+    """
+    
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         cpe_id = data['cpe_sn']
@@ -79,9 +81,6 @@ class PendingServiceView(View):
         
         return JsonResponse(response)
 
-
-
-
 def _get_free_cpe_port(cpe_id):
     url= INVENTORY_URL + "clientnodes/" + cpe_id + "/clientports?used=False"
     rheaders = {'Content-Type': 'application/json'}
@@ -114,7 +113,7 @@ def _update_cpe(cpe_id, data):
 
 
 def _get_service(service_id):
-    url= CORE_URL + service_id
+    url = CORE_URL + service_id
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -200,26 +199,3 @@ def _assign_autonomous_system(vrf_name):
                 proposed_as+=1
             else:
                 return proposed_as
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
