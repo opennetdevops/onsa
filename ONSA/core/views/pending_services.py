@@ -155,8 +155,8 @@ def _request_charles_service(service):
 
     data = _generate_json_data(service)
     pprint(data)
-
-    r = requests.post(settings.CHARLES_URL, data = json.dumps(data), headers=rheaders)
+    url = settings.CHARLES_URL + "services"
+    r = requests.post(url, data = json.dumps(data), headers=rheaders)
     print("r:", r)
     return r
 
