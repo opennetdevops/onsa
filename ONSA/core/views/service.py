@@ -12,6 +12,7 @@ from pprint import pprint
 # BASE = "http://127.0.0.1:8000/"
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
+VPLS_SERVICES = ['vpls']
 
 class ServiceStates(Enum):
     PENDING = "PENDING"
@@ -75,15 +76,22 @@ class ServiceView(View):
         #todo rewrite splitting service type
         if 'vrf_name' in data.keys():
             if data['vrf_name'] is '' and (data['service_type'] in VRF_SERVICES):
+                
                 #Get client VRFs
                 vrfs = _get_client_vrfs(client_obj['name'])
+                if data['service_type'] in VPLS_SERVICES:
+                    vrf_name = "VPLS-"
+                else:
+                    vrf_name = "VRF-"
+
                 #Create VRF
                 if vrfs is not None:
-                    vrf_name = "VRF-" + client_obj['name'] + "-" + str(len(vrfs)+1)
+                    vrf_name = vrf_name + client_obj['name'] + "-" + str(len(vrfs)+1)
                 else:
-                    vrf_name = "VRF-" + client_obj['name'] + "-1"
+                    vrf_name = vrf_name + client_obj['name'] + "-1"
+                
                 vrf = _get_free_vrf()
-                print(vrf)
+                
                 if vrf is not None:
                     _use_vrf(vrf['rt'],vrf_name, client_obj['name'])
                     data['vrf_name'] = vrf_name
