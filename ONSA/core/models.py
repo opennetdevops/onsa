@@ -21,7 +21,7 @@ class Service(models.Model):
     client_node_sn = models.CharField(max_length=50, blank=True)
     client_node_port = models.CharField(max_length=50, blank=True)
     #TODO VARIABLE
-    autonomous_system = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(65000),MaxValueValidator(65500)])
+    autonomous_system = models.IntegerField(default=0, null=True, blank=True, validators=[MinValueValidator(65000),MaxValueValidator(65500)])
 
 
     

@@ -149,7 +149,8 @@ def _generate_json_data(service):
         data['vrf_name'] = service.vrf_name
 
     if service.service_type in AS_SERVICES:
-        data['client_as'] = _assign_autonomous_system(service.vrf_name)   
+        service.autonomous_system = _assign_autonomous_system(service.vrf_name) 
+        data['client_as']  =  service.autonomous_system 
 
     return data
 
@@ -180,7 +181,7 @@ def _assign_autonomous_system(vrf_name):
     list_as = list( Service.objects.filter(vrf_name=vrf_name).values('autonomous_system') )
     print("list_as",list_as)
     
-    if (len(list_as) == 1) and (list_as[0]['autonomous_system'] is None):
+    if (len(list_as) == 1) and (list_as[0]['autonomous_system'] is 0):
         return 65000
 
     ordered_list_as = sorted(list_as, key=lambda k: k['autonomous_system'])
