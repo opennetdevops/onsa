@@ -40,7 +40,6 @@ class ServiceHandler():
 		else:
 			return None
 
-	
 	def _get_wan_mpls_network(location,client_name,service_id):
 		#Default prefix setted by IDR
 		mask = 30
@@ -57,7 +56,6 @@ class ServiceHandler():
 			return json_response["network"]
 		else:
 			return None
-
 
 	def _get_client_network(client_name,service_id,mask):
 		description = client_name + "-" + service_id
@@ -485,22 +483,24 @@ class ServiceHandler():
   		   "service_id" : service_id,
   		   "op_type" : "CREATE",
   		   "parameters" : {
-  		   					"pop_size" : pop_size,       
+  		   			"pop_size" : pop_size,       
 							"an_uplink_interface" : access_node['uplinkInterface'],
+							"an_uplink_ports" :   access_node['uplink_ports'],
 							"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
 							"bandwidth" : bandwidth,
-							"client_as" : client_as,
+							"client_as_number" : client_as,
 							"an_client_port" : free_access_port['port'],
 							"on_client_port" : client_node_port,
 							"vrf_exists": vrf_exists,
 							"wan_cidr": wan_cidr,
-            				"vrf_name": vrf['name'],
-            				"vrf_id": vrf['rt']
+							"client_cidr": " ",
+            	"vrf_name": vrf['name'],
+            	"vrf_id": vrf['rt'],
+            	"loopback":router_node['loopback']
 						},
-
-		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP'], "loopback":router_node['loopback']},
+		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
 						 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
 						 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
 
@@ -575,6 +575,7 @@ class ServiceHandler():
   		   "parameters" : {
   		   			"pop_size" : pop_size,       
 							"an_uplink_interface" : access_node['uplinkInterface'],
+							"an_uplink_ports" :   access_node['uplink_ports'],
 							"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
@@ -585,9 +586,9 @@ class ServiceHandler():
 							"vrf_exists": vrf_exists,
             	"vrf_name": vrf['name'],
             	"vrf_id": vrf['rt'],
+            	"loopback":router_node['loopback']
 						},
-
-		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP'], "loopback":router_node['loopback']},
+		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
 						 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
 						 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
 
@@ -657,6 +658,7 @@ class ServiceHandler():
   		   "parameters" : {
   		   			"pop_size" : pop_size,       
 							"an_uplink_interface" : access_node['uplinkInterface'],
+							"an_uplink_ports" :   access_node['uplink_ports'],
 							"logical_unit" : free_logical_units[0]['logical_unit_id'],   
 							"provider_vlan" : access_node['qinqOuterVlan'],      
 							"service_vlan" : free_vlan_tag['vlan_tag'], 
@@ -666,9 +668,9 @@ class ServiceHandler():
 							"vrf_exists": vrf_exists,
             	"vrf_name": vrf['name'],
             	"vrf_id": vrf['rt'],
+            	"loopback":router_node['loopback']
 						},
-
-		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP'], "loopback":router_node['loopback']},
+		 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
 						 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
 						 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
 

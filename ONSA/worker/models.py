@@ -121,9 +121,10 @@ class Task(models.Model):
 		params.update(self.service.parameters)
 
 		params = json.loads(render(variables_path, params))
-		print(params)
 
-		#config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
+		print (params)
+
+		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
 
 		#status = config_handler(template_path, params)
 

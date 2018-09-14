@@ -10,7 +10,7 @@
       "pop_size": "{{ pop_size }}",
       "vrf_name": "{{ vrf_name }}",
       "loopback": "{{ loopback }}",
-      "vpn_id": "{{ vpn_id }}",
+      "vrf_id": "{{ vrf_id }}",
       "an_uplink_interface": "{{ an_uplink_interface }}",  
       "logical_unit": "{{ logical_unit }}",
       "provider_vlan": "{{ provider_vlan }}", 
@@ -32,5 +32,3 @@
       "on_port_description": "{{ on_client_port }}",
       "on_client_port": "{{ on_client_port }}"
 }
-
-// ToDo
