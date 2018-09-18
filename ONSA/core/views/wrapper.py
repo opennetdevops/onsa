@@ -271,8 +271,11 @@ class LocationsView(View):
 
 class VrfsView(View):
 	def get(self, request):
+
+		client = request.GET.get('client')
+
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(settings.INVENTORY_URL + "vrfs", auth = None, verify = False, headers = rheaders)
+		response = requests.get(settings.INVENTORY_URL + "vrfs?client=" + client, auth = None, verify = False, headers = rheaders)
 
 		json_response = json.loads(response.text)
 
