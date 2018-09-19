@@ -180,10 +180,16 @@ class AccessPortsView(View):
 	def get(self, request):
 	   pass
 
+	"""
+	body = {
+		"location_name" : "LAB"
+	}
+	"""
+
 	def post(self, request):
 		body = json.loads(request.body.decode(encoding='UTF-8'))
 
-		location = _get_location(body['location_name'])
+		location = self._get_location(body['location_name'])
 		"""
 		Fetch one access port in a given location.
 		"""
