@@ -250,7 +250,7 @@ class Services(models.Model):
     # site_id = models.CharField(max_length=50)
 
     class Meta:
-        unique_together = (('vlantag', 'access_node'),)
+        unique_together = (('vlantag', 'access_node', 'access_port_id'),)
 
     def __str__(self):
         return self.access_node.name + \

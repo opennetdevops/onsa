@@ -10,7 +10,6 @@ class Client(models.Model):
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     id = models.CharField(primary_key=True, max_length=50, unique=True)
-    product_identifier = models.CharField(max_length=50)
     bandwidth = models.PositiveSmallIntegerField()
     vrf_name = models.CharField(max_length=50, blank=True)
     prefix = models.CharField(max_length=50, blank=True)

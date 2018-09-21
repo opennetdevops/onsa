@@ -57,7 +57,7 @@ class ClientAdmin (admin.ModelAdmin):
 class ServiceAdmin(admin.ModelAdmin):
     # form = IrsServiceForm
 
-    list_display = ('client', 'product_identifier', 'bandwidth')
+    list_display = ('client', 'bandwidth')
     actions = ['delete_selected']
 
     exclude = ['vrf']
