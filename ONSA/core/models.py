@@ -10,6 +10,8 @@ class Client(models.Model):
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     id = models.CharField(primary_key=True, max_length=50, unique=True)
+
+####### To be deleted ######
     bandwidth = models.PositiveSmallIntegerField()
     vrf_name = models.CharField(max_length=50, blank=True)
     prefix = models.CharField(max_length=50, blank=True)
@@ -19,32 +21,22 @@ class Service(models.Model):
     access_node_port = models.CharField(max_length=50, blank=True)
     client_node_sn = models.CharField(max_length=50, blank=True)
     client_node_port = models.CharField(max_length=50, blank=True)
-    #TODO VARIABLE
     autonomous_system = models.IntegerField(default=0, null=True, blank=True, validators=[MinValueValidator(65000),MaxValueValidator(65500)])
+    location = models.CharField(max_length=30)
 
-
-    
     SERVICE_STATE_CHOICES = (
     ("PENDING", "PENDING"),
     ("REQUESTED", "REQUESTED"),
     ("COMPLETED", "COMPLETED"),
     ("ERROR", "ERROR")
     )
-    
-    # cpeless_irs
-    # vcpe_irs
-    # cpe_mpls
-    # cpe_vpls 
-    # cpe_irs
-    # 
-
-    location = models.CharField(max_length=30)
-
-    service_type = models.CharField(max_length=30)
-
     service_state = models.CharField(max_length=15,
                   choices=SERVICE_STATE_CHOICES,
                   default="PENDING")
+####### End of To be deleted ######
+
+    service_type = models.CharField(max_length=30)
+
 
     def __str__(self):
         return "SERVICE_ID: " + str(self.pk)
