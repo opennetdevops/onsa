@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core import serializers
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views import View
 import json
 import requests
@@ -180,12 +180,20 @@ class AccessPortsView(View):
 	def get(self, request):
 	   pass
 
+	"""
+	body = {
+		"location_name" : "LAB"
+	}
+	"""
+
 	def post(self, request):
 		body = json.loads(request.body.decode(encoding='UTF-8'))
+
+		location = self._get_location(body['location_name'])
 		"""
 		Fetch one access port in a given location.
 		"""
-		free_access_port = self._get_free_access_port(body['location_id'])
+		free_access_port = self._get_free_access_port(location['id'])
 		access_port_id = str(free_access_port['id'])
 
 		"""
@@ -206,6 +214,16 @@ class AccessPortsView(View):
 
 	def delete(self, request):
 		pass
+
+	def _get_location(self, location_name):
+		url = settings.INVENTORY_URL + "locations?name="+ location_name
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response[0]
+		else:
+			return None
 
 	def _get_free_access_port(self, location_id):
 		url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
@@ -262,9 +280,14 @@ class VrfsView(View):
 	def get(self, request):
 
 		client = request.GET.get('client')
+		url = settings.INVENTORY_URL + "vrfs"
 
-		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(settings.INVENTORY_URL + "vrfs?client=" + client, auth = None, verify = False, headers = rheaders)
+		if client is not None:
+			url += "?client=" + client
+
+
+		rheaders = {'Content-Type': 'application/json'}	
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 
 		json_response = json.loads(response.text)
 
