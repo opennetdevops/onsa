@@ -12,18 +12,7 @@ class VlansView(View):
 
 	def post(self, request):
 		body = json.loads(request.body.decode(encoding='UTF-8'))
-		#
-		# TODO!!! INCLUDE LOCATION 
-		# 
-		#
-		# TODO!!! INCLUDE LOCATION 
-		# 
-		#
-		# TODO!!! INCLUDE LOCATION 
-		# 
-		#
-		# TODO!!! INCLUDE LOCATION 
-		# 
+
 		free_vlan_tag = self._get_free_vlan_tag(body['access_port_id'])
 		access_port = self._get_port(body['access_port_id'])
 		self._add_vlan_tag_to_access_node(access_port['accessNode_id'], access_port['id'], free_vlan_tag['vlan_tag'], )
