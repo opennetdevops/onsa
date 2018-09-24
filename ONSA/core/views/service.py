@@ -59,14 +59,20 @@ class ServiceView(View):
         data['client_id'] = client_id
         
         #GET Location ID
-        location_id = _get_location_id(data['location'])
+        try:
+            location_id = _get_location_id(data['location'])
 
-        #GET access_port from inventory
-        free_access_port = _get_free_access_port(location_id)
-        access_port_id = str(free_access_port['id'])
+            #GET access_port from inventory
+            free_access_port = _get_free_access_port(location_id)
+            access_port_id = str(free_access_port['id'])
+            #PUT to inventory to set access_port used
+            _use_port(access_port_id)
 
-        #PUT to inventory to set access_port used
-        _use_port(access_port_id)
+            data['access_node_port'] = access_port_id
+            data['access_node'] = str(free_access_port['accessNode_id'])
+
+        except KeyError:
+            pass
 
         #Create VRF
         #todo rewrite splitting service type
@@ -96,10 +102,6 @@ class ServiceView(View):
                 #todo release port
                 #TODO HANDLE ERROR
             #TODO VRF based on service type
-
-        data['access_node_port'] = access_port_id
-        data['access_node'] = str(free_access_port['accessNode_id'])
-
 
         service = Service.objects.create(**data)
         service.service_state = ServiceStates['IN_CONSTRUCTION'].value

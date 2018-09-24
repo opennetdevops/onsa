@@ -12,7 +12,7 @@ class Service(models.Model):
     id = models.CharField(primary_key=True, max_length=50, unique=True)
 
 ####### To be deleted ######
-    bandwidth = models.PositiveSmallIntegerField()
+    bandwidth = models.PositiveSmallIntegerField(blank=True, null=True)
     vrf_name = models.CharField(max_length=50, blank=True)
     prefix = models.CharField(max_length=50, blank=True)
     client_network = models.CharField(max_length=50, blank=True)
@@ -22,7 +22,7 @@ class Service(models.Model):
     client_node_sn = models.CharField(max_length=50, blank=True)
     client_node_port = models.CharField(max_length=50, blank=True)
     autonomous_system = models.IntegerField(default=0, null=True, blank=True, validators=[MinValueValidator(65000),MaxValueValidator(65500)])
-    location = models.CharField(max_length=30)
+    location = models.CharField(max_length=30, blank=True)
 
     SERVICE_STATE_CHOICES = (
     ("PENDING", "PENDING"),
