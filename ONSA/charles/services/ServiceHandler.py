@@ -212,6 +212,24 @@ class ServiceHandler():
 		else:
 			return None
 
+	def _add_product(vlan_tag,access_node_id,access_port_id,service_id,client_node_sn,client_node_port,bandwidth,vrf_id=None):
+		url= settings.INVENTORY_URL + "products"
+		rheaders = {'Content-Type': 'application/json'}
+		data = {"access_node_id":access_node_id,
+				"vlan_tag":vlan_tag,
+				"product_id":service_id,
+				"client_node_sn":client_node_sn,
+				"client_node_port":client_node_port,
+				"bandwidth":bandwidth,
+				"access_port_id":access_port_id,
+				"vrf_id": vrf_id}
+		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+			return json_response
+		else:
+			return None
+
 	def _get_access_node_port(access_port_id):
 		url= settings.INVENTORY_URL + "accessports/"+ access_port_id 
 		rheaders = {'Content-Type': 'application/json'}
@@ -282,7 +300,7 @@ class ServiceHandler():
 				#Add logicals unit to routernode
 				ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
 				#Add vlan tag to access port, serviceid,bandwidth, device SN
-				ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+				ServiceHandler._add_product(free_vlan_tag['vlan_tag'],
 														access_node_id,
 														access_port_id,
 														service_id,
@@ -361,7 +379,7 @@ class ServiceHandler():
 				client_network = ServiceHandler._get_client_network(client_name, service_id, prefix)
 				if client_network:
 					#Add vlan tag to access port, serviceid,bandwidth, device SN
-					ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+					ServiceHandler._add_product(free_vlan_tag['vlan_tag'],
 																access_node_id,
 																access_port_id,
 																service_id,
@@ -459,7 +477,7 @@ class ServiceHandler():
 				#Add logical unit to router node
 				ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
 				#Add vlan tag to access port, serviceid,bandwidth, device SN
-				ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+				ServiceHandler._add_product(free_vlan_tag['vlan_tag'],
 															access_node_id,
 															access_port_id,
 															service_id,
@@ -545,7 +563,7 @@ class ServiceHandler():
 
 		if free_logical_units and free_vlan_tag:
 			#Add vlan tag to access port, serviceid,bandwidth, device SN
-			ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+			ServiceHandler._add_product(free_vlan_tag['vlan_tag'],
 														access_node_id,
 														access_port_id,
 														service_id,
@@ -625,7 +643,7 @@ class ServiceHandler():
 
 		if free_logical_units and free_vlan_tag:
 			#Add vlan tag to access port, serviceid,bandwidth, device SN
-			ServiceHandler._add_vlan_tag_to_access_node(free_vlan_tag['vlan_tag'],
+			ServiceHandler._add_product(free_vlan_tag['vlan_tag'],
 														access_node_id,
 														access_port_id,
 														service_id,

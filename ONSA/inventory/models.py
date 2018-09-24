@@ -75,7 +75,7 @@ class AccessPort(models.Model):
 class VlanTag(models.Model):
     vlan_tag = models.CharField(max_length=50,  unique=True)
     vlan_tag.null = True
-    access_nodes = models.ManyToManyField(AccessNode, blank=True, through='Services')
+    access_nodes = models.ManyToManyField(AccessNode, blank=True, through='Products')
 
     def __str__(self):
         return self.vlan_tag
@@ -126,6 +126,7 @@ class NsxEdge(Device):
 class LogicalUnit(models.Model):
     logical_unit_id = models.PositiveSmallIntegerField(unique=True)
     routerNodes = models.ManyToManyField(RouterNode, blank=True) 
+    product_id = models.CharField(blank=True, null=True, max_length=50)
 
     def __str__(self):
         return str(self.logical_unit_id)
@@ -141,10 +142,10 @@ class Vrf(models.Model):
     client = models.CharField(max_length=50, null=True, blank=True)
 
 
-class Services(models.Model):
+class Products(models.Model):
     vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     access_node = models.ForeignKey(AccessNode, models.DO_NOTHING)
-    service_id = models.CharField(max_length=50, blank=True, unique=True, null=True)
+    product_id = models.CharField(max_length=50, blank=True, unique=True, null=True)
     client_node_sn = models.CharField(max_length=50, null=True)
     client_node_port = models.CharField(max_length=50, null=True)
     bandwidth = models.CharField(max_length=50, null=True)
@@ -157,5 +158,5 @@ class Services(models.Model):
 
     def __str__(self):
         return self.access_node.name + \
-        " - Vlan: " + self.vlantag.vlan_tag + " - Service Id: " + self.service_id
+        " - Vlan: " + self.vlantag.vlan_tag + " - Product Id: " + self.service_id
 

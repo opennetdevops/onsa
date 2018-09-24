@@ -10,9 +10,13 @@ from ..models import LogicalUnit
 import json
 
 class LogicalUnitsView(View):
-    def get(self, request):
-        lus = LogicalUnit.objects.all().values()        
-        return JsonResponse(list(lus), safe=False)
+    def get(self, request, logicalunit_id=None):
+        if logicalunit_id is None:
+            lus = LogicalUnit.objects.all().values()        
+            return JsonResponse(list(lus), safe=False)
+        else:
+            lu = LogicalUnit.objects.filter(pk=logicalunit_id).values()[0]        
+            return JsonResponse(lu, safe=False)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
