@@ -159,5 +159,5 @@ class Products(models.Model):
 
     def __str__(self):
         return self.access_node.name + \
-        " - Vlan: " + self.vlantag.vlan_tag + " - Product Id: " + self.service_id
+        " - Vlan: " + self.vlantag.vlan_tag + " - Product Id: " + self.product_id
 

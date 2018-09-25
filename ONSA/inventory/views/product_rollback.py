@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views import View
-from ..models import Products
+from ..models import Products, LogicalUnit, Vrf, Portgroup
 import json
 
 class ProductRollbackView(View):
@@ -8,20 +8,40 @@ class ProductRollbackView(View):
 
 
     def post(self, request, product_id):
-        data = json.loads(request.body.decode(encoding='UTF-8'))
-        access_node_id = data['access_node_id']
-        vlan_tag = data['vlan_tag']
-        product_id = data['product_id']
-        client_node_sn = data['client_node_sn']
-        client_node_port = data['client_node_port']
-        bandwidth = data['bandwidth']
-        access_port_id = data['access_port_id']
-        vrf_id = data['vrf_id']
+        
+        #Get product data
+        my_product = Products.objects.filter(product_id=product_id).values()[0]
 
-        vlan_tag = VlanTag.objects.get(vlan_tag=vlan_tag)
-        access_node = Products.objects.get(pk=access_node_id)
+        #Clear Logical Units assigned (if any)
+        my_logical_units = LogicalUnit.objects.filter(product_id=product_id).values()
+        for my_lu in my_logical_units:
+            my_lu.product_id = ""
+            my_lu.save()
 
-        a = Products(vlantag=vlan_tag, access_node=access_node, product_id=product_id, 
-            bandwidth=bandwidth, client_node_port=client_node_port, client_node_sn=client_node_sn, access_port_id=access_port_id, vrf_id=vrf_id)
-        a.save()
+        #Clear portgroups assigned (if any)
+        my_portgroups = Portgroup.objects.filter(product_id=product_id).values()
+        for my_pg in my_portgroups:
+            my_pg.product_id = ""
+            my_pg.save()
+
+        #Clear VRF in router_node (if any)
+        #get location_id
+        location_id = AccessNode.objects.get(pk=my_product.access_node_id).location_id
+        #get all products with this VRF in this location
+        my_products = Products.objects.filter(access_node_id__location_id=location_id, vrf_id=my_product.vrf_id).values()
+
+        if ~my_products.count():
+            my_vrf = Vrf.objects.get(rt=my_product.vrf_id)
+            my_location = Location.objects.get(pk=location_id)
+            my_vrf.locations.remove(my_location)
+
+        #Clear model data
+        my_product.client_node_sn = ""
+        my_product.client_node_port = ""
+        my_product.bandwidth = ""
+        my_product.vrf_id = ""
+
+        my_product.save()
+
+        data = {"Message" : "Product rollback'd successfully"}
         return JsonResponse(data, safe=False)
