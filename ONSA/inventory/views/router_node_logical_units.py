@@ -27,7 +27,9 @@ class RouterNodeLogicalUnitsView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         router_node = RouterNode.objects.get(pk=routernode_id)
         lu_id = data['logical_unit_id'] 
+        product_id = data['product_id'] 
         lu = LogicalUnit.objects.get(logical_unit_id=lu_id)
+        lu.product_id = product_id
         lu.routerNodes.add(router_node)
         lu.save()
         return JsonResponse(data, safe=False)

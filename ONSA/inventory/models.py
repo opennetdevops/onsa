@@ -103,6 +103,7 @@ class Portgroup(models.Model):
     virtualVmwPod = models.ForeignKey(VirtualVmwPod, on_delete=models.CASCADE)
     used = models.BooleanField(default=False)
     dvportgroup_id = models.CharField(max_length=50)
+    product_id = models.CharField(blank=True, null=True, max_length=50)
 
     def __str__(self):
         return self.name
