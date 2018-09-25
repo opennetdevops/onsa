@@ -8,12 +8,20 @@ import json
 class ProductsView(View):
     def get(self, request, product_id=None):
 
-        if accessnode_id is None:
-            access_nodes = AccessNode.objects.all().values()
-            return JsonResponse(list(access_nodes), safe=False)
+        vrf = request.GET.get('vrf', '')
+
+        if vrf:
+            products = Products.objects.filter(vrf_id=vrf).values()
+            return JsonResponse(list(products), safe=False)
+
         else:
-            access_node = AccessNode.objects.filter(pk=accessnode_id).values()[0]   
-            return JsonResponse(access_node, safe=False)
+            if product_id is None:
+                products = Products.objects.all().values()
+                return JsonResponse(list(products), safe=False)
+            else:
+                product = Products.objects.filter(product_id=product_id).values()[0]   
+                return JsonResponse(product, safe=False)
+
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
@@ -27,25 +35,25 @@ class ProductsView(View):
         vrf_id = data['vrf_id']
 
         vlan_tag = VlanTag.objects.get(vlan_tag=vlan_tag)
-        access_node = AccessNode.objects.get(pk=access_node_id)
+        access_node = Products.objects.get(pk=access_node_id)
 
         a = Products(vlantag=vlan_tag, access_node=access_node, product_id=product_id, 
             bandwidth=bandwidth, client_node_port=client_node_port, client_node_sn=client_node_sn, access_port_id=access_port_id, vrf_id=vrf_id)
         a.save()
         return JsonResponse(data, safe=False)
 
-    def put(self, request, accessnode_id):
+    def put(self, request, product_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        access_node = AccessNode.objects.filter(pk=accessnode_id)
-        access_node.update(**data)
-        my_access_node = access_node.values()
-        return JsonResponse(list(my_access_node), safe=False)
+        product = Products.objects.filter(product_id=product_id)
+        product.update(**data)
+        my_product = product.values()[0]
+        return JsonResponse(my_product, safe=False)
 
 
-    def delete(self, request, accessnode_id):
-        access_node = AccessNode.objects.filter(pk=accessnode_id)
-        access_node.delete()
+    def delete(self, request, product_id):
+        product = Products.objects.filter(pk=product_id)
+        product.delete()
         
-        data = {"Message" : "AccessNode deleted successfully"}
+        data = {"Message" : "Product deleted successfully"}
         return JsonResponse(data)
