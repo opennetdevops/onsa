@@ -56,12 +56,24 @@ class ServiceView(View):
 		data = {
 			"service_state":service[0].service_state
 		}
-		rheaders = {'Content-Type': 'application/json'}
-		url = settings.CORE_URL +"services/" + str(service_id)
-		r = requests.put(url, data = json.dumps(data), headers=rheaders)
+
+		#Rollback all reservations if error
+		if service[0].service_state == ServiceStatuses['ERROR'].value:
+			ServiceView.rollback_service(str(service_id))
+
+		ServiceView.update_core_service_status(str(service_id))
 
 		return HttpResponse(data, content_type='application/json')
 
 	def existing_service(service_id):
 		return Service.objects.filter(service_id=service_id).count() is not 0
+
+	def rollback_service(service_id):
+		url = "/api/products/" + service_id + "/rollback"
+		r = requests.post(url)
+
+	def update_core_service_statuste(service_id):
+		headers = {'Content-Type': 'application/json'}
+		url = settings.CORE_URL +"services/" + service_id
+		r = requests.put(url, data = json.dumps(data), headers=rheaders)
 		

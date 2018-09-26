@@ -143,10 +143,11 @@ class ServiceHandler():
 		else:
 			return None
 
-	def _add_logical_unit_to_router_node(router_node_id,logical_unit_id):
+	def _add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id):
 		url= settings.INVENTORY_URL + "routernodes/" + router_node_id + "/logicalunits"
 		rheaders = {'Content-Type': 'application/json'}
-		data = {"logical_unit_id":logical_unit_id}
+		data = {"logical_unit_id":logical_unit_id,
+						"product_id":product_id}
 		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 		if json_response:
@@ -298,7 +299,7 @@ class ServiceHandler():
 			client_network = ServiceHandler._get_client_network(client_name,service_id,prefix)
 			if client_network:
 				#Add logicals unit to routernode
-				ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
+				ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'],service_id)
 				#Add vlan tag to access port, serviceid,bandwidth, device SN
 				ServiceHandler._add_product(free_vlan_tag['vlan_tag'],
 														access_node_id,
@@ -389,8 +390,8 @@ class ServiceHandler():
 					#Use porgroup
 					ServiceHandler._use_portgroup(portgroup_id)
 					#Add logicals unit to routernode
-					ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
-					ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[1]['logical_unit_id'])
+					ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'],service_id)
+					ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[1]['logical_unit_id'],service_id)
 					config = { 
 							  "client" : client_name,
 							  "service_type" : service_type,
@@ -475,7 +476,7 @@ class ServiceHandler():
 				if not vrf_exists:
 					ServiceHandler._add_location_to_vrf(vrf_id,location_id)
 				#Add logical unit to router node
-				ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
+				ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'],service_id)
 				#Add vlan tag to access port, serviceid,bandwidth, device SN
 				ServiceHandler._add_product(free_vlan_tag['vlan_tag'],
 															access_node_id,
@@ -572,7 +573,7 @@ class ServiceHandler():
 														bandwidth,
 														vrf_id)
 			#Add logical unit to router node
-			ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
+			ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'],service_id)
 			if not vrf_exists:
 				ServiceHandler._add_location_to_vrf(vrf_id,location_id)
 
@@ -653,7 +654,7 @@ class ServiceHandler():
 														vrf_id)
 
 			#Add logical unit to router node
-			ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'])
+			ServiceHandler._add_logical_unit_to_router_node(router_node_id,free_logical_units[0]['logical_unit_id'],service_id)
 			if not vrf_exists:
 				ServiceHandler._add_location_to_vrf(vrf_id,location_id)
 
