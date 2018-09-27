@@ -25,14 +25,15 @@ class ProductsView(View):
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        access_node_id = data['access_node_id']
+
         vlan_tag = data['vlan_tag']
-        product_id = data['product_id']
         client_node_sn = data['client_node_sn']
         client_node_port = data['client_node_port']
         bandwidth = data['bandwidth']
-        access_port_id = data['access_port_id']
         vrf_id = data['vrf_id']
+        access_node_id = data['access_node_id']
+        product_id = data['product_id']        
+        access_port_id = data['access_port_id']
 
         vlan_tag = VlanTag.objects.get(vlan_tag=vlan_tag)
         access_node = Products.objects.get(pk=access_node_id)

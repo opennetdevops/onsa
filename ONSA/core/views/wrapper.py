@@ -186,7 +186,7 @@ class AccessPortsView(View):
 	}
 	"""
 
-	def post(self, request):
+	def post(self, request, product_id):
 		body = json.loads(request.body.decode(encoding='UTF-8'))
 
 		location = self._get_location(body['location_name'])
@@ -257,6 +257,19 @@ class AccessPortsView(View):
 			return json_response
 		else:
 			return None
+
+	def _attach_port_to_product(self, product_id, access_port_id):
+		url = settings.INVENTORY_URL + "/accessports/"
+		data = {}
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.post(url, data = data, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+
+		if json_response:
+			return json_response
+		else:
+			return None
+
 
 class LocationsView(View):
 	def get(self, request):
