@@ -5,6 +5,14 @@ class Location(models.Model):
     address = models.CharField(max_length=50, blank=True)
     pop_size =  models.CharField(max_length=50, blank=True)
 
+    def get_router_nodes(self):
+        router_nodes = RouterNode.objects.filter(deviceType="RouterNode",location=self)
+        return router_nodes
+    
+    def get_access_nodes(self):
+        access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
+        return access_nodes
+
     def __str__(self):
         return self.name
 
