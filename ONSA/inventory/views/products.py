@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views import View
 
-from ..models import Products
+from ..models import Products, VlanTag, AccessNode
 
 import json
 
@@ -23,23 +23,19 @@ class ProductsView(View):
                 return JsonResponse(product, safe=False)
 
 
-    def post(self, request):
+    def post(self, request, product_id=None):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        vlan_tag = data['vlan_tag']
-        client_node_sn = data['client_node_sn']
-        client_node_port = data['client_node_port']
-        bandwidth = data['bandwidth']
-        vrf_id = data['vrf_id']
-        access_node_id = data['access_node_id']
-        product_id = data['product_id']        
-        access_port_id = data['access_port_id']
-
+        vlan_tag = data.pop('vlan_tag')
+        access_node_id = data.pop('access_node_id')
+        
         vlan_tag = VlanTag.objects.get(vlan_tag=vlan_tag)
-        access_node = Products.objects.get(pk=access_node_id)
+        access_node = AccessNode.objects.get(pk=access_node_id)
 
-        a = Products(vlantag=vlan_tag, access_node=access_node, product_id=product_id, 
-            bandwidth=bandwidth, client_node_port=client_node_port, client_node_sn=client_node_sn, access_port_id=access_port_id, vrf_id=vrf_id)
+        # data['access_node'] = access_node
+        # data['vlan_tag'] = vlan_tag
+
+        a = Products(**data,access_node=access_node,vlantag=vlan_tag  )
         a.save()
         return JsonResponse(data, safe=False)
 
