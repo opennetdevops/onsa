@@ -5,8 +5,6 @@ import requests
 import json
 from ..views.service import *
 
-WAN_MPLS_MASK = 30
-
 class ServiceHandler():
 
 	def _configure_service(config):
@@ -14,6 +12,7 @@ class ServiceHandler():
 		rheaders = {'Content-Type': 'application/json'}
 		data = config
 		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+
 
 	def _get_ipam_authentication_token():
 		url = "/api/authenticate"
@@ -70,6 +69,32 @@ class ServiceHandler():
 			return json_response["network"]
 		else:
 			return None
+
+	def _get_subnets_by_description(description):
+		token = ServiceHandler._get_ipam_authentication_token()
+		url = settings.IPAM_URL + "/api/networks?description=" + description
+		rheaders = {'Authorization': 'Bearer ' + token}
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		return json_response
+
+	def _release_ip(client_name,product_id):
+		description = client_name + "-" + product_id
+		subnet = ServiceHandler._get_subnets_by_description(description)[0]
+		subnet_id = subnet['id']
+		token = ServiceHandler._get_ipam_authentication_token()
+		url = settings.IPAM_URL + "/api/networks/" + str(subnet_id) + "/release"
+		rheaders = {'Authorization': 'Bearer ' + token}
+		response = requests.post(url, auth = None, verify = False, headers = rheaders)
+
+	def _destroy_subnet(client_name,product_id):
+		description = client_name + "-" + product_id
+		subnet_to_destroy = ServiceHandler._get_subnets_by_description(description)[0]
+		subnet_id = subnet['id']
+		token = ServiceHandler._get_ipam_authentication_token()
+		url = settings.IPAM_URL + "/api/networks/" + str(subnet_id)
+		rheaders = {'Authorization': 'Bearer ' + token}
+		response = requests.delete(url, auth = None, verify = False, headers = rheaders)
 
 	def _get_location(location_name):
 		url = settings.INVENTORY_URL + "locations?name="+location_name
@@ -427,7 +452,8 @@ class ServiceHandler():
 					#Call worker
 					# ServiceHandler._configure_service(config)
 				else:
-					#TODO: Free wan_ip
+					#Free wan_ip
+					ServiceHandler._release_ip(client_name,service_id)
 					error = True
 			else:
 				error = True
