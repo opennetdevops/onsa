@@ -25,8 +25,7 @@ urlpatterns = [
     path('/api/locations', require_http_methods(["GET","DELETE"])(wrapper.LocationsView.as_view())),
     path('/api/products/<str:product_id>/accessports', require_http_methods(["GET", "POST","DELETE"])(wrapper.AccessPortsView.as_view())),
     path('/api/logicalunits', require_http_methods(["GET", "POST","DELETE"])(wrapper.LogicalUnitsView.as_view())),
-    path('/api/ipam/network', require_http_methods(["GET",  "POST", "DELETE"])(wrapper.IpamView.as_view())),
-    path('/api/vlans', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VlansView.as_view())),
+    path('/api/accessnodes/<str:access_node_id>/vlantags', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VlansView.as_view())),
     path('/api/vrfs', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VrfsView.as_view())),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

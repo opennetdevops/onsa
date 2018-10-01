@@ -42,7 +42,7 @@ class ProductsView(View):
     def put(self, request, product_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        product = Products.objects.filter(product_id=product_id)
+        product = Products.objects.filter(id=product_id)
         product.update(**data)
         my_product = product.values()[0]
         return JsonResponse(my_product, safe=False)
