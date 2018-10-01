@@ -26,6 +26,9 @@ class ProductsView(View):
     def post(self, request, product_id=None):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
+        if product_id is not None:
+            data['product_id'] = product_id
+
         vlan_tag = data.pop('vlan_tag')
         access_node_id = data.pop('access_node_id')
         
@@ -35,14 +38,14 @@ class ProductsView(View):
         # data['access_node'] = access_node
         # data['vlan_tag'] = vlan_tag
 
-        a = Products(**data,access_node=access_node,vlantag=vlan_tag  )
+        a = Products(**data, access_node=access_node, vlantag=vlan_tag)
         a.save()
         return JsonResponse(data, safe=False)
 
     def put(self, request, product_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        product = Products.objects.filter(id=product_id)
+        product = Products.objects.filter(product_id=product_id)
         product.update(**data)
         my_product = product.values()[0]
         return JsonResponse(my_product, safe=False)
