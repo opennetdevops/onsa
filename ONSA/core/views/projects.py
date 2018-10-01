@@ -12,15 +12,8 @@ ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', '
 VPLS_SERVICES = ['vpls']
 PROJECT_SERVICES = ['projects']
 
-class ServiceStates(Enum):
-    PENDING = "PENDING"
-    REQUESTED = "REQUESTED"
-    COMPLETED = "COMPLETED"
-    IN_CONSTRUCTION = "IN_CONSTRUCTION"
-    ERROR = "ERROR"
 
-
-class ServiceView(View):
+class ProjectsView(View):
 
     def get(self, request, service_id=None):
         state = request.GET.get('state', '')
@@ -45,19 +38,6 @@ class ServiceView(View):
             s = Service.objects.filter(pk=service_id).values()[0]
             return JsonResponse(s, safe=False)
 
-    #Pre: JSON with following format
-    # { 
-    #  "location": "LAB",
-    #  "client_id": 1,
-    #  "service_type": "cpeless_irs",
-    #  "id": "SVC001",
-    #  "bandwidth": "10",
-    #  "product_identifier":"PI0001",
-    #  "prefix":"29",
-    #  "vrf_name" : '' // xPLS
-    #  "client_network" : "192.168.0.0" // MPLS L3
-    # }
-    #
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
@@ -139,6 +119,7 @@ class ServiceView(View):
         service = Service.objects.filter(id=service_id)
         service.update(**data)
         return JsonResponse(data, safe=False)
+
 
 def _get_free_access_port(location_id):
     url= settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"

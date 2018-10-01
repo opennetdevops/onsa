@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 from rest_framework_jwt.views import obtain_jwt_token
 from django.views.decorators.http import require_http_methods
 
-from .views import service, client, client_service, pending_services, wrapper
+from .views import service, client, client_service, pending_services, wrapper, projects
 
 
 urlpatterns = [ 
@@ -28,5 +28,7 @@ urlpatterns = [
     path('/api/ipam/network', require_http_methods(["GET",  "POST", "DELETE"])(wrapper.IpamView.as_view())),
     path('/api/vlans', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VlansView.as_view())),
     path('/api/vrfs', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VrfsView.as_view())),
+    path('/api/products', require_http_methods(["GET", "POST"])(projects.ProjectsView.as_view())),
+    path('/api/products/<str:product_id>', require_http_methods(["GET", "PUT", "DELETE"])(projects.ProjectsView.as_view())),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
