@@ -27,7 +27,7 @@ urlpatterns = [
     path('/api/logicalunits', require_http_methods(["GET", "POST","DELETE"])(wrapper.LogicalUnitsView.as_view())),
     path('/api/accessnodes/<str:access_node_id>/vlantags', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VlansView.as_view())),
     path('/api/vrfs', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VrfsView.as_view())),
-    path('/api/products', require_http_methods(["GET", "POST"])(projects.ProjectsView.as_view())),
-    path('/api/products/<str:product_id>', require_http_methods(["GET", "PUT", "DELETE"])(projects.ProjectsView.as_view())),
+    path('/api/projects', require_http_methods(["GET", "POST"])(projects.ProjectsView.as_view())),
+    path('/api/projects/<str:product_id>', require_http_methods(["GET", "PUT", "DELETE"])(projects.ProjectsView.as_view())),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
