@@ -1,4 +1,4 @@
-[{"pk":"1", "model": "inventory.accessport", "fields": {"accessNode" : 1, "used" : "False", "port" : "GigabitEthernet 1/19"}},
-{"pk":"2", "model": "inventory.accessport", "fields": {"accessNode" : 1, "used" : "False", "port" : "GigabitEthernet 1/20"}},
-{"pk":"3", "model": "inventory.accessport", "fields": {"accessNode" : 1, "used" : "False", "port" : "GigabitEthernet 1/21"}},
-{"pk":"4", "model": "inventory.accessport", "fields": {"accessNode" : 1, "used" : "False", "port" : "GigabitEthernet 1/22"}}]
+[{"pk":"1", "model": "inventory.accessport", "fields": {"access_node" : 1, "used" : "False", "port" : "GigabitEthernet 1/19"}},
+{"pk":"2", "model": "inventory.accessport", "fields": {"access_node" : 1, "used" : "False", "port" : "GigabitEthernet 1/20"}},
+{"pk":"3", "model": "inventory.accessport", "fields": {"access_node" : 1, "used" : "False", "port" : "GigabitEthernet 1/21"}},
+{"pk":"4", "model": "inventory.accessport", "fields": {"access_node" : 1, "used" : "False", "port" : "GigabitEthernet 1/22"}}]

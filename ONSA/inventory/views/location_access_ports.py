@@ -14,15 +14,15 @@ class LocationAccessPortsView(View):
 
         for an in access_nodes:
             if used == "true":
-                my_ports = AccessPort.objects.filter(accessNode=an, used=True).values()
+                my_ports = AccessPort.objects.filter(access_node=an, used=True).values()
                 for port in my_ports:
                     all_ports.append(port)
             elif used == "false":
-                my_ports = AccessPort.objects.filter(accessNode=an, used=False).values()
+                my_ports = AccessPort.objects.filter(access_node=an, used=False).values()
                 for port in my_ports:
                     all_ports.append(port)
             else:
-                my_ports = AccessPort.objects.filter(accessNode=an).values()
+                my_ports = AccessPort.objects.filter(access_node=an).values()
                 for port in my_ports:
                     all_ports.append(port)
 

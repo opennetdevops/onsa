@@ -16,8 +16,6 @@ class ProjectsView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         
         location = self._get_location(data['location_name'])
-        access_node_id = data['access_node_id']
-
 
 
         """
@@ -25,6 +23,7 @@ class ProjectsView(View):
         """
         free_access_port = _get_free_access_port(location['id'])
         access_port_id = str(free_access_port['id'])
+        access_node_id = str(free_access_port['access_node_id'])
 
         """
         Fetch one vlan tag in a given access_node.

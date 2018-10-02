@@ -33,7 +33,7 @@ class Device(models.Model):
 class AccessNode(Device): #SCO
     uplinkInterface = models.CharField(max_length=50) #AE del lado del MX
     uplink_ports = models.CharField(max_length=50, blank=True)
-    accessNodeId = models.CharField(max_length=4) 
+    access_node_id = models.CharField(max_length=4) 
     qinqOuterVlan = models.CharField(max_length=50)
     logicalUnitId = models.CharField(max_length=50)
 
@@ -72,11 +72,11 @@ class AccessPort(models.Model):
     port = models.CharField(max_length=50)
     port.null = True
     used = models.BooleanField(default=False)
-    accessNode = models.ForeignKey(AccessNode, on_delete=models.CASCADE)
+    access_node = models.ForeignKey(AccessNode, on_delete=models.CASCADE)
 
 
     def __str__(self):
-        return str(self.accessNode.location) + " - " + self.port
+        return str(self.access_node.location) + " - " + self.port
 
 
 

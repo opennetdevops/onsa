@@ -11,11 +11,11 @@ class AccessNodeAccessPortsView(View):
         
         used = request.GET.get('used', '')
         if used == "true":
-            access_ports = AccessPort.objects.filter(accessNode=accessnode_id,used=True).values()
+            access_ports = AccessPort.objects.filter(access_node=accessnode_id,used=True).values()
         elif used == "false":
-            access_ports = AccessPort.objects.filter(accessNode=accessnode_id,used=False).values()
+            access_ports = AccessPort.objects.filter(access_node=accessnode_id,used=False).values()
         else:
-            access_ports = AccessPort.objects.filter(accessNode=accessnode_id).values()
+            access_ports = AccessPort.objects.filter(access_node=accessnode_id).values()
 
         return JsonResponse(list(access_ports), safe=False)
 
@@ -25,7 +25,7 @@ class AccessNodeAccessPortsView(View):
 
         access_node = AccessNode.objects.get(pk=accessnode_id)
 
-        access_port = AccessPort.objects.create(**data, accessNode=access_node)
+        access_port = AccessPort.objects.create(**data, access_node=access_node)
         access_port.save()
         access_port = AccessPort.objects.filter(port=data['port']).values()
         
