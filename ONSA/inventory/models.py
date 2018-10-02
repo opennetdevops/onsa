@@ -66,8 +66,6 @@ class ClientNodePort(models.Model):
     def __str__(self):
         return self.interface_name
 
-
-
 class AccessPort(models.Model):
     port = models.CharField(max_length=50)
     port.null = True
@@ -78,8 +76,6 @@ class AccessPort(models.Model):
     def __str__(self):
         return str(self.access_node.location) + " - " + self.port
 
-
-
 class VlanTag(models.Model):
     vlan_tag = models.CharField(max_length=50,  unique=True)
     vlan_tag.null = True
@@ -87,8 +83,6 @@ class VlanTag(models.Model):
 
     def __str__(self):
         return self.vlan_tag
-
-
 
 class VirtualVmwPod(Device):
     uplinkInterface = models.CharField(max_length=50, null=True) #AE del lado del MX
@@ -160,7 +154,6 @@ class Products(models.Model):
     bandwidth = models.CharField(max_length=50, null=True)
     access_port_id = models.CharField(max_length=50)
     vrf_id = models.CharField(max_length=50, null=True, blank=True)
-    # site_id = models.CharField(max_length=50)
 
     class Meta:
         unique_together = (('vlantag', 'access_node', 'access_port_id'),)

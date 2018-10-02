@@ -10,13 +10,19 @@ from pprint import pprint
 
 PROJECT_SERVICE_DEFINITION = "project"
 
+class ServiceStates(Enum):
+    PENDING = "PENDING"
+    REQUESTED = "REQUESTED"
+    COMPLETED = "COMPLETED"
+    IN_CONSTRUCTION = "IN_CONSTRUCTION"
+    ERROR = "ERROR"
+
 class ProjectsView(View):
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         
-        location = self._get_location(data['location_name'])
-
+        location = _get_location(data['location_name'])
 
         """
         Fetch one access port in a given location.
@@ -28,7 +34,7 @@ class ProjectsView(View):
         """
         Fetch one vlan tag in a given access_node.
         """
-        vlan_tag = _get_free_vlan_tag(access_node_id)
+        vlan_tag = _get_free_vlan_tag(access_node_id)['vlan_tag']
 
 
 
@@ -54,7 +60,7 @@ class ProjectsView(View):
         service.save()
 
         response = {"message" : "Project requested"}
-        return JsonResponse(response)
+        return JsonResponse(response, safe=False)
 
 
 
@@ -63,6 +69,39 @@ class ProjectsView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         _update_product(product_id,data)
         return JsonResponse(data, safe=False)
+
+
+def _get_location(location_name):
+    url = settings.INVENTORY_URL + "locations?name="+ location_name
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
+    else:
+        return None
+
+def _get_free_access_port(location_id):
+    url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
+    else:
+        return None
+
+def _use_port(access_port_id):
+    url = settings.INVENTORY_URL + "accessports/" + access_port_id
+    rheaders = {'Content-Type': 'application/json'}
+    data = { "used": True }
+    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+
+    if json_response:
+        return json_response
+    else:
+        return None
 
 
 def _create_project(product_id,access_node_id,access_port_id,vlan_tag):
@@ -91,7 +130,7 @@ def _update_product(product_id,data):
     else:
         return None
 
-def _get_free_vlan_tag(self, access_node_id):
+def _get_free_vlan_tag(access_node_id):
     url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)

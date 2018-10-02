@@ -43,7 +43,8 @@ class LogicalUnitsView(View):
 	def post(self, request):
 		body = json.loads(request.body.decode(encoding='UTF-8'))
 
-		router_node = self._get_router_node(body['location_id'])
+		location = self._get_location(body['location_name'])
+		router_node = self._get_router_node(location['id'])
 		router_node_id = str(router_node['id'])
 
 		free_logical_units = self._get_free_logical_units(router_node_id)
@@ -64,6 +65,16 @@ class LogicalUnitsView(View):
 
 	def _get_all_logical_units(self):
 		pass
+
+	def _get_location(self, location_name):
+		url = settings.INVENTORY_URL + "locations?name="+ location_name
+		rheaders = {'Content-Type': 'application/json'}
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		if json_response:
+		    return json_response[0]
+		else:
+		    return None
 
 	def _get_router_node(self, location_id):
 		url= settings.INVENTORY_URL + "locations/" + str(location_id) + "/routernodes"
@@ -97,101 +108,6 @@ class LogicalUnitsView(View):
 		else:
 			return None
 
-class AccessPortsView(View):
-	def get(self, request):
-	   pass
-
-	"""
-	body = {
-		"location_name" : "LAB"
-	}
-	"""
-
-	def post(self, request, product_id):
-		body = json.loads(request.body.decode(encoding='UTF-8'))
-
-		location = self._get_location(body['location_name'])
-		"""
-		Fetch one access port in a given location.
-		"""
-		free_access_port = self._get_free_access_port(location['id'])
-		access_port_id = str(free_access_port['id'])
-
-		"""
-		Reserve previously fetched access port.
-		"""
-		self._use_port(access_port_id)
-
-		"""
-		Fetch reserved access port information.
-		"""
-		json_response = self._get_port(access_port_id)
-
-		return JsonResponse(json_response, safe=False)
-		
-
-	def put(self, request):
-		pass
-
-	def delete(self, request):
-		pass
-
-	def _get_location(self, location_name):
-		url = settings.INVENTORY_URL + "locations?name="+ location_name
-		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(url, auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
-		if json_response:
-			return json_response[0]
-		else:
-			return None
-
-	def _get_free_access_port(self, location_id):
-		url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
-		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(url, auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
-		if json_response:
-			return json_response[0]
-		else:
-			return None
-
-	def _use_port(self, access_port_id):
-		url = settings.INVENTORY_URL + "accessports/" + access_port_id
-		rheaders = {'Content-Type': 'application/json'}
-		data = { "used": True }
-		response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
-
-		if json_response:
-			return json_response
-		else:
-			return None
-
-	def _get_port(self, access_port_id):
-		url = settings.INVENTORY_URL + "accessports/" + access_port_id
-		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(url, auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
-
-		if json_response:
-			return json_response
-		else:
-			return None
-
-	def _attach_port_to_product(self, product_id, access_port_id):
-		url = settings.INVENTORY_URL + "/accessports/"
-		data = {}
-		rheaders = {'Content-Type': 'application/json'}
-		response = requests.post(url, data = data, auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
-
-		if json_response:
-			return json_response
-		else:
-			return None
-
-
 class LocationsView(View):
 	def get(self, request):
 		rheaders = {'Content-Type': 'application/json'}
@@ -212,7 +128,6 @@ class LocationsView(View):
 
 class VrfsView(View):
 	def get(self, request):
-
 		client = request.GET.get('client')
 		url = settings.INVENTORY_URL + "vrfs"
 
@@ -224,9 +139,14 @@ class VrfsView(View):
 
 		json_response = json.loads(response.text)
 
+		json_response = {'count': len(json_response), 'vrfs': json_response}
+
 		return JsonResponse(json_response, safe=False)
 
 	def post(self, request):
+		pass
+
+	def put(self, request):
 		body = json.loads(request.body.decode(encoding='UTF-8'))
 
 		client = body['client']
@@ -246,9 +166,6 @@ class VrfsView(View):
 		json_response = {"vrf_id" : str(vrf_id)}
 
 		return JsonResponse(json_response, safe=False)
-
-	def put(self, request):
-		pass
 
 	def delete(self, request):
 		pass
@@ -314,4 +231,19 @@ class VrfsView(View):
 			return json_response
 		else:
 			return None
+
+
+class ClientAccessPortsView(View):
+	def get(self, request, client_id):
+		pass
+		
+	def post(self, request):
+		pass
+
+	def put(self, request):
+		pass
+
+	def delete(self, request):
+		pass
+
 	

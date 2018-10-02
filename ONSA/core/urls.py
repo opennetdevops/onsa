@@ -23,11 +23,11 @@ urlpatterns = [
     path('/api/pending_services/<str:service_id>', require_http_methods(["GET","PUT"])(pending_services.PendingServiceView.as_view())),
     
     path('/api/locations', require_http_methods(["GET","DELETE"])(wrapper.LocationsView.as_view())),
-    path('/api/products/<str:product_id>/accessports', require_http_methods(["GET", "POST","DELETE"])(wrapper.AccessPortsView.as_view())),
     path('/api/logicalunits', require_http_methods(["GET", "POST","DELETE"])(wrapper.LogicalUnitsView.as_view())),
     path('/api/accessnodes/<str:access_node_id>/vlantags', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VlansView.as_view())),
-    path('/api/vrfs', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VrfsView.as_view())),
+    path('/api/vrfs', require_http_methods(["GET", "PUT", "DELETE"])(wrapper.VrfsView.as_view())),
     path('/api/projects', require_http_methods(["GET", "POST"])(projects.ProjectsView.as_view())),
     path('/api/projects/<str:product_id>', require_http_methods(["GET", "PUT", "DELETE"])(projects.ProjectsView.as_view())),
+    path('/api/clients/<str:client_id>/accessports', require_http_methods(["GET"])(wrapper.ClientAccessPortsView.as_view())),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
