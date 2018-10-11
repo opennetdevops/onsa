@@ -71,8 +71,6 @@ class ServiceView(View):
         service_type = data['service_type']
         location = data.pop('location')
 
-        
-<<<<<<< HEAD
 
         try:
             location_id = _get_location_id(location)
@@ -143,7 +141,7 @@ class ServiceView(View):
         service.save()
         response = {"message" : "Service requested"}
         return JsonResponse(response)
-        
+
 
     def put(self, request, service_id):
         #To change state and client_network/wan_ip
