@@ -19,7 +19,7 @@ urlpatterns = [
     path('/api/devices', devices.devices),
     
     path('/api/locations', require_http_methods(["GET","POST"])(locations.LocationsView.as_view())),
-    path('/api/locations/<int:location_id>', require_http_methods(["PUT","DELETE"])(locations.LocationsView.as_view())),
+    path('/api/locations/<int:location_id>', require_http_methods(["GET","PUT","DELETE"])(locations.LocationsView.as_view())),
     path('/api/locations/<int:location_id>/routernodes', require_http_methods(["GET","POST"])(location_router_nodes.LocationRouterNodesView.as_view())),
     path('/api/locations/<int:location_id>/accessnodes', require_http_methods(["GET","POST"])(location_access_nodes.LocationAccessNodesView.as_view())),
     path('/api/locations/<int:location_id>/accessports', require_http_methods(["GET"])(location_access_ports.LocationAccessPortsView.as_view())),

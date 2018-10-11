@@ -146,7 +146,7 @@ class Vrf(models.Model):
 
 
 class Products(models.Model):
-    vlantag = models.ForeignKey(VlanTag, models.DO_NOTHING)
+    vlan_tag = models.ForeignKey(VlanTag, models.DO_NOTHING)
     access_node = models.ForeignKey(AccessNode, models.DO_NOTHING)
     product_id = models.CharField(max_length=50, blank=True, unique=True, null=True)
     client_node_sn = models.CharField(max_length=50, null=True)
@@ -156,9 +156,9 @@ class Products(models.Model):
     vrf_id = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
-        unique_together = (('vlantag', 'access_node', 'access_port_id'),)
+        unique_together = (('vlan_tag', 'access_node', 'access_port_id'),)
 
     def __str__(self):
         return self.access_node.name + \
-        " - Vlan: " + self.vlantag.vlan_tag + " - Product Id: " + self.product_id
+        " - Vlan: " + self.vlan_tag.vlan_tag + " - Product Id: " + self.product_id
 

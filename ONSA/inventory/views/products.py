@@ -35,10 +35,7 @@ class ProductsView(View):
         vlan_tag = VlanTag.objects.get(vlan_tag=vlan_tag)
         access_node = AccessNode.objects.get(pk=access_node_id)
 
-        # data['access_node'] = access_node
-        # data['vlan_tag'] = vlan_tag
-
-        a = Products(**data, access_node=access_node, vlantag=vlan_tag)
+        a = Products(**data, access_node=access_node, vlan_tag=vlan_tag)
         a.save()
         return JsonResponse(data, safe=False)
 

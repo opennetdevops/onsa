@@ -48,11 +48,10 @@ class ServiceView(View):
     #Pre: JSON with following format
     # { 
     #  "location": "LAB",
-    #  "client_id": 1,
+    #  "client": "client01",
     #  "service_type": "cpeless_irs",
     #  "id": "SVC001",
     #  "bandwidth": "10",
-    #  "product_identifier":"PI0001",
     #  "prefix":"29",
     #  "vrf_name" : '' // xPLS
     #  "client_network" : "192.168.0.0" // MPLS L3
@@ -65,73 +64,84 @@ class ServiceView(View):
         client = data.pop('client')
         client_obj = Client.objects.filter(name=client).values()[0]
         client_id = client_obj['id']
+        product_id = data['id']
+        bandwidth = data.pop('bandwidth')
+
         data['client_id'] = client_id
         service_type = data['service_type']
+        location = data.pop('location')
+
         
-        if service_type in PROJECT_SERVICES:
-            #request project at inventory
-            _create_project(data['id'],data['access_node_id'],data['access_port_id'],data['vlan_tag'])
-            client_obj = Client.objects.get(name=client)
-            service = Service.objects.create(client=client_obj,id=data['id'],service_type=service_type)
-            service.service_state = ServiceStates['REQUESTED'].value
-            service.save()
+
+        try:
+            location_id = _get_location_id(location)
+            print("loc id: ",location_id)
+            #GET access_port from inventory
+            free_access_port = _get_free_access_port(location_id)
+            print("free acc port: ",free_access_port)
+            access_port_id = str(free_access_port['id'])
+            print("access port id: ",access_port_id)
+            #PUT to inventory to set access_port used
+            _use_port(access_port_id)
+
+            #data['access_node_port'] = access_port_id
+            access_node_id = str(free_access_port['access_node_id'])
+            vlan_tag = _get_free_vlan_tag(access_node_id)
+            print("vlan tag: ",vlan_tag)
+
+        #TODO ASCO
+        except KeyError:
+            print("exception error")
+            pass
+
+        #Create VRF
+        #todo rewrite splitting service type
+        if 'vrf_name' in data.keys():
+            if data['vrf_name'] is '' and (data['service_type'] in VRF_SERVICES):
+                
+                data.pop('vrf_name')
+
+                #Get client VRFs
+                vrfs = _get_client_vrfs(client_obj['name'])
+
+                if data['service_type'] in VPLS_SERVICES:
+                    vrf_name = "VPLS-"
+                else:
+                    vrf_name = "VRF-"
+
+                #Create VRF Name
+                if vrfs is not None:
+                    vrf_name = vrf_name + client_obj['name'] + "-" + str(len(vrfs)+1)
+                else:
+                    vrf_name = vrf_name + client_obj['name'] + "-1"
+                
+                vrf = _get_free_vrf()
+                
+                if vrf is not None:
+                    _use_vrf(vrf['rt'],vrf_name, client_obj['name'])
+                    vrf_id = vrf['rt']
+                    data['vrf_name'] = vrf_name
+                else:
+                    print("ERROR NON VRF AVAILABLE")
+                #todo release port
+                #TODO HANDLE ERROR
+            else:
+                vrf_name = data['vrf_name']
+                vrf = _get_vrf(vrf_name)
+                vrf_id = vrf['rt']
 
 
-            response = {"message" : "Project requested"}
-            return JsonResponse(response)
 
-        else: 
-            #GET Location ID
-            try:
-                location_id = _get_location_id(data['location'])
+        #Create at inventory model
+        _create_product(product_id,access_node_id,access_port_id,vlan_tag['vlan_tag'], bandwidth, vrf_id)
 
-                #GET access_port from inventory
-                free_access_port = _get_free_access_port(location_id)
-                access_port_id = str(free_access_port['id'])
-                #PUT to inventory to set access_port used
-                _use_port(access_port_id)
 
-                data['access_node_port'] = access_port_id
-                data['access_node'] = str(free_access_port['accessNode_id'])
-
-            #TODO ASCO
-            except KeyError:
-                pass
-
-            #Create VRF
-            #todo rewrite splitting service type
-            if 'vrf_name' in data.keys():
-                if data['vrf_name'] is '' and (data['service_type'] in VRF_SERVICES):
-                    
-                    #Get client VRFs
-                    vrfs = _get_client_vrfs(client_obj['name'])
-                    if data['service_type'] in VPLS_SERVICES:
-                        vrf_name = "VPLS-"
-                    else:
-                        vrf_name = "VRF-"
-
-                    #Create VRF
-                    if vrfs is not None:
-                        vrf_name = vrf_name + client_obj['name'] + "-" + str(len(vrfs)+1)
-                    else:
-                        vrf_name = vrf_name + client_obj['name'] + "-1"
-                    
-                    vrf = _get_free_vrf()
-                    
-                    if vrf is not None:
-                        _use_vrf(vrf['rt'],vrf_name, client_obj['name'])
-                        data['vrf_name'] = vrf_name
-                    else:
-                        print("ERROR NON VRF AVAILABLE")
-                    #todo release port
-                    #TODO HANDLE ERROR
-                #TODO VRF based on service type
-
-            service = Service.objects.create(**data)
-            service.service_state = ServiceStates['IN_CONSTRUCTION'].value
-            service.save()
-            response = {"message" : "Service requested"}
-            return JsonResponse(response)
+        #Save at core model
+        service = Service.objects.create(**data)
+        service.service_state = ServiceStates['IN_CONSTRUCTION'].value
+        service.save()
+        response = {"message" : "Service requested"}
+        return JsonResponse(response)
 
     def put(self, request, service_id):
         #To change state and client_network/wan_ip
@@ -204,13 +214,15 @@ def _use_vrf(vrf_id, vrf_name, client_name):
     else:
         return None
 
-def _create_project(product_id,access_node_id,access_port_id,vlan_tag):
+def _create_product(product_id,access_node_id,access_port_id,vlan_tag, bandwidth, vrf_id):
     url= settings.INVENTORY_URL + "products/" + product_id 
     rheaders = {'Content-Type': 'application/json'}
     data = {
             "access_node_id":access_node_id,
             "access_port_id":access_port_id,
-            "vlan_tag":vlan_tag
+            "vlan_tag":vlan_tag,
+            "bandwidth":bandwidth,
+            "vrf_id":vrf_id
             }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -220,7 +232,27 @@ def _create_project(product_id,access_node_id,access_port_id,vlan_tag):
         return None
 
 
+#Returns first VLAN TAG free at access_node, if there is not free vlans available None value is returned.
+def _get_free_vlan_tag(access_node_id):
+    url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
+    else:
+        return None
 
+
+def _get_vrf(vrf_name):
+    url = settings.INVENTORY_URL + "vrfs?name="+ vrf_name
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
 
 
 

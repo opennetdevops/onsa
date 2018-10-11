@@ -202,7 +202,7 @@ class ServiceHandler():
 			return None
 
 	def _get_access_node(access_node_id):
-		url= settings.INVENTORY_URL + "accessnodes/"+ access_node_id 
+		url= settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -212,7 +212,7 @@ class ServiceHandler():
 			return None
 
 	def _get_free_vlan_tag(access_port_id):
-		url= settings.INVENTORY_URL + "accessnodes/"+ access_port_id + "/vlantags?used=false"
+		url= settings.INVENTORY_URL + "accessnodes/"+ str(access_port_id) + "/vlantags?used=false"
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -222,7 +222,7 @@ class ServiceHandler():
 			return None
 
 	def _add_vlan_tag_to_access_node(vlan_tag,access_node_id,access_port_id,service_id,client_node_sn,client_node_port,bandwidth,vrf_id=None):
-		url= settings.INVENTORY_URL + "accessnodes/"+ access_node_id + "/vlantags"
+		url= settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags"
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"vlan_tag":vlan_tag,
 						"service_id":service_id,
@@ -257,7 +257,7 @@ class ServiceHandler():
 			return None
 
 	def _get_access_node_port(access_port_id):
-		url= settings.INVENTORY_URL + "accessports/"+ access_port_id 
+		url= settings.INVENTORY_URL + "accessports/"+ str(access_port_id)
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -277,7 +277,7 @@ class ServiceHandler():
 			return None
 
 	def _vrf_exists_in_location(vrf_id,location_id):
-		url = settings.INVENTORY_URL + "vrfs/" + vrf_id + "/locations/" + location_id
+		url = settings.INVENTORY_URL + "vrfs/" + vrf_id + "/locations/" + str(location_id)
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -287,7 +287,7 @@ class ServiceHandler():
 			return None
 
 	def _add_location_to_vrf(vrf_id,location_id):
-		url = settings.INVENTORY_URL + "vrfs/" + vrf_id + "/locations/" + location_id
+		url = settings.INVENTORY_URL + "vrfs/" + vrf_id + "/locations/" + str(location_id)
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.put(url, auth = None, verify = False, headers = rheaders)
 

@@ -8,15 +8,19 @@ import json
 
 class LocationsView(View):
     
-    def get(self, request):
-        name = request.GET.get('name','')
+    def get(self, request, location_id=None):
         
-        if name is not '':
-            locations = Location.objects.filter(name=name).values()
+        if location_id is None:
+            name = request.GET.get('name','')
+            
+            if name is not '':
+                locations = Location.objects.filter(name=name).values()
+            else:
+                locations = Location.objects.all().values()
+            return JsonResponse(list(locations),safe=False)
         else:
-            locations = Location.objects.all().values()
-        
-        return JsonResponse(list(locations),safe=False)
+            location = Location.objects.filter(pk=location_id).values()[0]   
+            return JsonResponse(location, safe=False)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
