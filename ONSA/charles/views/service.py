@@ -61,7 +61,7 @@ class ServiceView(View):
 		if service[0].service_state == ServiceStatuses['ERROR'].value:
 			ServiceView.rollback_service(str(service_id))
 
-		ServiceView.update_core_service_status(str(service_id))
+		ServiceView.update_core_service_status(str(service_id), data)
 
 		return HttpResponse(data, content_type='application/json')
 
@@ -72,8 +72,8 @@ class ServiceView(View):
 		url = "/api/products/" + service_id + "/rollback"
 		r = requests.post(url)
 
-	def update_core_service_statuste(service_id):
-		headers = {'Content-Type': 'application/json'}
+	def update_core_service_status(service_id, data):
+		rheaders = {'Content-Type': 'application/json'}
 		url = settings.CORE_URL +"services/" + service_id
 		r = requests.put(url, data = json.dumps(data), headers=rheaders)
 		
