@@ -92,7 +92,7 @@ class ServiceView(View):
                 _use_port(access_port_id)
 
                 data['access_node_port'] = access_port_id
-                data['access_node'] = str(free_access_port['accessNode_id'])
+                data['access_node'] = str(free_access_port['access_node_id'])
 
             #TODO ASCO
             except KeyError:

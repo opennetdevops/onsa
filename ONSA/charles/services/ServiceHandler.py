@@ -357,7 +357,7 @@ class ServiceHandler():
 								 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]
 				}
 				pprint(config)
-				# ServiceHandler._configure_service(config)
+				ServiceHandler._configure_service(config)
 			else:
 				error = True
 		else:
@@ -450,7 +450,7 @@ class ServiceHandler():
 					}
 					pprint(config)
 					#Call worker
-					# ServiceHandler._configure_service(config)
+					ServiceHandler._configure_service(config)
 				else:
 					#Free wan_ip
 					ServiceHandler._release_ip(client_name,service_id)
@@ -541,7 +541,7 @@ class ServiceHandler():
 
 				pprint(config)
 				#Call worker
-				# ServiceHandler._configure_service(config)
+				ServiceHandler._configure_service(config)
 			else:
 				error = True
 		else:
@@ -630,7 +630,7 @@ class ServiceHandler():
 
 			pprint(config)
 			#Call worker
-			# ServiceHandler._configure_service(config)
+			ServiceHandler._configure_service(config)
 		else:
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()
@@ -710,7 +710,7 @@ class ServiceHandler():
 
 			pprint(config)
 			#Call worker
-			#ServiceHandler._configure_service(config)
+			ServiceHandler._configure_service(config)
 		else:
 			service.service_state = ServiceStatuses['ERROR'].value
 			service.save()
