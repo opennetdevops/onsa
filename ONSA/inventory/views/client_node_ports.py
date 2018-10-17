@@ -17,8 +17,6 @@ class ClientNodePortsView(View):
             client_ports = ClientNodePort.objects.all().values()
             return JsonResponse(list(client_ports), safe=False)
 
-
-
     def put(self, request, client_port_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         client_port = ClientNodePort.objects.filter(pk=client_port_id)

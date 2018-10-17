@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'inventory.apps.InventoryConfig',
     'worker.apps.WorkerConfig',
     'charles.apps.CharlesConfig',
+    'jeangrey.apps.JeangreyConfig',
     'django_select2',
     'background_task',
     'corsheaders',

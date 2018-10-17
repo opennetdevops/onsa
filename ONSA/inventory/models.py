@@ -6,11 +6,11 @@ class Location(models.Model):
     pop_size =  models.CharField(max_length=50, blank=True)
 
     def get_router_nodes(self):
-        router_nodes = RouterNode.objects.filter(deviceType="RouterNode",location=self)
+        router_nodes = RouterNode.objects.filter(device_type="RouterNode",location=self)
         return router_nodes
     
     def get_access_nodes(self):
-        access_nodes = AccessNode.objects.filter(deviceType="AccessNode",location=self)
+        access_nodes = AccessNode.objects.filter(device_type="AccessNode",location=self)
         return access_nodes
 
     def __str__(self):
@@ -19,9 +19,8 @@ class Location(models.Model):
 
 class Device(models.Model):
     name = models.CharField(max_length=50)
-    deviceType = models.CharField(max_length=50, blank=True)
-    mgmtIP = models.CharField(max_length=50, blank=True)
-    # TODO Change IP to dict() with type key and IP value
+    device_type = models.CharField(max_length=50, blank=True)
+    mgmt_ip = models.CharField(max_length=50, blank=True)
     model = models.CharField(max_length=50, blank=True)
     vendor = models.CharField(max_length=50, blank=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE) 
@@ -31,18 +30,18 @@ class Device(models.Model):
 
 
 class AccessNode(Device): #SCO
-    uplinkInterface = models.CharField(max_length=50) #AE del lado del MX
+    uplink_interface = models.CharField(max_length=50) #AE del lado del MX
     uplink_ports = models.CharField(max_length=50, blank=True)
     access_node_id = models.CharField(max_length=4) 
-    qinqOuterVlan = models.CharField(max_length=50)
-    logicalUnitId = models.CharField(max_length=50)
+    provider_vlan = models.CharField(max_length=50)
+    logical_unit_id = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
 
 class RouterNode(Device): #MX
-    privateWanIp = models.GenericIPAddressField(null=True, blank=True) #IP for WAN Virtual CPE
+    private_wan_ip = models.GenericIPAddressField(null=True, blank=True) #IP for WAN Virtual CPE
     loopback = models.GenericIPAddressField(null=True, blank=True) 
 
     def __str__(self):
@@ -85,24 +84,24 @@ class VlanTag(models.Model):
         return self.vlan_tag
 
 class VirtualVmwPod(Device):
-    uplinkInterface = models.CharField(max_length=50, null=True) #AE del lado del MX
-    transportZoneName = models.CharField(max_length=50, blank=True) #TODO NSX Only
-    clusterName = models.CharField(max_length=50, blank=True)
-    datastoreId = models.CharField(max_length=50, blank=True)
-    resourcePoolId = models.CharField(max_length=50, blank=True)
-    datacenterId = models.CharField(max_length=50, blank=True)
-    uplinkPg = models.CharField(max_length=50, blank=True)
-    uplinkPgId = models.CharField(max_length=50, blank=True)
-    routerNode = models.OneToOneField(RouterNode, on_delete=models.SET_NULL,null=True) #TODO no me gusta
+    uplink_interface = models.CharField(max_length=50, null=True) #AE del lado del MX
+    transport_zone_name = models.CharField(max_length=50, blank=True) #TODO NSX Only
+    cluster_name = models.CharField(max_length=50, blank=True)
+    datastore_id = models.CharField(max_length=50, blank=True)
+    respool_id = models.CharField(max_length=50, blank=True)
+    datacenter_id = models.CharField(max_length=50, blank=True)
+    uplink_pg = models.CharField(max_length=50, blank=True)
+    uplink_pg_id = models.CharField(max_length=50, blank=True)
+    router_node = models.OneToOneField(RouterNode, on_delete=models.SET_NULL,null=True) #TODO no me gusta
 
 
     def __str__(self):
-        return self.clusterName
+        return self.cluster_name
 
 class Portgroup(models.Model):
     vlan_tag = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
-    virtualVmwPod = models.ForeignKey(VirtualVmwPod, on_delete=models.CASCADE)
+    vmw_pod = models.ForeignKey(VirtualVmwPod, on_delete=models.CASCADE)
     used = models.BooleanField(default=False)
     dvportgroup_id = models.CharField(max_length=50)
     product_id = models.CharField(blank=True, null=True, max_length=50)
@@ -112,8 +111,8 @@ class Portgroup(models.Model):
 
 
 class NsxEdge(Device):
-    edgeName = models.CharField(max_length=50)
-    ipWan = models.CharField(max_length=50)
+    edge_name = models.CharField(max_length=50)
+    ip_wan = models.CharField(max_length=50)
     portgroup = models.ForeignKey(Portgroup, on_delete=models.CASCADE)
 
     def delete(self):
@@ -123,12 +122,12 @@ class NsxEdge(Device):
         super(NsxEdge, self).delete()
 
     def __str__(self):
-        return self.edgeName
+        return self.edge_name
 
 
 class LogicalUnit(models.Model):
     logical_unit_id = models.PositiveSmallIntegerField(unique=True)
-    routerNodes = models.ManyToManyField(RouterNode, blank=True) 
+    router_nodes = models.ManyToManyField(RouterNode, blank=True) 
     product_id = models.CharField(blank=True, null=True, max_length=50)
 
     def __str__(self):
