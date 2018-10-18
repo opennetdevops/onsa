@@ -62,10 +62,9 @@ urlpatterns = [
     path('/api/vrfs/<int:vrf_id>/locations', require_http_methods(["GET"])(vrf_locations.VrfLocationsView.as_view())),
     path('/api/vrfs/<int:vrf_id>/locations/<int:location_id>', require_http_methods(["GET", "PUT", "DELETE"])(vrf_locations.VrfLocationsView.as_view())),
 
-    path('/api/products', require_http_methods(["GET","POST"])(products.ProductsView.as_view())),
-
-    path('/api/products/<str:product_id>', require_http_methods(["GET","POST", "PUT"])(products.ProductsView.as_view())),
-
-    path('/api/products/<str:product_id>/rollback', require_http_methods(["POST"])(product_rollback.ProductRollbackView.as_view())),
+# TODO ARCHI LLEVAR A SERVICE/INV
+    # path('/api/products', require_http_methods(["GET","POST"])(products.ProductsView.as_view())),
+    # path('/api/products/<str:product_id>', require_http_methods(["GET","POST", "PUT"])(products.ProductsView.as_view())),
+    # path('/api/products/<str:product_id>/rollback', require_http_methods(["POST"])(product_rollback.ProductRollbackView.as_view())),
 
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

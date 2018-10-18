@@ -2,7 +2,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
 
-from ..models import Vrf, Location, Products
+from ..models import Vrf, Location
 
 import json
 
