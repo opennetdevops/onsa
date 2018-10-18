@@ -1,5 +1,5 @@
 [
-{"pk":"1", "model": "inventory.clientnode", "fields": {"name":"CENTRO-CPE", "deviceType" : "ClientNode", "mgmtIP" : "", "location" : 1, "model" : "Cisco 891", "serial_number" : "AAAA1111AAAA", "vendor" : "cisco", "uplink_port": "GigabitEthernet 0/1"}},
-{"pk":"2", "model": "inventory.clientnode", "fields": {"name":"LAB-CPE", "deviceType" : "ClientNode", "mgmtIP" : "", "location" : 2, "model" : "Cisco 891", "serial_number" : "BBBB2222BBBB", "vendor" : "cisco", "uplink_port": "GigabitEthernet 0/1"}},
-{"pk":"3", "model": "inventory.clientnode", "fields": {"name":"LAB-HOR-NID", "deviceType" : "ClientNode", "mgmtIP" : "10.120.80.121", "location" : 2, "model" : "s3290-5", "serial_number" : "CCCC3333CCCC", "vendor" : "transition", "uplink_port": "2.5GigabitEthernet 1/1"}}
+{"pk":"1", "model": "inventory.clientnode", "fields": {"name":"CENTRO-CPE", "device_type" : "ClientNode", "mgmt_ip" : "", "location" : 1, "model" : "Cisco 891", "serial_number" : "AAAA1111AAAA", "vendor" : "cisco", "uplink_port": "GigabitEthernet 0/1"}},
+{"pk":"2", "model": "inventory.clientnode", "fields": {"name":"LAB-CPE", "device_type" : "ClientNode", "mgmt_ip" : "", "location" : 2, "model" : "Cisco 891", "serial_number" : "BBBB2222BBBB", "vendor" : "cisco", "uplink_port": "GigabitEthernet 0/1"}},
+{"pk":"3", "model": "inventory.clientnode", "fields": {"name":"LAB-HOR-NID", "device_type" : "ClientNode", "mgmt_ip" : "10.120.80.121", "location" : 2, "model" : "s3290-5", "serial_number" : "CCCC3333CCCC", "vendor" : "transition", "uplink_port": "2.5GigabitEthernet 1/1"}}
 ]

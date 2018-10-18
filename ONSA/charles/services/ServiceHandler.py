@@ -343,7 +343,7 @@ class ServiceHandler():
 									"an_uplink_interface" : access_node['uplinkInterface'],
 									"an_uplink_ports" : access_node['uplink_ports'],
 									"logical_unit" : free_logical_units[0]['logical_unit_id'],   
-									"provider_vlan" : access_node['qinqOuterVlan'],      
+									"provider_vlan" : access_node['provider_vlan'],      
 									"service_vlan" : free_vlan_tag['vlan_tag'], 
 									"client_cidr" : client_network,
 									"bandwidth" : bandwidth,
@@ -352,9 +352,9 @@ class ServiceHandler():
 									"on_uplink_port" : client_node['uplink_port']
 								},
 
-				 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
-								 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
-								 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]
+				 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmt_ip']},
+								 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmt_ip']},
+								 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmt_ip']}]
 				}
 				pprint(config)
 				ServiceHandler._configure_service(config)
@@ -429,7 +429,7 @@ class ServiceHandler():
 										"an_uplink_interface" : access_node['uplinkInterface'],  
 										"an_uplink_ports" :   access_node['uplink_ports'],
 										"an_logical_unit" : free_logical_units[1]['logical_unit_id'],   
-										"provider_vlan" : access_node['qinqOuterVlan'],      
+										"provider_vlan" : access_node['provider_vlan'],      
 										"service_vlan" : free_vlan_tag['vlan_tag'], 
 										"client_cidr" : client_network,
 										"wan_ip" : ip_wan,
@@ -443,10 +443,10 @@ class ServiceHandler():
 										"on_client_port" : client_node_port,
 										"on_uplink_port" : client_node['uplink_port']
 									 },
-							  "devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
-										   {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
-										   {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']},
-										   {"vendor":virtual_pod['vendor'],"model":virtual_pod['model'],"mgmt_ip":virtual_pod['mgmtIP']}]
+							  "devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmt_ip']},
+										   {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmt_ip']},
+										   {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmt_ip']},
+										   {"vendor":virtual_pod['vendor'],"model":virtual_pod['model'],"mgmt_ip":virtual_pod['mgmt_ip']}]
 					}
 					pprint(config)
 					#Call worker
@@ -522,7 +522,7 @@ class ServiceHandler():
 									"an_uplink_interface" : access_node['uplinkInterface'],
 									"an_uplink_ports" :   access_node['uplink_ports'],
 									"logical_unit" : free_logical_units[0]['logical_unit_id'],   
-									"provider_vlan" : access_node['qinqOuterVlan'],      
+									"provider_vlan" : access_node['provider_vlan'],      
 									"service_vlan" : free_vlan_tag['vlan_tag'], 
 									"bandwidth" : bandwidth,
 									"client_as_number" : client_as,
@@ -535,9 +535,9 @@ class ServiceHandler():
 		            	"vrf_id": vrf['rt'],
 		            	"loopback":router_node['loopback']
 								},
-				 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
-								 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
-								 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
+				 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmt_ip']},
+								 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmt_ip']},
+								 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmt_ip']}]}
 
 				pprint(config)
 				#Call worker
@@ -613,7 +613,7 @@ class ServiceHandler():
 								"an_uplink_interface" : access_node['uplinkInterface'],
 								"an_uplink_ports" :   access_node['uplink_ports'],
 								"logical_unit" : free_logical_units[0]['logical_unit_id'],   
-								"provider_vlan" : access_node['qinqOuterVlan'],      
+								"provider_vlan" : access_node['provider_vlan'],      
 								"service_vlan" : free_vlan_tag['vlan_tag'], 
 								"bandwidth" : bandwidth,
 								"client_cidr" : client_cidr,
@@ -624,9 +624,9 @@ class ServiceHandler():
 	            	"vrf_id": vrf['rt'],
 	            	"loopback":router_node['loopback']
 							},
-			 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
-							 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
-							 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
+			 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmt_ip']},
+							 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmt_ip']},
+							 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmt_ip']}]}
 
 			pprint(config)
 			#Call worker
@@ -694,7 +694,7 @@ class ServiceHandler():
 								"an_uplink_interface" : access_node['uplinkInterface'],
 								"an_uplink_ports" :   access_node['uplink_ports'],
 								"logical_unit" : free_logical_units[0]['logical_unit_id'],   
-								"provider_vlan" : access_node['qinqOuterVlan'],      
+								"provider_vlan" : access_node['provider_vlan'],      
 								"service_vlan" : free_vlan_tag['vlan_tag'], 
 								"bandwidth" : bandwidth,
 								"an_client_port" : free_access_port['port'],
@@ -704,9 +704,9 @@ class ServiceHandler():
 	            	"vrf_id": vrf['rt'],
 	            	"loopback":router_node['loopback']
 							},
-			 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmtIP']},
-							 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmtIP']},
-							 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmtIP']}]}
+			 	"devices" : [{"vendor":router_node['vendor'],"model":router_node['model'],"mgmt_ip":router_node['mgmt_ip']},
+							 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmt_ip']},
+							 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmt_ip']}]}
 
 			pprint(config)
 			#Call worker

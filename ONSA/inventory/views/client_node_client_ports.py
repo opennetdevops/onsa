@@ -8,9 +8,8 @@ import json
 
 class ClientNodeClientPortsView(View):
     def get(self, request, client_node_sn, client_port_id=None):
-        used = request.GET.get('used', '')
-        # print("some")
-
+        used = request.GET.get('used', '').capitalize()
+    
         if used:
             client_port = ClientNodePort.objects.filter(client_node=client_node_sn, used=used).values()
             return JsonResponse(list(client_port), safe=False)

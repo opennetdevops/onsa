@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50)),
-                ('deviceType', models.CharField(blank=True, max_length=50)),
-                ('mgmtIP', models.CharField(blank=True, max_length=50)),
+                ('device_type', models.CharField(blank=True, max_length=50)),
+                ('mgmt_ip', models.CharField(blank=True, max_length=50)),
                 ('model', models.CharField(blank=True, max_length=50)),
                 ('vendor', models.CharField(blank=True, max_length=50)),
                 ('interface_name', models.CharField(blank=True, max_length=50)),

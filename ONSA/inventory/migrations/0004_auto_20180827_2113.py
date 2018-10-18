@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='clientnodeport',
-            name='deviceType',
+            name='device_type',
         ),
         migrations.RemoveField(
             model_name='clientnodeport',
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='clientnodeport',
-            name='mgmtIP',
+            name='mgmt_ip',
         ),
         migrations.RemoveField(
             model_name='clientnodeport',

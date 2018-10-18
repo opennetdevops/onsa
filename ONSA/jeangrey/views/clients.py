@@ -10,9 +10,11 @@ class ClientView(View):
     def get(self, request, client_id=None):
         if client_id is None:
             s = Client.objects.all().values()
+            return JsonResponse(list(s), safe=False)
         else:
-            s = Client.objects.filter(pk=client_id).values()
-        return JsonResponse(list(s), safe=False)
+            s = Client.objects.filter(pk=client_id).values()[0]
+            return JsonResponse(s, safe=False)
+        
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from jeangrey.models import Client
+from jeangrey.models import Client, Service
 from jeangrey import models
 from enum import Enum
 import json
@@ -62,7 +62,6 @@ class ServiceView(View):
         response = { "message": "Service requested" }
 
         return JsonResponse(response)
-
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

@@ -16,6 +16,7 @@ class Service(models.Model):
     bandwidth = models.CharField(max_length=50, null=True)
     prefix = models.CharField(max_length=50, blank=True)
 
+    location_id = models.CharField(max_length=10)
     router_node_id = models.CharField(max_length=10)
     logical_unit_id = models.CharField(max_length=10)
     access_node_id = models.CharField(max_length=10)

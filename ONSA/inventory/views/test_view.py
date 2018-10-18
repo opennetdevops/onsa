@@ -333,7 +333,7 @@ def test(request):
 #                         'sco_description' : sco.name,
 #                         'vxrail_ae_interface' : hub.vxrail_ae_interface,
 #                         'sco_ae_interface': sco.sco_ae_interface,
-#                         'qinqOuterVlan': sco.qinqOuterVlan,
+#                         'provider_vlan': sco.provider_vlan,
 #                         "client_network_ip" : str(client_network),
 #                         "ip_wan" : obj.ip_wan}
 
@@ -695,7 +695,7 @@ def test(request):
 #             data["scos"].append({"id" : sco.accessNodeId,
 #                                  "name" : sco.name,
 #                                  "sco_ae_interface" : sco.sco_ae_interface,
-#                                  "qinqOuterVlan" : sco.qinqOuterVlan,
+#                                  "provider_vlan" : sco.provider_vlan,
 #                                  "hub" : sco.hub.name})
 
 #         return JsonResponse(data, json_dumps_params={'indent': 3})
@@ -709,7 +709,7 @@ def test(request):
 #             sco = Sco(name=data["name"],
 #                       accessNodeId=data["accessNodeId"],
 #                       sco_ae_interface=data["sco_ae_interface"],
-#                       qinqOuterVlan=data["qinqOuterVlan"],
+#                       provider_vlan=data["provider_vlan"],
 #                       hub=hub)
 
 #             sco.save()

@@ -12,22 +12,22 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameField(
             model_name='accessnode',
-            old_name='deviceType',
+            old_name='device_type',
             new_name='device_type',
         ),
         migrations.RenameField(
             model_name='accessnode',
-            old_name='logicalUnitId',
+            old_name='logical_unit_id',
             new_name='logical_unit_id',
         ),
         migrations.RenameField(
             model_name='accessnode',
-            old_name='mgmtIP',
+            old_name='mgmt_ip',
             new_name='mgmt_ip',
         ),
         migrations.RenameField(
             model_name='accessnode',
-            old_name='qinqOuterVlan',
+            old_name='provider_vlan',
             new_name='provider_vlan',
         ),
         migrations.RenameField(
@@ -37,12 +37,12 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='clientnode',
-            old_name='deviceType',
+            old_name='device_type',
             new_name='device_type',
         ),
         migrations.RenameField(
             model_name='clientnode',
-            old_name='mgmtIP',
+            old_name='mgmt_ip',
             new_name='mgmt_ip',
         ),
         migrations.RenameField(
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='nsxedge',
-            old_name='deviceType',
+            old_name='device_type',
             new_name='device_type',
         ),
         migrations.RenameField(
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='nsxedge',
-            old_name='mgmtIP',
+            old_name='mgmt_ip',
             new_name='mgmt_ip',
         ),
         migrations.RenameField(
@@ -77,12 +77,12 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='routernode',
-            old_name='deviceType',
+            old_name='device_type',
             new_name='device_type',
         ),
         migrations.RenameField(
             model_name='routernode',
-            old_name='mgmtIP',
+            old_name='mgmt_ip',
             new_name='mgmt_ip',
         ),
         migrations.RenameField(
@@ -107,12 +107,12 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='virtualvmwpod',
-            old_name='deviceType',
+            old_name='device_type',
             new_name='device_type',
         ),
         migrations.RenameField(
             model_name='virtualvmwpod',
-            old_name='mgmtIP',
+            old_name='mgmt_ip',
             new_name='mgmt_ip',
         ),
         migrations.RenameField(
