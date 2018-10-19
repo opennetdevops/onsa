@@ -54,31 +54,25 @@ class ServiceView(View):
 		#Assign CPE Port (mark as used)
 		self.use_port(client_node_sn, cpe_port_id)
 
-		service_data = { "client_port_id": cpe_port_id }
+		#Check if exists (retry support)
+		if not self.existing_service(service_id):
+			service = Service.objects.create(service_id=service_id, service_state=service['service_state'] )
 
+		# Save locally
+		service = Service.objects.get(service_id=service_id)
+		service.service_state = ServiceStatuses['REQUESTED'].value
+		service.save()
+
+		#Update JeanGrey
+		service_data = { "client_port_id": cpe_port_id, "service_state": ServiceStatuses['REQUESTED'].value}
 		self.update_service(service_id, service_data)
 
-		# DESCOMENTAR Y TERMINAR!
+		#Trigger Worker
+		generate_request = getattr(ServiceHandler.ServiceHandler, "generate_" + service.service_type + "_request")
+		generate_request(data)
 		
-		# ############################################################
-
-		# #Check if exists (retry support)
-		# if self.existing_service(service_id):
-		# 	service = Service.objects.filter(service_id=service_id)
-		# 	service.update(**data['data_model'])
-		# else:
-		# 	service = Service.objects.create(**data['data_model'])
-
-		# service = Service.objects.get(service_id=service_id)
-		# service.service_state = ServiceStatuses['REQUESTED'].value
-		# service.save()
-
-		# generate_request = getattr(ServiceHandler.ServiceHandler, "generate_" + service.service_type + "_request")
-
-		# generate_request(data)
 		
 		response = { "message": "Service Requested." }
-
 		return JsonResponse(response)
 
 	def put(self, request, service_id):
