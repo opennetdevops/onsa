@@ -232,6 +232,36 @@ class VrfsView(View):
 			return None
 
 
+class ClientView(View):
+	def get(self, request, client_id=None):
+		
+		url = settings.JEAN_GREY_URL + "clients"
+		if client_id is not None:
+			url += "/" + str(client_id)
+
+		rheaders = { 'Content-Type': 'application/json' }		
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		
+		return JsonResponse(json_response, safe=False)
+
+		
+	def post(self, request):
+		data = json.loads(request.body.decode(encoding='UTF-8'))
+		url = settings.JEAN_GREY_URL + "clients"
+		rheaders = { 'Content-Type': 'application/json' }
+		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+
+		return JsonResponse(json_response, safe=False)
+
+	def put(self, request):
+		pass
+
+	def delete(self, request):
+		pass
+
+
 class ClientAccessPortsView(View):
 	def get(self, request, client_id):
 		pass

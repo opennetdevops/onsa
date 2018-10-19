@@ -143,17 +143,24 @@ class ServiceResourcesView(View):
 		router_node = self._get_router_node(service['router_node_id'])
 		access_node = self._get_access_node(service['access_node_id'])
 		access_port = self._get_access_port(service['access_port_id'])
-		client_node = self._get_client_node(service['client_node_sn'])
-		client_port = self._get_client_port(service['client_node_sn'], service['client_port_id'])
-		# logical_units = self._get_logical_units(logical_unit_ids)
 
 		resources = { "router_node": router_node['name'],
-					  "access_node": { "model": access_node['model'], "name": access_node['name'] },
+					  "access_node": { "model": access_node['model'],
+					  				   "name": access_node['name'],
+					  				   "access_port": access_port['port'] },
 					  "vlan_id": service['vlan_id'],
-					  "access_port": access_port['port'],
-					  "client_node": { "model": client_node['model'], "wan_port": client_node['uplink_port'] },
-					  "client_port": client_port['interface_name'] }
+					}
 
+
+		if service['service_state'] == 'REQUESTED':		
+			client_node = self._get_client_node(service['client_node_sn'])
+			client_port = self._get_client_port(service['client_node_sn'], service['client_port_id'])
+			# logical_units = self._get_logical_units(logical_unit_ids)
+			resources["client_node"] = { "model": client_node['model'],
+					  				   "wan_port": client_node['uplink_port'],
+					  				   "client_port": client_port['interface_name'] }
+
+		
 		return resources
 
 
