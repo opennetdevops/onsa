@@ -54,7 +54,7 @@ class ServiceView(View):
 		#Assign CPE Port (mark as used)
 		self.use_port(client_node_sn, cpe_port_id)
 
-		service_data = { "client_port_id": cpe_port_id }
+		service_data = { "client_port_id": cpe_port_id, "service_state": "REQUESTED" }
 
 		self.update_service(service_id, service_data)
 
