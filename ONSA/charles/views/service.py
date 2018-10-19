@@ -26,7 +26,6 @@ class ServiceView(View):
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-
 		service_id = data['service_id']
 
 		"""
@@ -40,8 +39,7 @@ class ServiceView(View):
 		"""
 		Update Inventory with CPE data
 		"""
-
-		cpe_data = {"client": client['name']}
+		cpe_data = { 'client': client['name'] }
 		self.update_cpe(client_node_sn, cpe_data)
 	
 		"""
@@ -56,10 +54,9 @@ class ServiceView(View):
 		#Assign CPE Port (mark as used)
 		self.use_port(client_node_sn, cpe_port_id)
 
-		service_data = {"client_port_id": cpe_port_id}
+		service_data = { "client_port_id": cpe_port_id }
 
 		self.update_service(service_id, service_data)
-
 
 		# DESCOMENTAR Y TERMINAR!
 		
@@ -80,7 +77,7 @@ class ServiceView(View):
 
 		# generate_request(data)
 		
-		response = { "message" : "Service Requested." }
+		response = { "message": "Service Requested." }
 
 		return JsonResponse(response)
 

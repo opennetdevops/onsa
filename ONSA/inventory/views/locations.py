@@ -11,13 +11,16 @@ class LocationsView(View):
     def get(self, request, location_id=None):
         
         if location_id is None:
-            name = request.GET.get('name','')
+            name = request.GET.get('name', None)
             
-            if name is not '':
-                locations = Location.objects.filter(name=name).values()
+            if name is not None:
+                location = Location.objects.filter(name=name).values()
+                response = location[0] if len(location) else []
+                return JsonResponse(response, safe=False)
             else:
                 locations = Location.objects.all().values()
-            return JsonResponse(list(locations),safe=False)
+                return JsonResponse(list(locations),safe=False)
+            
         else:
             location = Location.objects.filter(pk=location_id).values()[0]   
             return JsonResponse(location, safe=False)

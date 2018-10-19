@@ -17,6 +17,7 @@ urlpatterns = [
     path('/api/services', require_http_methods(["GET","POST"])(service.ServiceView.as_view())),
     path('/api/services/<str:service_id>', require_http_methods(["GET","PUT"])(service.ServiceView.as_view())),
     path('/api/services/<str:service_id>/activation', require_http_methods(["POST"])(service_activation.ServiceActivationView.as_view())),
+    path('/api/services/<str:service_id>/resources', require_http_methods(["GET"])(service.ServiceResourcesView.as_view())),
     # path('/api/clients', require_http_methods(["GET","POST"])(client.ClientView.as_view())),
     # path('/api/clients/<str:client_id>', require_http_methods(["GET"])(client.ClientView.as_view())),
     # path('/api/clients/<str:client_id>/services', require_http_methods(["GET"])(client_service.ClientServiceView.as_view())),

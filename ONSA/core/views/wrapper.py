@@ -14,7 +14,6 @@ class VlansView(View):
 		json_response = {"vlan_tag": free_vlan_tag['vlan_tag']}
 
 		return JsonResponse(json_response, safe=False)
-		
 
 	def post(self, request):
 		pass
