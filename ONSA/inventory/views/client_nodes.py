@@ -9,9 +9,11 @@ import json
 class ClientNodesView(View):
     def get(self, request, client_node_sn=None):
 
-        if not client_node_sn is None:
-            client_node = ClientNode.objects.filter(serial_number=client_node_sn).values()[0]
-            return JsonResponse(client_node, safe=False)
+        if client_node_sn is not None:
+            client_node = ClientNode.objects.filter(serial_number=client_node_sn).values()
+
+            response = client_node[0] if len(client_node) else []
+            return JsonResponse(response, safe=False)
 
         else:
             client_nodes = ClientNode.objects.all().values()

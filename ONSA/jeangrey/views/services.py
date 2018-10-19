@@ -97,7 +97,7 @@ class ServiceView(View):
                     print("ERROR NON VRF AVAILABLE")
             
             data['vrf_id'] = vrf_id
-                            
+
 
         ServiceClass = getattr(models, ServiceTypes[data['service_type']].value)
 
@@ -110,6 +110,9 @@ class ServiceView(View):
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+
+        print(data)
+
         service = Service.objects.filter(id=service_id)
         service.update(**data)
 
