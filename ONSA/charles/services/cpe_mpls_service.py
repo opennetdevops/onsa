@@ -1,4 +1,4 @@
-from utils import *
+from charles.utils import *
 from charles.views.service import *
 
 def generate_cpe_mpls_request(client, service):
@@ -9,7 +9,6 @@ def generate_cpe_mpls_request(client, service):
     client_node = get_client_node(service['client_node_sn'])
     client_port = get_client_port(service['client_port_id'])        
     
-    client_as = service['autonomous_system']
     vrf = get_vrf(service['vrf_id'])
 
     """
@@ -30,9 +29,16 @@ def generate_cpe_mpls_request(client, service):
             #Add logical unit to router node
             add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
             
+            client_as_number = assign_autonomous_system(service['vrf_id'])
+
             service_data = { 'logical_unit_id': logical_unit_id,
                              'client_network': service['client_network'], 
-                             'wan_network': wan_network }
+                             'wan_network': wan_network,
+                             'autonomous_system': client_as_number}
+
+            
+
+
 
             update_service(service_id, service_data)
 
@@ -49,7 +55,7 @@ def generate_cpe_mpls_request(client, service):
                                 "provider_vlan" : access_node['provider_vlan'],      
                                 "service_vlan" : service['vlan_id'], 
                                 "bandwidth" : service['bandwidth'],
-                                "client_as_number" : client_as,
+                                "client_as_number" : client_as_number,
                                 "an_client_port" : access_port['port'],
                                 "on_client_port" : client_port['interface_name'],
                                 "vrf_exists": vrf_exists,

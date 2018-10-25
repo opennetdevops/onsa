@@ -28,6 +28,16 @@ class ServiceView(View):
     def get(self, request, service_id=None):
         state = request.GET.get('state', '')
         service_type = request.GET.get('type', None)
+        vrf_id = request.GET.get('vrf_id',None)
+
+        if vrf_id is not None:
+
+            cpeless_mpls_services = list(CpelessMpls.objects.filter(vrf_id=vrf_id).values())
+            cpe_mpls_services = list(CpeMpls.objects.filter(vrf_id=vrf_id).values())
+            vpls_services = list(Vpls.objects.filter(vrf_id=vrf_id).values())
+
+            services = cpe_mpls_services + cpeless_mpls_services + vpls_services
+            return JsonResponse(services, safe=False)
 
 
         if service_type is not None:

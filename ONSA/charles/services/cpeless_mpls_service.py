@@ -1,4 +1,4 @@
-from utils import *
+from charles.utils import *
 from charles.views.service import *
 
 def generate_cpeless_mpls_request(client, service):

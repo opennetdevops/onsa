@@ -1,8 +1,5 @@
-from utils import *
+from charles.utils import *
 from charles.views.service import *
-
-
-
 
 def generate_vcpe_irs_request(client, service):
     location = get_location(service['location'])
