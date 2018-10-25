@@ -280,63 +280,48 @@ def add_location_to_vrf(vrf_id,location_id):
 	rheaders = {'Content-Type': 'application/json'}
 	response = requests.put(url, auth = None, verify = False, headers = rheaders)
 
-#Generate Services methods
 def generate_cpeless_irs_request(client, service):
-	client_name = client['name']
-
-	service_id = service['id']
-	service_type = service['service_type']
-
 	location = get_location(service['location'])
-	location_id = location['id']
-	pop_size = location['pop_size']
-
 	router_node = get_router_node(services['router_node_id'])
-	router_node_id = router_node['id']
-
-	access_port_id = service['access_port_id']
-	access_port = get_access_port(access_port_id)
-	access_node_id = service['access_node_id']
-	access_node = get_access_node(access_node_id)
-	
-	#Get client node by SN
+	access_port = get_access_port(service['access_port_id'])
+	access_node = get_access_node(service['access_node_id'])
 	client_node = get_client_node(service['client_node_sn'])
 	client_port = get_client_port(service['client_port_id'])	
 
 	"""
 	Fetch for logical units
 	"""
-	free_logical_units = get_free_logical_units(router_node_id)
+	free_logical_units = get_free_logical_units(router_node['id'])
 	logical_unit_id = free_logical_units[0]['logical_unit_id']
 
 
 	error = False
 
 	if logical_unit_id:
-		client_network = get_client_network(client_name, service_id, service['prefix'])
+		client_network = get_client_network(client['name'], service['id'], service['prefix'])
 		if client_network:
 			#Add logicals unit to routernode
-			add_logical_unit_to_router_node(router_node_id, logical_unit_id, service_id)
+			add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
 
 			service_data = { 'logical_unit_id': logical_unit_id,
 							 'public_network': client_network }
 
-			update_service(service_id, service_data)
+			update_service(service['id'], service_data)
 			
 			config = {
-			   "client" : client_name,
-	  		   "service_type" : service_type,
-	  		   "service_id" : service_id,
+			   "client" : client['name'],
+	  		   "service_type" : service['service_type'],
+	  		   "service_id" : service['id'],
 	  		   "op_type" : "CREATE",
 	  		   "parameters" : {
-	  		   			"pop_size" : pop_size,       
+	  		   			"pop_size" : location['pop_size'],       
 								"an_uplink_interface" : access_node['uplink_interface'],
 								"an_uplink_ports" : access_node['uplink_ports'],
 								"logical_unit" : logical_unit_id,   
 								"provider_vlan" : access_node['provider_vlan'],      
 								"service_vlan" : service['vlan_id'], 
 								"client_cidr" : client_network,
-								"bandwidth" : bandwidth,
+								"bandwidth" : service['bandwidth'],
 								"an_client_port" : access_port['port'],
 								"on_client_port" : client_port['interface_name'],
 								"on_uplink_port" : client_node['uplink_port']
@@ -346,7 +331,6 @@ def generate_cpeless_irs_request(client, service):
 							 {"vendor":access_node['vendor'],"model":access_node['model'],"mgmt_ip":access_node['mgmt_ip']},
 							 {"vendor":client_node['vendor'],"model":client_node['model'],"mgmt_ip":client_node['mgmt_ip']}]
 			}
-			pprint(config)
 			configure_service(config)
 		else:
 			error = True
@@ -359,62 +343,47 @@ def generate_cpeless_irs_request(client, service):
 		print("Not possible service")
 
 def generate_vcpe_irs_request(client, service):
-	client_name = client['name']
-
-	service_id = service['id']
-	service_type = service['service_type']
-
 	location = get_location(service['location'])
-	location_id = location['id']
-	pop_size = location['pop_size']
-
 	router_node = get_router_node(services['router_node_id'])
-	router_node_id = router_node['id']
-
-	access_port_id = service['access_port_id']
-	access_port = get_access_port(access_port_id)
-	access_node_id = service['access_node_id']
-	access_node = get_access_node(access_node_id)
-	
+	access_port = get_access_port(service['access_port_id'])
+	access_node = get_access_node(service['access_node_id'])
 	client_node = get_client_node(service['client_node_sn'])
-	client_port = get_client_port(service['client_port_id'])	
+	client_port = get_client_port(service['client_port_id'])		
 
 	"""
 	Fetch for logical units
 	"""
-	free_logical_units = get_free_logical_units(router_node_id)
+	free_logical_units = get_free_logical_units(router_node['id'])
 	logical_unit_id = free_logical_units[0]['logical_unit_id']
 	vcpe_logical_unit_id = free_logical_units[1]['logical_unit_id']
 	
-	virtual_pod = get_virtual_pod(location_id)
-	downlink_pg = get_virtual_pod_downlink_portgroup(str(virtual_pod['id']))
-	portgroup_id = str(downlink_pg['id'])
-	router_node_id = str(router_node_id)
+	virtual_pod = get_virtual_pod(location['id'])
+	downlink_pg = get_virtual_pod_downlink_portgroup(virtual_pod['id'])
 	
 	error = False
 
 	if len(free_logical_units) >= 2 and downlink_pg:
-		wan_ip = get_ip_wan_nsx(location['name'], client_name, service_id)
+		wan_ip = get_ip_wan_nsx(location['name'], client['name'], service['id'])
 		if wan_ip:
-			client_network = get_client_network(client_name, service_id, service['prefix'])
+			client_network = get_client_network(client['name'], service['id'], service['prefix'])
 			if client_network:
 				
 				service_data = { 'logical_unit_id': logical_unit_id,
 								 'vcpe_logical_unit_id': vcpe_logical_unit_id,
 								 'public_network': client_network, 
 								 'wan_ip': wan_ip,
-								 'portgroup_id': portgroup_id }
+								 'portgroup_id': downlink_pg['id'] }
 
-				update_service(service_id, service_data)
+				update_service(service['id'], service_data)
 
-				use_portgroup(portgroup_id)
+				use_portgroup(downlink_pg['id'])
 
-				add_logical_unit_to_router_node(router_node_id, logical_unit_id, service_id)
-				add_logical_unit_to_router_node(router_node_id, vcpe_logical_unit_id, service_id)
+				add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
+				add_logical_unit_to_router_node(router_node['id'], vcpe_logical_unit_id, service['id'])
 				config = { 
-						  "client" : client_name,
-						  "service_type" : service_type,
-						  "service_id" : service_id,
+						  "client" : client['name'],
+						  "service_type" : service['service_type'],
+						  "service_id" : service['id'],
 						  "op_type" : "CREATE",
 						  "parameters":{
 									"vmw_uplink_interface" : virtual_pod['uplink_interface'],
@@ -427,11 +396,11 @@ def generate_vcpe_irs_request(client, service):
 									"service_vlan" : free_vlan_tag['vlan_tag'], 
 									"client_cidr" : client_network,
 									"wan_ip" : wan_ip,
-									"bandwidth" : bandwidth,
+									"bandwidth" : service['bandwidth'],
 									"datacenter_id" : virtual_pod['datacenterId'] ,
 									"resgroup_id" : virtual_pod['resourcePoolId'],
 									"datastore_id" : virtual_pod['datastoreId'],
-									"wan_portgroup_id" : virtual_pod['uplinkPgId'],
+									"wan_portgroup_id" : virtual_pod['uplink_pg_id'],
 									"lan_portgroup_id" : downlink_pg['dvportgroup_id'],
 									"an_client_port" : free_access_port['port'],
 									"on_client_port" : client_port['interface_name'],
@@ -462,23 +431,18 @@ def generate_vcpe_irs_request(client, service):
 def generate_cpe_mpls_request(client, service):
 	location = get_location(service['location'])
 	router_node = get_router_node(services['router_node_id'])
-	
-	vrf = get_vrf(service['vrf_id'])
-	# DUDOSO
-	client_as = service['autonomous_system']
-
-	access_port_id = service['access_port_id']
-	access_port = get_access_port(access_port_id)
-	access_node_id = service['access_node_id']
-	access_node = get_access_node(access_node_id)
-	
+	access_port = get_access_port(service['access_port_id'])
+	access_node = get_access_node(service['access_node_id'])
 	client_node = get_client_node(service['client_node_sn'])
-	client_port = get_client_port(service['client_port_id'])	
+	client_port = get_client_port(service['client_port_id'])		
+	
+	client_as = service['autonomous_system']
+	vrf = get_vrf(service['vrf_id'])
 
 	"""
 	Fetch for logical units
 	"""
-	free_logical_units = get_free_logical_units(router_node_id)
+	free_logical_units = get_free_logical_units(router_node['id'])
 	logical_unit_id = free_logical_units[0]['logical_unit_id']
 
 	vrf_exists = vrf_exists_in_location(vrf['rt'], location['id'])
@@ -542,19 +506,13 @@ def generate_cpe_mpls_request(client, service):
 def generate_cpeless_mpls_request(client, service):
 	location = get_location(service['location'])
 	router_node = get_router_node(services['router_node_id'])
-	
-	vrf = get_vrf(service['vrf_id'])
-	
-	# DUDOSO
-	client_as = service['autonomous_system']
-
-	access_port_id = service['access_port_id']
-	access_port = get_access_port(access_port_id)
-	access_node_id = service['access_node_id']
-	access_node = get_access_node(access_node_id)
-	
+	access_port = get_access_port(service['access_port_id'])
+	access_node = get_access_node(service['access_node_id'])
 	client_node = get_client_node(service['client_node_sn'])
-	client_port = get_client_port(service['client_port_id'])	
+	client_port = get_client_port(service['client_port_id'])		
+	
+	client_as = service['autonomous_system']
+	vrf = get_vrf(service['vrf_id'])	
 
 	"""
 	Fetch for logical units
@@ -564,7 +522,6 @@ def generate_cpeless_mpls_request(client, service):
 
 	client_cidr = service['client_network'] + "/" + service['prefix']
 
-	router_node = get_router_node(router_node_id)
 	vrf_exists = vrf_exists_in_location(vrf['rt'], location['id'])
 
 	if logical_unit_id:
@@ -572,9 +529,9 @@ def generate_cpeless_mpls_request(client, service):
 						 'client_network': service['client_network'],
 						 'autonomous_system': client_as }
 
-		update_service(service_id, service_data)
+		update_service(service['id'], service_data)
 
-		add_logical_unit_to_router_node(router_node['router_node_id'], logical_unit_id, service_id)
+		add_logical_unit_to_router_node(router_node['router_node_id'], logical_unit_id, service['id'])
 		if not vrf_exists:
 			add_location_to_vrf(vrf['rt'], location['id'])
 
@@ -614,36 +571,30 @@ def generate_cpeless_mpls_request(client, service):
 def generate_vpls_request(client, service):
 	location = get_location(service['location'])
 	router_node = get_router_node(services['router_node_id'])
-	
-	vrf = get_vrf(service['vrf_id'])
-	
-	# DUDOSO
-	client_as = service['autonomous_system']
-
-	access_port_id = service['access_port_id']
-	access_port = get_access_port(access_port_id)
-	access_node_id = service['access_node_id']
-	access_node = get_access_node(access_node_id)
-	
+	access_port = get_access_port(service['access_port_id'])
+	access_node = get_access_node(service['access_node_id'])
 	client_node = get_client_node(service['client_node_sn'])
-	client_port = get_client_port(service['client_port_id'])	
+	client_port = get_client_port(service['client_port_id'])		
+	
+	client_as = service['autonomous_system']
+	vrf = get_vrf(service['vrf_id'])
 
 	"""
 	Fetch for logical units
 	"""
-	free_logical_units = get_free_logical_units(router_node_id)
+	free_logical_units = get_free_logical_units(router_node['id'])
 	logical_unit_id = free_logical_units[0]['logical_unit_id']
 
 	
-	vrf_exists = vrf_exists_in_location(vrf_id,location_id)
+	vrf_exists = vrf_exists_in_location(vrf['rt'],location['id'])
 
 	if 	logical_unit_id:
 		service_data = { 'logical_unit_id': logical_unit_id }
 
-		update_service(service_id, service_data)
+		update_service(service['id'], service_data)
 
 		#Add logical unit to router node
-		add_logical_unit_to_router_node(router_node_id, free_logical_units[0]['logical_unit_id'], service_id)
+		add_logical_unit_to_router_node(router_node_id, free_logical_units[0]['logical_unit_id'], service['id'])
 		if not vrf_exists:
 			add_location_to_vrf(vrf['rt'], location['id'])
 
