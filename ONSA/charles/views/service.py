@@ -3,7 +3,7 @@ from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from charles.models import Service
-from charles.services import ServiceHandler
+from charles.services import *
 from enum import Enum
 from pprint import pprint
 import requests
