@@ -68,8 +68,9 @@ class ServiceView(View):
 		self.update_service(service_id, service_data)
 
 		#Trigger Worker
-		generate_request = getattr(ServiceHandler.ServiceHandler, "generate_" + service.service_type + "_request")
-		generate_request(data)
+
+		generate_request = getattr(ServiceHandler, "generate_" + service.service_type + "_request")
+		generate_request(client, service)
 		
 		
 		response = { "message": "Service Requested." }

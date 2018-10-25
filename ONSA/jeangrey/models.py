@@ -63,7 +63,9 @@ class CpeMpls(Service):
         return str(self.id)
 
 class VcpeIrs(Service):
-    vcpe_logical_unit_id = models.CharField(max_length=10)
+    vcpe_logical_unit_id = models.CharField(max_length=10, null=True)
+    wan_ip = models.CharField(max_length=50, null=True)
+    portgroup_id = models.CharField(max_length=50, null=True)
 
     def __str__(self):
         return str(self.id)
