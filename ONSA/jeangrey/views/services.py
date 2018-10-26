@@ -116,7 +116,7 @@ class ServiceView(View):
         if data['service_type'] in VRF_SERVICES:
 
             if 'vrf_name' in data.keys():
-                    vrf_name = data['vrf_name']
+                    vrf_name = data.pop('vrf_name')
                     vrf = get_vrf(vrf_name)
                     vrf_id = vrf['rt']
             else:

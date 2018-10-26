@@ -352,15 +352,39 @@ def update_service(service_id, data):
         return None
 
 
+def get_service_vrfs(vrf_id):
+    url = settings.JEAN_GREY_URL + "services?vrf_id="  + str(vrf_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
+def get_vrfs():
+    url = settings.INVENTORY_URL + "vrfs" 
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
 def assign_autonomous_system(vrf_id):    
-    list_as = list( Service.objects.filter(vrf=vrf_name).values('autonomous_system') )
-    print("list_as",list_as)
-    
-    if (len(list_as) == 1) and (list_as[0]['autonomous_system'] is 0):
+    list_vrfs = get_service_vrfs(vrf_id)
+    list_as = list(map(lambda x: x['autonomous_system'], list_vrfs))
+    print(list_as)
+    print(len(list_as))
+    print(list_as[0])
+    if (len(list_as) == 1) and (list_as[0] is 0):
         return 65000
 
-    ordered_list_as = sorted(list_as, key=lambda k: k['autonomous_system'])
-    last_as = int( ordered_list_as[-1]['autonomous_system'] )
+    ordered_list_as = sorted(list_as, key=lambda k: k)
+    last_as = int( ordered_list_as[-1] )
 
     if last_as <= 65500:
         return (last_as + 1)
