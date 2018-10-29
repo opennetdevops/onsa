@@ -92,17 +92,27 @@ def destroy_subnet(client_name,product_id):
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
 
 def get_location(location_id):
-    url = settings.INVENTORY_URL + "locations/" + location_id
+    url = settings.INVENTORY_URL + "locations/" + str(location_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     if json_response:
-        return json_response[0]
+        return json_response
     else:
         return None
 
 def get_router_node(router_node_id):
-    url= settings.INVENTORY_URL + "routernodes/"+ router_node_id
+    url= settings.INVENTORY_URL + "routernodes/"+ str(router_node_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def get_virtual_pods(location_id):
+    url= settings.INVENTORY_URL + "locations/"+ str(location_id) + "/virtualpods"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -111,13 +121,13 @@ def get_router_node(router_node_id):
     else:
         return None
 
-def get_virtual_pod(location_id):
-    url= settings.INVENTORY_URL + "locations/"+ location_id + "/virtualpods"
+def get_virtual_pods(location_id, virtual_pod_id):
+    url= settings.INVENTORY_URL + "locations/"+ str(location_id) + "/virtualpods/" + str(virtual_pod_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     if json_response:
-        return json_response[0]
+        return json_response
     else:
         return None
 
@@ -153,7 +163,7 @@ def use_portgroup(portgroup_id):
         return None
 
 def get_free_logical_units(router_node_id):
-    url = settings.INVENTORY_URL + "routernodes/" + router_node_id + "/logicalunits?used=false"
+    url = settings.INVENTORY_URL + "routernodes/" + str(router_node_id) + "/logicalunits?used=false"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -164,7 +174,7 @@ def get_free_logical_units(router_node_id):
         return None
 
 def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id):
-    url= settings.INVENTORY_URL + "routernodes/" + router_node_id + "/logicalunits"
+    url= settings.INVENTORY_URL + "routernodes/" + str(router_node_id) + "/logicalunits"
     rheaders = {'Content-Type': 'application/json'}
     data = {"logical_unit_id":logical_unit_id,
                     "product_id":product_id}
@@ -244,7 +254,7 @@ def update_service(service_id, data):
     else:
         return None
 
-def get_access_node_port(access_port_id):
+def get_access_port(access_port_id):
     url= settings.INVENTORY_URL + "accessports/"+ str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
@@ -328,6 +338,18 @@ def get_client(client_id):
     else:
         return None
 
+
+def get_client_port(client_node_id, client_port_id):
+    url = settings.INVENTORY_URL + "clientnodes/"  + str(client_node_id) + "/clientports/" + str(client_port_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
 def use_port(client_node_id, client_port_id):
     url= settings.INVENTORY_URL + "clientnodes/" + str(client_node_id) + "/clientports/" + str(client_port_id)
 
@@ -352,17 +374,6 @@ def update_service(service_id, data):
         return None
 
 
-def get_service_vrfs(vrf_id):
-    url = settings.JEAN_GREY_URL + "services?vrf_id="  + str(vrf_id)
-    rheaders = {'Content-Type': 'application/json'}
-    response = requests.get(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response
-    else:
-        return None
-
-
 def get_vrfs():
     url = settings.INVENTORY_URL + "vrfs" 
     rheaders = {'Content-Type': 'application/json'}
@@ -372,30 +383,3 @@ def get_vrfs():
         return json_response
     else:
         return None
-
-
-def assign_autonomous_system(vrf_id):    
-    list_vrfs = get_service_vrfs(vrf_id)
-    list_as = list(map(lambda x: x['autonomous_system'], list_vrfs))
-    print(list_as)
-    print(len(list_as))
-    print(list_as[0])
-    if (len(list_as) == 1) and (list_as[0] is 0):
-        return 65000
-
-    ordered_list_as = sorted(list_as, key=lambda k: k)
-    last_as = int( ordered_list_as[-1] )
-
-    if last_as <= 65500:
-        return (last_as + 1)
-    else:
-        while(1):
-            proposed_as = 65000
-            if proposed_as > 65500:
-                #TODO throw exception
-                return -1
-
-            if Service.objects.filter(vrf_name=vrf_name, autonomous_system=proposed_as).values().count():
-                proposed_as+=1
-            else:
-                return proposed_as

@@ -20,7 +20,7 @@ class VrfLocationsView(View):
 
         else:
             vrf = Vrf.objects.get(rt=vrf_id)
-            return JsonResponse(list(vrf.locations.all()), safe=False)
+            return JsonResponse(list(vrf.locations.all().values()), safe=False)
 
 
     def put(self, request, vrf_id, location_id):

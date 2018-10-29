@@ -15,9 +15,9 @@ class RouterNodeLogicalUnitsView(View):
         used = request.GET.get('used')
         
         if used == "true":
-            all_lus = LogicalUnit.objects.filter(routerNodes=router_node).values()
+            all_lus = LogicalUnit.objects.filter(router_nodes=router_node).values()
         elif used == "false":
-            all_lus = LogicalUnit.objects.exclude(routerNodes=router_node).values()
+            all_lus = LogicalUnit.objects.exclude(router_nodes=router_node).values()
         else:
             all_lus = LogicalUnit.objects.all().values()
         return JsonResponse(list(all_lus), safe=False)
@@ -30,7 +30,7 @@ class RouterNodeLogicalUnitsView(View):
         product_id = data['product_id'] 
         lu = LogicalUnit.objects.get(logical_unit_id=lu_id)
         lu.product_id = product_id
-        lu.routerNodes.add(router_node)
+        lu.router_nodes.add(router_node)
         lu.save()
         return JsonResponse(data, safe=False)
 
@@ -38,7 +38,7 @@ class RouterNodeLogicalUnitsView(View):
     def delete(self, request, routernode_id, logicalunit_id):
         router_node = RouterNode.objects.get(pk=routernode_id)
         lu = LogicalUnit.objects.get(logical_unit_id=logicalunit_id)
-        lu.routerNodes.remove(router_node)
+        lu.router_nodes.remove(router_node)
         lu.save()
         data = {"Message" : "RouterNode deleted successfully"}
         return JsonResponse(data, safe=False)

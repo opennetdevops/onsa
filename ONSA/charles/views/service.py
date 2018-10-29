@@ -6,6 +6,7 @@ from charles.models import Service
 from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service
 from charles.services import vpls_service
 from enum import Enum
+from charles.utils.utils import *
 from pprint import pprint
 import requests
 import json
@@ -40,8 +41,8 @@ class ServiceView(View):
 		"""
 		Get service and client info from Service Inventory
 		"""	
-		service = self.get_service(service_id)
-		client = self.get_client(service['client_id'])
+		service = get_service(service_id)
+		client = get_client(service['client_id'])
 		
 		client_node_sn = service['client_node_sn']
 
@@ -74,13 +75,13 @@ class ServiceView(View):
 
 		#Update JeanGrey
 		service_data = { "client_port_id": cpe_port_id, "service_state": ServiceStatuses['REQUESTED'].value}
-		self.update_service(service_id, service_data)
+		update_service(service_id, service_data)
 
 		#Get Service from JeanGrey
 		service = get_service(service_id)
 
 		#Trigger Worker
-		generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service.service_type + "_request")
+		generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
 		generate_request(client, service)
 		
 		
@@ -100,9 +101,9 @@ class ServiceView(View):
 
 		#Rollback all reservations if error
 		if service[0].service_state == ServiceStatuses['ERROR'].value:
-			self.rollback_service(str(service_id))
+			rollback_service(str(service_id))
 
-		self.update_core_service_status(str(service_id), data)
+		update_core_service_status(str(service_id), data)
 
 		return HttpResponse(data, content_type='application/json')
 

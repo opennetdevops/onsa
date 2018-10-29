@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views import View
 from jeangrey.models import Client, Service, CpelessIrs, CpeMpls, CpeIrs, Vpls, VcpeIrs, CpelessMpls
 from jeangrey import models
+from jeangrey.utils.utils import *
 from enum import Enum
 import json
 import requests
@@ -133,6 +134,7 @@ class ServiceView(View):
                     print("ERROR NON VRF AVAILABLE")
             
             data['vrf_id'] = vrf_id
+            data['autonomous_system'] = assign_autonomous_system(vrf_id)
 
         data['location_id'] = location_id
         data['router_node_id'] = router_node['id']
@@ -153,9 +155,10 @@ class ServiceView(View):
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        print(data)
-
-        service = Service.objects.filter(id=service_id)
+        service_type = Service.objects.get(id=service_id).service_type
+        ServiceClass = getattr(models, ServiceTypes[service_type].value)
+        
+        service = ServiceClass.objects.filter(id=service_id)
         service.update(**data)
 
         return JsonResponse(data, safe=False)

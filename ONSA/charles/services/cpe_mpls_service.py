@@ -1,13 +1,13 @@
-from charles.utils import *
+from charles.utils.utils import *
 from charles.views.service import *
 
 def generate_cpe_mpls_request(client, service):
-    location = get_location(service['location'])
-    router_node = get_router_node(services['router_node_id'])
+    location = get_location(service['location_id'])
+    router_node = get_router_node(service['router_node_id'])
     access_port = get_access_port(service['access_port_id'])
     access_node = get_access_node(service['access_node_id'])
     client_node = get_client_node(service['client_node_sn'])
-    client_port = get_client_port(service['client_port_id'])        
+    client_port = get_client_port(service['client_node_sn'], service['client_port_id'])        
     
     vrf = get_vrf(service['vrf_id'])
 
@@ -29,7 +29,7 @@ def generate_cpe_mpls_request(client, service):
             #Add logical unit to router node
             add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
             
-            client_as_number = assign_autonomous_system(service['vrf_id'])
+            client_as_number = service['autonomous_system']
 
             service_data = { 'logical_unit_id': logical_unit_id,
                              'client_network': service['client_network'], 
@@ -40,12 +40,12 @@ def generate_cpe_mpls_request(client, service):
 
 
 
-            update_service(service_id, service_data)
+            update_service(service['id'], service_data)
 
             config = {
                "client" : client['name'],
                "service_type" :  service['service_type'],
-               "service_id" : service['service_id'],
+               "service_id" : service['id'],
                "op_type" : "CREATE",
                "parameters" : {
                         "pop_size" : location['pop_size'],       
@@ -60,7 +60,7 @@ def generate_cpe_mpls_request(client, service):
                                 "on_client_port" : client_port['interface_name'],
                                 "vrf_exists": vrf_exists,
                                 "wan_cidr": wan_network,
-                                "client_cidr": sevice['client_network'],
+                                "client_cidr": service['client_network'],
                     "vrf_name": vrf['name'],
                     "vrf_id": vrf['rt'],
                     "loopback":router_node['loopback']
