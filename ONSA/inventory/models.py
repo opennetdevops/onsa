@@ -2,8 +2,8 @@ from django.db import models
 
 class Location(models.Model):
     name = models.CharField(max_length=50, blank=True, unique=True, null=True)  #HUB
-    address = models.CharField(max_length=50, blank=True)
-    pop_size =  models.CharField(max_length=50, blank=True)
+    address = models.CharField(max_length=50, blank=True, null=True)
+    pop_size =  models.CharField(max_length=50, blank=True, null=True)
 
     def get_router_nodes(self):
         router_nodes = RouterNode.objects.filter(device_type="RouterNode",location=self)
@@ -19,10 +19,10 @@ class Location(models.Model):
 
 class Device(models.Model):
     name = models.CharField(max_length=50)
-    device_type = models.CharField(max_length=50, blank=True)
-    mgmt_ip = models.CharField(max_length=50, blank=True)
-    model = models.CharField(max_length=50, blank=True)
-    vendor = models.CharField(max_length=50, blank=True)
+    device_type = models.CharField(max_length=50, blank=True, null=True)
+    mgmt_ip = models.CharField(max_length=50, blank=True, null=True)
+    model = models.CharField(max_length=50, blank=True, null=True)
+    vendor = models.CharField(max_length=50, blank=True, null=True)
     location = models.ForeignKey(Location, on_delete=models.CASCADE) 
 
     class Meta:
@@ -30,11 +30,11 @@ class Device(models.Model):
 
 
 class AccessNode(Device): #SCO
-    uplink_interface = models.CharField(max_length=50) #AE del lado del MX
-    uplink_ports = models.CharField(max_length=50, blank=True)
-    access_node_id = models.CharField(max_length=4) 
-    provider_vlan = models.CharField(max_length=50)
-    logical_unit_id = models.CharField(max_length=50)
+    uplink_interface = models.CharField(max_length=50, null=True) #AE del lado del MX
+    uplink_ports = models.CharField(max_length=50, blank=True, null=True)
+    access_node_id = models.CharField(max_length=4, null=True) 
+    provider_vlan = models.CharField(max_length=50, null=True)
+    logical_unit_id = models.CharField(max_length=50, null=True)
 
     def __str__(self):
         return self.name
@@ -57,7 +57,7 @@ class ClientNode(Device):
 
 
 class ClientNodePort(models.Model):
-    interface_name = models.CharField(max_length=50, blank=True)
+    interface_name = models.CharField(max_length=50, blank=True, null=True)
     client_node = models.ForeignKey(ClientNode, on_delete=models.CASCADE)
     used = models.BooleanField(default=False)
     service_id = models.CharField(max_length=50, blank=True)
