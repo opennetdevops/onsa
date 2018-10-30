@@ -22,19 +22,18 @@ class ServiceActivationView(View):
 		logging.basicConfig(level=logging.INFO)
 
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-		sn = data['cpe_sn']
+		print(data)
+		
+		if 'cpe_sn' in data.keys():
+			if self.is_valid_cpe(data['cpe_sn']):
+				service_data = { "client_node_sn": data['cpe_sn']}
+				self.update_service(service_id, service_data)
+			else:
+				response = { "message" : "CPE not valid." }
+				return JsonResponse(response, safe=False)
 
-		if self.is_valid_cpe(sn):
-			service_data = { "client_node_sn": sn }
-			self.update_service(service_id, service_data)
-
-			r = self.push_service_to_orchestrator(service_id)
-
-			response = r.status_code
-		else:
-			response = { "message" : "CPE not valid." }
-
-		return JsonResponse(response, safe=False)
+		r = self.push_service_to_orchestrator(service_id)
+		return JsonResponse(r.status_code, safe=False)
 
 	def is_valid_cpe(self, sn):
 		cpe = self._get_cpe(sn)
@@ -52,7 +51,7 @@ class ServiceActivationView(View):
 			return None	
 
 	def update_service(self, service_id, data):
-		url = settings.JEAN_GREY_URL + "services/" + service_id
+		url = settings.JEAN_GREY_URL + "services/" + str(service_id)
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)

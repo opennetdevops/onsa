@@ -46,11 +46,15 @@ class ServiceView(View):
 		
 		client_node_sn = service['client_node_sn']
 
+		client_node = get_client_node(client_node_sn)
+		
 		"""
-		Update Inventory with CPE data
+		Update Inventory with CPE data if needed
 		"""
-		cpe_data = { 'client': client['name'] }
-		update_cpe(client_node_sn, cpe_data)
+		if client_node['client'] is None:
+
+			cpe_data = { 'client': client['name'] }
+			update_cpe(client_node_sn, cpe_data)
 	
 		"""
 		Get free CPE port from Inventory and

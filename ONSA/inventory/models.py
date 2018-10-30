@@ -49,8 +49,8 @@ class RouterNode(Device): #MX
 
 class ClientNode(Device):
     serial_number = models.CharField(primary_key=True, max_length=50, blank=True, unique=True)
-    client = models.CharField(max_length=50, blank=True)
-    uplink_port = models.CharField(max_length=50, blank=True)
+    client = models.CharField(max_length=50, blank=True, null=True)
+    uplink_port = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.serial_number
@@ -76,7 +76,7 @@ class AccessPort(models.Model):
         return str(self.access_node.location) + " - " + self.port
 
 class VlanTag(models.Model):
-    vlan_tag = models.CharField(max_length=50,  unique=True)
+    vlan_tag = models.CharField(max_length=50, unique=True)
     vlan_tag.null = True
     access_nodes = models.ManyToManyField(AccessNode, blank=True)
 

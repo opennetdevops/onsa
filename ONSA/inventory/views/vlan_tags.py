@@ -8,10 +8,7 @@ import json
 
 class VlanTagsView(View):
 	def get(self, request):
-		vlan_tags = VlanTag.objects.all().values()
-
-		return JsonResponse(list(vlan_tags), safe=False)
-
+		return JsonResponse(list(VlanTag.objects.all().values()), safe=False)
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))

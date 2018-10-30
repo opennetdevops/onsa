@@ -4,6 +4,8 @@ from ..models import VlanTag, AccessNode
 
 import json
 
+from pprint import pprint
+
 class AccesNodeVlanTagsView(View):
     def get(self, request, access_node_id):
         access_node = AccessNode.objects.get(pk=access_node_id)
@@ -18,8 +20,16 @@ class AccesNodeVlanTagsView(View):
         return JsonResponse(list(all_vlans), safe=False)
 
     def post(self, request, access_node_id):
-        data = {"Message" : "Deprecated method"}
+        data = json.loads(request.body.decode(encoding='UTF-8'))
 
+        pprint(data)
+
+        access_node = AccessNode.objects.get(pk=access_node_id)
+        vlan_tag = VlanTag.objects.get(vlan_tag=data['vlan_id'])
+
+        vlan_tag.access_nodes.add(access_node)
+        vlan_tag.save()
+        
         return JsonResponse(data, safe=False)
 
 

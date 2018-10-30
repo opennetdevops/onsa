@@ -16,5 +16,5 @@ urlpatterns = [
     path('/api/clients/<str:client_id>', require_http_methods(["GET", "PUT", "DELETE"])(clients.ClientView.as_view())),
 	path('/api/services', require_http_methods(["GET", "POST"])(services.ServiceView.as_view())),
 	path('/api/services/<str:service_id>', require_http_methods(["GET", "PUT", "DELETE"])(services.ServiceView.as_view())),
-    
+	
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
