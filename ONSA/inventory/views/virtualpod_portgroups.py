@@ -15,9 +15,9 @@ class VirtualpodPortgroupsView(View):
         used = request.GET.get('used')
         
         if used == "true":
-            all_pgs = Portgroup.objects.filter(virtualVmwPod=virtual_pod, used=True).values()
+            all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=True).values()
         elif used == "false":
-            all_pgs = Portgroup.objects.filter(virtualVmwPod=virtual_pod, used=False).values()
+            all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=False).values()
         else:
-            all_pgs = Portgroup.objects.filter(virtualVmwPod=virtual_pod).values()
+            all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod).values()
         return JsonResponse(list(all_pgs), safe=False)

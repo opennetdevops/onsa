@@ -117,11 +117,11 @@ def get_virtual_pods(location_id):
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     if json_response:
-        return json_response[0]
+        return json_response
     else:
         return None
 
-def get_virtual_pods(location_id, virtual_pod_id):
+def get_virtual_pod(location_id, virtual_pod_id):
     url= settings.INVENTORY_URL + "locations/"+ str(location_id) + "/virtualpods/" + str(virtual_pod_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
@@ -132,7 +132,7 @@ def get_virtual_pods(location_id, virtual_pod_id):
         return None
 
 def get_client_node(client_node_sn):
-    url= settings.INVENTORY_URL + "clientnodes/"+client_node_sn
+    url= settings.INVENTORY_URL + "clientnodes/" + client_node_sn
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -142,7 +142,7 @@ def get_client_node(client_node_sn):
         return None
 
 def get_virtual_pod_downlink_portgroup(virtual_pod_id):
-    url= settings.INVENTORY_URL + "virtualpods/"+ virtual_pod_id + "/portgroups?used=false"
+    url= settings.INVENTORY_URL + "virtualpods/"+ str(virtual_pod_id) + "/portgroups?used=false"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -152,7 +152,7 @@ def get_virtual_pod_downlink_portgroup(virtual_pod_id):
         return None
 
 def use_portgroup(portgroup_id):
-    url= settings.INVENTORY_URL + "portgroups/" + portgroup_id
+    url= settings.INVENTORY_URL + "portgroups/" + str(portgroup_id)
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -186,7 +186,7 @@ def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id):
         return None
 
 def get_free_access_port(location_id):
-    url= settings.INVENTORY_URL + "locations/"+ location_id + "/accessports?used=false"
+    url= settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -196,7 +196,7 @@ def get_free_access_port(location_id):
         return None
 
 def use_port(access_port_id):
-    url= settings.INVENTORY_URL + "accessports/" + access_port_id
+    url= settings.INVENTORY_URL + "accessports/" + str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -244,7 +244,7 @@ def add_vlan_tag_to_access_node(vlan_tag,access_node_id,access_port_id,service_i
         return None
 
 def update_service(service_id, data):
-    url = settings.JEAN_GREY_URL + "services/" + service_id
+    url = settings.JEAN_GREY_URL + "services/" + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
 
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -295,11 +295,11 @@ def rollback_service(service_id):
 
 def update_core_service_status(service_id, data):
     rheaders = {'Content-Type': 'application/json'}
-    url = settings.CORE_URL +"services/" + service_id
+    url = settings.CORE_URL +"services/" + str(service_id)
     r = requests.put(url, data = json.dumps(data), headers=rheaders)
 
 def get_free_cpe_port(client_node_sn):
-    url= settings.INVENTORY_URL + "clientnodes/" + client_node_sn + "/clientports?used=False"
+    url= settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn) + "/clientports?used=False"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -309,7 +309,7 @@ def get_free_cpe_port(client_node_sn):
         return None
 
 def update_cpe(client_node_sn, data):
-    url = settings.INVENTORY_URL + "clientnodes/" + client_node_sn
+    url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -319,7 +319,7 @@ def update_cpe(client_node_sn, data):
         return None
 
 def get_service(service_id):
-    url = settings.JEAN_GREY_URL + "services/" + service_id
+    url = settings.JEAN_GREY_URL + "services/" + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -362,17 +362,6 @@ def use_port(client_node_id, client_port_id):
         return json_response
     else:
         return None
-
-def update_service(service_id, data):
-    url = settings.JEAN_GREY_URL + "services/" + service_id
-    rheaders = { 'Content-Type': 'application/json' }
-    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response
-    else:
-        return None
-
 
 def get_vrfs():
     url = settings.INVENTORY_URL + "vrfs" 

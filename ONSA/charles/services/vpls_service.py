@@ -7,7 +7,7 @@ def generate_vpls_request(client, service):
     access_port = get_access_port(service['access_port_id'])
     access_node = get_access_node(service['access_node_id'])
     client_node = get_client_node(service['client_node_sn'])
-    client_port = get_client_port(service['client_port_id'])        
+    client_port = get_client_port(service['client_node_sn'], service['client_port_id'])        
     
     client_as = service['autonomous_system']
     vrf = get_vrf(service['vrf_id'])
@@ -27,7 +27,7 @@ def generate_vpls_request(client, service):
         update_service(service['id'], service_data)
 
         #Add logical unit to router node
-        add_logical_unit_to_router_node(router_node_id, free_logical_units[0]['logical_unit_id'], service['id'])
+        add_logical_unit_to_router_node(router_node['id'], free_logical_units[0]['logical_unit_id'], service['id'])
         if not vrf_exists:
             add_location_to_vrf(vrf['rt'], location['id'])
 
@@ -37,7 +37,7 @@ def generate_vpls_request(client, service):
            "service_id" : service['id'],
            "op_type" : "CREATE",
            "parameters" : {
-                    "pop_size" : service['pop_size'],       
+                    "pop_size" : location['pop_size'],       
                             "an_uplink_interface" : access_node['uplink_interface'],
                             "an_uplink_ports" :   access_node['uplink_ports'],
                             "logical_unit" : logical_unit_id,   

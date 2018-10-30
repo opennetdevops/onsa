@@ -7,7 +7,7 @@ def generate_vcpe_irs_request(client, service):
     access_port = get_access_port(service['access_port_id'])
     access_node = get_access_node(service['access_node_id'])
     client_node = get_client_node(service['client_node_sn'])
-    client_port = get_client_port(service['client_port_id'])        
+    client_port = get_client_port(service['client_node_sn'], service['client_port_id'])        
 
     """
     Fetch for logical units
@@ -16,7 +16,7 @@ def generate_vcpe_irs_request(client, service):
     logical_unit_id = free_logical_units[0]['logical_unit_id']
     vcpe_logical_unit_id = free_logical_units[1]['logical_unit_id']
     
-    virtual_pod = get_virtual_pod(location['id'])
+    virtual_pod = get_virtual_pods(location['id'])[0]
     downlink_pg = get_virtual_pod_downlink_portgroup(virtual_pod['id'])
     
     error = False
@@ -52,16 +52,16 @@ def generate_vcpe_irs_request(client, service):
                                     "an_uplink_ports" :   access_node['uplink_ports'],
                                     "an_logical_unit" : free_logical_units[1]['logical_unit_id'],   
                                     "provider_vlan" : access_node['provider_vlan'],      
-                                    "service_vlan" : free_vlan_tag['vlan_tag'], 
+                                    "service_vlan" : service['vlan_id'], 
                                     "client_cidr" : client_network,
                                     "wan_ip" : wan_ip,
                                     "bandwidth" : service['bandwidth'],
-                                    "datacenter_id" : virtual_pod['datacenterId'] ,
-                                    "resgroup_id" : virtual_pod['resourcePoolId'],
-                                    "datastore_id" : virtual_pod['datastoreId'],
+                                    "datacenter_id" : virtual_pod['datacenter_id'] ,
+                                    "resgroup_id" : virtual_pod['respool_id'],
+                                    "datastore_id" : virtual_pod['datastore_id'],
                                     "wan_portgroup_id" : virtual_pod['uplink_pg_id'],
                                     "lan_portgroup_id" : downlink_pg['dvportgroup_id'],
-                                    "an_client_port" : free_access_port['port'],
+                                    "an_client_port" : access_port['port'],
                                     "on_client_port" : client_port['interface_name'],
                                     "on_uplink_port" : client_node['uplink_port']
                                  },

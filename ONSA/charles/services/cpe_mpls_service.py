@@ -37,9 +37,6 @@ def generate_cpe_mpls_request(client, service):
                              'autonomous_system': client_as_number}
 
             
-
-
-
             update_service(service['id'], service_data)
 
             config = {

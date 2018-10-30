@@ -14,8 +14,7 @@ class Service(models.Model):
     service_state = models.CharField(max_length=15, null=True)
     service_type = models.CharField(max_length=30, null=True)
     bandwidth = models.CharField(max_length=50, null=True)
-    prefix = models.CharField(max_length=50, null=True)
-
+   
     location_id = models.CharField(max_length=10, null=True)
     router_node_id = models.CharField(max_length=10, null=True)
     logical_unit_id = models.CharField(max_length=10, null=True)
@@ -33,12 +32,14 @@ class Service(models.Model):
         return "SERVICE_ID: " + str(self.id)
 
 class CpelessIrs(Service):
+    prefix = models.CharField(max_length=50, null=True)
     public_network = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
 
 class CpeIrs(Service):
+    prefix = models.CharField(max_length=50, null=True)
     wan_network = models.CharField(max_length=50)
     public_network = models.CharField(max_length=50, null=True, blank=True)
     
@@ -63,9 +64,11 @@ class CpeMpls(Service):
         return str(self.id)
 
 class VcpeIrs(Service):
+    prefix = models.CharField(max_length=50, null=True)
     vcpe_logical_unit_id = models.CharField(max_length=10, null=True)
     wan_ip = models.CharField(max_length=50, null=True)
     portgroup_id = models.CharField(max_length=50, null=True)
+    public_network = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return str(self.id)

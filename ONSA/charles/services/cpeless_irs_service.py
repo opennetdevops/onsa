@@ -7,7 +7,7 @@ def generate_cpeless_irs_request(client, service):
 	access_port = get_access_port(service['access_port_id'])
 	access_node = get_access_node(service['access_node_id'])
 	client_node = get_client_node(service['client_node_sn'])
-	client_port = get_client_port(service['client_port_id'])	
+	client_port = get_client_port(service['client_node_sn'], service['client_port_id'])	
 
 	"""
 	Fetch for logical units
