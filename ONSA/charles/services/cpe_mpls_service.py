@@ -38,7 +38,7 @@ def generate_cpe_mpls_request(client, service):
 
             
             update_service(service['id'], service_data)
-
+#/////
             config = {
                "client" : client['name'],
                "service_type" :  service['service_type'],

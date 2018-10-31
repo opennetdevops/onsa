@@ -37,48 +37,56 @@ class ServiceView(View):
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 		service_id = data['service_id']
+		service_code = data['service_code']
 
-		"""
-		Get service and client info from Service Inventory
-		"""	
-		service = get_service(service_id)
-		client = get_client(service['client_id'])
+		if service_code == "E2E":
+			"""
+			Get service and client info from Service Inventory
+			"""	
+			service = get_service(service_id)
+			client = get_client(service['client_id'])
+			
+			client_node_sn = service['client_node_sn']
+
+			client_node = get_client_node(client_node_sn)
+			
+			"""
+			Update Inventory with CPE data if needed
+			"""
+			if client_node['client'] is None:
+
+				cpe_data = { 'client': client['name'] }
+				update_cpe(client_node_sn, cpe_data)
 		
-		client_node_sn = service['client_node_sn']
-
-		client_node = get_client_node(client_node_sn)
-		
-		"""
-		Update Inventory with CPE data if needed
-		"""
-		if client_node['client'] is None:
-
-			cpe_data = { 'client': client['name'] }
-			update_cpe(client_node_sn, cpe_data)
-	
-		"""
-		Get free CPE port from Inventory and
-		mark it as a used port.
-		"""
-		cpe_port = get_free_cpe_port(client_node_sn)
-		cpe_port_id = cpe_port['id']
-		client_node_port = cpe_port['interface_name']
+			"""
+			Get free CPE port from Inventory and
+			mark it as a used port.
+			"""
+			cpe_port = get_free_cpe_port(client_node_sn)
+			cpe_port_id = cpe_port['id']
+			client_node_port = cpe_port['interface_name']
 
 
-		#Assign CPE Port (mark as used)
-		use_port(client_node_sn, cpe_port_id)
+			#Assign CPE Port (mark as used)
+			use_port(client_node_sn, cpe_port_id)
 
-		#Check if exists (retry support)
-		if not self._existing_service(service_id):
-			service = Service.objects.create(service_id=service_id, service_state=service['service_state'] )
+			#Check if exists (retry support)
+			if not self._existing_service(service_id):
+				service = Service.objects.create(service_id=service_id, service_state=service['service_state'] )
 
-		# Save locally
-		service = Service.objects.get(service_id=service_id)
-		service.service_state = ServiceStatuses['REQUESTED'].value
-		service.save()
+			# Save locally
+			service = Service.objects.get(service_id=service_id)
+			service.service_state = ServiceStatuses['REQUESTED'].value
+			service.save()
+
+			#Update JeanGrey
+			service_data = { "client_port_id": cpe_port_id, "service_state": ServiceStatuses['REQUESTED'].value}
+			update_service(service_id, service_data)
+		elif service_code == ""
+
 
 		#Update JeanGrey
-		service_data = { "client_port_id": cpe_port_id, "service_state": ServiceStatuses['REQUESTED'].value}
+		service_data = { "service_state": ServiceStatuses['REQUESTED'].value}
 		update_service(service_id, service_data)
 
 		#Get Service from JeanGrey
