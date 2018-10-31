@@ -4,7 +4,8 @@ from django.db import models
 class Service(models.Model):
 	service_id = models.CharField(max_length=50)
 	# service_type = models.CharField(max_length=50)
-	service_state = models.CharField(max_length=50, blank=True, null=True) 
+	service_state = models.CharField(max_length=50, blank=True, null=True)
+	target_state = models.CharField(max_length=50, blank=True, null=True)  
 	# client_id = models.CharField(max_length=50)
 	# client_name = models.CharField(max_length=50)
 	# location = models.CharField(max_length=50)

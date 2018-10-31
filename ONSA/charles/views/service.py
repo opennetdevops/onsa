@@ -11,11 +11,6 @@ from pprint import pprint
 import requests
 import json
 
-class ServiceStatuses(Enum):
-    REQUESTED = "REQUESTED"
-    COMPLETED = "COMPLETED"
-    ERROR = "ERROR"
-
 class ServiceTypes(Enum):
     cpeless_irs = cpeless_irs_service
     cpe_mpls = cpe_mpls_service
@@ -23,6 +18,14 @@ class ServiceTypes(Enum):
     vcpe_irs = vcpe_irs_service
     vpls = vpls_service
 
+class CodeMap(Enum):
+    e2e = "bb"
+    bb = "bb"
+    bb_data = "bb_data"
+
+class NextStateE2e(Enum):
+    BB_ACTIVATION_IN_PROGRESS = "BB_ACTIVATED"
+    BB_ACTIVATED = "SERVICE_ACTIVATED"
 
 class ServiceView(View):
 
@@ -36,65 +39,33 @@ class ServiceView(View):
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-		service_id = data['service_id']
-		service_code = data['service_code']
 
-		if service_code == "E2E":
-			"""
-			Get service and client info from Service Inventory
-			"""	
-			service = get_service(service_id)
-			client = get_client(service['client_id'])
-			
-			client_node_sn = service['client_node_sn']
+		"""
+		Get service and client info from Service Inventory
+		"""	
+		service = get_service(data['service_id'])
+		client = get_client(service['client_id'])
 
-			client_node = get_client_node(client_node_sn)
-			
-			"""
-			Update Inventory with CPE data if needed
-			"""
-			if client_node['client'] is None:
+		client_port_id = self.fetch_cpe(data, service, client) if data['activation_code'] == "e2e" else None 
 
-				cpe_data = { 'client': client['name'] }
-				update_cpe(client_node_sn, cpe_data)
-		
-			"""
-			Get free CPE port from Inventory and
-			mark it as a used port.
-			"""
-			cpe_port = get_free_cpe_port(client_node_sn)
-			cpe_port_id = cpe_port['id']
-			client_node_port = cpe_port['interface_name']
-
-
-			#Assign CPE Port (mark as used)
-			use_port(client_node_sn, cpe_port_id)
-
-			#Check if exists (retry support)
-			if not self._existing_service(service_id):
-				service = Service.objects.create(service_id=service_id, service_state=service['service_state'] )
-
-			# Save locally
-			service = Service.objects.get(service_id=service_id)
-			service.service_state = ServiceStatuses['REQUESTED'].value
-			service.save()
-
-			#Update JeanGrey
-			service_data = { "client_port_id": cpe_port_id, "service_state": ServiceStatuses['REQUESTED'].value}
-			update_service(service_id, service_data)
-		elif service_code == ""
-
-
+		# Retry support
+		if not self._existing_service(data['service_id']):
+			charles_service = Service.objects.create(service_id=data['service_id'], service_state="REQUESTED")
+		else:
+			charles_service = Service.objects.get(service_id=data['service_id'])
+			charles_service.service_state = "REQUESTED"
+			charles_service.save()
+	
 		#Update JeanGrey
-		service_data = { "service_state": ServiceStatuses['REQUESTED'].value}
-		update_service(service_id, service_data)
+		service_data = { "service_state": "REQUESTED", "client_port_id": client_port_id } if client_port_id else { "service_state": "REQUESTED" }
+		update_service(data['service_id'], service_data)
 
-		#Get Service from JeanGrey
-		service = get_service(service_id)
+		# Get Service from JeanGrey
+		service = get_service(data['service_id'])
 
-		#Trigger Worker
+		# Trigger Worker
 		generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
-		generate_request(client, service)
+		generate_request(client, service, CodeMap[data['activation_code']].value)
 		
 		
 		response = { "message": "Service Requested." }
@@ -102,23 +73,48 @@ class ServiceView(View):
 
 	def put(self, request, service_id):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-		service = Service.objects.filter(service_id=service_id)
-		service.update(**data)
-		data = serializers.serialize('json', service)
 
-		#Update service status in core
-		data = {
-			"service_state":service[0].service_state
-		}
+		if data['service_state'] != "ERROR":
+			service = Service.objects.get(service_id=service_id)
+			service.service_state = NextStateE2e[service.service_state].value
+			service.save()
+
+			update_service(service_id, {'service_state': service.service_state})
+
+			if service.service_state != service.target_state:
+				service = get_service(service_id)
+				client = get_client(service['client_id'])
+
+				generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
+				generate_request(client, service, code="cpe")
 
 		#Rollback all reservations if error
-		if service[0].service_state == ServiceStatuses['ERROR'].value:
-			rollback_service(str(service_id))
-
-		update_core_service_status(str(service_id), data)
+		# if service[0].service_state == "ERROR":
+		# 	rollback_service(str(service_id))	
 
 		return HttpResponse(data, content_type='application/json')
 
 
 	def _existing_service(self, service_id):
 	    return Service.objects.filter(service_id=service_id).count() is not 0
+
+	def fetch_cpe(self, data, service, client):
+		client_node = get_client_node(service['client_node_sn'])
+		"""
+		Update Inventory with CPE data if needed
+		"""
+		if client_node['client'] is None:
+			cpe_data = { 'client': client['name'] }
+			update_cpe(service['client_node_sn'], cpe_data)
+	
+		"""
+		Get free CPE port from Inventory and
+		mark it as a used port.
+		"""
+		cpe_port = get_free_cpe_port(service['client_node_sn'])
+		cpe_port_id = cpe_port['id']
+
+		#Assign CPE Port (mark as used)
+		use_port(service['client_node_sn'], cpe_port_id)
+
+		return cpe_port_id

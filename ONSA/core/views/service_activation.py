@@ -32,7 +32,7 @@ class ServiceActivationView(View):
 				response = { "message" : "CPE not valid." }
 				return JsonResponse(response, safe=False)
 
-		r = self.push_service_to_orchestrator(service_id)
+		r = self.push_service_to_orchestrator(service_id, data['activation_code'])
 		return JsonResponse(r.status_code, safe=False)
 
 	def is_valid_cpe(self, sn):
@@ -60,10 +60,10 @@ class ServiceActivationView(View):
 		else:
 			return None
 
-	def push_service_to_orchestrator(self, service_id):
+	def push_service_to_orchestrator(self, service_id, activation_code):
 		url = settings.CHARLES_URL + "services"
 
 		rheaders = { 'Content-Type': 'application/json' }	
-		data = { "service_id": service_id }	
+		data = { "service_id": service_id, "activation_code": activation_code }	
 		r = requests.post(url, data = json.dumps(data), headers = rheaders)
 		return r
