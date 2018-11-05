@@ -22,10 +22,12 @@ class CodeMap(Enum):
     e2e = "bb"
     bb = "bb"
     bb_data = "bb_data"
+    cpe_data = "cpe_data"
 
 class NextStateE2e(Enum):
     BB_ACTIVATION_IN_PROGRESS = "BB_ACTIVATED"
     BB_ACTIVATED = "SERVICE_ACTIVATED"
+    CPE_ACTIVATION_IN_PROGRESS = "SERVICE_ACTIVATED"
 
 class ServiceView(View):
 
@@ -46,29 +48,38 @@ class ServiceView(View):
 		service = get_service(data['service_id'])
 		client = get_client(service['client_id'])
 
-		client_port_id = self.fetch_cpe(data, service, client) if data['activation_code'] == "e2e" else None 
+		client_port_id = self.fetch_cpe(data, service, client) if data['activation_code'] == "e2e" or data['activation_code'] == "cpe_data" else None 
 
 		# Retry support
 		if not self._existing_service(data['service_id']):
-			charles_service = Service.objects.create(service_id=data['service_id'], service_state="REQUESTED")
+			charles_service = Service.objects.create(service_id=data['service_id'], target_state=data['target_state'])
 		else:
 			charles_service = Service.objects.get(service_id=data['service_id'])
-			charles_service.service_state = "REQUESTED"
-			charles_service.save()
+			charles_service.target_state = data['target_state']
 	
 		#Update JeanGrey
-		service_data = { "service_state": "REQUESTED", "client_port_id": client_port_id } if client_port_id else { "service_state": "REQUESTED" }
-		update_service(data['service_id'], service_data)
+
+		if client_port_id:
+			service_data = { "client_port_id": client_port_id }
+			update_service(data['service_id'], service_data)
+		
 
 		# Get Service from JeanGrey
 		service = get_service(data['service_id'])
 
 		# Trigger Worker
 		generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
-		generate_request(client, service, CodeMap[data['activation_code']].value)
+		request, service_state = generate_request(client, service, CodeMap[data['activation_code']].value)
 		
+		if request is not None:
+			charles_service.service_state = service_state
+			response = { "message": "Service requested." }
+		else:
+			charles_service.service_state = "ERROR"
+			response = { "message": "Service request failed." }
 		
-		response = { "message": "Service Requested." }
+		charles_service.save()
+		
 		return JsonResponse(response)
 
 	def put(self, request, service_id):
@@ -92,7 +103,9 @@ class ServiceView(View):
 		# if service[0].service_state == "ERROR":
 		# 	rollback_service(str(service_id))	
 
-		return HttpResponse(data, content_type='application/json')
+			response = { "message": "Service stated updated" }
+
+		return JsonResponse(response, safe=False)
 
 
 	def _existing_service(self, service_id):

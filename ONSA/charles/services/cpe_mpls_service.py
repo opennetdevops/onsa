@@ -3,6 +3,11 @@ from charles.views.service import *
 
 from pprint import pprint
 
+BB_CODES = ["bb", "bb_data"]
+CPE_CODES = ["cpe", "cpe_data"]
+DATA_CODES = ["bb_data", "cpe_data"]
+ACTIVATION_CODES = ["bb", "cpe"]
+
 def generate_cpe_mpls_request(client, service, code=None):
 
 	config = {
@@ -11,7 +16,7 @@ def generate_cpe_mpls_request(client, service, code=None):
 			   "service_id" : service['id'],
 			   "op_type" : "CREATE" }
 	
-	if code == "bb":
+	if code in BB_CODES:
 		parameters = bb_parameters(client, service)
 		
 		service_data = { 'logical_unit_id': parameters['logical_unit_id'],
@@ -41,31 +46,46 @@ def generate_cpe_mpls_request(client, service, code=None):
 							 {"vendor": parameters['access_node']['vendor'],"model": parameters['access_node']['model'],"mgmt_ip": parameters['access_node']['mgmt_ip']}]
 
 
-		service_data['service_state'] = "BB_ACTIVATION_IN_PROGRESS"
+		if code == "bb_data":
+			service_data['service_state'] = "BB_DATA_ACK"
+
+		elif code == "bb":
+			service_data['service_state'] = "BB_ACTIVATION_IN_PROGRESS"
+
 		update_service(service['id'], service_data) 
 
-	elif code == "cpe":
+	elif code in CPE_CODES:
 		parameters = cpe_parameters(client, service)
 
 		config['parameters'] =  {  
 								"service_vlan" : service['vlan_id'], 
 								"bandwidth" : service['bandwidth'],
-								"client_as_number" : service['client_as_number'],
-								"on_client_port" : parameters['interface_name'],
+								"client_as_number" : service['autonomous_system'],
+								"on_client_port" : parameters['client_node']['interface_name'],
 								"wan_cidr": service['wan_network'],
 								"client_cidr": service['client_network'],
 							 }
 
 		config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
 
-	pprint(config)
+
+		if code == "cpe_data":
+			service_data = { "service_state": "CPE_DATA_ACK" }
+
+		elif code == "cpe":
+			service_data = { "service_state": "CPE_ACTIVATION_IN_PROGRESS" }
+
+		update_service(service['id'], service_data)
 			
-	if code == 'bb_data':
-		return config
-	# if 'devices' in config.keys():
-	#     configure_service(config)
-	# else:
-	#     return "ERROR"
+	if code in DATA_CODES:
+		print("DATA_FECTH")
+		return config, service_data['service_state']
+	elif code in ACTIVATION_CODES:
+		print("ACTIVATION")
+		# configure_service(config)
+		return config, service_data['service_state']
+	else:
+		return None, service_state['service_state']
  
 
 def bb_parameters(client, service):
@@ -117,7 +137,7 @@ def bb_parameters(client, service):
 								  'mgmt_ip': access_node['mgmt_ip']
 								}
 
-	pprint(parameters)
+	# pprint(parameters)
 
 	return parameters
 
@@ -126,10 +146,9 @@ def cpe_parameters(client, service):
 	client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
 
 	parameters = {}
-
-
-	parameters['client_node']['vendor'] = client_node['vendor']
-	parameters['client_node']['model'] = client_node['model']
-	parameters['client_node']['mgmt_ip'] = client_node['mgmt_ip']
+	parameters['client_node'] = { 'vendor': client_node['vendor'],
+								  'model': client_node['model'],
+								  'mgmt_ip': client_node['mgmt_ip'],
+								  'interface_name': client_port['interface_name'] }
 
 	return parameters
