@@ -23,6 +23,7 @@ class CodeMap(Enum):
     bb = "bb"
     bb_data = "bb_data"
     cpe_data = "cpe_data"
+    an = "an"
 
 class NextStateE2e(Enum):
     BB_ACTIVATION_IN_PROGRESS = "BB_ACTIVATED"

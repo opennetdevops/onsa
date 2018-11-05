@@ -70,10 +70,25 @@ def generate_cpe_mpls_request(client, service, code=None):
 
 
 		if code == "cpe_data":
-			service_data = { "service_state": "CPE_DATA_ACK" }
+			service_data = { "service_state": "CPE_DATA_ACK", "wan_network": parameters['client_node']['wan_network'] }
 
 		elif code == "cpe":
-			service_data = { "service_state": "CPE_ACTIVATION_IN_PROGRESS" }
+			service_data = { "service_state": "CPE_ACTIVATION_IN_PROGRESS" , "wan_network": parameters['client_node']['wan_network'] }
+
+		update_service(service['id'], service_data)
+
+	elif code == "an":
+		parameters = an_parameters(client, service)
+
+		config['parameters'] =  {  
+								"service_vlan" : service['vlan_id'], 
+								"an_client_port": parameters['an_client_port']
+   	 							}
+
+		config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": ['mgmt_ip']}]
+
+
+		service_data = { "service_state": "AN_ACTIVATED" }
 
 		update_service(service['id'], service_data)
 			
@@ -82,6 +97,10 @@ def generate_cpe_mpls_request(client, service, code=None):
 		return config, service_data['service_state']
 	elif code in ACTIVATION_CODES:
 		print("ACTIVATION")
+		# configure_service(config)
+		return config, service_data['service_state']
+	elif code == "an":
+		print("AN ACTIVATION")
 		# configure_service(config)
 		return config, service_data['service_state']
 	else:
@@ -142,13 +161,29 @@ def bb_parameters(client, service):
 	return parameters
 
 def cpe_parameters(client, service):
+	location = get_location(service['location_id'])
 	client_node = get_client_node(service['client_node_sn'])
 	client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
+
+	wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
 
 	parameters = {}
 	parameters['client_node'] = { 'vendor': client_node['vendor'],
 								  'model': client_node['model'],
 								  'mgmt_ip': client_node['mgmt_ip'],
-								  'interface_name': client_port['interface_name'] }
+								  'interface_name': client_port['interface_name'],
+								  'wan_network': wan_network }
+
+	return parameters
+
+def an_parameters(client, service):
+	access_port = get_access_port(service['access_port_id'])
+	access_node = get_access_node(service['access_node_id'])
+
+	parameters = { 'provider_vlan': access_node['provider_vlan'],
+				   'an_client_port': access_port['port'],
+				   'mgmt_ip': access_node['mgmt_ip'],
+				   'model': access_node['model'],
+				   'vendor': access_node['vendor'] }
 
 	return parameters
