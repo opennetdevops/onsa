@@ -13,7 +13,6 @@ ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', '
 VPLS_SERVICES = ['vpls']
 PROJECT_SERVICES = ['projects']
 
-
 class ServiceTypes(Enum):
     cpeless_irs = "CpelessIrs"
     cpe_irs = "CpeIrs"
@@ -126,7 +125,7 @@ class ServiceView(View):
         ServiceClass = getattr(models, ServiceTypes[data['service_type']].value)
 
         service = ServiceClass.objects.create(**data)
-        service.service_state = "IN CONSTRUCTION"
+        service.service_state = "IN_CONSTRUCTION"
         service.save()
         response = { "message": "Service requested" }
 

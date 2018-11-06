@@ -58,7 +58,7 @@ class ServiceView(View):
         ServiceClass = getattr(models, ServiceTypes[data['service_type']].value)
 
         service = ServiceClass.objects.create(**data)
-        service.service_state = "IN CONSTRUCTION"
+        service.service_state = "BF_IN_CONSTRUCTION"
         service.save()
         response = { "message": "Service requested" }
 
