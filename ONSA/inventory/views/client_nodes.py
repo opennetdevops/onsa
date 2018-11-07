@@ -16,7 +16,12 @@ class ClientNodesView(View):
             return JsonResponse(response, safe=False)
 
         else:
-            client_nodes = ClientNode.objects.all().values()
+            customer_location = request.GET.get('customer_location', None)
+            if customer_location is not None:
+                client_nodes = ClientNode.objects.filter(customer_location=customer_location).values()
+            else:
+                client_nodes = ClientNode.objects.all().values()
+            
             return JsonResponse(list(client_nodes), safe=False)
 
 

@@ -372,3 +372,14 @@ def get_vrfs():
         return json_response
     else:
         return None
+
+def get_customer_location(client_id, customer_location_id):
+    url = settings.JEAN_GREY_URL + "clients/"  + str(client_id) +"customerlocations/" + str(customer_location_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+

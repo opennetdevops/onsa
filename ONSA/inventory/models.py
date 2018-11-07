@@ -29,6 +29,17 @@ class Device(models.Model):
         abstract = True
 
 
+class DeviceModel(models.Model):
+    end_of_life_date = models.CharField(max_length=50, blank=True, null=True)
+    end_of_sale_date = models.CharField(max_length=50, blank=True, null=True)
+    vendor = models.CharField(max_length=50, blank=True, null=True)
+    model = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return self.model
+
+
+
 class AccessNode(Device): #SCO
     uplink_interface = models.CharField(max_length=50, null=True) #AE del lado del MX
     uplink_ports = models.CharField(max_length=50, blank=True, null=True)
@@ -51,6 +62,7 @@ class ClientNode(Device):
     serial_number = models.CharField(primary_key=True, max_length=50, blank=True, unique=True)
     client = models.CharField(max_length=50, blank=True, null=True)
     uplink_port = models.CharField(max_length=50, blank=True, null=True)
+    customer_location = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.serial_number
