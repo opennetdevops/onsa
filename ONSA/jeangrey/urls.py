@@ -14,7 +14,8 @@ urlpatterns = [
 	
 	path('/api/clients', require_http_methods(["GET","POST"])(clients.ClientView.as_view())),
     path('/api/clients/<str:client_id>', require_http_methods(["GET", "PUT", "DELETE"])(clients.ClientView.as_view())),
-	path('/api/clients/<str:client_id>/customerlocations', require_http_methods(["GET", "PUT", "DELETE", "POST"])(clients.CustomerLocationView.as_view())),
+	path('/api/clients/<str:client_id>/customerlocations', require_http_methods(["GET", "POST"])(clients.CustomerLocationView.as_view())),
+    path('/api/clients/<str:client_id>/customerlocations/customer_location_id', require_http_methods(["PUT", "DELETE"])(clients.CustomerLocationView.as_view())),
     path('/api/services', require_http_methods(["GET", "POST"])(services.ServiceView.as_view())),
 	path('/api/brownfield/services', require_http_methods(["GET", "POST"])(brownfield_services.ServiceView.as_view())),
 	path('/api/services/<str:service_id>', require_http_methods(["GET", "PUT", "DELETE"])(services.ServiceView.as_view())),

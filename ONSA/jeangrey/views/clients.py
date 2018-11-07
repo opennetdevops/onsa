@@ -39,16 +39,21 @@ class CustomerLocationView(View):
         return JsonResponse(data, safe=False)
         
 
-    def post(self, request):
+    def post(self, request, client_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+        data['client_id'] = client_id
         cl = CustomerLocation.objects.create(**data)
         cl.save()
         response = {"message" : "CustomerLocation requested"}
         return JsonResponse(response)
 
-    def put(self, request, client_id):
+    def put(self, request, client_id, customer_location_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         cl = CustomerLocation.objects.get(pk=client_id).customer_location
         cl.update(**data)
         return JsonResponse(data, safe=False)
+
+    def delete(self, request, client_id, customer_location_id):
+        #TODO
+        pass
 

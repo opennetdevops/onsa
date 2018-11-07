@@ -8,12 +8,21 @@ class Client(models.Model):
     def __str__(self):
         return self.name
 
+class CustomerLocation(models.Model):
+    address = models.CharField(max_length=50, blank=True, null=True)
+    description = models.CharField(max_length=50, blank=True, null=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.address
+
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     id = models.CharField(primary_key=True, max_length=100, unique=True)
     service_state = models.CharField(max_length=100, null=True)
     service_type = models.CharField(max_length=100, null=True)
     bandwidth = models.CharField(max_length=100, null=True)
+    customer_location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE)
    
     location_id = models.CharField(max_length=100, null=True)
     router_node_id = models.CharField(max_length=100, null=True)
@@ -79,11 +88,3 @@ class Vpls(Service):
 
     def __str__(self):
         return str(self.id)
-
-class CustomerLocation(models.Model):
-    address = models.CharField(max_length=50, blank=True, null=True)
-    description = models.CharField(max_length=50, blank=True, null=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.address

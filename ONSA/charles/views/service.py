@@ -45,7 +45,7 @@ class ServiceView(View):
 
 		service = get_service(data['service_id'])
 		client = get_client(service['client_id'])
-		customer_location = get_customer_location(service['client_id'], service['customer_location'])
+		customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
 
 		client_port_id = self.fetch_cpe(data, service, client, customer_location) if data['activation_code'] == "e2e" or data['activation_code'] == "cpe_data" else None 
 
