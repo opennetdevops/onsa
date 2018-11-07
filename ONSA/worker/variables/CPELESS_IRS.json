@@ -5,7 +5,6 @@
       "bandwidth" : "{{ bandwidth }}",
       "client_cidr" : "{{ client_cidr }}",
 
-
       {# Devices variables #}
       {# MX104 variables #}
       "vrf_name" : "INTERNET",

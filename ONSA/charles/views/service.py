@@ -43,9 +43,6 @@ class ServiceView(View):
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-		"""
-		Get service and client info from Service Inventory
-		"""	
 		service = get_service(data['service_id'])
 		client = get_client(service['client_id'])
 		customer_location = get_customer_location(service['client_id'], service['customer_location'])
@@ -59,20 +56,18 @@ class ServiceView(View):
 			charles_service = Service.objects.get(service_id=data['service_id'])
 			charles_service.target_state = data['target_state']
 	
-		#Update JeanGrey
-
 		if client_port_id:
 			service_data = { "client_port_id": client_port_id }
 			update_service(data['service_id'], service_data)
-		
 
-		# Get Service from JeanGrey
 		service = get_service(data['service_id'])
 
-		# Trigger Worker
 		generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
 		request, service_state = generate_request(client, service, CodeMap[data['activation_code']].value)
+
+		pprint(request)
 		
+		# Se puede optimizar
 		if request is not None:
 			charles_service.service_state = service_state
 			response = { "message": "Service requested." }
@@ -99,7 +94,8 @@ class ServiceView(View):
 				client = get_client(service['client_id'])
 
 				generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
-				generate_request(client, service, code="cpe")
+				request, service_state = generate_request(client, service, code="cpe")
+				pprint(request)
 
 		#Rollback all reservations if error
 		# if service[0].service_state == "ERROR":
