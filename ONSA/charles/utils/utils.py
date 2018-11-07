@@ -18,16 +18,19 @@ def get_ipam_authentication_token():
     return json.loads(response.text)['auth_token']
 
 
-def get_ip_wan_nsx(location,client_name,service_id):
-    description = client_name + "-" + service_id
-    #"Searchin by owner prefix=WAN_NSX"
-    owner = "WAN_NSX_" + location
-    token = get_ipam_authentication_token()
+def get_ip_wan_nsx(location, client_name, service_id):
     url = settings.IPAM_URL + "/api/networks/assign_ip"
+
+    token = get_ipam_authentication_token()
+
     rheaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
-    data = { "description" : description, "owner" : owner,"ip_version" : 4 }
+    data = { "description" : client_name + "-" + service_id, "owner" : "WAN_NSX_" + location, "ip_version" : 4 }
+ 
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
+    
+    print(json_response)
+
     if "network" in json_response:
         return json_response["network"]
     else:
@@ -132,7 +135,7 @@ def get_virtual_pod(location_id, virtual_pod_id):
         return None
 
 def get_client_node(client_node_sn):
-    url= settings.INVENTORY_URL + "clientnodes/" + client_node_sn
+    url= settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)

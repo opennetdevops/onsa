@@ -11,10 +11,10 @@ ACTIVATION_CODES = ["bb", "cpe"]
 def generate_cpe_mpls_request(client, service, code=None):
 
 	config = {
-			   "client" : client['name'],
-			   "service_type" :  service['service_type'],
-			   "service_id" : service['id'],
-			   "op_type" : "CREATE" }
+				 "client" : client['name'],
+				 "service_type" :  service['service_type'],
+				 "service_id" : service['id'],
+				 "op_type" : "CREATE" }
 	
 	if code in BB_CODES:
 		parameters = bb_parameters(client, service)
@@ -83,7 +83,7 @@ def generate_cpe_mpls_request(client, service, code=None):
 		config['parameters'] =  {  
 								"service_vlan" : service['vlan_id'], 
 								"an_client_port": parameters['an_client_port']
-   	 							}
+									}
 
 		config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": ['mgmt_ip']}]
 
@@ -124,15 +124,15 @@ def bb_parameters(client, service):
 	vrf_exists = vrf_exists_in_location(vrf['rt'], location['id'])
 
 	parameters = { 'pop_size': location['pop_size'],
-				   'an_uplink_interface' : access_node['uplink_interface'],
-				   'an_uplink_ports' :   access_node['uplink_ports'],
-				   'logical_unit_id': logical_unit_id,   
-				   'provider_vlan' : access_node['provider_vlan'],      
-				   'an_client_port' : access_port['port'],
-				   'vrf_exists': vrf_exists,
-				   'vrf_name': vrf['name'],
-				   'vrf_id': vrf['rt'],
-				   'loopback': router_node['loopback']}
+					 'an_uplink_interface' : access_node['uplink_interface'],
+					 'an_uplink_ports' :   access_node['uplink_ports'],
+					 'logical_unit_id': logical_unit_id,   
+					 'provider_vlan' : access_node['provider_vlan'],      
+					 'an_client_port' : access_port['port'],
+					 'vrf_exists': vrf_exists,
+					 'vrf_name': vrf['name'],
+					 'vrf_id': vrf['rt'],
+					 'loopback': router_node['loopback']}
 
 	if logical_unit_id:
 		wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
@@ -148,12 +148,12 @@ def bb_parameters(client, service):
 	parameters['client_as_number'] = client_as_number
 
 	parameters['router_node'] = { 'vendor': router_node['vendor'],
-								  'model': router_node['model'],
-								  'mgmt_ip': router_node['mgmt_ip']
+									'model': router_node['model'],
+									'mgmt_ip': router_node['mgmt_ip']
 								}
 	parameters['access_node'] = { 'vendor': access_node['vendor'],
-								  'model': access_node['model'],
-								  'mgmt_ip': access_node['mgmt_ip']
+									'model': access_node['model'],
+									'mgmt_ip': access_node['mgmt_ip']
 								}
 
 	# pprint(parameters)
@@ -169,10 +169,10 @@ def cpe_parameters(client, service):
 
 	parameters = {}
 	parameters['client_node'] = { 'vendor': client_node['vendor'],
-								  'model': client_node['model'],
-								  'mgmt_ip': client_node['mgmt_ip'],
-								  'interface_name': client_port['interface_name'],
-								  'wan_network': wan_network }
+									'model': client_node['model'],
+									'mgmt_ip': client_node['mgmt_ip'],
+									'interface_name': client_port['interface_name'],
+									'wan_network': wan_network }
 
 	return parameters
 
@@ -181,9 +181,9 @@ def an_parameters(client, service):
 	access_node = get_access_node(service['access_node_id'])
 
 	parameters = { 'provider_vlan': access_node['provider_vlan'],
-				   'an_client_port': access_port['port'],
-				   'mgmt_ip': access_node['mgmt_ip'],
-				   'model': access_node['model'],
-				   'vendor': access_node['vendor'] }
+					 'an_client_port': access_port['port'],
+					 'mgmt_ip': access_node['mgmt_ip'],
+					 'model': access_node['model'],
+					 'vendor': access_node['vendor'] }
 
 	return parameters
