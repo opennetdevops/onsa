@@ -18,7 +18,7 @@ class CustomerLocation(models.Model):
 
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
-    id = models.CharField(primary_key=True, max_length=100, unique=True)
+    id = models.CharField(primary_key=True, max_length=100, unique=True, default=None)
     service_state = models.CharField(max_length=100, null=True)
     service_type = models.CharField(max_length=100, null=True)
     bandwidth = models.CharField(max_length=100, null=True)

@@ -34,9 +34,8 @@ class ClientView(View):
 class CustomerLocationView(View):
 
     def get(self, request, client_id):
-        cl = Client.objects.get(pk=client_id).customer_location
-        data = CustomerLocation.objects.filter(pk=cl.id)
-        return JsonResponse(data, safe=False)
+        data = CustomerLocation.objects.filter(client_id=client_id).values()
+        return JsonResponse(list(data), safe=False)
         
 
     def post(self, request, client_id):
