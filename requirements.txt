@@ -17,3 +17,5 @@ djangorestframework-jwt>=1.11.0
 psycopg2-binary
 django-background-tasks
 django-cors-headers
+netmiko
+coloredlogs
