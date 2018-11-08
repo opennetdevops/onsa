@@ -85,7 +85,7 @@ def generate_cpe_mpls_request(client, service, code=None):
 								"an_client_port": parameters['an_client_port']
 									}
 
-		config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": ['mgmt_ip']}]
+		config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
 
 
 		service_data = { "service_state": "AN_ACTIVATED" }
