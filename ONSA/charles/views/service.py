@@ -3,20 +3,19 @@ from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 from charles.models import Service
-from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service
-from charles.services import vpls_service
+from charles.utils.fsm import Fsm
 from enum import Enum
 from charles.utils.utils import *
 from pprint import pprint
 import requests
 import json
 
-class ServiceTypes(Enum):
-    cpeless_irs = cpeless_irs_service
-    cpe_mpls = cpe_mpls_service
-    cpeless_mpls = cpeless_mpls_service
-    vcpe_irs = vcpe_irs_service
-    vpls = vpls_service
+# class ServiceTypes(Enum):
+#     cpeless_irs = cpeless_irs_service
+#     cpe_mpls = cpe_mpls_service
+#     cpeless_mpls = cpeless_mpls_service
+#     vcpe_irs = vcpe_irs_service
+#     vpls = vpls_service
 
 class CodeMap(Enum):
     e2e = "bb"
@@ -29,6 +28,9 @@ class NextStateE2e(Enum):
     BB_ACTIVATION_IN_PROGRESS = "BB_ACTIVATED"
     BB_ACTIVATED = "SERVICE_ACTIVATED"
     CPE_ACTIVATION_IN_PROGRESS = "SERVICE_ACTIVATED"
+
+
+
 
 class ServiceView(View):
 
@@ -47,7 +49,8 @@ class ServiceView(View):
 		client = get_client(service['client_id'])
 		customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
 
-		client_port_id = self.fetch_cpe(data, service, client, customer_location) if data['activation_code'] == "e2e" or data['activation_code'] == "cpe_data" else None 
+		# TODO ARI NO TE OLVIDES DE ESTO
+		# client_port_id = self.fetch_cpe(data, service, client, customer_location) if data['activation_code'] == "e2e" or data['activation_code'] == "cpe_data" else None 
 
 		# Retry support
 		if not self._existing_service(data['service_id']):
@@ -62,13 +65,13 @@ class ServiceView(View):
 
 		service = get_service(data['service_id'])
 
-		generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
-		request, service_state = generate_request(client, service, CodeMap[data['activation_code']].value)
+		# generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
+		# request, service_state = generate_request(client, service, CodeMap[data['activation_code']].value)
+		service_state = FSM.transition(service)
 
 		pprint(request)
 		
-		# Se puede optimizar
-		if request is not None:
+		if service_state is not None:
 			charles_service.service_state = service_state
 			response = { "message": "Service requested." }
 		else:
@@ -97,7 +100,7 @@ class ServiceView(View):
 				request, service_state = generate_request(client, service, code="cpe")
 				pprint(request)
 
-		#Rollback all reservations if error
+		# Rollback all reservations if error
 		# if service[0].service_state == "ERROR":
 		# 	rollback_service(str(service_id))	
 
