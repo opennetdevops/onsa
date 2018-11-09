@@ -89,9 +89,11 @@ def an_activated_automated_request(service):
 
 		configure_service(config)
 		service_data['service_state'] = "AN_ACTIVATION_IN_PROGRESS"
+		configure_service(config)	
+
 	else:
 		service_data['service_state'] = "error"
-	
+
 	update_service(service['id'], service_data)
 	return service_data['service_state']
 
@@ -126,9 +128,10 @@ def service_activated_automated_request(service):
 
 
 		service_data['service_state'] = "CPE_ACTIVATION_IN_PROGRESS"
+		configure_service(config)
 	else:
 		service_data['service_state'] = "error"
-
+	
 	update_service(service['id'], service_data)
 	return service_data['service_state']
 
