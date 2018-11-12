@@ -51,6 +51,10 @@ class ServiceView(View):
 
 		# TODO ARI NO TE OLVIDES DE ESTO
 		# client_port_id = self.fetch_cpe(data, service, client, customer_location) if data['activation_code'] == "e2e" or data['activation_code'] == "cpe_data" else None 
+		# if client_port_id:
+		# 	service_data = { "client_port_id": client_port_id }
+		# 	update_service(data['service_id'], service_data)
+
 
 		# Retry support
 		if not self._existing_service(data['service_id']):
@@ -58,16 +62,13 @@ class ServiceView(View):
 		else:
 			charles_service = Service.objects.get(service_id=data['service_id'])
 			charles_service.target_state = data['target_state']
-	
-		if client_port_id:
-			service_data = { "client_port_id": client_port_id }
-			update_service(data['service_id'], service_data)
+
 
 		service = get_service(data['service_id'])
 
 		# generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
 		# request, service_state = generate_request(client, service, CodeMap[data['activation_code']].value)
-		service_state = FSM.transition(service)
+		service_state = Fsm.run(service)
 
 		pprint(request)
 		
@@ -75,7 +76,7 @@ class ServiceView(View):
 			charles_service.service_state = service_state
 			response = { "message": "Service requested." }
 		else:
-			charles_service.service_state = "ERROR"
+			charles_service.service_state = "error"
 			response = { "message": "Service request failed." }
 		
 		charles_service.save()
@@ -133,3 +134,28 @@ class ServiceView(View):
 		use_port(service['client_node_sn'], cpe_port_id)
 
 		return cpe_port_id
+
+
+class ProcessView(View):
+
+	def post(self, request, service_id):
+		data = json.loads(request.body.decode(encoding='UTF-8'))
+		service = Service.objects.get(service_id=service_id)
+
+		if data['service_state'] != "ERROR":
+			#move to the next state
+			service.service_state = Fsm.to_next_state(service)
+			service.save()
+
+			if service.service_state != service.target_state:
+				service.service_state = FSM.run(service)
+			
+			response = { "message": "Service stated updated" }
+
+		
+		else:
+			response = { "message": "Service update failed" }
+		return JsonResponse(response, safe=False)
+
+
+

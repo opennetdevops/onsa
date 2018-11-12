@@ -30,7 +30,6 @@ class Service(models.Model):
     service_type = models.CharField(max_length=100, null=True)
     bandwidth = models.CharField(max_length=100, null=True)
     customer_location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE)
-    deployment_mode = models.CharField(max_length=100, null=True)
    
     location_id = models.CharField(max_length=100, null=True)
     router_node_id = models.CharField(max_length=100, null=True)

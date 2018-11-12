@@ -44,18 +44,36 @@ NextStateMap = (    {'src':"IN_CONSTRUCTION",
                     'next_state':"an_activated" }
                 )
 
+def next_state(source_state,target_state):
+    for state in NextStateMap:
+        if state['src'] == source_state and state['dst'] == target_state:
+            return state['next_state']
+
+
 class Fsm():
-    def transition(service):
-        for state in NextStateMap:
-            if state['src'] == service['service_state'] and state['dst'] == service['target_state']:
-                generate_request = getattr(state['next_state'], "do_" + service['deployment_mode'])
-                return generate_request(service)
+    def run(service):
+        state = next_state(service['service_state'], service['target_state'])
+        generate_request = getattr(state, "do_" + service['deployment_mode'])
+        req_state = generate_request(service)
+        
+        if req_state is not "error":
+            if req_state != service['target_state']:
+                state = next_state(req_state, service['target_state'])
+                generate_request = getattr(state, "do_" + service['deployment_mode'])
+                req_state = generate_request(service)
+            return req_state
         return None 
+
+    def to_next_state(service):
+        state = next_state(service['service_state'], service['target_state'])
+        generate_request = getattr(state, "do_manual")
+        return generate_request(service)
+        
 
 
 class State():
     def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + service['deployment_mode'] + "_request")
+        generate_request = getattr(ServiceTypes[service['service_type']].value, service['service_type'] + service['deployment_mode'] + "_request")
         return  generate_request(service)
 
 class bb_data_ack(State):
