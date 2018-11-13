@@ -41,7 +41,16 @@ NextStateMap = (    {'src':"IN_CONSTRUCTION",
                     'next_state':"service_activated" },
                     {'src':"an_data_ack",
                     'dst': "an_activated",
-                    'next_state':"an_activated" }
+                    'next_state':"an_activated" },
+                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    'dst': "bb_activated",
+                    'next_state':"bb_activated" },             
+                    {'src':"AN_ACTIVATION_IN_PROGRESS",
+                    'dst': "an_activated",
+                    'next_state':"an_activated" }, 
+                    {'src':"CPE_ACTIVATION_IN_PROGRESS",
+                    'dst': "service_activated",
+                    'next_state':"service_activated" }, 
                 )
 
 def next_state(source_state,target_state):

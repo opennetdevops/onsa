@@ -102,6 +102,11 @@ def an_activated_automated_request(service):
 def cpe_data_ack_automated_request(service):
 	client = get_client(service['client_id'])
 	parameters = cpe_parameters(client, service)
+	customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
+
+	client_port_id = fetch_cpe(service, client, customer_location)
+	if client_port_id:
+		service_data = { "client_port_id": client_port_id }
 
 	service_data['service_state'] = "cpe_data_ack"
 	service_data['wan_network'] = parameters['client_node']['wan_network'] 	

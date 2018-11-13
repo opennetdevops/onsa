@@ -386,3 +386,24 @@ def get_customer_location(client_id, customer_location_id):
     else:
         return None
 
+
+def fetch_cpe(service, client, customer_location):
+    client_node = get_client_node(service['client_node_sn'])
+    """
+    Update Inventory with CPE data if needed
+    """
+    if client_node['client'] is None:
+        cpe_data = { 'client': client['name'], 'customer_location': customer_location['address'] }
+        update_cpe(service['client_node_sn'], cpe_data)
+
+    """
+    Get free CPE port from Inventory and
+    mark it as a used port.
+    """
+    cpe_port = get_free_cpe_port(service['client_node_sn'])
+    cpe_port_id = cpe_port['id']
+
+    #Assign CPE Port (mark as used)
+    use_port(service['client_node_sn'], cpe_port_id)
+
+    return cpe_port_id

@@ -14,4 +14,3 @@ class Service(models.Model):
         return self.service_id
 
 
-

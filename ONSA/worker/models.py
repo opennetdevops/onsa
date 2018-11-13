@@ -66,7 +66,7 @@ class Service(models.Model):
 		"""
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"service_state" : my_service.service_state}
-		requests.put(CHARLES+"/charles/api/services/%s" % my_service.service_id, data = json.dumps(data), verify = False, headers = rheaders)
+		requests.post(CHARLES+"/charles/api/services/" + my_service.service_id + "/process", data = json.dumps(data), verify = False, headers = rheaders)
 
 
 class TaskStates(Enum):

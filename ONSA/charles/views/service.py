@@ -45,9 +45,9 @@ class ServiceView(View):
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-		service = get_service(data['service_id'])
-		client = get_client(service['client_id'])
-		customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
+		# service = get_service(data['service_id'])
+		# client = get_client(service['client_id'])
+		# customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
 
 		# TODO ARI NO TE OLVIDES DE ESTO
 		# client_port_id = self.fetch_cpe(data, service, client, customer_location) if data['activation_code'] == "e2e" or data['activation_code'] == "cpe_data" else None 
@@ -113,27 +113,6 @@ class ServiceView(View):
 	def _existing_service(self, service_id):
 	    return Service.objects.filter(service_id=service_id).count() is not 0
 
-
-	def fetch_cpe(self, data, service, client, customer_location):
-		client_node = get_client_node(service['client_node_sn'])
-		"""
-		Update Inventory with CPE data if needed
-		"""
-		if client_node['client'] is None:
-			cpe_data = { 'client': client['name'], 'customer_location': customer_location['address'] }
-			update_cpe(service['client_node_sn'], cpe_data)
-	
-		"""
-		Get free CPE port from Inventory and
-		mark it as a used port.
-		"""
-		cpe_port = get_free_cpe_port(service['client_node_sn'])
-		cpe_port_id = cpe_port['id']
-
-		#Assign CPE Port (mark as used)
-		use_port(service['client_node_sn'], cpe_port_id)
-
-		return cpe_port_id
 
 
 class ProcessView(View):
