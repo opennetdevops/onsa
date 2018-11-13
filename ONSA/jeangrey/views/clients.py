@@ -1,7 +1,7 @@
 from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
-from ..models import Client, CustomerLocation
+from jeangrey.models.models import Client, CustomerLocation
 import json
 
 

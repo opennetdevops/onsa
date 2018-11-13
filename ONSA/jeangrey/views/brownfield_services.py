@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from jeangrey.models import Client, Service, CpelessIrs, CpeMpls, CpeIrs, Vpls, VcpeIrs, CpelessMpls
-from jeangrey import models
+from jeangrey.models.models import *
+from jeangrey.models import models
 from jeangrey.utils.utils import *
 from enum import Enum
 import json
