@@ -275,4 +275,16 @@ class ClientAccessPortsView(View):
 	def delete(self, request):
 		pass
 
+
+class CustomerLocationsView(View):
+	def get(self, request, client_id):
+		
+		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
+
+		rheaders = { 'Content-Type': 'application/json' }		
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+		
+		return JsonResponse(json_response, safe=False)
+
 	

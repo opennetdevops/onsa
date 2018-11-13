@@ -4,10 +4,11 @@ from jeangrey.models.client import Client
 
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
-    id = models.CharField(primary_key=True, max_length=100, unique=True)
+    id = models.CharField(primary_key=True, max_length=100, unique=True, default=None)
     service_state = models.CharField(max_length=100, null=True)
     service_type = models.CharField(max_length=100, null=True)
     bandwidth = models.CharField(max_length=100, null=True)
+    customer_location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE)
    
     location_id = models.CharField(max_length=100, null=True)
     router_node_id = models.CharField(max_length=100, null=True)

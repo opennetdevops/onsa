@@ -13,4 +13,5 @@ from .views import service
 urlpatterns = [ 
     path('/api/services', require_http_methods(["POST","GET"])(service.ServiceView.as_view())),
     path('/api/services/<str:service_id>', require_http_methods(["GET","PUT","DELETE"])(service.ServiceView.as_view())),    
+    path('/api/services/<str:service_id>/process', require_http_methods(["POST"])(service.ProcessView.as_view())),
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
