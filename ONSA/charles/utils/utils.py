@@ -39,7 +39,7 @@ def get_ip_wan_nsx(location, client_name, service_id):
 def get_wan_mpls_network(location,client_name,service_id):
     #Default prefix set by IDR
     mask = 30
-    description = client_name + "-" + service_id
+    description = client_name + "-" + str(service_id)
     owner = "WAN_MPLS_" + location
     token = get_ipam_authentication_token()
     url = settings.IPAM_URL + "/api/networks/assign_subnet"
@@ -54,7 +54,7 @@ def get_wan_mpls_network(location,client_name,service_id):
         return None
 
 def get_client_network(client_name,service_id,mask):
-    description = client_name + "-" + service_id
+    description = client_name + "-" + str(service_id)
     owner = "PUBLIC_ONSA"
     token = get_ipam_authentication_token()
     url = settings.IPAM_URL + "/api/networks/assign_subnet"
@@ -77,7 +77,7 @@ def get_subnets_by_description(description):
     return json_response
 
 def release_ip(client_name,product_id):
-    description = client_name + "-" + product_id
+    description = client_name + "-" + str(product_id)
     subnet = _get_subnets_by_description(description)[0]
     subnet_id = subnet['id']
     token = get_ipam_authentication_token()
@@ -86,7 +86,7 @@ def release_ip(client_name,product_id):
     response = requests.post(url, auth = None, verify = False, headers = rheaders)
 
 def destroy_subnet(client_name,product_id):
-    description = client_name + "-" + product_id
+    description = client_name + "-" + str(product_id)
     subnet_to_destroy = _get_subnets_by_description(description)[0]
     subnet_id = subnet['id']
     token = get_ipam_authentication_token()
@@ -341,6 +341,26 @@ def get_client(client_id):
     else:
         return None
 
+def delete_client(client_id):
+    url = settings.JEAN_GREY_URL + "clients/"  + str(client_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def get_client_by_name(client_name):
+    url = settings.JEAN_GREY_URL + "clients?name="  + str(client_name)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 
 def get_client_port(client_node_id, client_port_id):
     url = settings.INVENTORY_URL + "clientnodes/"  + str(client_node_id) + "/clientports/" + str(client_port_id)
@@ -385,6 +405,32 @@ def get_customer_location(client_id, customer_location_id):
         return json_response
     else:
         return None
+
+def create_customer_location(client_id):
+    url = settings.JEAN_GREY_URL + "clients/"  + str(client_id) +"/customerlocations"
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"client_id":client_id}
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    
+    if json_response:
+        return json_response
+    else:
+        return None
+    
+
+def create_client(client_name):
+    url = settings.JEAN_GREY_URL + "clients" 
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"name":client_name}
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    
+    if json_response:
+        return json_response
+    else:
+        return None
+
 
 
 def fetch_cpe(service, client, customer_location):

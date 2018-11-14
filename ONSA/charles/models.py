@@ -1,5 +1,6 @@
 from django.db import models
-
+from charles.utils.fsm import Fsm
+from charles.utils.utils import *
 
 
 # Create your models here.
@@ -12,5 +13,19 @@ class Service(models.Model):
 
     def __str__(self):
         return self.service_id
+
+    def process_worker_response(self, state):
+        if state != "ERROR":
+            #move to the next state
+            self.service_state = Fsm.to_next_state(my_service)
+            self.save()
+            if self.service_state != self.target_state:
+                self.service_state = FSM.run(my_service)
+        else:
+            self.service_state = "error"
+            self.save()
+        
+        return self.service_state
+
 
 

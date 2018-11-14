@@ -9,8 +9,13 @@ class ClientView(View):
 
     def get(self, request, client_id=None):
         if client_id is None:
-            s = Client.objects.all().values()
-            return JsonResponse(list(s), safe=False)
+            name = request.GET.get('name', None)
+            if name is None:
+                s = Client.objects.all().values()
+                return JsonResponse(list(s), safe=False)
+            else:
+                s = Client.objects.filter(name=name).values()[0]
+                return JsonResponse(s, safe=False)
         else:
             s = Client.objects.filter(pk=client_id).values()[0]
             return JsonResponse(s, safe=False)
@@ -28,6 +33,12 @@ class ClientView(View):
         client = Client.objects.get(pk=client_id)
         client.update(**data)
         return JsonResponse(data, safe=False)
+
+    def delete(self, request, client_id):
+        client = Client.objects.filter(pk=client_id)
+        client.delete()
+        data = {"Message" : "Client deleted successfully"}
+        return JsonResponse(data)
 
 
 

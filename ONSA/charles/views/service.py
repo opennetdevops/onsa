@@ -10,27 +10,6 @@ from pprint import pprint
 import requests
 import json
 
-# class ServiceTypes(Enum):
-#     cpeless_irs = cpeless_irs_service
-#     cpe_mpls = cpe_mpls_service
-#     cpeless_mpls = cpeless_mpls_service
-#     vcpe_irs = vcpe_irs_service
-#     vpls = vpls_service
-
-class CodeMap(Enum):
-    e2e = "bb"
-    bb = "bb"
-    bb_data = "bb_data"
-    cpe_data = "cpe_data"
-    an = "an"
-
-class NextStateE2e(Enum):
-    BB_ACTIVATION_IN_PROGRESS = "BB_ACTIVATED"
-    BB_ACTIVATED = "SERVICE_ACTIVATED"
-    CPE_ACTIVATION_IN_PROGRESS = "SERVICE_ACTIVATED"
-
-
-
 
 class ServiceView(View):
 
@@ -45,31 +24,28 @@ class ServiceView(View):
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-		# service = get_service(data['service_id'])
-		# client = get_client(service['client_id'])
-		# customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
-
-		# TODO ARI NO TE OLVIDES DE ESTO
-		# client_port_id = self.fetch_cpe(data, service, client, customer_location) if data['activation_code'] == "e2e" or data['activation_code'] == "cpe_data" else None 
-		# if client_port_id:
-		# 	service_data = { "client_port_id": client_port_id }
-		# 	update_service(data['service_id'], service_data)
-
-
 		# Retry support
 		if not self._existing_service(data['service_id']):
-			charles_service = Service.objects.create(service_id=data['service_id'], target_state=data['target_state'])
+			charles_service = Service.objects.create(service_id=data['service_id'], target_state=data['target_state'], deployment_mode=data['deployment_mode'])
 		else:
 			charles_service = Service.objects.get(service_id=data['service_id'])
 			charles_service.target_state = data['target_state']
+			charles_service.deployment_mode = data['deployment_mode']
 
 
 		service = get_service(data['service_id'])
+		charles_service.service_state = service['service_state']
 
-		# generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
-		# request, service_state = generate_request(client, service, CodeMap[data['activation_code']].value)
-		service_state = Fsm.run(service)
+		#for persistence
+		charles_service.save()
 
+		my_charles_service = Service.objects.filter(service_id=data['service_id']).values()[0]
+		my_charles_service.update(service)
+
+
+		pprint(my_charles_service)
+
+		service_state = Fsm.run(my_charles_service)
 		pprint(request)
 		
 		if service_state is not None:
@@ -80,32 +56,31 @@ class ServiceView(View):
 			response = { "message": "Service request failed." }
 		
 		charles_service.save()
-		
 		return JsonResponse(response)
 
 	def put(self, request, service_id):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-		if data['service_state'] != "ERROR":
-			service = Service.objects.get(service_id=service_id)
-			service.service_state = NextStateE2e[service.service_state].value
-			service.save()
+		# if data['service_state'] != "ERROR":
+		# 	service = Service.objects.get(service_id=service_id)
+		# 	service.service_state = NextStateE2e[service.service_state].value
+		# 	service.save()
 
-			update_service(service_id, {'service_state': service.service_state})
+		# 	update_service(service_id, {'service_state': service.service_state})
 
-			if service.service_state != service.target_state:
-				service = get_service(service_id)
-				client = get_client(service['client_id'])
+		# 	if service.service_state != service.target_state:
+		# 		service = get_service(service_id)
+		# 		client = get_client(service['client_id'])
 
-				generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
-				request, service_state = generate_request(client, service, code="cpe")
-				pprint(request)
+		# 		generate_request = getattr(ServiceTypes[service['service_type']].value, "generate_" + service['service_type'] + "_request")
+		# 		request, service_state = generate_request(client, service, code="cpe")
+		# 		pprint(request)
 
-		# Rollback all reservations if error
-		# if service[0].service_state == "ERROR":
-		# 	rollback_service(str(service_id))	
+		# # Rollback all reservations if error
+		# # if service[0].service_state == "ERROR":
+		# # 	rollback_service(str(service_id))	
 
-			response = { "message": "Service stated updated" }
+		response = { "message": "Service stated updated" }
 
 		return JsonResponse(response, safe=False)
 
@@ -121,19 +96,15 @@ class ProcessView(View):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 		service = Service.objects.get(service_id=service_id)
 
-		if data['service_state'] != "ERROR":
-			#move to the next state
-			service.service_state = Fsm.to_next_state(service)
-			service.save()
-
-			if service.service_state != service.target_state:
-				service.service_state = FSM.run(service)
-			
+		if service.process_worker_response(data['service_state']) != "error":
+			data = {'service_state': service.service_state}
+			update_service(service.service_id, data)
 			response = { "message": "Service stated updated" }
-
-		
 		else:
+			data = {'service_state': "error"}
+			update_service(service.service_id, data)
 			response = { "message": "Service update failed" }
+		
 		return JsonResponse(response, safe=False)
 
 

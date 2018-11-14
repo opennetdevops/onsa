@@ -23,11 +23,11 @@ def bb_data_ack_automated_request(service):
 
 		service_data['client_network'] = service['client_network']
 		service_data['service_state'] = "bb_data_ack"
-		update_service(service['id'], service_data)
+		update_service(service['service_id'], service_data)
 
 	else:
 		service_data['service_state'] = "error"
-		update_service(service['id'], service_data)
+		update_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -39,7 +39,7 @@ def bb_activated_automated_request(service):
 	config = {
 			 "client" : client['name'],
 			 "service_type" :  service['service_type'],
-			 "service_id" : service['id'],
+			 "service_id" : service['service_id'],
 			 "op_type" : "CREATE" }
 
 	config['parameters'] =  {
@@ -63,15 +63,16 @@ def bb_activated_automated_request(service):
 						 {"vendor": parameters['access_node']['vendor'],"model": parameters['access_node']['model'],"mgmt_ip": parameters['access_node']['mgmt_ip']}]
 
 	configure_service(config)
+	service_data = {}
 	service_data['service_state'] = "BB_ACTIVATION_IN_PROGRESS"
-	update_service(service['id'], service_data)
+	update_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
 
 def an_data_ack_automated_request(service):
 	service_data['service_state'] = "an_data_ack"
-	update_service(service['id'], service_data)
+	update_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -94,7 +95,7 @@ def an_activated_automated_request(service):
 	else:
 		service_data['service_state'] = "error"
 
-	update_service(service['id'], service_data)
+	update_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -111,7 +112,7 @@ def cpe_data_ack_automated_request(service):
 	service_data['service_state'] = "cpe_data_ack"
 	service_data['wan_network'] = parameters['client_node']['wan_network'] 	
 
-	update_service(service['id'], service_data)
+	update_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -137,7 +138,7 @@ def service_activated_automated_request(service):
 	else:
 		service_data['service_state'] = "error"
 	
-	update_service(service['id'], service_data)
+	update_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 

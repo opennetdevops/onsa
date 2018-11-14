@@ -12,6 +12,8 @@ class ServiceTypes(Enum):
     vpls = vpls_service
 
 
+
+
 NextStateMap = (    {'src':"IN_CONSTRUCTION",
                     'dst': "bb_activated",
                     'next_state':"bb_data_ack" },
@@ -62,40 +64,44 @@ def next_state(source_state,target_state):
 class Fsm():
     def run(service):
         state = next_state(service['service_state'], service['target_state'])
-        generate_request = getattr(state, "do_" + service['deployment_mode'])
+        generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
         req_state = generate_request(service)
         
         if req_state is not "error":
             if req_state != service['target_state']:
                 state = next_state(req_state, service['target_state'])
-                generate_request = getattr(state, "do_" + service['deployment_mode'])
+                generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
                 req_state = generate_request(service)
             return req_state
         return None 
 
     def to_next_state(service):
         state = next_state(service['service_state'], service['target_state'])
-        generate_request = getattr(state, "do_manual")
+        generate_request = getattr(StateTypes[state].value, "do_manual")
         return generate_request(service)
         
 
 
 class State():
     def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, service['service_type'] + service['deployment_mode'] + "_request")
-        return  generate_request(service)
+        print("not implemented")
+        return
 
 class bb_data_ack(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        print(type(self))
         return "bb_data_ack"
+    def do_automated(service):
+        generate_request = getattr(ServiceTypes[service['service_type']].value, "bb_data_ack_" + service['deployment_mode'] + "_request")
+        return  generate_request(service)
         
 class bb_activated(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        print(type(self))
         return "bb_activated"
+    def do_automated(service):
+        generate_request = getattr(ServiceTypes[service['service_type']].value, "bb_activated_" + service['deployment_mode'] + "_request")
+        return  generate_request(service)
 
 class an_data_ack(State):
     def do_manual(service):
@@ -121,6 +127,9 @@ class service_activated(State):
         print(type(self))
         return "service_activated"
 
+class StateTypes(Enum):
+    bb_activated = bb_activated
+    bb_data_ack = bb_data_ack
 
 
 
