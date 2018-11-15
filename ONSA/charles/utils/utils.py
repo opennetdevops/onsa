@@ -351,6 +351,16 @@ def delete_client(client_id):
     else:
         return None
 
+def delete_customer_location(client_id, customer_location_id):
+    url = settings.JEAN_GREY_URL + "clients/"  + str(client_id) + "/customerlocations/" + str(customer_location_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 def get_client_by_name(client_name):
     url = settings.JEAN_GREY_URL + "clients?name="  + str(client_name)
     rheaders = {'Content-Type': 'application/json'}
@@ -409,7 +419,7 @@ def get_customer_location(client_id, customer_location_id):
 def create_customer_location(client_id):
     url = settings.JEAN_GREY_URL + "clients/"  + str(client_id) +"/customerlocations"
     rheaders = {'Content-Type': 'application/json'}
-    data = {"client_id":client_id}
+    data = {}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     
@@ -431,6 +441,17 @@ def create_client(client_name):
     else:
         return None
 
+
+def create_core_service(data):
+    url = settings.CORE_URL +"services" 
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    
+    if json_response:
+        return json_response
+    else:
+        return None
 
 
 def fetch_cpe(service, client, customer_location):

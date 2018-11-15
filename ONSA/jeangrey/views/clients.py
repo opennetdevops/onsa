@@ -58,7 +58,7 @@ class CustomerLocationView(View):
         data['client_id'] = client_id
         cl = CustomerLocation.objects.create(**data)
         cl.save()
-        response = {"message" : "CustomerLocation requested"}
+        response = {"message" : "CustomerLocation requested", "id": cl.id}
         return JsonResponse(response)
 
     def put(self, request, client_id, customer_location_id):
@@ -68,6 +68,8 @@ class CustomerLocationView(View):
         return JsonResponse(data, safe=False)
 
     def delete(self, request, client_id, customer_location_id):
-        #TODO
-        pass
+        cl = CustomerLocation.objects.filter(pk=customer_location_id)
+        cl.delete()
+        data = {"Message" : "CustomerLocation deleted successfully"}
+        return JsonResponse(data)
 
