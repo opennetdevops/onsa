@@ -40,30 +40,15 @@ $ sudo su
 $ psql postgres
 ```
 
-#### Crear usuario nsx
+#### Crear DB
 
 ```sql
-$ CREATE ROLE automation with login password 'F1b3rc0rp';
-```
-
-#### Crear base de datos
-
-```sql
-$ CREATE database onsa;
-```
-
-#### Configuración de usuario
-
-```sql
-$ ALTER role automation SET client_encoding TO 'utf8';
-$ ALTER role automation SET default_transaction_isolation TO 'read committed';
-$ ALTER role automation SET timezone TO 'UTC';
-```
-
-#### Dar privilegios al usuario
-
-```sql
-$ GRANT ALL PRIVILEGES ON DATABASE onsa to automation;
+CREATE ROLE automation with login password 'F1b3rc0rp';
+CREATE database onsa;
+ALTER role automation SET client_encoding TO 'utf8';
+ALTER role automation SET default_transaction_isolation TO 'read committed';
+ALTER role automation SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE onsa to automation;
 ```
 
 ## Instalar dependencias
