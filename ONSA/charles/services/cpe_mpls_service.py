@@ -7,13 +7,18 @@ BB_CODES = ["bb", "bb_data"]
 CPE_CODES = ["cpe", "cpe_data"]
 DATA_CODES = ["bb_data", "cpe_data"]
 ACTIVATION_CODES = ["bb", "cpe"]
+DEBUG = True
+
 
 # Naming convention for functions inside this class
 # "service_state" + "_" + deployment_mode + "_request"
 
 def bb_data_ack_automated_request(service):
+	if DEBUG: print("bb_data_ack_automated_request")
 	client = get_client(service['client_id'])
 	parameters = bb_parameters(client, service)
+
+	if DEBUG: print(parameters)
 
 	#Handle parameters error
 	if parameters is not None:
@@ -33,6 +38,7 @@ def bb_data_ack_automated_request(service):
 
 
 def bb_activated_automated_request(service):
+	if DEBUG: print("bb_activated_automated_request")
 	client = get_client(service['client_id'])
 	parameters = bb_parameters(client, service)
 
@@ -71,6 +77,7 @@ def bb_activated_automated_request(service):
 
 
 def an_data_ack_automated_request(service):
+	if DEBUG: print("an_data_ack_automated_request")
 	service_data['service_state'] = "an_data_ack"
 	update_service(service['service_id'], service_data)
 	return service_data['service_state']
@@ -78,8 +85,15 @@ def an_data_ack_automated_request(service):
 
 
 def an_activated_automated_request(service):
+	if DEBUG: print("an_activated_automated_request")
 	client = get_client(service['client_id'])
 	parameters = an_parameters(client, service)	
+
+	config = {
+		 "client" : client['name'],
+		 "service_type" :  service['service_type'],
+		 "service_id" : service['service_id'],
+		 "op_type" : "CREATE" }
 	
 	if parameters is not None:	
 		config['parameters'] =  {  
@@ -101,13 +115,13 @@ def an_activated_automated_request(service):
 
 
 def cpe_data_ack_automated_request(service):
+	if DEBUG: print("cpe_data_ack_automated_request")
 	client = get_client(service['client_id'])
 	parameters = cpe_parameters(client, service)
 	customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
 
-	client_port_id = fetch_cpe(service, client, customer_location)
-	if client_port_id:
-		service_data = { "client_port_id": client_port_id }
+	if parameters['client_port_id']:
+		service_data = { "client_port_id": parameters['client_port_id'] }
 
 	service_data['service_state'] = "cpe_data_ack"
 	service_data['wan_network'] = parameters['client_node']['wan_network'] 	
@@ -117,8 +131,17 @@ def cpe_data_ack_automated_request(service):
 
 
 def service_activated_automated_request(service):
+	if DEBUG: print("service_activated_automated_request")
 	client = get_client(service['client_id'])
 	parameters = cpe_parameters(client, service)
+	config = {
+		 "client" : client['name'],
+		 "service_type" :  service['service_type'],
+		 "service_id" : service['service_id'],
+		 "op_type" : "CREATE" }
+
+
+	service_data = {}
 
 	if parameters is not None:
 		config['parameters'] =  {  
@@ -280,8 +303,8 @@ def bb_parameters(client, service):
 			
 			client_as_number = service['autonomous_system']
 
-	parameters['wan_network'] = wan_network
-	parameters['client_as_number'] = client_as_number
+			parameters['wan_network'] = wan_network
+			parameters['client_as_number'] = client_as_number
 
 	parameters['router_node'] = { 'vendor': router_node['vendor'],
 									'model': router_node['model'],
@@ -299,11 +322,20 @@ def bb_parameters(client, service):
 def cpe_parameters(client, service):
 	location = get_location(service['location_id'])
 	client_node = get_client_node(service['client_node_sn'])
-	client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
+	parameters = {}
+	
+	if service['client_port_id'] is None:
+		customer_location = get_customer_location(client['id'],service['customer_location_id']) 
+		client_port_id = fetch_cpe(service['client_node_sn'], client['name'], customer_location )
+		client_port = get_client_port(service['client_node_sn'], client_port_id)
+		parameters['client_port_id'] = client_port_id
 
+	else:
+		client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
+	
 	wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
 
-	parameters = {}
+	
 	parameters['client_node'] = { 'vendor': client_node['vendor'],
 									'model': client_node['model'],
 									'mgmt_ip': client_node['mgmt_ip'],

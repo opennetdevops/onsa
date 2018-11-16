@@ -98,17 +98,12 @@ class ServiceView(View):
         location = data.pop('location')
         location_id = get_location_id(location)
         router_node = get_router_node(location_id)
-      
-        if 'client_node_sn' in data.keys():
-            access_port_id = Service.objects.filter(client_node_sn=data['client_node_sn']).values()[0]['access_port_id']
-            access_port = get_access_port(access_port_id)
-            access_node_id = access_port['access_node_id']
 
-        else:
-            free_access_port = get_free_access_port(location_id)           
-            access_port_id = str(free_access_port['id'])
-            use_port(access_port_id)
-            access_node_id = str(free_access_port['access_node_id'])
+        
+        free_access_port = get_free_access_port(location_id)           
+        access_port_id = str(free_access_port['id'])
+        use_port(access_port_id)
+        access_node_id = str(free_access_port['access_node_id'])
 
         vlan = get_free_vlan(access_node_id)
         use_vlan(access_node_id, vlan['vlan_tag'])
@@ -131,6 +126,7 @@ class ServiceView(View):
 
         return JsonResponse(response)
 
+
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
@@ -141,6 +137,14 @@ class ServiceView(View):
         service.update(**data)
 
         return JsonResponse(data, safe=False)
+
+
+    def delete(self, request, service_id):
+        svc = Service.objects.filter(service_id=service_id)
+        svc.delete()
+        data = {"Message" : "Service deleted successfully"}
+        return JsonResponse(data)
+
 
     def define_vrf(self, client, data):
         if data['service_type'] in VRF_SERVICES:

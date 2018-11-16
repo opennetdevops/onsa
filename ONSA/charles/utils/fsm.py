@@ -36,6 +36,9 @@ NextStateMap = (    {'src':"IN_CONSTRUCTION",
                     'dst': "service_activated",
                     'next_state':"bb_activated" },
                     {'src':"bb_activated",
+                    'dst': "cpe_data_ack",
+                    'next_state':"cpe_data_ack" },
+                    {'src':"bb_activated",
                     'dst': "service_activated",
                     'next_state':"cpe_data_ack" },
                     {'src':"cpe_data_ack",
@@ -46,6 +49,9 @@ NextStateMap = (    {'src':"IN_CONSTRUCTION",
                     'next_state':"an_activated" },
                     {'src':"BB_ACTIVATION_IN_PROGRESS",
                     'dst': "bb_activated",
+                    'next_state':"bb_activated" }, 
+                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    'dst': "service_activated",
                     'next_state':"bb_activated" },             
                     {'src':"AN_ACTIVATION_IN_PROGRESS",
                     'dst': "an_activated",
@@ -91,6 +97,7 @@ class bb_data_ack(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
         return "bb_data_ack"
+
     def do_automated(service):
         generate_request = getattr(ServiceTypes[service['service_type']].value, "bb_data_ack_" + service['deployment_mode'] + "_request")
         return  generate_request(service)
@@ -99,6 +106,7 @@ class bb_activated(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
         return "bb_activated"
+
     def do_automated(service):
         generate_request = getattr(ServiceTypes[service['service_type']].value, "bb_activated_" + service['deployment_mode'] + "_request")
         return  generate_request(service)
@@ -106,30 +114,49 @@ class bb_activated(State):
 class an_data_ack(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        print(type(self))
         return "an_data_ack"
 
 class an_activated(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        print(type(self))
         return "an_activated"
 
 class cpe_data_ack(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        print(type(self))
         return "cpe_data_ack"
+    
+    def do_automated(service):
+        generate_request = getattr(ServiceTypes[service['service_type']].value, "cpe_data_ack_" + service['deployment_mode'] + "_request")
+        return  generate_request(service)
 
 class service_activated(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        print(type(self))
         return "service_activated"
+
+    def do_automated(service):
+        generate_request = getattr(ServiceTypes[service['service_type']].value, "service_activated_" + service['deployment_mode'] + "_request")
+        return  generate_request(service)
+
+class BB_ACTIVATION_IN_PROGRESS(State):
+    def do_manual(service):
+        #TODO ESTO SE HACE POR REFLECTION FACIL
+        return "BB_ACTIVATION_IN_PROGRESS"
+
+class CPE_ACTIVATION_IN_PROGRESS(State):
+    def do_manual(service):
+        #TODO ESTO SE HACE POR REFLECTION FACIL
+        return "CPE_ACTIVATION_IN_PROGRESS"
+
 
 class StateTypes(Enum):
     bb_activated = bb_activated
     bb_data_ack = bb_data_ack
+    cpe_data_ack = cpe_data_ack
+    service_activated = service_activated
+    BB_ACTIVATION_IN_PROGRESS = BB_ACTIVATION_IN_PROGRESS
+    CPE_ACTIVATION_IN_PROGRESS = CPE_ACTIVATION_IN_PROGRESS
 
 
 

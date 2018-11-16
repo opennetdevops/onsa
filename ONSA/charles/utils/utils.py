@@ -209,6 +209,17 @@ def use_port(access_port_id):
     else:
         return None
 
+def release_access_port(access_port_id):
+    url= settings.INVENTORY_URL + "accessports/" + str(access_port_id)
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"used":False}
+    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 def get_access_node(access_node_id):
     url= settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
     rheaders = {'Content-Type': 'application/json'}
@@ -331,6 +342,26 @@ def get_service(service_id):
     else:
         return None
 
+def get_services():
+    url = settings.JEAN_GREY_URL + "services"
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def get_charles_services():
+    url = settings.CHARLES_URL + "services"
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 def get_client(client_id):
     url = settings.JEAN_GREY_URL + "clients/"  + str(client_id)
     rheaders = {'Content-Type': 'application/json'}
@@ -351,6 +382,39 @@ def delete_client(client_id):
     else:
         return None
 
+
+def delete_service(service_id):
+    url = settings.CORE_URL + "services/"  + str(service_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
+def delete_charles_service(service_id):
+    url = settings.CHARLES_URL + "services/"  + str(service_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def delete_jeangrey_service(service_id):
+    url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
 def delete_customer_location(client_id, customer_location_id):
     url = settings.JEAN_GREY_URL + "clients/"  + str(client_id) + "/customerlocations/" + str(customer_location_id)
     rheaders = {'Content-Type': 'application/json'}
@@ -363,6 +427,16 @@ def delete_customer_location(client_id, customer_location_id):
 
 def get_client_by_name(client_name):
     url = settings.JEAN_GREY_URL + "clients?name="  + str(client_name)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def get_clients():
+    url = settings.JEAN_GREY_URL + "clients"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -416,6 +490,16 @@ def get_customer_location(client_id, customer_location_id):
     else:
         return None
 
+def get_customer_locations(client_id):
+    url = settings.JEAN_GREY_URL + "clients/"  + str(client_id) +"/customerlocations"
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 def create_customer_location(client_id):
     url = settings.JEAN_GREY_URL + "clients/"  + str(client_id) +"/customerlocations"
     rheaders = {'Content-Type': 'application/json'}
@@ -454,23 +538,43 @@ def create_core_service(data):
         return None
 
 
-def fetch_cpe(service, client, customer_location):
-    client_node = get_client_node(service['client_node_sn'])
+def fetch_cpe(client_node_sn, client_name, customer_location):
+    client_node = get_client_node(client_node_sn)
     """
     Update Inventory with CPE data if needed
     """
+    # print(customer_location)
     if client_node['client'] is None:
-        cpe_data = { 'client': client['name'], 'customer_location': customer_location['address'] }
-        update_cpe(service['client_node_sn'], cpe_data)
+        cpe_data = { 'client': client_name, 'customer_location': customer_location['address'] }
+        update_cpe(client_node_sn, cpe_data)
 
     """
     Get free CPE port from Inventory and
     mark it as a used port.
     """
-    cpe_port = get_free_cpe_port(service['client_node_sn'])
+    cpe_port = get_free_cpe_port(client_node_sn)
     cpe_port_id = cpe_port['id']
 
     #Assign CPE Port (mark as used)
-    use_port(service['client_node_sn'], cpe_port_id)
+    use_port(client_node_sn, cpe_port_id)
 
     return cpe_port_id
+
+
+def push_service_to_orchestrator(service_id, deployment_mode, target_state):
+    url = settings.CHARLES_URL + "services"
+
+    rheaders = { 'Content-Type': 'application/json' }   
+    data = { "service_id": service_id, "deployment_mode": deployment_mode, "target_state": target_state }   
+    r = requests.post(url, data = json.dumps(data), headers = rheaders)
+    return r
+
+
+def update_charles_service_state(service_id, state):
+    url = settings.CHARLES_URL + "services/" + str(service_id) + "/process"
+
+    rheaders = { 'Content-Type': 'application/json' }   
+    data = { "service_state": state }   
+    r = requests.post(url, data = json.dumps(data), headers = rheaders)
+    return r
+
