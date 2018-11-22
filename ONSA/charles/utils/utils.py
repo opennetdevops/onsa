@@ -470,6 +470,20 @@ def use_port(client_node_id, client_port_id):
     else:
         return None
 
+
+def release_client_node_port(client_node_id, client_port_id):
+    url= settings.INVENTORY_URL + "clientnodes/" + str(client_node_id) + "/clientports/" + str(client_port_id)
+
+    rheaders = { 'Content-Type': 'application/json' }
+    data = { "used": False }
+    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 def get_vrfs():
     url = settings.INVENTORY_URL + "vrfs" 
     rheaders = {'Content-Type': 'application/json'}

@@ -78,6 +78,7 @@ def bb_activated_automated_request(service):
 
 def an_data_ack_automated_request(service):
 	if DEBUG: print("an_data_ack_automated_request")
+	service_data = {}
 	service_data['service_state'] = "an_data_ack"
 	update_service(service['service_id'], service_data)
 	return service_data['service_state']
@@ -88,6 +89,7 @@ def an_activated_automated_request(service):
 	if DEBUG: print("an_activated_automated_request")
 	client = get_client(service['client_id'])
 	parameters = an_parameters(client, service)	
+	service_data = {}
 
 	config = {
 		 "client" : client['name'],

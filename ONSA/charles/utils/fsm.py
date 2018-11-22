@@ -115,11 +115,19 @@ class an_data_ack(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
         return "an_data_ack"
+    
+    def do_automated(service):
+        generate_request = getattr(ServiceTypes[service['service_type']].value, "an_data_ack_" + service['deployment_mode'] + "_request")
+        return  generate_request(service)
 
 class an_activated(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
         return "an_activated"
+
+    def do_automated(service):
+        generate_request = getattr(ServiceTypes[service['service_type']].value, "an_activated_" + service['deployment_mode'] + "_request")
+        return  generate_request(service)
 
 class cpe_data_ack(State):
     def do_manual(service):
@@ -149,6 +157,10 @@ class CPE_ACTIVATION_IN_PROGRESS(State):
         #TODO ESTO SE HACE POR REFLECTION FACIL
         return "CPE_ACTIVATION_IN_PROGRESS"
 
+class AN_ACTIVATION_IN_PROGRESS(State):
+    def do_manual(service):
+        #TODO ESTO SE HACE POR REFLECTION FACIL
+        return "CPE_ACTIVATION_IN_PROGRESS"
 
 class StateTypes(Enum):
     bb_activated = bb_activated
@@ -157,6 +169,9 @@ class StateTypes(Enum):
     service_activated = service_activated
     BB_ACTIVATION_IN_PROGRESS = BB_ACTIVATION_IN_PROGRESS
     CPE_ACTIVATION_IN_PROGRESS = CPE_ACTIVATION_IN_PROGRESS
+    AN_ACTIVATION_IN_PROGRESS = AN_ACTIVATION_IN_PROGRESS
+    an_data_ack = an_data_ack
+    an_activated = an_activated
 
 
 
