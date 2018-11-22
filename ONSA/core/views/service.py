@@ -61,6 +61,10 @@ class ServiceView(View):
         url = settings.JEAN_GREY_URL + "services"
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+
+        pprint(data)
+
+
         json_response = json.loads(response.text)
 
         return JsonResponse(json_response, safe=False)

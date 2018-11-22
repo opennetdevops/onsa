@@ -116,6 +116,7 @@ class ServiceView(View):
         data['client_id'] = client.id
         data['vlan_id'] = vlan['vlan_tag']
         data['access_node_id'] = access_node_id
+        data['customer_location_id'] = int(data['customer_location_id'])
 
         ServiceClass = getattr(models, ServiceTypes[data['service_type']].value)
 

@@ -125,6 +125,20 @@ class LocationsView(View):
 		pass
 
 
+class CustomerLocationsView(View):
+	def get(self, request, client_id):
+		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
+
+		rheaders = {'Content-Type': 'application/json'}	
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+		json_response = json.loads(response.text)
+
+		return JsonResponse(json_response, safe=False)
+
+	def post(self, request):
+		pass
+
 class VrfsView(View):
 	def get(self, request):
 		client = request.GET.get('client')
@@ -234,11 +248,15 @@ class VrfsView(View):
 
 class ClientView(View):
 	def get(self, request, client_id=None):
-		
+
 		url = settings.JEAN_GREY_URL + "clients"
+		name = request.GET.get('name', None)
+
 		if client_id is not None:
 			url += "/" + str(client_id)
-
+		elif name is not None:
+			url += "?name=" + name		
+		
 		rheaders = { 'Content-Type': 'application/json' }		
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -273,18 +291,4 @@ class ClientAccessPortsView(View):
 		pass
 
 	def delete(self, request):
-		pass
-
-
-class CustomerLocationsView(View):
-	def get(self, request, client_id):
-		
-		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
-
-		rheaders = { 'Content-Type': 'application/json' }		
-		response = requests.get(url, auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
-		
-		return JsonResponse(json_response, safe=False)
-
-	
+		pass	
