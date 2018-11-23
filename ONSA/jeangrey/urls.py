@@ -19,5 +19,6 @@ urlpatterns = [
     path('/api/services', require_http_methods(["GET", "POST"])(services.ServiceView.as_view())),
 	path('/api/brownfield/services', require_http_methods(["GET", "POST"])(brownfield_services.ServiceView.as_view())),
 	path('/api/services/<str:service_id>', require_http_methods(["GET", "PUT", "DELETE"])(services.ServiceView.as_view())),
+	path('/api/clients/<str:client_id>/customerlocations/<str:customer_location_id>/accessports', require_http_methods(["GET"])(clients.CustomerLocationAccessPortsView.as_view())),
 	
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

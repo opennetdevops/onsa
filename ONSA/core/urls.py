@@ -32,6 +32,6 @@ urlpatterns = [
     path('/api/vrfs', require_http_methods(["GET", "PUT", "DELETE"])(wrapper.VrfsView.as_view())),
     # path('/api/projects', require_http_methods(["GET", "POST"])(projects.ProjectsView.as_view())),
     # path('/api/projects/<str:product_id>', require_http_methods(["GET", "PUT", "DELETE"])(projects.ProjectsView.as_view())),
-    path('/api/clients/<str:client_id>/accessports', require_http_methods(["GET"])(wrapper.ClientAccessPortsView.as_view())),
+    path('/api/clients/<str:client_id>/customerlocations/<str:customer_location_id>/accessports', require_http_methods(["GET"])(wrapper.ClientCustomerLocationAccessPortsView.as_view())),
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

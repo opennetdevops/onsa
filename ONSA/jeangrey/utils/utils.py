@@ -17,6 +17,16 @@ class ServiceTypes(Enum):
     vcpe_irs = "VcpeIrs"
     vpls = "Vpls"
 
+def get_access_node(access_node_id):
+    url= settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
 def get_access_port(access_port_id):
     url = settings.INVENTORY_URL + "accessports/"+ str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}

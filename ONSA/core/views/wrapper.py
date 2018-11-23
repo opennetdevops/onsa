@@ -280,9 +280,14 @@ class ClientView(View):
 		pass
 
 
-class ClientAccessPortsView(View):
-	def get(self, request, client_id):
-		pass
+class ClientCustomerLocationAccessPortsView(View):
+	def get(self, request, client_id, customer_location_id):
+		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations/" + str(customer_location_id) + "/accessports"
+		rheaders = { 'Content-Type': 'application/json' }
+		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+
+		return JsonResponse(json_response, safe=False)
 		
 	def post(self, request):
 		pass

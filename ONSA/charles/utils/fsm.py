@@ -18,6 +18,9 @@ NextStateMap = (    {'src':"IN_CONSTRUCTION",
                     'dst': "bb_activated",
                     'next_state':"bb_data_ack" },
                     {'src':"IN_CONSTRUCTION",
+                    'dst': "cpe_data_ack",
+                    'next_state':"bb_data_ack" },
+                    {'src':"IN_CONSTRUCTION",
                     'dst': "bb_data_ack",
                     'next_state':"bb_data_ack" },
                     {'src':"IN_CONSTRUCTION",
@@ -70,6 +73,7 @@ def next_state(source_state,target_state):
 class Fsm():
     def run(service):
         state = next_state(service['service_state'], service['target_state'])
+        print(state)
         generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
         req_state = generate_request(service)
         
