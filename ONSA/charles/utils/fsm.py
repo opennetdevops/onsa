@@ -1,4 +1,4 @@
-from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service
+from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service, cpe_irs_service
 from charles.services import vpls_service
 from enum import Enum
 
@@ -9,6 +9,7 @@ class ServiceTypes(Enum):
     cpe_mpls = cpe_mpls_service
     cpeless_mpls = cpeless_mpls_service
     vcpe_irs = vcpe_irs_service
+    cpe_irs = cpe_irs_service
     vpls = vpls_service
 
 

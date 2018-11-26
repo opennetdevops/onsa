@@ -69,8 +69,7 @@ def bb_activated_automated_request(service):
 							"loopback":parameters['loopback']
 						}
 
-	config['devices'] = [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']},
-						 {"vendor": parameters['access_node']['vendor'],"model": parameters['access_node']['model'],"mgmt_ip": parameters['access_node']['mgmt_ip']}]
+	config['devices'] = [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']}]
 
 	configure_service(config)
 	service_data = {}
@@ -130,7 +129,7 @@ def cpe_data_ack_automated_request(service):
 		service_data = { "client_port_id": parameters['client_port_id'] }
 
 	service_data['service_state'] = "cpe_data_ack"
-	service_data['wan_network'] = parameters['client_node']['wan_network'] 	
+	service_data['wan_network'] = service['wan_network'] 	
 
 	update_service(service['service_id'], service_data)
 	return service_data['service_state']
@@ -171,106 +170,6 @@ def service_activated_automated_request(service):
 	return service_data['service_state']
 
 
-
-
-# def generate_cpe_mpls_automated_request(client, service, code=None):
-
-# 	config = {
-# 				 "client" : client['name'],
-# 				 "service_type" :  service['service_type'],
-# 				 "service_id" : service['id'],
-# 				 "op_type" : "CREATE" }
-	
-# 	if code in BB_CODES:
-# 		parameters = bb_parameters(client, service)
-		
-# 		service_data = { 'logical_unit_id': parameters['logical_unit_id'],
-# 						 'wan_network':  parameters['wan_network'],
-# 						 'autonomous_system':  parameters['client_as_number'] }
-
-# 		service_data['client_network'] = service['client_network']
-
-# 		config['parameters'] =  {
-# 								"pop_size" : parameters['pop_size'],       
-# 								"an_uplink_interface" : parameters['an_uplink_interface'],
-# 								"an_uplink_ports" :   parameters['an_uplink_ports'],
-# 								"logical_unit" : parameters['logical_unit_id'],   
-# 								"provider_vlan" : parameters['provider_vlan'],      
-# 								"service_vlan" : service['vlan_id'], 
-# 								"client_as_number" : parameters['client_as_number'],
-# 								"an_client_port" : parameters['an_client_port'],
-# 								"vrf_exists": parameters['vrf_exists'],
-# 								"wan_cidr": parameters['wan_network'],
-# 								"client_cidr": service['client_network'],
-# 								"vrf_name": parameters['vrf_name'],
-# 								"vrf_id": parameters['vrf_id'],
-# 								"loopback":parameters['loopback']
-# 							}
-
-# 		config['devices'] = [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']},
-# 							 {"vendor": parameters['access_node']['vendor'],"model": parameters['access_node']['model'],"mgmt_ip": parameters['access_node']['mgmt_ip']}]
-
-
-# 		if code == "bb_data":
-# 			service_data['service_state'] = "BB_DATA_ACK"
-
-# 		elif code == "bb":
-# 			service_data['service_state'] = "BB_ACTIVATION_IN_PROGRESS"
-
-# 		update_service(service['id'], service_data) 
-# #
-# 	elif code in CPE_CODES:
-# 		parameters = cpe_parameters(client, service)
-
-# 		config['parameters'] =  {  
-# 								"service_vlan" : service['vlan_id'], 
-# 								"bandwidth" : service['bandwidth'],
-# 								"client_as_number" : service['autonomous_system'],
-# 								"on_client_port" : parameters['client_node']['interface_name'],
-# 								"wan_cidr": service['wan_network'],
-# 								"client_cidr": service['client_network'],
-# 							 }
-
-# 		config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
-
-
-# 		if code == "cpe_data":
-# 			service_data = { "service_state": "CPE_DATA_ACK", "wan_network": parameters['client_node']['wan_network'] }
-
-# 		elif code == "cpe":
-# 			service_data = { "service_state": "CPE_ACTIVATION_IN_PROGRESS" , "wan_network": parameters['client_node']['wan_network'] }
-
-# 		update_service(service['id'], service_data)
-
-# 	elif code == "an":
-# 		parameters = an_parameters(client, service)
-
-# 		config['parameters'] =  {  
-# 								"service_vlan" : service['vlan_id'], 
-# 								"an_client_port": parameters['an_client_port']
-# 									}
-
-# 		config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
-
-
-# 		service_data = { "service_state": "AN_ACTIVATED" }
-
-# 		update_service(service['id'], service_data)
-			
-# 	if code in DATA_CODES:
-# 		print("DATA_FECTH")
-# 		return config, service_data['service_state']
-# 	elif code in ACTIVATION_CODES:
-# 		print("ACTIVATION")
-# 		# configure_service(config)
-# 		return config, service_data['service_state']
-# 	elif code == "an":
-# 		print("AN ACTIVATION")
-# 		# configure_service(config)
-# 		return config, service_data['service_state']
-# 	else:
-# 		return None, service_state['service_state']
- 
 
 def bb_parameters(client, service):
 	location = get_location(service['location_id'])
