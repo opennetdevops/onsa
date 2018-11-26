@@ -141,7 +141,7 @@ def service_activated_automated_request(service):
                 "on_client_port" : parameters['client_node']['interface_name'],
                 "on_uplink_port" : parameters['client_node']['uplink_port'],
                 "wan_cidr": service['wan_network'],
-                "client_cidr": service['client_network']
+                "client_cidr": service['public_network']
                }
 
     config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
@@ -176,8 +176,10 @@ def bb_parameters(client, service):
           if client_network:  
               add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
           else:
+              print("Client Network - not available")
               return None
       else:
+          print("not available LOGICAL UNITS")
           return None
 
       wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
