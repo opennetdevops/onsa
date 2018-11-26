@@ -13,59 +13,102 @@ class ServiceTypes(Enum):
     vpls = vpls_service
 
 
-
-
-NextStateMap = (    {'src':"IN_CONSTRUCTION",
-                    'dst': "bb_activated",
-                    'next_state':"bb_data_ack" },
-                    {'src':"IN_CONSTRUCTION",
-                    'dst': "cpe_data_ack",
-                    'next_state':"bb_data_ack" },
-                    {'src':"IN_CONSTRUCTION",
-                    'dst': "bb_data_ack",
-                    'next_state':"bb_data_ack" },
-                    {'src':"IN_CONSTRUCTION",
-                    'dst': "service_activated",
-                    'next_state':"bb_data_ack" },
+##
+## IN_CONS. -> AN_DATA -> AN_ACT_IN_PROG -> AN_ACT -> BB_DATA -> BB_ACT_IN_PROG -> BB_ACT -> CPE_DATA_ACK
+##
+NextStateMap = (    
+                    #From IN_CONSTRUNCTION
                     {'src':"IN_CONSTRUCTION",
                     'dst': "an_activated",
                     'next_state':"an_data_ack" },
                     {'src':"IN_CONSTRUCTION",
                     'dst': "an_data_ack",
                     'next_state':"an_data_ack" },
-                    {'src':"bb_data_ack",
-                    'dst': "bb_activated",
-                    'next_state':"bb_activated" },
-                    {'src':"bb_data_ack",
+                    {'src':"IN_CONSTRUCTION",
                     'dst': "cpe_data_ack",
-                    'next_state':"bb_activated" },
-                    {'src':"bb_data_ack",
+                    'next_state':"an_data_ack" },
+                    {'src':"IN_CONSTRUCTION",
+                    'dst': "bb_data_ack",
+                    'next_state':"an_data_ack" },
+                    {'src':"IN_CONSTRUCTION",
                     'dst': "service_activated",
-                    'next_state':"bb_activated" },
-                    {'src':"bb_activated",
-                    'dst': "cpe_data_ack",
-                    'next_state':"cpe_data_ack" },
-                    {'src':"bb_activated",
-                    'dst': "service_activated",
-                    'next_state':"cpe_data_ack" },
-                    {'src':"cpe_data_ack",
-                    'dst': "service_activated",
-                    'next_state':"service_activated" },
+                    'next_state':"an_data_ack" },
+
+                    #From AN_DATA_ACK
                     {'src':"an_data_ack",
                     'dst': "an_activated",
                     'next_state':"an_activated" },
-                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    {'src':"an_data_ack",
                     'dst': "bb_activated",
-                    'next_state':"bb_activated" }, 
-                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    'next_state':"an_activated" },
+                    {'src':"an_data_ack",
+                    'dst': "cpe_data_ack",
+                    'next_state':"an_activated" },
+                    {'src':"an_data_ack",
                     'dst': "service_activated",
-                    'next_state':"bb_activated" },             
+                    'next_state':"an_activated" },
+
+
                     {'src':"AN_ACTIVATION_IN_PROGRESS",
                     'dst': "an_activated",
-                    'next_state':"an_activated" }, 
+                    'next_state':"an_activated" },
+                    {'src':"AN_ACTIVATION_IN_PROGRESS",
+                    'dst': "service_activated",
+                    'next_state':"an_activated" },
+                     {'src':"AN_ACTIVATION_IN_PROGRESS",
+                    'dst': "cpe_data_ack",
+                    'next_state':"an_activated" },
+
+                    #From an_activated
+                    {'src':"an_activated",
+                    'dst': "bb_data_ack",
+                    'next_state':"bb_data_ack" },
+                    {'src':"an_activated",
+                    'dst': "cpe_data_ack",
+                    'next_state':"bb_data_ack" },
+                    {'src':"an_activated",
+                    'dst': "service_activated",
+                    'next_state':"bb_data_ack" },
+                    {'src':"an_activated",
+                    'dst': "bb_activated",
+                    'next_state':"bb_data_ack" },
+
+
+                    #From bb_data_ack
+                    {'src':"bb_data_ack",
+                    'dst': "bb_activated",
+                    'next_state':"bb_activated" },
+                    {'src':"bb_data_ack",
+                    'dst': "service_activated",
+                    'next_state':"bb_activated" },
+                    {'src':"bb_data_ack",
+                    'dst': "cpe_data_ack",
+                    'next_state':"bb_activated" },
+
+
+                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    'dst': "bb_activated",
+                    'next_state':"bb_activated" },
+                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    'dst': "cpe_data_ack",
+                    'next_state':"bb_activated" },
+                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    'dst': "service_activated",
+                    'next_state':"bb_activated" },
+
+
+                    {'src':"bb_activated",
+                    'dst': "cpe_data_ack",
+                    'next_state':"cpe_data_ack" },
+                    {'src':"bb_activated",
+                    'dst': "service_activated",
+                    'next_state':"cpe_data_ack" },
                     {'src':"CPE_ACTIVATION_IN_PROGRESS",
                     'dst': "service_activated",
-                    'next_state':"service_activated" }, 
+                    'next_state':"service_activated" },
+                    {'src':"cpe_data_ack",
+                    'dst': "service_activated",
+                    'next_state':"service_activated" }
                 )
 
 def next_state(source_state,target_state):
