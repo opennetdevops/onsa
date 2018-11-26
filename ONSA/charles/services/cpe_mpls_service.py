@@ -9,6 +9,9 @@ DATA_CODES = ["bb_data", "cpe_data"]
 ACTIVATION_CODES = ["bb", "cpe"]
 DEBUG = True
 
+VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
+ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs']
+VPLS_SERVICES = ['vpls']
 
 # Naming convention for functions inside this class
 # "service_state" + "_" + deployment_mode + "_request"
@@ -24,7 +27,8 @@ def bb_data_ack_automated_request(service):
 	if parameters is not None:
 		service_data = { 'logical_unit_id': parameters['logical_unit_id'],
 						 'wan_network':  parameters['wan_network'],
-						 'autonomous_system':  parameters['client_as_number'] }
+						 'autonomous_system':  parameters['client_as_number'],
+						 'vrf_id': parameters['vrf_id'] }
 
 		service_data['client_network'] = service['client_network']
 		service_data['service_state'] = "bb_data_ack"
@@ -274,7 +278,10 @@ def bb_parameters(client, service):
 	access_port = get_access_port(service['access_port_id'])
 	access_node = get_access_node(service['access_node_id'])
 
-	vrf = get_vrf(service['vrf_id'])
+	#vrf = get_vrf(service['vrf_id'])
+
+	#Asignar vrf y AS 
+	data = define_vrf(client, service)
 
 	"""
 	Fetch for logical units
@@ -282,7 +289,7 @@ def bb_parameters(client, service):
 	free_logical_units = get_free_logical_units(router_node['id'])
 	logical_unit_id = free_logical_units[0]['logical_unit_id']
 
-	vrf_exists = vrf_exists_in_location(vrf['rt'], location['id'])
+	vrf_exists = vrf_exists_in_location(data['vrf_id'], location['id'])
 
 	parameters = { 'pop_size': location['pop_size'],
 					 'an_uplink_interface' : access_node['uplink_interface'],
@@ -291,19 +298,19 @@ def bb_parameters(client, service):
 					 'provider_vlan' : access_node['provider_vlan'],      
 					 'an_client_port' : access_port['port'],
 					 'vrf_exists': vrf_exists,
-					 'vrf_name': vrf['name'],
-					 'vrf_id': vrf['rt'],
+					 'vrf_name': data['vrf_name'],
+					 'vrf_id': data['vrf_id'],
 					 'loopback': router_node['loopback']}
 
 	if logical_unit_id:
 		wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
 		if wan_network: 
 			if not vrf_exists:
-				add_location_to_vrf(vrf['rt'], location['id'])
+				add_location_to_vrf(data['vrf_id'], location['id'])
 			#Add logical unit to router node
 			add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
 			
-			client_as_number = service['autonomous_system']
+			client_as_number = data['autonomous_system']
 
 			parameters['wan_network'] = wan_network
 			parameters['client_as_number'] = client_as_number
@@ -357,3 +364,25 @@ def an_parameters(client, service):
 					 'vendor': access_node['vendor'] }
 
 	return parameters
+
+
+def define_vrf(client, service):
+    if service['vrf_id'] is None:
+        vrf_list = get_client_vrfs(client['name'])
+
+        vrf_name = "VPLS-" + client['name'] if service['service_type'] in VPLS_SERVICES else "VRF-" + client['name']    
+        vrf_name += "-" + str(len(vrf_list)+1) if vrf_list is not None else "-1"
+        
+        vrf = get_free_vrf()
+        if vrf is not None:
+            service['vrf_id'] = vrf['rt']
+            use_vrf(service['vrf_id'], vrf_name, client['name'])
+            service['vrf_name'] = vrf_name
+        else:
+            print("ERROR NON VRF AVAILABLE")
+    else:
+    	service['vrf_name'] = get_vrf(service['vrf_id'])['name']
+    
+    service['autonomous_system'] = assign_autonomous_system(service['vrf_id'])
+
+    return service

@@ -99,17 +99,19 @@ class ServiceView(View):
         location_id = get_location_id(location)
         router_node = get_router_node(location_id)
 
-        
-        free_access_port = get_free_access_port(location_id)           
-        access_port_id = str(free_access_port['id'])
-        use_port(access_port_id)
-        access_node_id = str(free_access_port['access_node_id'])
+        if "access_port_id" not in data.keys():
+            access_port = get_free_access_port(location_id)           
+            access_port_id = str(access_port['id'])
+            use_port(access_port_id)
+        else:
+            access_port_id = data['access_port_id']
+            access_port = get_access_port(access_port_id)
+
+        access_node_id = str(access_port['access_node_id'])
 
         vlan = get_free_vlan(access_node_id)
         use_vlan(access_node_id, vlan['vlan_tag'])
  
-        data = self.define_vrf(client, data)
-
         data['location_id'] = location_id
         data['router_node_id'] = router_node['id']
         data['access_port_id'] = access_port_id
@@ -147,27 +149,4 @@ class ServiceView(View):
         return JsonResponse(data)
 
 
-    def define_vrf(self, client, data):
-        if data['service_type'] in VRF_SERVICES:
-
-            if 'vrf_name' in data.keys():
-                    vrf_name = data.pop('vrf_name')
-                    vrf = get_vrf(vrf_name)
-                    vrf_id = vrf['rt']
-            else:
-                vrf_list = get_client_vrfs(client.name)
-
-                vrf_name = "VPLS-" + client.name if data['service_type'] in VPLS_SERVICES else "VRF-" + client.name    
-                vrf_name += "-" + str(len(vrf_list)+1) if vrf_list is not None else "-1"
-                
-                vrf = get_free_vrf()
-                if vrf is not None:
-                    vrf_id = vrf['rt']
-                    use_vrf(vrf_id, vrf_name, client.name)
-                else:
-                    print("ERROR NON VRF AVAILABLE")
-            
-            data['vrf_id'] = vrf_id
-            data['autonomous_system'] = assign_autonomous_system(vrf_id)
-
-        return data
+    
