@@ -139,8 +139,14 @@ class CustomerLocationsView(View):
 
 		return JsonResponse(json_response, safe=False)
 
-	def post(self, request):
-		pass
+	def post(self, request, client_id):
+		data = json.loads(request.body.decode(encoding='UTF-8'))
+		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
+		rheaders = {'Content-Type': 'application/json'}	
+		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+		json_response = json.loads(response.text)
+
+		return JsonResponse(json_response, safe=False)
 
 class VrfsView(View):
 	def get(self, request):

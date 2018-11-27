@@ -20,7 +20,7 @@ urlpatterns = [
     path('/api/services/<str:service_id>/resources', require_http_methods(["GET"])(service.ServiceResourcesView.as_view())),
     path('/api/clients', require_http_methods(["GET","POST"])(wrapper.ClientView.as_view())),
     path('/api/clients/<str:client_id>', require_http_methods(["GET"])(wrapper.ClientView.as_view())),
-    path('/api/clients/<str:client_id>/customerlocations', require_http_methods(["GET"])(wrapper.CustomerLocationsView.as_view())),
+    path('/api/clients/<str:client_id>/customerlocations', require_http_methods(["GET", "POST"])(wrapper.CustomerLocationsView.as_view())),
     path('/api/clients/<str:client_id>/customerlocations/<str:customer_location_id>', require_http_methods(["GET"])(wrapper.CustomerLocationsView.as_view())),
     path('/api/clients/<str:client_id>/customerlocations/<str:customer_location_id>/accessports', require_http_methods(["GET"])(wrapper.ClientCustomerLocationAccessPortsView.as_view())),
     path('/api/locations', require_http_methods(["GET","DELETE"])(wrapper.LocationsView.as_view())),
