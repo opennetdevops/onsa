@@ -67,15 +67,15 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
 
     def test_001_initial_service_state(self):      
         service_manual = get_service(self.service_id)
-        self.assertEqual(service_manual['service_state'], "IN_CONSTRUCTION")
+        self.assertEqual(service_manual['service_state'], "in_construction")
 
     def test_002_automated_from_in_construction_to_service_activated_ok(self):
         push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "BB_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "bb_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "CPE_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "cpe_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "service_activated")
@@ -85,7 +85,7 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
     def test_003_automated_from_in_construction_to_service_activated_error(self):
         push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "BB_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "bb_activation_in_progress")
         update_charles_service_state(self.service_id, "ERROR")
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "error")
@@ -97,11 +97,11 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
         
         push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "BB_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "bb_activation_in_progress")
 
         update_charles_service_state(self.service_id, "COMPLETED")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "CPE_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "cpe_activation_in_progress")
 
         update_charles_service_state(self.service_id, "COMPLETED")
         service = get_service(self.service_id)
@@ -121,7 +121,7 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
     def test_006_automated_till_an_activated(self):
         push_service_to_orchestrator(self.service_id, "automated", "an_activated")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "AN_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "an_activated")
@@ -180,7 +180,7 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
 
     def test_001_initial_service_state(self):      
         service_manual = get_service(self.cpe_mpls_manual_service_id)
-        self.assertEqual(service_manual['service_state'], "IN_CONSTRUCTION")
+        self.assertEqual(service_manual['service_state'], "in_construction")
 
 
     def test_002_manual_from_in_construction_to_bb_data_ack(self):
@@ -262,21 +262,21 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
     def test_001_initial_service_state(self):      
         service_manual = get_service(self.service_id)
-        self.assertEqual(service_manual['service_state'], "IN_CONSTRUCTION")
+        self.assertEqual(service_manual['service_state'], "in_construction")
 
     def test_002_automated_from_in_construction_to_service_activated_ok(self):
         push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "AN_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
 
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "BB_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "bb_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
 
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "CPE_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "cpe_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
 
         service = get_service(self.service_id)
@@ -288,7 +288,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
     def test_003_automated_from_in_construction_to_service_activated_error(self):
         push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "AN_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
         update_charles_service_state(self.service_id, "ERROR")
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "error")
@@ -301,15 +301,15 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "AN_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
 
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "BB_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "bb_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
 
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "CPE_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "cpe_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
         
         service = get_service(self.service_id)
@@ -329,7 +329,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
     def test_006_automated_till_an_activated(self):
         push_service_to_orchestrator(self.service_id, "automated", "an_activated")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "AN_ACTIVATION_IN_PROGRESS")
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
         update_charles_service_state(self.service_id, "COMPLETED")
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "an_activated")
@@ -389,7 +389,7 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
 
     def test_001_initial_service_state(self):      
         service_manual = get_service(self.cpe_mpls_manual_service_id)
-        self.assertEqual(service_manual['service_state'], "IN_CONSTRUCTION")
+        self.assertEqual(service_manual['service_state'], "in_construction")
 
     def test_002_manual_from_in_construction_to_an_data_ack(self):
         push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "an_data_ack")

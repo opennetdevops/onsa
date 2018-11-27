@@ -18,19 +18,19 @@ class ServiceTypes(Enum):
 ##
 NextStateMap = (    
                     #From IN_CONSTRUNCTION
-                    {'src':"IN_CONSTRUCTION",
+                    {'src':"in_construction",
                     'dst': "an_activated",
                     'next_state':"an_data_ack" },
-                    {'src':"IN_CONSTRUCTION",
+                    {'src':"in_construction",
                     'dst': "an_data_ack",
                     'next_state':"an_data_ack" },
-                    {'src':"IN_CONSTRUCTION",
+                    {'src':"in_construction",
                     'dst': "cpe_data_ack",
                     'next_state':"an_data_ack" },
-                    {'src':"IN_CONSTRUCTION",
+                    {'src':"in_construction",
                     'dst': "bb_data_ack",
                     'next_state':"an_data_ack" },
-                    {'src':"IN_CONSTRUCTION",
+                    {'src':"in_construction",
                     'dst': "service_activated",
                     'next_state':"an_data_ack" },
 
@@ -49,13 +49,13 @@ NextStateMap = (
                     'next_state':"an_activated" },
 
 
-                    {'src':"AN_ACTIVATION_IN_PROGRESS",
+                    {'src':"an_activation_in_progress",
                     'dst': "an_activated",
                     'next_state':"an_activated" },
-                    {'src':"AN_ACTIVATION_IN_PROGRESS",
+                    {'src':"an_activation_in_progress",
                     'dst': "service_activated",
                     'next_state':"an_activated" },
-                     {'src':"AN_ACTIVATION_IN_PROGRESS",
+                     {'src':"an_activation_in_progress",
                     'dst': "cpe_data_ack",
                     'next_state':"an_activated" },
 
@@ -86,13 +86,13 @@ NextStateMap = (
                     'next_state':"bb_activated" },
 
 
-                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    {'src':"bb_activation_in_progress",
                     'dst': "bb_activated",
                     'next_state':"bb_activated" },
-                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    {'src':"bb_activation_in_progress",
                     'dst': "cpe_data_ack",
                     'next_state':"bb_activated" },
-                    {'src':"BB_ACTIVATION_IN_PROGRESS",
+                    {'src':"bb_activation_in_progress",
                     'dst': "service_activated",
                     'next_state':"bb_activated" },
 
@@ -103,7 +103,7 @@ NextStateMap = (
                     {'src':"bb_activated",
                     'dst': "service_activated",
                     'next_state':"cpe_data_ack" },
-                    {'src':"CPE_ACTIVATION_IN_PROGRESS",
+                    {'src':"cpe_activation_in_progress",
                     'dst': "service_activated",
                     'next_state':"service_activated" },
                     {'src':"cpe_data_ack",
@@ -198,31 +198,34 @@ class service_activated(State):
         generate_request = getattr(ServiceTypes[service['service_type']].value, "service_activated_" + service['deployment_mode'] + "_request")
         return  generate_request(service)
 
-class BB_ACTIVATION_IN_PROGRESS(State):
+class bb_activation_in_progress(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "BB_ACTIVATION_IN_PROGRESS"
+        return "bb_activation_in_progress"
 
-class CPE_ACTIVATION_IN_PROGRESS(State):
+class cpe_activation_in_progress(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "CPE_ACTIVATION_IN_PROGRESS"
+        return "cpe_activation_in_progress"
 
-class AN_ACTIVATION_IN_PROGRESS(State):
+class an_activation_in_progress(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "CPE_ACTIVATION_IN_PROGRESS"
+        return "cpe_activation_in_progress"    
 
 class StateTypes(Enum):
-    bb_activated = bb_activated
-    bb_data_ack = bb_data_ack
-    cpe_data_ack = cpe_data_ack
-    service_activated = service_activated
-    BB_ACTIVATION_IN_PROGRESS = BB_ACTIVATION_IN_PROGRESS
-    CPE_ACTIVATION_IN_PROGRESS = CPE_ACTIVATION_IN_PROGRESS
-    AN_ACTIVATION_IN_PROGRESS = AN_ACTIVATION_IN_PROGRESS
+    # Access node states
     an_data_ack = an_data_ack
+    an_activation_in_progress = an_activation_in_progress
     an_activated = an_activated
 
+    # Backbone states
+    bb_data_ack = bb_data_ack
+    bb_activation_in_progress = bb_activation_in_progress
+    bb_activated = bb_activated
 
+    # CPE states
+    cpe_data_ack = cpe_data_ack
+    cpe_activation_in_progress = cpe_activation_in_progress
+    service_activated = service_activated
 

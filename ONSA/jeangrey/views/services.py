@@ -123,7 +123,7 @@ class ServiceView(View):
         ServiceClass = getattr(models, ServiceTypes[data['service_type']].value)
 
         service = ServiceClass.objects.create(**data)
-        service.service_state = "IN_CONSTRUCTION"
+        service.service_state = "in_construction"
         service.save()
         response = { "message": "Service requested" }
 
@@ -139,7 +139,7 @@ class ServiceView(View):
         service = ServiceClass.objects.filter(id=service_id)
         service.update(**data)
 
-        return JsonResponse(data, safe=False)
+        return JsonResponse(ServiceClass.objects.filter(id=service_id).values()[0], safe=False)
 
 
     def delete(self, request, service_id):

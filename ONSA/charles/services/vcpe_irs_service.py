@@ -51,7 +51,7 @@ def generate_vcpe_irs_request(client, service, code=None):
 			service_data['service_state'] = "BB_DATA_ACK"
 
 		elif code == "bb":
-			service_data['service_state'] = "BB_ACTIVATION_IN_PROGRESS"
+			service_data['service_state'] = "bb_activation_in_progress"
 
 		update_service(service['id'], service_data)
 
@@ -72,7 +72,7 @@ def generate_vcpe_irs_request(client, service, code=None):
 			service_data = { "service_state": "CPE_DATA_ACK" }
 
 		elif code == "cpe":
-			service_data = { "service_state": "CPE_ACTIVATION_IN_PROGRESS" }
+			service_data = { "service_state": "cpe_activation_in_progress" }
 
 		update_service(service['id'], service_data) 
 

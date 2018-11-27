@@ -61,7 +61,7 @@ def bb_activated_automated_request(service):
 
   configure_service(config)
   service_data = {}
-  service_data['service_state'] = "BB_ACTIVATION_IN_PROGRESS"
+  service_data['service_state'] = "bb_activation_in_progress"
   update_service(service['service_id'], service_data)
   return service_data['service_state']
 
@@ -96,7 +96,7 @@ def an_activated_automated_request(service):
     config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
 
     configure_service(config)
-    service_data['service_state'] = "AN_ACTIVATION_IN_PROGRESS"
+    service_data['service_state'] = "an_activation_in_progress"
     configure_service(config) 
 
   else:
@@ -147,7 +147,7 @@ def service_activated_automated_request(service):
     config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
 
 
-    service_data['service_state'] = "CPE_ACTIVATION_IN_PROGRESS"
+    service_data['service_state'] = "cpe_activation_in_progress"
     configure_service(config)
   else:
     service_data['service_state'] = "error"

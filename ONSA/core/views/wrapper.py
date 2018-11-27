@@ -126,8 +126,11 @@ class LocationsView(View):
 
 
 class CustomerLocationsView(View):
-	def get(self, request, client_id):
+	def get(self, request, client_id, customer_location_id=None):
 		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
+
+		if customer_location_id is not None:
+			url += "/" + str(customer_location_id)
 
 		rheaders = {'Content-Type': 'application/json'}	
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
