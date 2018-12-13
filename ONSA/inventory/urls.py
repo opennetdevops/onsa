@@ -12,7 +12,7 @@ from .views import devices, portgroups, virtualpods, locations, router_nodes, ac
 from .views import router_node_logical_units, logical_units, location_access_nodes, location_router_nodes
 from .views import access_node_access_ports, location_access_ports, access_node_vlan_tags, locations_virtual_pod
 from .views import virtualpod_portgroups, client_nodes, vlan_tags, client_node_client_ports, client_node_ports
-from .views import vrf, vrf_locations, products, product_rollback
+from .views import vrf, vrf_locations
 
 urlpatterns = [ 
     path('/api/login', obtain_jwt_token),
@@ -61,10 +61,5 @@ urlpatterns = [
     path('/api/vrfs/<int:vrf_id>', require_http_methods(["GET","PUT","DELETE"])(vrf.VrfView.as_view())),
     path('/api/vrfs/<int:vrf_id>/locations', require_http_methods(["GET"])(vrf_locations.VrfLocationsView.as_view())),
     path('/api/vrfs/<int:vrf_id>/locations/<int:location_id>', require_http_methods(["GET", "PUT", "DELETE"])(vrf_locations.VrfLocationsView.as_view())),
-
-# TODO ARCHI LLEVAR A SERVICE/INV
-    # path('/api/products', require_http_methods(["GET","POST"])(products.ProductsView.as_view())),
-    # path('/api/products/<str:product_id>', require_http_methods(["GET","POST", "PUT"])(products.ProductsView.as_view())),
-    # path('/api/products/<str:product_id>/rollback', require_http_methods(["POST"])(product_rollback.ProductRollbackView.as_view())),
 
  ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

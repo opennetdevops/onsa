@@ -1,30 +1,34 @@
 from django.core import serializers
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
-
-from ..models import ClientNodePort, ClientNode
-
 import json
+
+from inventory.models import ClientNodePort, ClientNode
+from inventory.constants import *
+
 
 class ClientNodeClientPortsView(View):
     def get(self, request, client_node_sn, client_port_id=None):
+
         used = request.GET.get('used', '').capitalize()
-        
+
         if client_port_id is None:
-            if used:
-                client_ports = ClientNodePort.objects.filter(client_node=client_node_sn, used=used).values()
-                
+            if used is True:
+                client_ports = ClientNodePort.objects.filter(client_node=client_node_sn, used=used).values()                
             else:
                 client_ports = ClientNodePort.objects.filter(client_node=client_node_sn).values()
  
+                if list(client_ports) == []:
+                    return HttpResponse(status=ERR523)                  
+            
             return JsonResponse(list(client_ports), safe=False)
 
         else:
-            client_port = ClientNodePort.objects.filter(client_node=client_node_sn, pk=client_port_id).values()
-
-            json_response = client_port[0] if len(client_port) else []
-
-            return JsonResponse(json_response, safe=False)
+            try:
+                client_port = ClientNodePort.objects.filter(client_node=client_node_sn, pk=client_port_id).values()[0]
+                return JsonResponse(client_port, safe=False)
+            except IndexError:
+                return HttpResponse(status=500)
 
     def put(self, request, client_node_sn, client_port_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

@@ -1,6 +1,8 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
-from ..models import VlanTag, AccessNode
+from inventory.models import VlanTag, AccessNode
+
+from inventory.constants import *
 
 import json
 
@@ -17,7 +19,11 @@ class AccesNodeVlanTagsView(View):
             all_vlans = VlanTag.objects.exclude(access_nodes=access_node).values()
         else:
             all_vlans = VlanTag.objects.all().values()
-        return JsonResponse(list(all_vlans), safe=False)
+
+        if list(all_vlans) == []:
+            return HttpResponse(status=ERR522)
+        else: 
+            return JsonResponse(list(all_vlans), safe=False)
 
     def post(self, request, access_node_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

@@ -1,8 +1,8 @@
 from django.core import serializers
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 
-from ..models import AccessPort
+from inventory.models import AccessPort
 
 import json
 
@@ -12,8 +12,11 @@ class AccessPortsView(View):
             access_ports = AccessPort.objects.all().values()
             return JsonResponse(list(access_ports), safe=False)
         else:
-            access_port = AccessPort.objects.filter(pk=accessport_id).values()[0]   
-            return JsonResponse(access_port, safe=False)
+            try:
+                access_port = AccessPort.objects.filter(pk=accessport_id).values()[0]   
+                return JsonResponse(access_port, safe=False)
+            except IndexError:
+                return HttpResponse(status=500)
 
 
     def put(self, request, accessport_id):
