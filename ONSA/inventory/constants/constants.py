@@ -1,4 +1,4 @@
-# Inventory constants
+### Inventory constants
 
 # Error codes 52X
 ERR520 = 520

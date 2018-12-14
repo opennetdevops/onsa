@@ -1,14 +1,13 @@
-from charles.utils.utils import *
+# Python imports
+import logging
 from pprint import pprint
 
-BB_CODES = ["bb", "bb_data"]
-CPE_CODES = ["cpe", "cpe_data"]
-DATA_CODES = ["bb_data", "cpe_data"]
-ACTIVATION_CODES = ["bb", "cpe"]
+# ONSA imports
+from charles.utils.utils import *
+from charles.constants import *
+
+logging.basicConfig(level=logging.DEBUG)
 DEBUG = True
-
-
-
 
 def bb_data_ack_automated_request(service):
   if DEBUG: print("bb_data_ack_automated_request")
@@ -28,7 +27,7 @@ def bb_data_ack_automated_request(service):
 
   else:
     service_data['service_state'] = "error"
-  
+
   update_service(service['service_id'], service_data)
   return service_data['service_state']
 
@@ -155,9 +154,6 @@ def service_activated_automated_request(service):
   update_service(service['service_id'], service_data)
   return service_data['service_state']
 
-
-
-
 def bb_parameters(client, service):
     location = get_location(service['location_id'])
     router_node = get_router_node(service['router_node_id'])
@@ -169,18 +165,17 @@ def bb_parameters(client, service):
     """
     if service['logical_unit_id'] is None:
       free_logical_units = get_free_logical_units(router_node['id'])
-      logical_unit_id = free_logical_units[0]['logical_unit_id']
-
-      if logical_unit_id:
+      if (free_logical_units == 524):
+          logging.warning('No available logical units')
+          return free_logical_units
+      else:
+          logical_unit_id = free_logical_units[0]['logical_unit_id']
           client_network = get_client_network(client['name'], service['id'], service['prefix'])
-          if client_network:  
+          if client_network:
               add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
           else:
-              print("Client Network - not available")
-              return None
-      else:
-          print("not available LOGICAL UNITS")
-          return None
+              logging.warning('No public networks available')
+              return ERR541
 
       wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
 
@@ -199,7 +194,7 @@ def bb_parameters(client, service):
                  'client_network' : client_network,
                  'wan_network' : wan_network
                  }
-            
+
     parameters['router_node'] = { 'vendor': router_node['vendor'],
                                   'model': router_node['model'],
                                   'mgmt_ip': router_node['mgmt_ip']
@@ -216,9 +211,12 @@ def cpe_parameters(client, service):
   
   if service['client_port_id'] is None:
     customer_location = get_customer_location(client['id'],service['customer_location_id']) 
-    client_port_id = fetch_cpe(service['client_node_sn'], client['name'], customer_location )
-    client_port = get_client_port(service['client_node_sn'], client_port_id)
-    parameters['client_port_id'] = client_port_id
+    client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)
+    if (client_port_id == 523):
+      return client_port_id
+    else:
+      client_port = get_client_port(service['client_node_sn'], client_port_id)
+      parameters['client_port_id'] = client_port_id
 
   else:
     client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
@@ -240,10 +238,10 @@ def an_parameters(client, service):
   access_node = get_access_node(service['access_node_id'])
 
   parameters = { 'provider_vlan': access_node['provider_vlan'],
-           'an_client_port': access_port['port'],
-           'mgmt_ip': access_node['mgmt_ip'],
-           'model': access_node['model'],
-           'vendor': access_node['vendor'] }
+                 'an_client_port': access_port['port'],
+                 'mgmt_ip': access_node['mgmt_ip'],
+                 'model': access_node['model'],
+                 'vendor': access_node['vendor'] }
 
   return parameters
 

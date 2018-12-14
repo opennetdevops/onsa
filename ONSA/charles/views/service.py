@@ -53,7 +53,7 @@ class ServiceView(View):
         else:
             charles_service.service_state = "error"
             response = { "message": "Service request failed." }
-        
+
         charles_service.save()
         update_service(data['service_id'], {'service_state': service_state} )
 
@@ -62,7 +62,7 @@ class ServiceView(View):
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        # if data['service_state'] != "ERROR":
+        # if data['service_state'] == 0:
         #   service = Service.objects.get(service_id=service_id)
         #   service.service_state = NextStateE2e[service.service_state].value
         #   service.save()
@@ -79,9 +79,9 @@ class ServiceView(View):
 
         # # Rollback all reservations if error
         # # if service[0].service_state == "ERROR":
-        # #     rollback_service(str(service_id))   
+        # #     rollback_service(str(service_id))
 
-        response = { "message": "Service stated updated" }
+        response = { "message": "Service state updated" }
 
         return JsonResponse(response, safe=False)
 

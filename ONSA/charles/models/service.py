@@ -2,7 +2,6 @@ from django.db import models
 from charles.utils.fsm import Fsm
 from charles.utils.utils import *
 
-
 # Create your models here.
 class Service(models.Model):
     service_id = models.CharField(max_length=50)
