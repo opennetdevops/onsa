@@ -29,12 +29,17 @@ class WorkerView(View):
 
 		"""
 
-		service = Service(client_name=data['client'],
-						service_id=data['service_id'],
-						service_type=data['service_type'],
-						service_state="IN_PROGRESS",
-						parameters=data['parameters'])
-		service.save()
+		if Service.objects.filter(service_id=data['service_id']).count() is 0:
+			service = Service(client_name=data['client'],
+							service_id=data['service_id'],
+							service_type=data['service_type'],
+							service_state="IN_PROGRESS",
+							parameters=data['parameters'])
+			service.save()
+		else:
+			service = Service.objects.filter(service_id=data['service_id'])
+			service.update(parameters=data['parameters'])
+
 
 		"""
 		Creates all of the tasks associated with

@@ -109,7 +109,6 @@ def an_activated_automated_request(service):
 
 		configure_service(config)
 		service_data['service_state'] = "an_activation_in_progress"
-		configure_service(config)	
 
 	else:
 		service_data['service_state'] = "error"
