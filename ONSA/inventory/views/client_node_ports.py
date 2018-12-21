@@ -1,18 +1,21 @@
+# Django imports
 from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
 
-from ..models import ClientNodePort
-
+# Python imports
 import json
+
+# ONSA imports
+from inventory.models import ClientNodePort
+
+
 
 class ClientNodePortsView(View):
     def get(self, request, client_port_id=None):
-
         if client_port_id is not None:
             client_port = ClientNodePort.objects.filter(pk=client_port_id).values()[0]
             return JsonResponse(client_port, safe=False)
-
         else:
             client_ports = ClientNodePort.objects.all().values()
             return JsonResponse(list(client_ports), safe=False)

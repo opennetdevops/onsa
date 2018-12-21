@@ -1,23 +1,28 @@
+# Python imports
 import os
 import ipaddress
 import requests
 import json
 import logging
+from time import sleep
+from jinja2 import Template
+from pprint import pprint
 
+# Netmiko imports
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
-
 from requests.exceptions import HTTPError
 
+# Pyez imports
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import CommitError, RpcTimeoutError, ConnectError, ConnectAuthError, ConfigLoadError
 
-from jinja2 import Template
-from pprint import pprint
-from .nsx.nsx_rest import *
-from .common.render import render
-from time import sleep
+
+# ONSA imports
+from worker.lib.nsx.nsx_rest import *
+from worker.lib.common.render import render
+from worker.constants import *
 
 
 def get_edge_id_by_name(name, **kwargs):
@@ -49,8 +54,12 @@ class ConfigHandler:
 		try:
 			logging.info("Openning NETCONF connection to device")
 			dev.open()
-		except (ConnectError, ConnectAuthError) as err:
+		except (ConnectError) as err:
 			logging.error("Cannot connect to device:%s", err)
+			return ERR532
+		except (ConnectAuthError) as err:
+			logging.error('Cannot connect to device: %s', err)
+			return ERR533
 
 
 		logging.info("Locking the configuration")
@@ -59,12 +68,13 @@ class ConfigHandler:
 		except LockError:
 			logging.error("Error: Unable to lock configuration")
 			dev.close()
-			return False
+			return ERR531
 		try:
 			dev.cu.load(template_path=template_path, merge=True, template_vars=parameters, format="set")
 			dev.cu.pdiff()
 		except ValueError as err:
 			logging.error("Error: %s", err.message)
+			return ERR531
 		except ConfigLoadError as err:
 			logging.error("Unable to load configuration changes: %s", err)
 
@@ -73,9 +83,10 @@ class ConfigHandler:
 				dev.cu.unlock()
 			except UnlockError:
 				logging.error("Error: Unable to unlock configuration")
-			
+				return ERR531
+
 			dev.close()
-			return False
+			return ERR531
 
 
 		logging.info("Committing the configuration")
@@ -89,21 +100,23 @@ class ConfigHandler:
 			print(e)
 			dev.cu.unlock()
 			dev.close()
-			return False
+			return ERR531
 
 		logging.info( "Unlocking the configuration")
 		try:
 			 dev.cu.unlock()
 		except UnlockError:
 			 logging.error( "Error: Unable to unlock configuration")
+			 return ERR531
 
 		try:
 			logging.info("Closing NETCONF session")
 			dev.close()
 		except ConnectClosedError as err:
 			logging.info("Error: Unable to close connection. %s", err)
+			return ERR531
 
-		return True
+		return ERR0
 
 
 	def ssh(template_path, params):
@@ -121,15 +134,12 @@ class ConfigHandler:
 		try:
 			net_connect = ConnectHandler(**my_device)
 			output = net_connect.send_config_set(config)
-	    
-			net_connect.disconnect()		
-			status = True
-	
-		except (NetMikoTimeoutException, NetMikoAuthenticationException):
-			status = False
-
-		return status
-		
+			net_connect.disconnect()
+			return ERR0
+		except (NetMikoTimeoutException):
+			return ERR532
+		except (NetMikoAuthenticationException):
+			return ERR533
 
 	def nsx(template_path, params):
 
@@ -137,18 +147,13 @@ class ConfigHandler:
 		params['trigger'] = False
 		data = render(template_path, params)
 
-
-		print(data)
-
-		status = True
-
 		try:
 			rheaders = {'Content-Type': 'application/xml'}
 			r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 			r.raise_for_status()
 
 			sleep(45)
-			
+
 			edge_id = get_edge_id_by_name(params['edge_name'], manager=MANAGER)
 
 			params['trigger'] = True
@@ -158,8 +163,8 @@ class ConfigHandler:
 			r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
 			r.raise_for_status()
 
-		except HTTPError:
-			print("FAILED!")
-			status = False
+			return ERR0
 
-		return status
+		except (HTTPError) as err:
+			return ERR531
+

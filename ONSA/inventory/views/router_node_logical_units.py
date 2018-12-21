@@ -1,23 +1,34 @@
+# Django imports
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import status
 
-from ..models import RouterNode, LogicalUnit
-
+# Python imports
 import json
+
+# ONSA imports
+from inventory.models import RouterNode, LogicalUnit
+from inventory.constants import *
 
 
 class RouterNodeLogicalUnitsView(View):
     def get(self, request, routernode_id):
-        router_node = RouterNode.objects.get(pk=routernode_id)
-        used = request.GET.get('used')
+        try:
+            router_node = RouterNode.objects.get(pk=routernode_id)
+        except ObjectDoesNotExist:
+                return HttpResponse(status=500)
+
+        used = request.GET.get('used', '').capitalize()
         
-        if used == "true":
+        if used == 'True':
             all_lus = LogicalUnit.objects.filter(router_nodes=router_node).values()
-        elif used == "false":
+        elif used == 'False':
             all_lus = LogicalUnit.objects.exclude(router_nodes=router_node).values()
+            if list(all_lus) == []:
+                return HttpResponse(status=ERR525)
         else:
             all_lus = LogicalUnit.objects.all().values()
         return JsonResponse(list(all_lus), safe=False)

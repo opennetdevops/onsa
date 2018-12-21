@@ -1,12 +1,12 @@
-from charles.utils.utils import *
-# from charles.views.service import *
-
+# Python imports
 from pprint import pprint
 
-BB_CODES = ["bb", "bb_data"]
-CPE_CODES = ["cpe", "cpe_data"]
-DATA_CODES = ["bb_data", "cpe_data"]
-ACTIVATION_CODES = ["bb", "cpe"]
+# ONSA imports
+from charles.utils.utils import *
+from charles.constants import *
+
+DEBUG = True
+
 
 def generate_vpls_request(client, service, code):
 
@@ -15,10 +15,9 @@ def generate_vpls_request(client, service, code):
                  "service_type" :  service['service_type'],
                  "service_id" : service['id'],
                  "op_type" : "CREATE" }
-    
     if code in BB_CODES:
         parameters = bb_parameters(client, service)
-        
+
         service_data = { 'logical_unit_id': parameters['logical_unit_id'] }
 
         config['parameters'] =  {

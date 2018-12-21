@@ -1,7 +1,7 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 
-from ..models import AccessNode
+from inventory.models import AccessNode
 
 import json
 
@@ -12,8 +12,11 @@ class AccessNodesView(View):
 			access_nodes = AccessNode.objects.all().values()
 			return JsonResponse(list(access_nodes), safe=False)
 		else:
-			access_node = AccessNode.objects.filter(pk=accessnode_id).values()[0]	
-			return JsonResponse(access_node, safe=False)
+			try:
+				access_node = AccessNode.objects.filter(pk=accessnode_id).values()[0]	
+				return JsonResponse(access_node, safe=False)
+			except IndexError:
+				return HttpResponse(status=500)
 
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))

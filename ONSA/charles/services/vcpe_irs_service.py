@@ -1,13 +1,12 @@
-from charles.utils.utils import *
-# from charles.views.service import *
-
-
+# Python imports
 from pprint import pprint
 
-BB_CODES = ["bb", "bb_data"]
-CPE_CODES = ["cpe", "cpe_data"]
-DATA_CODES = ["bb_data", "cpe_data"]
-ACTIVATION_CODES = ["bb", "cpe"]
+# ONSA imports
+from charles.utils.utils import *
+from charles.constants import *
+
+DEBUG = True
+
 
 
 def generate_vcpe_irs_request(client, service, code=None):

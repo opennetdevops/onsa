@@ -1,17 +1,11 @@
-from charles.utils.utils import *
-# from charles.views.service import *
-
+# Python imports
 from pprint import pprint
 
-BB_CODES = ["bb", "bb_data"]
-CPE_CODES = ["cpe", "cpe_data"]
-DATA_CODES = ["bb_data", "cpe_data"]
-ACTIVATION_CODES = ["bb", "cpe"]
-DEBUG = True
+# ONSA imports
+from charles.utils.utils import *
+from charles.constants import *
 
-VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
-ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs']
-VPLS_SERVICES = ['vpls']
+DEBUG = True
 
 # Naming convention for functions inside this class
 # "service_state" + "_" + deployment_mode + "_request"

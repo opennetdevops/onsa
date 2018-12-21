@@ -168,13 +168,12 @@ def use_portgroup(portgroup_id):
 def get_free_logical_units(router_node_id):
     url = settings.INVENTORY_URL + "routernodes/" + str(router_node_id) + "/logicalunits?used=false"
     rheaders = {'Content-Type': 'application/json'}
-    response = requests.get(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    #TODO check minimum size = 2
-    if json_response:
-        return json_response
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+    if (r.status_code == 200):
+        return r.json()
     else:
-        return None
+        return r.status_code
 
 def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id):
     url= settings.INVENTORY_URL + "routernodes/" + str(router_node_id) + "/logicalunits"
@@ -191,12 +190,11 @@ def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id):
 def get_free_access_port(location_id):
     url= settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
     rheaders = {'Content-Type': 'application/json'}
-    response = requests.get(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response[0]
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+    if (r.status_code == 200):
+        return r.json()
     else:
-        return None
+        return r.status_code
 
 def use_port(access_port_id):
     url= settings.INVENTORY_URL + "accessports/" + str(access_port_id)
@@ -233,12 +231,11 @@ def get_access_node(access_node_id):
 def get_free_vlan_tag(access_port_id):
     url= settings.INVENTORY_URL + "accessnodes/"+ str(access_port_id) + "/vlantags?used=false"
     rheaders = {'Content-Type': 'application/json'}
-    response = requests.get(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response[0]
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+    if (r.status_code == 200):
+        return r.json()
     else:
-        return None
+        return r.status_code
 
 def add_vlan_tag_to_access_node(vlan_tag,access_node_id,access_port_id,service_id,client_node_sn,client_node_port,bandwidth,vrf_id=None):
     url= settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags"
@@ -291,12 +288,12 @@ def get_vrf(vrf_id):
 def vrf_exists_in_location(vrf_id,location_id):
     url = settings.INVENTORY_URL + "vrfs/" + str(vrf_id) + "/locations/" + str(location_id)
     rheaders = {'Content-Type': 'application/json'}
-    response = requests.get(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response["exists"]
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+    if (r.status_code == 200):
+        return r.json()['exists']
     else:
-        return None
+        return r.status_code
 
 def add_location_to_vrf(vrf_id,location_id):
     url = settings.INVENTORY_URL + "vrfs/" + str(vrf_id) + "/locations/" + str(location_id)
@@ -315,12 +312,12 @@ def update_core_service_status(service_id, data):
 def get_free_cpe_port(client_node_sn):
     url= settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn) + "/clientports?used=False"
     rheaders = {'Content-Type': 'application/json'}
-    response = requests.get(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response[0]
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+    
+    if (r.status_code == 200):
+        return r.json()
     else:
-        return None
+        return r.status_code
 
 def update_cpe(client_node_sn, data):
     url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn)
@@ -552,12 +549,12 @@ def create_core_service(data):
         return None
 
 
-def fetch_cpe(client_node_sn, client_name, customer_location):
+def fetch_cpe_port_id(client_node_sn, client_name, customer_location):
     client_node = get_client_node(client_node_sn)
+
     """
     Update Inventory with CPE data if needed
     """
-    # print(customer_location)
     if client_node['client'] is None:
         cpe_data = { 'client': client_name, 'customer_location': customer_location['address'] }
         update_cpe(client_node_sn, cpe_data)
@@ -567,12 +564,14 @@ def fetch_cpe(client_node_sn, client_name, customer_location):
     mark it as a used port.
     """
     cpe_port = get_free_cpe_port(client_node_sn)
-    cpe_port_id = cpe_port['id']
+    if (cpe_port == 523):
+        return cpe_port
+    else:
+        cpe_port_id = cpe_port['id']
+        #Assign CPE Port (mark as used)
+        use_port(client_node_sn, cpe_port_id)
 
-    #Assign CPE Port (mark as used)
-    use_port(client_node_sn, cpe_port_id)
-
-    return cpe_port_id
+        return cpe_port_id
 
 
 def push_service_to_orchestrator(service_id, deployment_mode, target_state):

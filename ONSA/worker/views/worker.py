@@ -1,19 +1,22 @@
+# Django imports
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 
+# Python imports
+import json
 from pprint import pprint
 from itertools import chain
-from ..models import Service, Task
-import json
+
+# ONSA imports
+from worker.models import Service, Task
 
 class WorkerView(View):
 	def get(self, request, service_id=None):
-		# state = request.GET.get('status', '')
 		if service_id is None:
-			my_services = Service.objects.all().values()			
-			return JsonResponse(list(chain(my_services)), safe=False)
-	
+			my_services = Service.objects.all().values()
+		return JsonResponse(list(chain(my_services)), safe=False)
+
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 
@@ -29,6 +32,7 @@ class WorkerView(View):
 
 		"""
 
+
 		if Service.objects.filter(service_id=data['service_id']).count() is 0:
 			service = Service(client_name=data['client'],
 							service_id=data['service_id'],
@@ -39,6 +43,7 @@ class WorkerView(View):
 		else:
 			service = Service.objects.filter(service_id=data['service_id'])
 			service.update(parameters=data['parameters'])
+
 
 
 		"""

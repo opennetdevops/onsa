@@ -1,17 +1,25 @@
+# Django imports
 from django.core import serializers
-from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 
-from ..models import Vrf, Location
-
+# Python imports
 import json
+
+# ONSA imports
+from inventory.models import Vrf, Location
 
 class VrfLocationsView(View):
     def get(self, request, vrf_id, location_id=None):
 
         if location_id is not None:
-            exists = Vrf.objects.filter(rt=vrf_id, locations=location_id).values().count()
-            data = { "exists": False }
+            try:
+                exists = Vrf.objects.filter(rt=vrf_id, locations=location_id).values().count()
+            except ObjectDoesNotExist:
+                return HttpResponse(status=500)
+
+            data = {}
             if exists:
                 data["exists"] = True
             else:
@@ -19,7 +27,10 @@ class VrfLocationsView(View):
             return JsonResponse(data, safe=False)
 
         else:
-            vrf = Vrf.objects.get(rt=vrf_id)
+            try:
+                vrf = Vrf.objects.get(rt=vrf_id)
+            except ObjectDoesNotExist:
+                return HttpResponse(status=500)
             return JsonResponse(list(vrf.locations.all().values()), safe=False)
 
 

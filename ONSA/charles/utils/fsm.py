@@ -123,14 +123,14 @@ class Fsm():
         print(state)
         generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
         req_state = generate_request(service)
-        
+
         if req_state is not "error":
             if req_state != service['target_state']:
                 state = next_state(req_state, service['target_state'])
                 generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
                 req_state = generate_request(service)
             return req_state
-        return None 
+        return None
 
     def to_next_state(service):
         state = next_state(service['service_state'], service['target_state'])
@@ -152,7 +152,7 @@ class bb_data_ack(State):
     def do_automated(service):
         generate_request = getattr(ServiceTypes[service['service_type']].value, "bb_data_ack_" + service['deployment_mode'] + "_request")
         return  generate_request(service)
-        
+
 class bb_activated(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
@@ -166,7 +166,7 @@ class an_data_ack(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
         return "an_data_ack"
-    
+
     def do_automated(service):
         generate_request = getattr(ServiceTypes[service['service_type']].value, "an_data_ack_" + service['deployment_mode'] + "_request")
         return  generate_request(service)
@@ -184,7 +184,7 @@ class cpe_data_ack(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
         return "cpe_data_ack"
-    
+
     def do_automated(service):
         generate_request = getattr(ServiceTypes[service['service_type']].value, "cpe_data_ack_" + service['deployment_mode'] + "_request")
         return  generate_request(service)
@@ -211,7 +211,7 @@ class cpe_activation_in_progress(State):
 class an_activation_in_progress(State):
     def do_manual(service):
         #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "cpe_activation_in_progress"    
+        return "cpe_activation_in_progress"
 
 class StateTypes(Enum):
     # Access node states

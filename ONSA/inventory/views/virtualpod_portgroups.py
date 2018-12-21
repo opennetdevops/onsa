@@ -1,23 +1,33 @@
+# Django imports
 from django.core import serializers
-from django.http import HttpResponse
-from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from rest_framework import status
 
-from ..models import VirtualVmwPod, Portgroup
-
+# Python imports
 import json
+
+# ONSA imports
+from inventory.models import VirtualVmwPod, Portgroup
+from inventory.constants import *
 
 
 class VirtualpodPortgroupsView(View):
     def get(self, request, virtualpod_id):
-        virtual_pod = VirtualVmwPod.objects.get(pk=virtualpod_id)
-        used = request.GET.get('used')
+        try:
+            virtual_pod = VirtualVmwPod.objects.get(pk=virtualpod_id)
+        except ObjectDoesNotExist:
+            return HttpResponse(status=500)
+
+        used = request.GET.get('used', '').capitalize()
         
-        if used == "true":
-            all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=True).values()
-        elif used == "false":
-            all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=False).values()
+        if used == 'True':
+            all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=used).values()
+        elif used == 'False':
+            all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=used).values()
+            if list(all_pgs) == []:
+                return HttpResponse(status=ERR526)
         else:
             all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod).values()
         return JsonResponse(list(all_pgs), safe=False)

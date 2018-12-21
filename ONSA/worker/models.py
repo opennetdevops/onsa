@@ -1,26 +1,21 @@
+# Django imports
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 
+# Python imports
 import json
 import time
 import requests
 import os
-
 from enum import Enum
-from background_task import background
 from pprint import pprint
+from background_task import background
 
-from .lib import ConfigHandler
-from .lib.common.render import render
-
-CHARLES = "http://localhost:8000"
-
-
-
-class ServiceStates(Enum):
-	IN_PROGRESS = "IN_PROGRESS"
-	COMPLETED = "COMPLETED"
-	ERROR = "ERROR"
+# ONSA imports
+from worker.lib import ConfigHandler
+from worker.lib.common.render import render
+from worker.utils.worker_maps import *
+from worker.utils.utils import *
 
 class Service(models.Model):
 	client_name = models.CharField(max_length=50)
@@ -31,62 +26,41 @@ class Service(models.Model):
 
 	def __str__(self):
 		return self.service_id
-		
+
 	@background(schedule=5)
 	def deploy(service_id):
 
 		my_service = Service.objects.get(service_id=service_id)
 		tasks = Task.objects.filter(service=my_service)
 
-		print(tasks)
+		print("Service Id: ", my_service.service_id)
+		print("Requested Tasks: ", tasks)
 
-		executed_tasks = []
+		completed_tasks = []
+		failed_tasks = []
 
-		my_service.service_state = "COMPLETED"
+		my_service.service_state = ERR0
 
 		for task in tasks:
 			task.run_task()
 			task.save()
-			if task.task_state == "COMPLETED":
-				executed_tasks.append(task)
-			elif task.task_state == "ERROR":
+			if task.task_state == ERR0:
+				completed_tasks.append(task)
+			elif task.task_state != ERR0:
 				task.rollback()
 				task.save()
-				for task in executed_tasks:
-					task.rollback()
-					task.save()
-				my_service.service_state = "ERROR"            
+				failed_tasks.append(task)
+				my_service.service_state = task.task_state
 				break
-		
-		print(executed_tasks)
+
+		print("Completed Tasks: ", completed_tasks)
+		print("Failed Tasks: ", failed_tasks)
 		my_service.save()
 
-		"""
-		Updates Charles' service status	
-		"""
-		rheaders = {'Content-Type': 'application/json'}
-		data = {"service_state" : my_service.service_state}
-		requests.post(CHARLES+"/charles/api/services/" + my_service.service_id + "/process", data = json.dumps(data), verify = False, headers = rheaders)
+		# Let charles know about service state
+		update_charles_service(my_service)
 
 
-class TaskStates(Enum):
-	IN_PROGRESS = "IN_PROGRESS"
-	COMPLETED = "COMPLETED"
-	NO_ROLLBACK = "NO_ROLLBACK"
-	ROLLBACK = "ROLLBACK"
-	ERROR = "ERROR"
-
-class OperationType(Enum):
-	CREATE = "CREATE"
-	UPDATE = "UPDATE"
-	DELETE = "DELETE"
-
-class Strategy(Enum):
-	juniper = "pyez"
-	vmware = "nsx"
-	transition = "ssh"
-	huawei = "netconf"
-	cisco = "netconf"
 
 class Task(models.Model):
 	service = models.ForeignKey(Service, on_delete=models.CASCADE)
@@ -97,27 +71,34 @@ class Task(models.Model):
 	def __str__(self):
 		return self.service.service_id
 
-	def run_task(self):
-		dir = os.path.dirname(os.path.abspath(__file__))
-
+	def _gen_template_path(self):
 		if self.device['vendor'] == 'transition':
 			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + "_L2SERVICE.CONF"
 		else:
-			if self.service.service_type != "vpls":	
+			if self.service.service_type != "vpls":
 				template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
 					"_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
 			else:
 				template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + \
 					"_" + self.service.service_type.upper() + ".CONF"
 
-		template_path = os.path.join(dir, template_path)
+		return template_path
 
+
+	def run_task(self):
+		dir = os.path.dirname(os.path.abspath(__file__))
+
+		# Generates template path
+		template_path = self._gen_template_path()
+		template_path = os.path.join(dir, template_path)
+		pprint(template_path)
+
+		# Generates variables path
 		variables_path = "variables/" + self.service.service_type.upper() + ".json"
 		variables_path = os.path.join(dir, variables_path)
-
-		pprint(template_path)
 		pprint(variables_path)
-		
+
+		# Set up parameters
 		params = {}
 		params['mgmt_ip'] = self.device['mgmt_ip']
 		params['service_id'] = self.service.service_id
@@ -128,14 +109,16 @@ class Task(models.Model):
 
 		params = json.loads(render(variables_path, params))
 
-		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
+		config_handler = getattr(ConfigHandler.ConfigHandler, StrategyMap[self.device['vendor']])
 
 		status = config_handler(template_path, params)
 
-		self.task_state = TaskStates['ERROR'].value if status is not True else TaskStates['COMPLETED'].value
+		if (status == ERR0):
+			self.task_state = status
+		else:
+			self.task_state = status
 
 		print(self.task_state)
-			
 
 	def rollback(self):
 
@@ -143,7 +126,7 @@ class Task(models.Model):
 
 		if self.device['vendor'] == 'transition':
 			template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_L2SERVICE.CONF"
-		else:	
+		else:
 			if self.service.service_type != "vpls":
 				template_path = "templates/" + self.device['vendor'].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_" + self.service.service_type.split("_")[1].upper() + self.service.service_type.split("_")[0].upper() + ".CONF"
 			else:
@@ -156,7 +139,7 @@ class Task(models.Model):
 
 		pprint(template_path)
 		pprint(variables_path)
-		
+
 		params = {}
 		params['mgmt_ip'] = self.device['mgmt_ip']
 		params['service_id'] = self.service.service_id
@@ -167,10 +150,10 @@ class Task(models.Model):
 
 		params = json.loads(render(variables_path, params))
 
-		config_handler = getattr(ConfigHandler.ConfigHandler, Strategy[self.device['vendor']].value)
+		config_handler = getattr(ConfigHandler.ConfigHandler, StrategyMap[self.device['vendor']])
 
 		status = config_handler(template_path, params)
 
-		self.task_state = TaskStates['NO_ROLLBACK'].value if status is not True else TaskStates['ROLLBACK'].value
+		self.task_state = 'NO_ROLLBACK' if status is not True else 'ROLLBACK'
 
 		print(self.task_state)
