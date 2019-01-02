@@ -1,0 +1,163 @@
+<edge>
+  <datacenterMoid>{{ datacenterMoid }}</datacenterMoid>
+  <name>{{ name }}</name>
+  <description>{{ description }}</description>
+  {% if tenant is defined %}
+    <tenant> {{ tenant }} </tenant>
+  {% endif %}
+  {% if fqdn is defined %}
+  <fqdn>{{ fqdn }}</fqdn>
+  {% endif %}
+  {% if vseLogLevel is defined %}
+  <vseLogLevel>{{ vseLogLevel }}</vseLogLevel>
+  {% endif %}
+  {% if enableAesni is defined %}
+  <enableAesni>{{ enableAesni }}</enableAesni>
+  {% endif %}
+  {% if enableAesni is defined %}
+  <enableFips>{{ enableFips }}</enableFips>
+  {% endif %}
+  {% if appliances is defined %}
+  <appliances>
+    <applianceSize>{{ appliances.applianceSize }}</applianceSize>
+    {% if appliances.enableCoreDump is defined %}
+    <enableCoreDump>{{ appliances.enableCoreDump }}</enableCoreDump>
+    {% endif %}
+    <appliance>
+      <resourcePoolId>{{ appliances.appliance.resourcePoolId }}</resourcePoolId>
+      <datastoreId>{{ appliances.appliance.datastoreId }}</datastoreId>
+      {% if hostId is defined %}
+      <hostId>{{ appliances.appliance.hostId }}</hostId>
+      {% endif %}
+      {% if vmFolderId is defined %}
+      <vmFolderId>{{ appliances.appliance.vmFolderId }}</vmFolderId>
+      {% endif %}
+      {% if customField is defined %}
+      <customField>
+        {% if appliances.appliance.customField.key is defined %}
+        <key>{{ customField.key }}</key>
+        {% endif %}
+        {% if appliances.appliance.customField.value is defined %}
+        <value>{{ customField.value }}</value>
+        {% endif %}
+      </customField>
+      {% endif %}
+      {% if appliances.appliance.cpuReservation is defined %}
+      <cpuReservation>
+        {% if appliances.appliance.cpuReservation.limit is defined %}
+        <limit>{{ appliances.appliance.cpuReservation.limit }}</limit>
+        {% endif %}
+        {% if appliances.appliance.reservation is defined %}
+        <reservation>{{ appliances.appliance.cpuReservation.reservation }}</reservation>
+        {% endif %}
+        {% if appliances.appliance.cpuReservation.shares is defined %}
+        <shares>{{ appliances.appliance.cpuReservation.shares }}</shares>
+        {% endif %}
+      </cpuReservation>
+      {% endif %}
+      {% if appliances.appliance.memoryReservation is defined %}
+      <memoryReservation>
+        {% if appliances.appliance.memoryReservation.limit is defined %}
+        <limit>{{ appliances.appliance.memoryReservation.limit }}</limit>
+        {% endif %}
+        {% if appliances.appliance.memoryReservation.reservation is defined %}
+        <reservation>{{ appliances.appliance.memoryReservation.reservation }}</reservation>
+        {% endif %}
+        {% if appliances.appliance.memoryReservation.shares is defined %}
+        <shares>{{ appliances.appliance.memoryReservation.shares }}</shares>
+        {% endif %}
+      </memoryReservation>
+      {% endif %}
+    </appliance>
+  </appliances>
+  {% endif %}
+  <vnics>
+    {% for vnic in vnics %}
+    <vnic>
+      <index>{{ vnic.index }}</index>
+      <name>{{ vnic.name }}</name>
+      <type>{{ vnic.type }}</type>
+      <portgroupId>{{ vnic.portgroupId }}</portgroupId>
+      <addressGroups>
+        <addressGroup>
+          <primaryAddress>{{ vnic.primaryAddress }}</primaryAddress>
+          {% if vnic.secondaryAddresses is defined %}
+          <secondaryAddresses>
+            {% for secondaryAddress in vnic.secondaryAddresses %}
+            <ipAddress>{{ secondaryAddress }}</ipAddress>
+            {% endfor %}
+          </secondaryAddresses>
+          {% endif %} 
+          <subnetMask>{{ vnic.subnetMask }}</subnetMask>
+        </addressGroup>
+      </addressGroups>
+      {% if vnic.macAddress is defined %}
+      <macAddress>
+        <edgeVmHaIndex>{{ vnic.macAddress.edgeVmHaIndex }}</edgeVmHaIndex>
+        <value>{{ vnic.macAddress.value }}</value>
+      </macAddress>
+      {% endif %}
+      {% if vnic.fenceParameter is defined %}
+      <fenceParameter>
+        <key>{{ vnic.fenceParameter.key }}</key>
+        <value>{{ vnic.fenceParameter.value }}</value>
+      </fenceParameter>
+      {% endif %}
+      <mtu>{{ vnic.mtu }}</mtu>
+      {% if vnic.enableProxyArp is defined %}
+      <enableProxyArp>{{ vnic.enableProxyArp }}</enableProxyArp>
+      {% endif %}
+      {% if vnic.enableSendRedirects is defined %}
+      <enableSendRedirects>{{ vnic.enableSendRedirects }}</enableSendRedirects>
+      {% endif %}
+      {% if vnic.isConnected is defined %}
+      <isConnected>{{ vnic.isConnected }}</isConnected>
+      {% endif %}
+      {% if vnic.inShapingPolicy is defined %}
+      <inShapingPolicy>
+        <averageBandwidth>{{ vnic.inShapingPolicy.averageBandwidth }}</averageBandwidth>
+        <peakBandwidth>{{ vnic.inShapingPolicy.peakBandwidth }}</peakBandwidth>
+        <burstSize>{{ vnic.inShapingPolicy.burstSize }}</burstSize>
+        <enabled>{{ vnic.inShapingPolicy.enabled }}</enabled>
+        <inherited>{{ vnic.inShapingPolicy.inherited }}</inherited>
+      </inShapingPolicy>
+      {% endif %}
+      {% if vnic.outShapingPolicy is defined %}
+      <outShapingPolicy>
+        <averageBandwidth>{{ vnic.outShapingPolicy.averageBandwidth }}</averageBandwidth>
+        <peakBandwidth>{{ vnic.outShapingPolicy.peakBandwidth }}</peakBandwidth>
+        <burstSize>{{ vnic.outShapingPolicy.burstSize }}</burstSize>
+        <enabled>{{ vnic.outShapingPolicy.enabled }}</enabled>
+        <inherited>{{ vnic.outShapingPolicy.inherited }}</inherited>
+      </outShapingPolicy>
+      {% endif %}
+    </vnic>
+    {% endfor %}
+  </vnics>
+  <cliSettings>    
+    <userName>{{ cliSettings.userName }}</userName>
+    <password>{{ cliSettings.password }}</password>
+    <remoteAccess>{{ cliSettings.remoteAccess }}</remoteAccess>
+  </cliSettings>
+  {% if autoConfiguration is defined %}
+  <autoConfiguration>
+    <enabled>{{ autoConfiguration.enabled }}</enabled>
+    <rulePriority>{{ autoConfiguration.rulePriority }}</rulePriority>
+  </autoConfiguration>
+  {% endif %}
+  {% if dnsClient is defined %}
+  <dnsClient>
+    <primaryDns>{{ dnsClient.primaryDns }}</primaryDns>
+    <secondaryDns>{{ dnsClient.secondaryDns }}</secondaryDns>
+    {% for domainName in dnsClient.domainNames %}
+    <domainName>{{ domainName }}</domainName>
+    {% endfor %}
+  </dnsClient>
+  {% endif %}
+  {% if queryDaemon is defined %}
+  <queryDaemon>
+    <enabled>{{ queryDaemon.enabled }}</enabled>
+    <port>{{ queryDaemon.port }}</port>
+  </queryDaemon>
+  {% endif %}
+</edge>

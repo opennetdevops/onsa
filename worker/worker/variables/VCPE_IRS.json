@@ -1,0 +1,61 @@
+{     
+      {# Service variables #}
+      "mgmt_ip": "{{ mgmt_ip }}", 
+      "bandwidth": "{{ bandwidth }}",
+      "client_cidr": "{{ client_cidr }}",
+      "client_name" : "{{ client_name }}",
+
+      {# Devices variables #}
+
+      {# MX104 variables #}
+      "vmw_uplink_interface": "{{ vmw_uplink_interface }}",
+      "vmw_logical_unit": "{{ vmw_logical_unit }}",  
+      "vmw_vlan": "{{ vmw_vlan }}",
+      "vmw_interface_description" : "A description",
+      "an_uplink_interface": "{{ an_uplink_interface }}",  
+      "an_logical_unit": "{{ an_logical_unit }}",  
+      "provider_vlan": "{{ provider_vlan }}",    
+      "service_vlan": "{{ service_vlan }}",
+      "an_interface_description" : "Ok, another description",      
+      "bridge_domain_id" : "{{ service_type }}-{{ client_name }}-{{ service_id }}",
+      "bridge_domain_description" : "Another one...",
+
+      {# NSX Edge variables #}
+      "datacenter_id" : "{{ datacenter_id }}",
+      "edge_name" : "{{ client_name }}-{{ service_id }}",
+      "description" : "vCPE-{{ edge_name }}",
+      "appliance_size" : "xlarge",
+      "resgroup_id" : "{{ resgroup_id }}",
+      "datastore_id" : "{{ datastore_id }}",
+      "vnics" : [{"index" : "0",
+                        "name" : "Uplink",
+                        "type" : "Uplink",
+                        "portgroup_id" : "{{ wan_portgroup_id }}",
+                        "primary_address" : "{{ wan_ip | net() | ip() }}",
+                        "netmask" : "255.255.254.0",
+                        "mtu" : "1500",
+                        "is_connected" : "true"},
+                        {"index" : "1",
+                        "name" : "Internal",
+                        "type" : "Internal",
+                        "portgroup_id" : "{{ lan_portgroup_id }}",
+                        "primary_address" : "{{ client_cidr | net() | host() }}",
+                        "netmask" : "{{ client_cidr | net() | netmask() }}",
+                        "mtu" : "1500",
+                        "is_connected" : "true"}],
+      "username" : "admin",
+      "password" : "T3stC@s3NSx!",
+      "remote_access" : "true",
+
+      "gw_vnic_description" : "Gateway description",
+      "gw_vnic" : "0",
+      "gw_address" : "100.64.0.1",
+      "gw_vnic_mtu" : "1500",
+      
+      {# Access Node variables #}
+      "an_client_port": "{{ an_client_port }}",
+      "an_port_description" : "One description",
+      {# Optical Node variables #}
+      "on_client_port": "{{ on_client_port }}",
+      "on_port_description" : "Another description"
+}
