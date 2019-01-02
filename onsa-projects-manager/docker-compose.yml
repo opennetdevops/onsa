@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  projects:
+    env_file:
+      - ./.dev.env
+    build: .
+    image: "onsa-projects:${TAG}"
+    ports:
+     - "${EXPOSE}:${PUBLISH}"
+    command: ./app.py
