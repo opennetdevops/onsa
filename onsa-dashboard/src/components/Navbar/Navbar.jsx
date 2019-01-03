@@ -21,7 +21,7 @@ const Navbar = (props) => {
 			...attributes
 		} = props
 
-	return ( 	  
+	return (
 		<nav className={classNames(className,bsSuffix)} {...attributes}>
 			<NavbarToggler data-toggle="collapse" data-target="#navbarCollapseTest" aria-controls="navbarCollapseTest" aria-expanded="false" aria-label="Toggle navigation"/>
 			<Collapse bsSuffix="navbar-collapse" id="navbarCollapseTest">
@@ -42,15 +42,15 @@ const Navbar = (props) => {
 						<DropdownItem href="/customerslocations">Add customer location</DropdownItem>
 					</DropdownMenu>
 				</NavDropdown>
-{/*				<NavDropdown bsSuffix={props.history.location.pathname.includes('/projects') ? "active" : ""}>
-					<NavLink bsSuffix="dropdown-toggle text-secondary" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><FontAwesomeIcon icon="project-diagram"/> Projects</NavLink>
+				<NavDropdown bsSuffix={props.history.location.pathname.includes('/projects') ? "active" : ""}>
+					<NavLink bsSuffix="dropdown-toggle text-secondary" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><FontAwesomeIcon icon="project-diagram"/> Projects</NavLink>
 					<DropdownMenu>
-						<DropdownItem href="/projects/ports">Reserve port</DropdownItem>
-						<DropdownItem href="/projects/logicalunits">Reserve logical unit</DropdownItem>
-						<DropdownItem href="/projects/vrfs">Reserve VRF</DropdownItem>
-						<DropdownItem href="/projects/add_vlan">Add VLAN</DropdownItem>
+						<DropdownItem href="/projects/create">Create project</DropdownItem>
+						<DropdownItem href="/accessports">Add access port</DropdownItem>
+						<DropdownItem href="/logicalunits">Add logical units</DropdownItem>
+						<DropdownItem href="/vrfs">Add vrf</DropdownItem>
 					</DropdownMenu>
-				</NavDropdown>*/}
+				</NavDropdown>
 			</Nav>
 			</Collapse> 
 			<NavbarBrand bsSuffix="navbar-center text-secondary" href="/dashboard"><img className="xlogo" alt="" src={logo}/></NavbarBrand>
