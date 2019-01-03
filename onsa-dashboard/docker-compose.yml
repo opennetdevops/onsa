@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  dashboard:
+    env_file:
+      - ./.dash.dev.env
+    build: .
+    image: "onsa-dash:${TAG}"
+    ports:
+     - "${EXPOSE}:${PUBLISH}"
+    command: npm start
