@@ -4,7 +4,7 @@ from django.views import View
 from enum import Enum
 import json
 import requests
-from charles.utils.utils import *
+from core.utils.utils import *
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 IRS_SERVICES = ['cpeless_irs', 'cpe_irs', 'vcpe_irs']
