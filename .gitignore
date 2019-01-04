@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Postgres DB volume
+volumes/postgres/*
+
 # Distribution / packaging
 .Python
 env/
