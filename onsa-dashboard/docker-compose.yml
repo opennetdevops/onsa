@@ -6,5 +6,5 @@ services:
     build: .
     image: "onsa-dash:${TAG}"
     ports:
-     - "${EXPOSE}:${PUBLISH}"
+     - "${PUBLISH}:${EXPOSE}"
     command: npm start
