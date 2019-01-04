@@ -1,1 +1,0 @@
-echo -ne "yes\n" | python3 manage.py flush && python3 manage.py loaddata inventory/fixtures/* jeangrey/fixtures/* 
