@@ -30,8 +30,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = bool(int(os.getenv('DEBUG', False)))
 
 # ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost']
-#ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = ['*']
+#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 JQUERY_URL = True
 
@@ -64,19 +64,19 @@ APPEND_SLASH=False
 ROOT_URLCONF = 'settings.urls'
 
 TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR + '/core/templates/'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
+    # {
+    #     'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    #     'DIRS': [BASE_DIR + '/core/templates/'],
+    #     'APP_DIRS': True,
+    #     'OPTIONS': {
+    #         'context_processors': [
+    #             'django.template.context_processors.debug',
+    #             'django.template.context_processors.request',
+    #             'django.contrib.auth.context_processors.auth',
+    #             'django.contrib.messages.context_processors.messages',
+    #         ],
+    #     },
+    # },
 ]
 
 WSGI_APPLICATION = 'settings.wsgi.application'
@@ -182,11 +182,10 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 
-PORT = 8004
 # ONSA Variables
-JEAN_GREY_URL = "http://localhost:8002/jeangrey/api/"
-CHARLES_URL = "http://localhost:8004/charles/api/"
-CORE_URL = "http://localhost:8000/core/api/"
-INVENTORY_URL = "http://localhost:8001/inventory/api/"
-WORKER_URL = "http://localhost:8003/worker/api/"
+JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
+CHARLES_URL = "http://charles:8000/charles/api/"
+CORE_URL = "http://core:8000/core/api/"
+INVENTORY_URL = "http://inventory:8000/inventory/api/"
+WORKER_URL = "http://worker:8000/worker/api/"
 IPAM_URL = "http://10.120.78.90"

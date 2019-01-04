@@ -172,10 +172,11 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 
+
 # ONSA Variables
-JEAN_GREY_URL = "http://localhost:8002/jeangrey/api/"
-CHARLES_URL = "http://localhost:8004/charles/api/"
-CORE_URL = "http://localhost:8000/core/api/"
-INVENTORY_URL = "http://localhost:8001/inventory/api/"
-WORKER_URL = "http://localhost:8003/worker/api/"
+JEAN_GREY_URL = "http://jeangrey:8002/jeangrey/api/"
+CHARLES_URL = "http://charles:8004/charles/api/"
+CORE_URL = "http://core:8000/core/api/"
+INVENTORY_URL = "http://inventory:8001/inventory/api/"
+WORKER_URL = "http://worker:8003/worker/api/"
 IPAM_URL = "http://10.120.78.90"

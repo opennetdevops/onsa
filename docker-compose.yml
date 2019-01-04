@@ -14,87 +14,77 @@ services:
   build: ./charles/
   restart: always
   ports:
-   - "$CHARLES_PORT:8004"
+   - "8004:8000"
   volumes:
    - ./charles:/app
    - ./createsuperuser.py:/usr/src/app/createsuperuser.py
   environment:
    - ENV=development
-   - PORT=$CHARLES_PORT
   depends_on:
    - postgres
   env_file:
    - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver"
+  command: bash -c "python manage.py migrate && python manage.py runserver"
  core:
   build: ./core/
   restart: always
   ports:
-   - "$CORE_PORT:8000"
+   - "8000:8000"
   volumes:
    - ./core:/app
    - ./createsuperuser.py:/usr/src/app/createsuperuser.py
   environment:
    - ENV=development
-   - PORT=$CORE_PORT
   depends_on:
    - postgres
   env_file:
    - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver"
+  command: bash -c "python manage.py migrate && python manage.py runserver"
  jeangrey:
   build: ./jeangrey/
   restart: always
   ports:
-   - "$JEANGREY_PORT:8000"
+   - "8002:8000"
   volumes:
    - ./jeangrey:/app
    - ./createsuperuser.py:/usr/src/app/createsuperuser.py
   environment:
    - ENV=development
-   - PORT=$JEANGREY_PORT
   depends_on:
    - postgres
   env_file:
    - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver"
+  command: bash -c "python manage.py migrate && python manage.py runserver"
  worker:
   build: ./worker/
   restart: always
   ports:
-   - "$WORKER_PORT:8000"
+   - "8003:8000"
   volumes:
    - ./worker:/app
    - ./createsuperuser.py:/usr/src/app/createsuperuser.py
   environment:
    - ENV=development
-   - PORT=$WORKER_PORT
   depends_on:
    - postgres
   env_file:
    - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver"
+  command: bash -c "python manage.py migrate && python manage.py runserver"
  inventory:
   build: ./inventory/
   restart: always
   ports:
-   - "$INVENTORY_PORT:8000"
+   - "8001:8000"
   volumes:
    - ./inventory:/app
    - ./createsuperuser.py:/usr/src/app/createsuperuser.py
   environment:
    - ENV=development
-   - PORT=$INVENTORY_PORT
   depends_on:
    - postgres
   env_file:
    - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver"
+  command: bash -c "python manage.py migrate && python manage.py runserver"
 networks:
  default:
   name: onsa
