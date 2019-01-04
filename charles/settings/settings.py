@@ -30,8 +30,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = bool(int(os.getenv('DEBUG', False)))
 
 # ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost']
-ALLOWED_HOSTS = ['*']
-#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
+#ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 JQUERY_URL = True
 
@@ -64,19 +64,19 @@ APPEND_SLASH=False
 ROOT_URLCONF = 'settings.urls'
 
 TEMPLATES = [
-    # {
-    #     'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    #     'DIRS': [BASE_DIR + '/core/templates/'],
-    #     'APP_DIRS': True,
-    #     'OPTIONS': {
-    #         'context_processors': [
-    #             'django.template.context_processors.debug',
-    #             'django.template.context_processors.request',
-    #             'django.contrib.auth.context_processors.auth',
-    #             'django.contrib.messages.context_processors.messages',
-    #         ],
-    #     },
-    # },
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR + '/charles/templates/'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
 ]
 
 WSGI_APPLICATION = 'settings.wsgi.application'

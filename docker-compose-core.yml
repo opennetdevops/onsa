@@ -1,15 +1,5 @@
 version: '3.5'
 services:
- postgres:
-  image: postgres:latest
-  container_name: "postgres"
-  env_file:
-   - ./.env
-  volumes:
-   - ./volumes/postgres:/var/lib/postgresql/data
-   - ./db/postgres/10-init.sql:/docker-entrypoint-initdb/10-init.sql
-  ports:
-   - 5432:5432
  core:
   build: ./core/
   restart: always
@@ -18,11 +8,6 @@ services:
   volumes:
    - ./core:/app
    - ./createsuperuser.py:/usr/src/app/createsuperuser.py
-  depends_on:
-   - postgres
   env_file:
    - ./.env
-  command: bash -c "python manage.py migrate && python manage.py runserver"
-networks:
- default:
-  name: onsa
+  command: "python manage.py runserver"

@@ -66,7 +66,7 @@ ROOT_URLCONF = 'settings.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR + '/core/templates/'],
+        'DIRS': [BASE_DIR + '/jeangrey/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,7 +137,7 @@ STATIC_URL = '/static/'
 
 # Fixtures
 FIXTURE_DIRS = (
-   BASE_DIR + '/inventory/fixtures/',
+   BASE_DIR + '/jeangrey/fixtures/',
 )
 
 # Django REST Framework
@@ -171,11 +171,10 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 
-
 # ONSA Variables
-JEAN_GREY_URL = "http://jeangrey:8002/jeangrey/api/"
-CHARLES_URL = "http://charles:8004/charles/api/"
+JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
+CHARLES_URL = "http://charles:8000/charles/api/"
 CORE_URL = "http://core:8000/core/api/"
-INVENTORY_URL = "http://inventory:8001/inventory/api/"
-WORKER_URL = "http://worker:8003/worker/api/"
+INVENTORY_URL = "http://inventory:8000/inventory/api/"
+WORKER_URL = "http://worker:8000/worker/api/"
 IPAM_URL = "http://10.120.78.90"

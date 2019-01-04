@@ -6,4 +6,4 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 ENV PYTHONUNBUFFERED 1
 ENV DJANGO_SETTINGS_MODULE settings.settings
-ENTRYPOINT python3 manage.py runserver
+CMD ["python3", "manage.py", "runserver"]

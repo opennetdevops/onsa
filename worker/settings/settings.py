@@ -64,21 +64,21 @@ APPEND_SLASH=False
 
 ROOT_URLCONF = 'settings.urls'
 
-# TEMPLATES = [
-#     {
-#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-#         'DIRS': [BASE_DIR + '/core/templates/'],
-#         'APP_DIRS': True,
-#         'OPTIONS': {
-#             'context_processors': [
-#                 'django.template.context_processors.debug',
-#                 'django.template.context_processors.request',
-#                 'django.contrib.auth.context_processors.auth',
-#                 'django.contrib.messages.context_processors.messages',
-#             ],
-#         },
-#     },
-# ]
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR + '/worker/templates/'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 WSGI_APPLICATION = 'settings.wsgi.application'
 
@@ -171,12 +171,10 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:9000'
 )
 
-
-
 # ONSA Variables
-JEAN_GREY_URL = "http://jeangrey:8002/jeangrey/api/"
-CHARLES_URL = "http://charles:8004/charles/api/"
+JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
+CHARLES_URL = "http://charles:8000/charles/api/"
 CORE_URL = "http://core:8000/core/api/"
-INVENTORY_URL = "http://inventory:8001/inventory/api/"
-WORKER_URL = "http://worker:8003/worker/api/"
+INVENTORY_URL = "http://inventory:8000/inventory/api/"
+WORKER_URL = "http://worker:8000/worker/api/"
 IPAM_URL = "http://10.120.78.90"
