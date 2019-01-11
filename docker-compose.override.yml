@@ -1,0 +1,73 @@
+version: '3.5'
+services:
+ postgres:
+  env_file:
+   - ./env/.dev.env
+  volumes:
+   - ./volumes/postgres:/var/lib/postgresql/data
+   - ./db/postgres/10-init.sql:/docker-entrypoint-initdb/10-init.sql
+  ports:
+   - 5433:5432
+ charles:
+  build: ./charles/
+  ports:
+   - "8004:8000"
+  volumes:
+   - ./charles:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  env_file:
+   - ./env/.dev.env
+  command: bash -c "python manage.py migrate
+            && python manage.py runserver 0.0.0.0:8000"
+ jeangrey:
+  build: ./jeangrey/
+  restart: always
+  ports:
+   - "8002:8000"
+  volumes:
+   - ./jeangrey:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  depends_on:
+   - postgres
+  env_file:
+   - ./env/.dev.env
+  command: bash -c "python manage.py migrate
+            && python manage.py runserver 0.0.0.0:8000"
+ worker:
+  build: ./worker/
+  restart: always
+  ports:
+   - "8003:8000"
+  volumes:
+   - ./worker:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  depends_on:
+   - postgres
+  env_file:
+   - ./env/.dev.env
+  command: bash -c "python manage.py migrate
+            && python manage.py runserver 0.0.0.0:8000"
+ inventory:
+  build: ./inventory/
+  restart: always
+  ports:
+   - "8001:8000"
+  volumes:
+   - ./inventory:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  depends_on:
+   - postgres
+  env_file:
+   - ./env/.dev.env
+  command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+ core:
+  build: ./core/
+  restart: always
+  ports:
+   - "8000:8000"
+  volumes:
+   - ./core:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  env_file:
+   - ./env/.dev.env
+  command: python manage.py runserver 0.0.0.0:8000

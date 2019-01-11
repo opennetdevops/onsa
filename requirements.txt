@@ -19,3 +19,4 @@ django-background-tasks
 django-cors-headers
 netmiko
 coloredlogs
+gunicorn

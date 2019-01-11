@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'charles.apps.CharlesConfig'
+    'jeangrey.apps.JeangreyConfig'
 ]
 
 MIDDLEWARE = [
@@ -66,7 +66,7 @@ ROOT_URLCONF = 'settings.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR + '/charles/templates/'],
+        'DIRS': [BASE_DIR + '/jeangrey/templates/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,17 +84,6 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'onsa',
-#         'USER': 'automation',
-#         'PASSWORD': 'F1b3rc0rp',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
 
 DATABASES = {
     'default': {
@@ -139,14 +128,16 @@ USE_L10N = True
 
 USE_TZ = True
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
 
+
 # Fixtures
 FIXTURE_DIRS = (
-   BASE_DIR + '/charles/fixtures/',
+   BASE_DIR + '/jeangrey/fixtures/',
 )
 
 # Django REST Framework
@@ -170,6 +161,7 @@ JWT_AUTH = {
 
 MAX_ATTEMPTS = 0
 
+
 # CORS Headers
 CORS_ORIGIN_WHITELIST = (
     'google.com',
@@ -178,18 +170,11 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:9000'
 )
 
+
 # ONSA Variables
-if os.getenv('ENV') == "local":
-    JEAN_GREY_URL = "http://localhost:"+ os.getenv('JEANGREY_PORT') +"/jeangrey/api/"
-    CHARLES_URL = "http://localhost:"+ os.getenv('CHARLES_PORT') +"/charles/api/"
-    CORE_URL = "http://localhost:"+ os.getenv('CORE_PORT') +"/core/api/"
-    INVENTORY_URL = "http://localhost:"+ os.getenv('INVENTORY_PORT') +"/inventory/api/"
-    WORKER_URL = "http://localhost:"+ os.getenv('WORKER_PORT') +"/worker/api/"
-    IPAM_URL = "http://10.120.78.90"
-else:
-    JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
-    CHARLES_URL = "http://charles:8000/charles/api/"
-    CORE_URL = "http://core:8000/core/api/"
-    INVENTORY_URL = "http://inventory:8000/inventory/api/"
-    WORKER_URL = "http://worker:8000/worker/api/"
-    IPAM_URL = "http://10.120.78.90"
+JEAN_GREY_URL = "http://localhost:"+ os.getenv('JEANGREY_PORT') +"/jeangrey/api/"
+CHARLES_URL = "http://localhost:"+ os.getenv('CHARLES_PORT') +"/charles/api/"
+CORE_URL = "http://localhost:"+ os.getenv('CORE_PORT') +"/core/api/"
+INVENTORY_URL = "http://localhost:"+ os.getenv('INVENTORY_PORT') +"/inventory/api/"
+WORKER_URL = "http://localhost:"+ os.getenv('WORKER_PORT') +"/worker/api/"
+IPAM_URL = "http://10.120.78.90"

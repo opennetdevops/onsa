@@ -3,91 +3,18 @@ services:
  postgres:
   image: postgres:latest
   container_name: "postgres"
-  env_file:
-   - ./.env
-  volumes:
-   - ./volumes/postgres:/var/lib/postgresql/data
-   - ./db/postgres/10-init.sql:/docker-entrypoint-initdb/10-init.sql
-  ports:
-   - 5432:5432
  charles:
-  build: ./charles/
   restart: always
-  ports:
-   - "$CHARLES_PORT:8000"
-  volumes:
-   - ./charles:/app
-   - ./createsuperuser.py:/usr/src/app/createsuperuser.py
-  environment:
-   - ENV=development
-  depends_on:
-   - postgres
-  env_file:
-   - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver 0.0.0.0:8000"
  jeangrey:
-  build: ./jeangrey/
   restart: always
-  ports:
-   - "$JEANGREY_PORT:8000"
-  volumes:
-   - ./jeangrey:/app
-   - ./createsuperuser.py:/usr/src/app/createsuperuser.py
-  environment:
-   - ENV=development
   depends_on:
    - postgres
-  env_file:
-   - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver 0.0.0.0:8000"
  worker:
-  build: ./worker/
   restart: always
-  ports:
-   - "$WORKER_PORT:8000"
-  volumes:
-   - ./worker:/app
-   - ./createsuperuser.py:/usr/src/app/createsuperuser.py
-  environment:
-   - ENV=development
   depends_on:
    - postgres
-  env_file:
-   - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver 0.0.0.0:8000"
  inventory:
-  build: ./inventory/
-  restart: always
-  ports:
-   - "$INVENTORY_PORT:8000"
-  volumes:
-   - ./inventory:/app
-   - ./createsuperuser.py:/usr/src/app/createsuperuser.py
-  environment:
-   - ENV=development
   depends_on:
    - postgres
-  env_file:
-   - ./.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver 0.0.0.0:8000"
-
  core:
-  build: ./core/
   restart: always
-  ports:
-   - "$CORE_PORT:8000"
-  volumes:
-   - ./core:/app
-   - ./createsuperuser.py:/usr/src/app/createsuperuser.py
-  environment:
-   - ENV=development
-  env_file:
-   - ./.env
-  command: python manage.py runserver 0.0.0.0:8000
-networks:
- default:
-  name: onsa

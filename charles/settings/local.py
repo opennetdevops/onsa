@@ -179,17 +179,9 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 # ONSA Variables
-if os.getenv('ENV') == "local":
-    JEAN_GREY_URL = "http://localhost:"+ os.getenv('JEANGREY_PORT') +"/jeangrey/api/"
-    CHARLES_URL = "http://localhost:"+ os.getenv('CHARLES_PORT') +"/charles/api/"
-    CORE_URL = "http://localhost:"+ os.getenv('CORE_PORT') +"/core/api/"
-    INVENTORY_URL = "http://localhost:"+ os.getenv('INVENTORY_PORT') +"/inventory/api/"
-    WORKER_URL = "http://localhost:"+ os.getenv('WORKER_PORT') +"/worker/api/"
-    IPAM_URL = "http://10.120.78.90"
-else:
-    JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
-    CHARLES_URL = "http://charles:8000/charles/api/"
-    CORE_URL = "http://core:8000/core/api/"
-    INVENTORY_URL = "http://inventory:8000/inventory/api/"
-    WORKER_URL = "http://worker:8000/worker/api/"
-    IPAM_URL = "http://10.120.78.90"
+JEAN_GREY_URL = "http://localhost:"+ os.getenv('JEANGREY_PORT') +"/jeangrey/api/"
+CHARLES_URL = "http://localhost:"+ os.getenv('CHARLES_PORT') +"/charles/api/"
+CORE_URL = "http://localhost:"+ os.getenv('CORE_PORT') +"/core/api/"
+INVENTORY_URL = "http://localhost:"+ os.getenv('INVENTORY_PORT') +"/inventory/api/"
+WORKER_URL = "http://localhost:"+ os.getenv('WORKER_PORT') +"/worker/api/"
+IPAM_URL = "http://10.120.78.90"

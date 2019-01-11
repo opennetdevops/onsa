@@ -21,24 +21,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=hv+%a0454jo54^=*r3tf9jzzb-7w%q8u27rl-7=_p%=^w_&t*'
-#SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-#DEBUG = bool(int(os.getenv('DEBUG', False)))
+DEBUG = bool(int(os.getenv('DEBUG', False)))
 
 # ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost']
-ALLOWED_HOSTS = ['*']
-#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
+# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 JQUERY_URL = True
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    #  'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -173,9 +171,17 @@ CORS_ORIGIN_WHITELIST = (
 
 
 # ONSA Variables
-JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
-CHARLES_URL = "http://charles:8000/charles/api/"
-CORE_URL = "http://core:8000/core/api/"
-INVENTORY_URL = "http://inventory:8000/inventory/api/"
-WORKER_URL = "http://worker:8000/worker/api/"
-IPAM_URL = "http://10.120.78.90"
+if os.getenv('ENV') == "local":
+    JEAN_GREY_URL = "http://localhost:"+ os.getenv('JEANGREY_PORT') +"/jeangrey/api/"
+    CHARLES_URL = "http://localhost:"+ os.getenv('CHARLES_PORT') +"/charles/api/"
+    CORE_URL = "http://localhost:"+ os.getenv('CORE_PORT') +"/core/api/"
+    INVENTORY_URL = "http://localhost:"+ os.getenv('INVENTORY_PORT') +"/inventory/api/"
+    WORKER_URL = "http://localhost:"+ os.getenv('WORKER_PORT') +"/worker/api/"
+    IPAM_URL = "http://10.120.78.90"
+else:
+    JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
+    CHARLES_URL = "http://charles:8000/charles/api/"
+    CORE_URL = "http://core:8000/core/api/"
+    INVENTORY_URL = "http://inventory:8000/inventory/api/"
+    WORKER_URL = "http://worker:8000/worker/api/"
+    IPAM_URL = "http://10.120.78.90"
