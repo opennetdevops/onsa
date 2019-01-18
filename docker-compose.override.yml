@@ -14,11 +14,10 @@ services:
    - "8004:8000"
   volumes:
    - ./charles:/app
-   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+   - ./scripts:/usr/src/app/scripts
   env_file:
    - ./env/.dev.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver 0.0.0.0:8000"
+  command: ./scripts/gunicorn.sh
  jeangrey:
   build: ./jeangrey/
   restart: always
@@ -26,13 +25,12 @@ services:
    - "8002:8000"
   volumes:
    - ./jeangrey:/app
-   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+   - ./scripts:/usr/src/app/scripts
   depends_on:
    - postgres
   env_file:
    - ./env/.dev.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver 0.0.0.0:8000"
+  command: ./scripts/gunicorn.sh
  worker:
   build: ./worker/
   restart: always
@@ -40,13 +38,12 @@ services:
    - "8003:8000"
   volumes:
    - ./worker:/app
-   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+   - ./scripts:/usr/src/app/scripts
   depends_on:
    - postgres
   env_file:
    - ./env/.dev.env
-  command: bash -c "python manage.py migrate
-            && python manage.py runserver 0.0.0.0:8000"
+  command: ./scripts/gunicorn.sh
  inventory:
   build: ./inventory/
   restart: always
@@ -54,12 +51,12 @@ services:
    - "8001:8000"
   volumes:
    - ./inventory:/app
-   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+   - ./scripts:/usr/src/app/scripts
   depends_on:
    - postgres
   env_file:
    - ./env/.dev.env
-  command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+  command: ./scripts/gunicorn.sh
  core:
   build: ./core/
   restart: always
@@ -67,7 +64,7 @@ services:
    - "8000:8000"
   volumes:
    - ./core:/app
-   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+   - ./scripts:/usr/src/app/scripts
   env_file:
    - ./env/.dev.env
-  command: python manage.py runserver 0.0.0.0:8000
+  command: ./scripts/gunicorn.sh
