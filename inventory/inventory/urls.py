@@ -62,4 +62,5 @@ urlpatterns = [
     path('/api/vrfs/<int:vrf_id>/locations', require_http_methods(["GET"])(vrf_locations.VrfLocationsView.as_view())),
     path('/api/vrfs/<int:vrf_id>/locations/<int:location_id>', require_http_methods(["GET", "PUT", "DELETE"])(vrf_locations.VrfLocationsView.as_view())),
 
- ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+ ]
+ 

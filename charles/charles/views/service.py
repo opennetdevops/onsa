@@ -14,6 +14,7 @@ import json
 class ServiceView(View):
 
     def get(self, request, service_id=None):
+
         if service_id is None:
             services = Service.objects.all().values()
             return JsonResponse(list(services), safe=False)

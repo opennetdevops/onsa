@@ -17,7 +17,7 @@ AN_STATES = ['an_data_ack', 'an_activation_in_progress']
 
 
 def delete_charles_service(service_id):
-    url = settings.CHARLES_URL + "services/"  + str(service_id)
+    url = os.getenv('CHARLES_URL') + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -27,7 +27,7 @@ def delete_charles_service(service_id):
         return None
 
 def delete_jeangrey_service(service_id):
-    url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
+    url = os.getenv('JEAN_GREY_URL') + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -44,9 +44,9 @@ class ServiceView(View):
         service_type = request.GET.get('type', None)
 
         if service_id is not None:
-            url = settings.JEAN_GREY_URL + "services/"+ str(service_id)
+            url = os.getenv('JEAN_GREY_URL') + "services/"+ str(service_id)
         else:
-            url = settings.JEAN_GREY_URL + "services"
+            url = os.getenv('JEAN_GREY_URL') + "services"
 
             if state is not None:
                 url += "?state=" + state
@@ -62,7 +62,7 @@ class ServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        url = settings.JEAN_GREY_URL + "services"
+        url = os.getenv('JEAN_GREY_URL') + "services"
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)
@@ -71,7 +71,7 @@ class ServiceView(View):
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        url = settings.JEAN_GREY_URL + "services/" + str(service_id)
+        url = os.getenv('JEAN_GREY_URL') + "services/" + str(service_id)
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)

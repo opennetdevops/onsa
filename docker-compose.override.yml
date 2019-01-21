@@ -2,7 +2,7 @@ version: '3.5'
 services:
  postgres:
   env_file:
-   - ./env/.dev.env
+   - ./env/.local.env
   volumes:
    - ./volumes/postgres:/var/lib/postgresql/data
    - ./db/postgres/10-init.sql:/docker-entrypoint-initdb/10-init.sql
@@ -16,8 +16,8 @@ services:
    - ./charles:/app
    - ./scripts:/usr/src/app/scripts
   env_file:
-   - ./env/.dev.env
-  command: ./scripts/gunicorn.sh
+   - ./env/.local.env
+  command: ./scripts/local/run.sh
  jeangrey:
   build: ./jeangrey/
   restart: always
@@ -29,8 +29,8 @@ services:
   depends_on:
    - postgres
   env_file:
-   - ./env/.dev.env
-  command: ./scripts/gunicorn.sh
+   - ./env/.local.env
+  command: ./scripts/local/run.sh
  worker:
   build: ./worker/
   restart: always
@@ -42,8 +42,8 @@ services:
   depends_on:
    - postgres
   env_file:
-   - ./env/.dev.env
-  command: ./scripts/gunicorn.sh
+   - ./env/.local.env
+  command: ./scripts/local/run.sh
  inventory:
   build: ./inventory/
   restart: always
@@ -55,8 +55,8 @@ services:
   depends_on:
    - postgres
   env_file:
-   - ./env/.dev.env
-  command: ./scripts/gunicorn.sh
+   - ./env/.local.env
+  command: ./scripts/local/run.sh
  core:
   build: ./core/
   restart: always
@@ -66,5 +66,5 @@ services:
    - ./core:/app
    - ./scripts:/usr/src/app/scripts
   env_file:
-   - ./env/.dev.env
-  command: ./scripts/gunicorn.sh
+   - ./env/.local.env
+  command: ./scripts/local/run.sh
