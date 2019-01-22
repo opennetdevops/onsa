@@ -1,10 +1,11 @@
 import React from 'react';
 import { Router, Route, Switch, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
-import indexRoutes from "./routes/index.js";
+import { publicRoutes, privateRoutes } from "./routes/index.js";
 import Navbar from './components/Navbar';
 import Tag from './components/Tag';
 import Footer from './components/Footer';
+import PrivateRoute from './components/PrivateRoute';
 import './css/fibercorp-labs.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faChartLine, faBolt, faMale, faProjectDiagram, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
@@ -37,8 +38,11 @@ class App extends React.Component {
       <Router history={hist}>
         <Switch>
           <Redirect exact from='/' to='/login'/>
-          {indexRoutes.map((prop, key) => {
+          {publicRoutes.map((prop, key) => {
             return <Route path={prop.path} key={key} render={(props) => <prop.component {...props} displayNavbar={this.handleNavbar}/>}/>;
+          })}
+          {privateRoutes.map((prop, key) => {
+            return <PrivateRoute component={prop.component} path={prop.path} key={key} displayNavbar={this.handleNavbar}/>;
           })}
         </Switch>
       </Router>
