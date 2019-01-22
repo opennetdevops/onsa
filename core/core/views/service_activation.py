@@ -41,7 +41,7 @@ class ServiceActivationView(View):
 		return True if cpe else False
 	
 	def _get_cpe(self, sn):
-		url = settings.INVENTORY_URL + "clientnodes/" + str(sn)
+		url = os.getenv('INVENTORY_URL') + "clientnodes/" + str(sn)
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -51,7 +51,7 @@ class ServiceActivationView(View):
 			return None	
 
 	def update_service(self, service_id, data):
-		url = settings.JEAN_GREY_URL + "services/" + str(service_id)
+		url = os.getenv('JEAN_GREY_URL') + "services/" + str(service_id)
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -61,7 +61,7 @@ class ServiceActivationView(View):
 			return None
 
 	def push_service_to_orchestrator(self, service_id, deployment_mode, target_state):
-		url = settings.CHARLES_URL + "services"
+		url = os.getenv('CHARLES_URL') + "services"
 
 		rheaders = { 'Content-Type': 'application/json' }	
 		data = { "service_id": service_id, "deployment_mode": deployment_mode, "target_state": target_state }	

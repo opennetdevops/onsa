@@ -16,3 +16,4 @@ netmiko
 junos-eznc>=2.1.7
 pyvmomi>=6.7.0
 jinja2>=2.9.6
+gunicorn

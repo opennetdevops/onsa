@@ -3,32 +3,70 @@ services:
  postgres:
   env_file:
    - ./env/.prod.env
+  volumes:
+   - ./volumes/postgres:/var/lib/postgresql/data
+   - ./db/postgres/10-init.sql:/docker-entrypoint-initdb/10-init.sql
   ports:
-   - 5432:5432
+   - 5433:5432
  charles:
+  build: ./charles/
   ports:
    - "8004:8000"
+  volumes:
+   - ./charles:/app
+   - ./scripts:/usr/src/app/scripts
   env_file:
    - ./env/.prod.env
+  command:./scripts/gunicorn.sh
  jeangrey:
+  build: ./jeangrey/
+  restart: always
   ports:
    - "8002:8000"
+  volumes:
+   - ./jeangrey:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  depends_on:
+   - postgres
   env_file:
    - ./env/.prod.env
+  command: bash -c "python manage.py migrate
+            && gunicorn settings.wsgi"
  worker:
   build: ./worker/
+  restart: always
   ports:
    - "8003:8000"
+  volumes:
+   - ./worker:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  depends_on:
+   - postgres
   env_file:
    - ./env/.prod.env
+  command: bash -c "python manage.py migrate
+            && gunicorn settings.wsgi"
  inventory:
+  build: ./inventory/
   restart: always
   ports:
    - "8001:8000"
+  volumes:
+   - ./inventory:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
+  depends_on:
+   - postgres
   env_file:
    - ./env/.prod.env
+  command: bash -c "python manage.py migrate && gunicorn settings.wsgi"
  core:
+  build: ./core/
+  restart: always
   ports:
-   - "80:8000"
+   - "8000:8000"
+  volumes:
+   - ./core:/app
+   - ./scripts/createsuperuser.py:/usr/src/app/createsuperuser.py
   env_file:
    - ./env/.prod.env
+  command: gunicorn settings.wsgi

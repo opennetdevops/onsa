@@ -18,7 +18,7 @@ class ServiceTypes(Enum):
     vpls = "Vpls"
 
 def get_access_node(access_node_id):
-    url= settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
+    url= os.getenv('INVENTORY_URL') + "accessnodes/"+ str(access_node_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -28,7 +28,7 @@ def get_access_node(access_node_id):
         return None
 
 def get_access_port(access_port_id):
-    url = settings.INVENTORY_URL + "accessports/"+ str(access_port_id)
+    url = os.getenv('INVENTORY_URL') + "accessports/"+ str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -38,7 +38,7 @@ def get_access_port(access_port_id):
         return None
 
 def get_service_vrfs(vrf_id):
-    url = settings.JEAN_GREY_URL + "services?vrf_id="  + str(vrf_id)
+    url = os.getenv('JEAN_GREY_URL') + "services?vrf_id="  + str(vrf_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -77,7 +77,7 @@ def assign_autonomous_system(vrf_id):
                 return proposed_as
 
 def get_router_node(location_id):
-    url = settings.INVENTORY_URL + "locations/" + str(location_id) + "/routernodes"
+    url = os.getenv('INVENTORY_URL') + "locations/" + str(location_id) + "/routernodes"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)[0]
@@ -88,7 +88,7 @@ def get_router_node(location_id):
 
 
 def get_free_access_port(location_id):
-    url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
+    url = os.getenv('INVENTORY_URL') + "locations/"+ str(location_id) + "/accessports?used=false"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -98,7 +98,7 @@ def get_free_access_port(location_id):
         return None
 
 def get_location_id(location_name):
-    url = settings.INVENTORY_URL + "locations?name=" + location_name
+    url = os.getenv('INVENTORY_URL') + "locations?name=" + location_name
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -108,7 +108,7 @@ def get_location_id(location_name):
         return None
 
 def use_port(access_port_id):
-    url= settings.INVENTORY_URL + "accessports/" + access_port_id
+    url= os.getenv('INVENTORY_URL') + "accessports/" + access_port_id
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -119,7 +119,7 @@ def use_port(access_port_id):
         return None
 
 def get_client_vrfs(client_name):
-    url= settings.INVENTORY_URL + "vrfs?client="+client_name
+    url= os.getenv('INVENTORY_URL') + "vrfs?client="+client_name
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -130,7 +130,7 @@ def get_client_vrfs(client_name):
 
 
 def get_free_vrf():
-    url= settings.INVENTORY_URL + "vrfs?used=False"
+    url= os.getenv('INVENTORY_URL') + "vrfs?used=False"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -141,7 +141,7 @@ def get_free_vrf():
 
 
 def use_vrf(vrf_id, vrf_name, client_name):
-    url= settings.INVENTORY_URL + "vrfs/" + vrf_id
+    url= os.getenv('INVENTORY_URL') + "vrfs/" + vrf_id
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True, "name": vrf_name, "client": client_name}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -152,7 +152,7 @@ def use_vrf(vrf_id, vrf_name, client_name):
         return None
 
 def get_free_vlan(access_node_id):
-    url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
+    url = os.getenv('INVENTORY_URL') + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -162,7 +162,7 @@ def get_free_vlan(access_node_id):
         return None
 
 def use_vlan(access_node_id, vlan_id):
-    url = settings.INVENTORY_URL + "accessnodes/" + str(access_node_id) + "/vlantags"
+    url = os.getenv('INVENTORY_URL') + "accessnodes/" + str(access_node_id) + "/vlantags"
     rheaders = { 'Content-Type': 'application/json' }
     data = { 'vlan_id': vlan_id }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -173,7 +173,7 @@ def use_vlan(access_node_id, vlan_id):
         return None
 
 def get_vrf(vrf_name):
-    url = settings.INVENTORY_URL + "vrfs?name="+ vrf_name
+    url = os.getenv('INVENTORY_URL') + "vrfs?name="+ vrf_name
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)

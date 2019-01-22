@@ -28,4 +28,4 @@ urlpatterns = [
     path('/api/accessnodes/<str:access_node_id>/vlantags', require_http_methods(["GET", "POST", "DELETE"])(wrapper.VlansView.as_view())),
     path('/api/vrfs', require_http_methods(["GET", "PUT", "DELETE"])(wrapper.VrfsView.as_view())),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
