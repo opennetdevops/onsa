@@ -6,14 +6,14 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 
 from rest_framework_jwt.views import obtain_jwt_token
+from core.views.ldap_jwt import obtain_ldap_jwt_token
 from django.views.decorators.http import require_http_methods
 
 # from .views import service, pending_services, wrapper, projects, service_process
-from .views import wrapper, service_activation, service
+from core.views import wrapper, service_activation, service
 
 urlpatterns = [ 
-    # url(r'^select2/', include('django_select2.urls')),
-    # path('/api/login', obtain_jwt_token),
+    path('/api/login', obtain_ldap_jwt_token),
     path('/api/services', require_http_methods(["GET","POST"])(service.ServiceView.as_view())),
     path('/api/services/<str:service_id>', require_http_methods(["GET","PUT"])(service.ServiceView.as_view())),
     path('/api/services/<str:service_id>/activation', require_http_methods(["POST"])(service_activation.ServiceActivationView.as_view())),

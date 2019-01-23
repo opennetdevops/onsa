@@ -5,6 +5,7 @@ from enum import Enum
 import json
 import requests
 from core.utils.utils import *
+import os
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 IRS_SERVICES = ['cpeless_irs', 'cpe_irs', 'vcpe_irs']
