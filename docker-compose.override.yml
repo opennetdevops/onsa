@@ -1,8 +1,10 @@
 version: '3.5'
 services:
  postgres:
+  image: postgres:latest
+  container_name: "postgres"
   env_file:
-   - ./env/.local.env
+   - ./env/.dev.env
   volumes:
    - ./volumes/postgres:/var/lib/postgresql/data
    - ./db/postgres/10-init.sql:/docker-entrypoint-initdb/10-init.sql
@@ -16,8 +18,8 @@ services:
    - ./charles:/app
    - ./scripts:/usr/src/app/scripts
   env_file:
-   - ./env/.local.env
-  command: ./scripts/local/run.sh
+   - ./env/.dev.env
+  command: ./scripts/dev/run.sh
  jeangrey:
   build: ./jeangrey/
   restart: always
@@ -29,8 +31,8 @@ services:
   depends_on:
    - postgres
   env_file:
-   - ./env/.local.env
-  command: ./scripts/local/run.sh
+   - ./env/.dev.env
+  command: ./scripts/dev/run.sh
  worker:
   build: ./worker/
   restart: always
@@ -42,8 +44,8 @@ services:
   depends_on:
    - postgres
   env_file:
-   - ./env/.local.env
-  command: ./scripts/local/run.sh
+   - ./env/.dev.env
+  command: ./scripts/dev/run.sh
  inventory:
   build: ./inventory/
   restart: always
@@ -55,8 +57,8 @@ services:
   depends_on:
    - postgres
   env_file:
-   - ./env/.local.env
-  command: ./scripts/local/run.sh
+   - ./env/.dev.env
+  command: ./scripts/dev/run.sh
  core:
   build: ./core/
   restart: always
@@ -66,5 +68,5 @@ services:
    - ./core:/app
    - ./scripts:/usr/src/app/scripts
   env_file:
-   - ./env/.local.env
-  command: ./scripts/local/run.sh
+   - ./env/.dev.env
+  command: ./scripts/dev/run.sh
