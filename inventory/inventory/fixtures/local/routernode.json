@@ -1,0 +1,2 @@
+[{"pk":"1", "model": "inventory.routernode", "fields": {"name":"RAC-CENTRO", "device_type" : "RouterNode", "mgmt_ip" : "10.120.14.106", "model" : "mx104", "location" : 1, "private_wan_ip" : "100.64.0.1", "vendor" : "juniper","loopback":"10.120.104.1"}},
+{"pk":"2", "model": "inventory.routernode", "fields" : {"name":"LAB-HOR", "device_type":"RouterNode", "mgmt_ip" : "10.120.80.61", "model" : "mx104", "location" : 2, "private_wan_ip" : "100.64.0.1", "vendor" : "juniper","loopback":"10.120.104.1"}}]

@@ -12,7 +12,7 @@ ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', '
 VPLS_SERVICES = ['vpls']
 
 # Error codes 54X
-ERR520 = 540
+ERR540 = 540
 ERR541 = 541 # No public networks available
 ERR544 = 542 # No WAN networks available
 ERR543 = 543 # No MGMT networks available
