@@ -131,17 +131,23 @@ def authenticate_ldap(username, password):
 	# Authenticate user
 	base = "dc=lab,dc=fibercorp,dc=com,dc=ar"
 	scope = ldap.SCOPE_SUBTREE
-	filter = "(sAMAccountName=" + username + ")"
+	filter = "(userPrincipalName=" + username + ")"
 	attrs = ["sAMAccountName"]
 	r = l.search_s(base, scope, filter, attrs)
 	user_dn = r[0][0]
 
+	if user_dn is None:
+		return None
+
+	print(user_dn, password)
+
 	try:
-		l.simple_bind_s(user_dn, password)
+		print(l.simple_bind_s(user_dn, password))
 		username = r[0][1]['sAMAccountName'][0].decode("utf-8")
 		user = User(username=username, is_active=True)	
+		return user
 
 	except ldap.INVALID_CREDENTIALS:
 		return None
 			
-	return user
+	
