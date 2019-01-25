@@ -47,8 +47,7 @@ class ServiceView(View):
         if service_id is not None:
             url = os.getenv('JEAN_GREY_URL') + "services/"+ str(service_id)
         else:
-            url = os.getenv('JEAN_GREY_URL') + "services"
-
+            url = settings.JEAN_GREY_URL + "services"
             if state is not None:
                 url += "?state=" + state
             elif service_type is not None:
