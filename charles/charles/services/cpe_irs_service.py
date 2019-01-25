@@ -165,9 +165,10 @@ def bb_parameters(client, service):
     """
     if service['logical_unit_id'] is None:
       free_logical_units = get_free_logical_units(router_node['id'])
-      if (free_logical_units == 524):
+      if free_logical_units is None:
           logging.warning('No available logical units')
-          return free_logical_units
+          parameters['status'] = ERR_NO_LOGICALUNITS
+          return parameters
       else:
           logical_unit_id = free_logical_units[0]['logical_unit_id']
           client_network = get_client_network(client['name'], service['id'], service['prefix'])
@@ -175,7 +176,8 @@ def bb_parameters(client, service):
               add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
           else:
               logging.warning('No public networks available')
-              return ERR541
+              parameters['status'] = ERR_NO_PUBLICNETWORKS
+              return parameters
 
       wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
 
@@ -200,6 +202,8 @@ def bb_parameters(client, service):
                                   'mgmt_ip': router_node['mgmt_ip']
                                 }
 
+    parameters['status'] = ONSA_OK
+
     return parameters
 
 
@@ -210,13 +214,17 @@ def cpe_parameters(client, service):
   parameters = {}
   
   if service['client_port_id'] is None:
-    customer_location = get_customer_location(client['id'],service['customer_location_id']) 
-    client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)
-    if (client_port_id == 523):
-      return client_port_id
-    else:
-      client_port = get_client_port(service['client_node_sn'], client_port_id)
-      parameters['client_port_id'] = client_port_id
+    customer_location = get_customer_location(client['id'],service['customer_location_id'])
+    #TODO ERROR CUSTOMER LOCATION
+
+    try:
+      client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)
+    except ValueError as err:
+      logging.error(err)
+      return ERR_NO_CLIENTPORTS
+      
+    client_port = get_client_port(service['client_node_sn'], client_port_id)
+    parameters['client_port_id'] = client_port_id
 
   else:
     client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
