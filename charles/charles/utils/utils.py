@@ -1,7 +1,9 @@
-from django.conf import settings
 from pprint import pprint
+from charles.constants.constants import *
 import requests
 import json
+import os
+
 
 def configure_service(config):
     url = os.getenv('WORKER_URL') + "services"
@@ -170,10 +172,10 @@ def get_free_logical_units(router_node_id):
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
-    if (r.status_code == 200):
+    if (r.status_code == HTTP_200_OK):
         return r.json()
     else:
-        return r.status_code
+        return None
 
 def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id):
     url= os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits"
@@ -191,7 +193,7 @@ def get_free_access_port(location_id):
     url= os.getenv('INVENTORY_URL') + "locations/"+ str(location_id) + "/accessports?used=false"
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
-    if (r.status_code == 200):
+    if (r.status_code == HTTP_200_OK):
         return r.json()
     else:
         return r.status_code
@@ -232,7 +234,7 @@ def get_free_vlan_tag(access_port_id):
     url= os.getenv('INVENTORY_URL') + "accessnodes/"+ str(access_port_id) + "/vlantags?used=false"
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
-    if (r.status_code == 200):
+    if (r.status_code == HTTP_200_OK):
         return r.json()
     else:
         return r.status_code
@@ -290,7 +292,7 @@ def vrf_exists_in_location(vrf_id,location_id):
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
-    if (r.status_code == 200):
+    if (r.status_code == HTTP_200_OK):
         return r.json()['exists']
     else:
         return r.status_code
@@ -313,11 +315,10 @@ def get_free_cpe_port(client_node_sn):
     url= os.getenv('INVENTORY_URL') + "clientnodes/" + str(client_node_sn) + "/clientports?used=False"
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
-    
-    if (r.status_code == 200):
+    if r.status_code == ONSA_OK:
         return r.json()
     else:
-        return r.status_code
+        return None
 
 def update_cpe(client_node_sn, data):
     url = os.getenv('INVENTORY_URL') + "clientnodes/" + str(client_node_sn)
@@ -564,13 +565,12 @@ def fetch_cpe_port_id(client_node_sn, client_name, customer_location):
     mark it as a used port.
     """
     cpe_port = get_free_cpe_port(client_node_sn)
-    if (cpe_port == 523):
-        return cpe_port
+    if cpe_port == []:
+        raise ValueError("Error - no client port available")
     else:
         cpe_port_id = cpe_port['id']
         #Assign CPE Port (mark as used)
         use_port(client_node_sn, cpe_port_id)
-
         return cpe_port_id
 
 

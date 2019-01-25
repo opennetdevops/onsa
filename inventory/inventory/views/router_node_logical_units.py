@@ -11,7 +11,6 @@ import json
 
 # ONSA imports
 from inventory.models import RouterNode, LogicalUnit
-from inventory.constants import *
 
 
 class RouterNodeLogicalUnitsView(View):
@@ -27,8 +26,6 @@ class RouterNodeLogicalUnitsView(View):
             all_lus = LogicalUnit.objects.filter(router_nodes=router_node).values()
         elif used == 'False':
             all_lus = LogicalUnit.objects.exclude(router_nodes=router_node).values()
-            if list(all_lus) == []:
-                return HttpResponse(status=ERR525)
         else:
             all_lus = LogicalUnit.objects.all().values()
         return JsonResponse(list(all_lus), safe=False)

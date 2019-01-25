@@ -1,4 +1,4 @@
-from django.conf import settings
+import os
 import requests
 from pprint import pprint
 import json

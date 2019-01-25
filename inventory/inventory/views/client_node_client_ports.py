@@ -2,10 +2,7 @@ from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.views import View
 import json
-
 from inventory.models import ClientNodePort, ClientNode
-from inventory.constants import *
-
 
 class ClientNodeClientPortsView(View):
     def get(self, request, client_node_sn, client_port_id=None):
@@ -16,10 +13,7 @@ class ClientNodeClientPortsView(View):
             if used is True:
                 client_ports = ClientNodePort.objects.filter(client_node=client_node_sn, used=used).values()                
             else:
-                client_ports = ClientNodePort.objects.filter(client_node=client_node_sn).values()
- 
-                if list(client_ports) == []:
-                    return HttpResponse(status=ERR523)                  
+                client_ports = ClientNodePort.objects.filter(client_node=client_node_sn).values()               
             
             return JsonResponse(list(client_ports), safe=False)
 

@@ -131,7 +131,6 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
 
 
 
-@unittest.skip("testing irs")
 class TestCpeMplsManualServiceMethods(unittest.TestCase):
 
     @classmethod
@@ -183,31 +182,31 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
         self.assertEqual(service_manual['service_state'], "in_construction")
 
 
-    def test_002_manual_from_in_construction_to_bb_data_ack(self):
-        push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "bb_data_ack")
-        service = get_service(self.cpe_mpls_manual_service_id)
-        self.assertEqual(service['service_state'], "bb_data_ack")
+    # def test_002_manual_from_in_construction_to_bb_data_ack(self):
+    #     push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "bb_data_ack")
+    #     service = get_service(self.cpe_mpls_manual_service_id)
+    #     self.assertEqual(service['service_state'], "bb_data_ack")
 
-    def test_003_manual_from_bb_data_ack_to_bb_activated(self):
-        push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "bb_activated")
-        service = get_service(self.cpe_mpls_manual_service_id)
-        self.assertEqual(service['service_state'], "bb_activated")
+    # def test_003_manual_from_bb_data_ack_to_bb_activated(self):
+    #     push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "bb_activated")
+    #     service = get_service(self.cpe_mpls_manual_service_id)
+    #     self.assertEqual(service['service_state'], "bb_activated")
 
-    def test_004_manual_from_bb_activated_to_cpe_data_ack(self):
-        push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "cpe_data_ack")
-        service = get_service(self.cpe_mpls_manual_service_id)
-        self.assertEqual(service['service_state'], "cpe_data_ack")
+    # def test_004_manual_from_bb_activated_to_cpe_data_ack(self):
+    #     push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "cpe_data_ack")
+    #     service = get_service(self.cpe_mpls_manual_service_id)
+    #     self.assertEqual(service['service_state'], "cpe_data_ack")
 
-    def test_005_manual_from_cpe_data_ack_to_service_activated(self):
-        push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "service_activated")
-        service = get_service(self.cpe_mpls_manual_service_id)
-        self.assertEqual(service['service_state'], "service_activated")
-
-
+    # def test_005_manual_from_cpe_data_ack_to_service_activated(self):
+    #     push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "service_activated")
+    #     service = get_service(self.cpe_mpls_manual_service_id)
+    #     self.assertEqual(service['service_state'], "service_activated")
 
 
 
 
+
+@unittest.skip("testing irs")
 class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
     @classmethod
@@ -339,7 +338,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
 
 
-
+@unittest.skip("testing irs")
 class TestCpeIrsManualServiceMethods(unittest.TestCase):
 
     @classmethod

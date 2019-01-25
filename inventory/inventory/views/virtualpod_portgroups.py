@@ -10,7 +10,7 @@ import json
 
 # ONSA imports
 from inventory.models import VirtualVmwPod, Portgroup
-from inventory.constants import *
+
 
 
 class VirtualpodPortgroupsView(View):
@@ -26,8 +26,6 @@ class VirtualpodPortgroupsView(View):
             all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=used).values()
         elif used == 'False':
             all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod, used=used).values()
-            if list(all_pgs) == []:
-                return HttpResponse(status=ERR526)
         else:
             all_pgs = Portgroup.objects.filter(vmw_pod=virtual_pod).values()
         return JsonResponse(list(all_pgs), safe=False)
