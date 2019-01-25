@@ -1,22 +1,24 @@
 from django.conf import settings
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
-from django.views import View
-from enum import Enum
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.views import APIView
+
 import json
 import requests
 import logging
-import coloredlogs
+
 from pprint import pprint
+from enum import Enum
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 AS_SERVICES = ['cpe_mpls']
 CLIENT_NETWORK_SERVICES = ['cpeless_mpls']
 PREFIX_SERVICES = ['cpeless_irs', 'vcpe_irs', 'cpeless_mpls']
 
-coloredlogs.install()
-
-class ServiceActivationView(View):
+class ServiceActivationView(APIView):
 	
 	def post(self, request, service_id):
 		logging.basicConfig(level=logging.INFO)
@@ -41,7 +43,7 @@ class ServiceActivationView(View):
 		return True if cpe else False
 	
 	def _get_cpe(self, sn):
-		url = os.getenv('INVENTORY_URL') + "clientnodes/" + str(sn)
+		url = settings.INVENTORY_URL + "clientnodes/" + str(sn)
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -51,7 +53,7 @@ class ServiceActivationView(View):
 			return None	
 
 	def update_service(self, service_id, data):
-		url = os.getenv('JEAN_GREY_URL') + "services/" + str(service_id)
+		url = settings.JEAN_GREY_URL + "services/" + str(service_id)
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -61,7 +63,7 @@ class ServiceActivationView(View):
 			return None
 
 	def push_service_to_orchestrator(self, service_id, deployment_mode, target_state):
-		url = os.getenv('CHARLES_URL') + "services"
+		url = settings.CHARLES_URL + "services"
 
 		rheaders = { 'Content-Type': 'application/json' }	
 		data = { "service_id": service_id, "deployment_mode": deployment_mode, "target_state": target_state }	

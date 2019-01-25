@@ -18,6 +18,9 @@ class Login extends React.Component {
       password: ''
     };
   }
+  componentDidMount() {
+		sessionStorage.clear()
+	}
 
   handleChange = (event) => {
 
@@ -28,21 +31,31 @@ class Login extends React.Component {
   }
 
   handleSubmit = (event) => {
-    // event.preventDefault()
-    // const data = { "email": this.state.email,
-    //                "password": this.state.password };
+    event.preventDefault()
+    const data = { "username": this.state.email,
+                   "password": this.state.password };
 
-    // fetch("http://localhost:8000/core/api/clients",
-    //   {
-    //     method: "POST",
-    //     mode: "cors", 
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(data)
-    //   })
-    //   .then(response => response.json())
-    //   .then(myJson => console.log(myJson))
+    fetch("http://localhost:8000/core/api/login",
+      {
+        method: "POST",
+        mode: "cors", 
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(myJson => {
+        let token = myJson['token']
+        if (token !== undefined) {
+          sessionStorage.setItem('token', token)
+        }
+        else {
+          sessionStorage.setItem('token', null)
+        }  
+      })
+
+
     this.props.history.push('/dashboard');
   }
 

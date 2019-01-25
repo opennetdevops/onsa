@@ -25,7 +25,7 @@ class VlansView(View):
 		pass
 
 	def _get_free_vlan_tag(self, access_node_id, used):
-		url = os.getenv('INVENTORY_URL') + "accessnodes/"+ str(access_node_id) + "/vlantags?used=" + used
+		url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=" + used
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -66,7 +66,7 @@ class LogicalUnitsView(View):
 		pass
 
 	def _get_location(self, location_name):
-		url = os.getenv('INVENTORY_URL') + "locations?name="+ location_name
+		url = settings.INVENTORY_URL + "locations?name="+ location_name
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -76,7 +76,7 @@ class LogicalUnitsView(View):
 		    return None
 
 	def _get_router_node(self, location_id):
-		url= os.getenv('INVENTORY_URL') + "locations/" + str(location_id) + "/routernodes"
+		url= settings.INVENTORY_URL + "locations/" + str(location_id) + "/routernodes"
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -86,7 +86,7 @@ class LogicalUnitsView(View):
 			return None
 
 	def _get_free_logical_units(self, router_node_id):
-		url = os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits?used=false"
+		url = settings.INVENTORY_URL + "routernodes/" + str(router_node_id) + "/logicalunits?used=false"
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -97,7 +97,7 @@ class LogicalUnitsView(View):
 			return None
 
 	def _add_logical_unit_to_router_node(self, router_node_id,logical_unit_id, product_id):
-		url = os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits"
+		url = settings.INVENTORY_URL + "routernodes/" + str(router_node_id) + "/logicalunits"
 		rheaders = {'Content-Type': 'application/json'}
 		data = {"logical_unit_id":logical_unit_id, "product_id": product_id}
 		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -110,7 +110,7 @@ class LogicalUnitsView(View):
 class LocationsView(View):
 	def get(self, request):
 		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(os.getenv('INVENTORY_URL') + "locations", auth = None, verify = False, headers = rheaders)
+		response = requests.get(settings.INVENTORY_URL + "locations", auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
 
 		return JsonResponse(json_response, safe=False)
@@ -127,7 +127,7 @@ class LocationsView(View):
 
 class CustomerLocationsView(View):
 	def get(self, request, client_id, customer_location_id=None):
-		url = os.getenv('JEAN_GREY_URL') + "clients/" + str(client_id) + "/customerlocations"
+		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
 
 		if customer_location_id is not None:
 			url += "/" + str(customer_location_id)
@@ -141,7 +141,7 @@ class CustomerLocationsView(View):
 
 	def post(self, request, client_id):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-		url = os.getenv('JEAN_GREY_URL') + "clients/" + str(client_id) + "/customerlocations"
+		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
 		rheaders = {'Content-Type': 'application/json'}	
 		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -151,7 +151,7 @@ class CustomerLocationsView(View):
 class VrfsView(View):
 	def get(self, request):
 		client = request.GET.get('client')
-		url = os.getenv('INVENTORY_URL') + "vrfs"
+		url = settings.INVENTORY_URL + "vrfs"
 
 		if client is not None:
 			url += "?client=" + client
@@ -193,7 +193,7 @@ class VrfsView(View):
 		pass
 
 	def _request_vrf(self):
-		url = os.getenv('INVENTORY_URL') + "vrfs?used=False"
+		url = settings.INVENTORY_URL + "vrfs?used=False"
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)[0]
@@ -204,7 +204,7 @@ class VrfsView(View):
 			return None
 
 	def _update_vrf(self, vrf_id, client, name, description):
-		url = os.getenv('INVENTORY_URL') + "vrfs/" + str(vrf_id)
+		url = settings.INVENTORY_URL + "vrfs/" + str(vrf_id)
 		rheaders = {'Content-Type': 'application/json'}		
 		data = { "client": client,
 			     "name": name,
@@ -222,7 +222,7 @@ class VrfsView(View):
 			return None
 
 	def _get_location(self, location):
-		url = os.getenv('INVENTORY_URL') + "locations?name="+ location
+		url = settings.INVENTORY_URL + "locations?name="+ location
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -232,7 +232,7 @@ class VrfsView(View):
 			return None
 
 	def _add_location_to_vrf(self, vrf_id, location_id):
-		url = os.getenv('INVENTORY_URL') + "vrfs/" + str(vrf_id) + "/locations/" + str(location_id)
+		url = settings.INVENTORY_URL + "vrfs/" + str(vrf_id) + "/locations/" + str(location_id)
 		rheaders = {'Content-Type': 'application/json'}		
 		response = requests.put(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -243,7 +243,7 @@ class VrfsView(View):
 			return None
 	
 	def _attach_vrf_to_product(self, vrf_id, product_id):	
-		url = os.getenv('INVENTORY_URL') + "products/" + str(product_id)
+		url = settings.INVENTORY_URL + "products/" + str(product_id)
 		data = {"vrf_id": vrf_id }
 		rheaders = {'Content-Type': 'application/json'}		
 		response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -258,7 +258,7 @@ class VrfsView(View):
 class ClientView(View):
 	def get(self, request, client_id=None):
 
-		url = os.getenv('JEAN_GREY_URL') + "clients"
+		url = settings.JEAN_GREY_URL + "clients"
 		name = request.GET.get('name', None)
 
 		if client_id is not None:
@@ -275,7 +275,7 @@ class ClientView(View):
 		
 	def post(self, request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-		url = os.getenv('JEAN_GREY_URL') + "clients"
+		url = settings.JEAN_GREY_URL + "clients"
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)
@@ -291,7 +291,7 @@ class ClientView(View):
 
 class ClientCustomerLocationAccessPortsView(View):
 	def get(self, request, client_id, customer_location_id):
-		url = os.getenv('JEAN_GREY_URL') + "clients/" + str(client_id) + "/customerlocations/" + str(customer_location_id) + "/accessports"
+		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations/" + str(customer_location_id) + "/accessports"
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.get(url, auth = None, verify = False, headers = rheaders)
 		json_response = json.loads(response.text)

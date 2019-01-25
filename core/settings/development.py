@@ -169,7 +169,6 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:9000'
 )
 
-
 # ONSA Variables
 JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"
 CHARLES_URL = "http://charles:8000/charles/api/"

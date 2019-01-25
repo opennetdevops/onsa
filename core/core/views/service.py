@@ -1,10 +1,15 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-from django.views import View
-from enum import Enum
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.views import APIView
+
 import json
 import requests
+
 from core.utils.utils import *
+from enum import Enum
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 IRS_SERVICES = ['cpeless_irs', 'cpe_irs', 'vcpe_irs']
@@ -17,7 +22,7 @@ AN_STATES = ['an_data_ack', 'an_activation_in_progress']
 
 
 def delete_charles_service(service_id):
-    url = os.getenv('CHARLES_URL') + "services/"  + str(service_id)
+    url = settings.CHARLES_URL + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -27,7 +32,7 @@ def delete_charles_service(service_id):
         return None
 
 def delete_jeangrey_service(service_id):
-    url = os.getenv('JEAN_GREY_URL') + "services/"  + str(service_id)
+    url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -36,18 +41,19 @@ def delete_jeangrey_service(service_id):
     else:
         return None
 
+class ServiceView(APIView):
 
-class ServiceView(View):
+    authentication_classes = ([JSONWebTokenAuthentication,])
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, service_id=None):
         state = request.GET.get('state', None)
         service_type = request.GET.get('type', None)
 
         if service_id is not None:
-            url = os.getenv('JEAN_GREY_URL') + "services/"+ str(service_id)
+            url = settings.JEAN_GREY_URL + "services/"+ str(service_id)
         else:
-            url = os.getenv('JEAN_GREY_URL') + "services"
-
+            url = settings.JEAN_GREY_URL + "services"
             if state is not None:
                 url += "?state=" + state
             elif service_type is not None:
@@ -62,7 +68,7 @@ class ServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        url = os.getenv('JEAN_GREY_URL') + "services"
+        url = settings.JEAN_GREY_URL + "services"
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)
@@ -71,7 +77,7 @@ class ServiceView(View):
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        url = os.getenv('JEAN_GREY_URL') + "services/" + str(service_id)
+        url = settings.JEAN_GREY_URL + "services/" + str(service_id)
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)
@@ -83,15 +89,15 @@ class ServiceView(View):
         data = {"Message" : "Service deleted successfully"}
         return JsonResponse(data)
 
-class ServiceResourcesView(View):
-    def get(self, request, service_id=None):
+class ServiceResourcesView(APIView):
+    authentication_classes = ([JSONWebTokenAuthentication,])
+    permission_classes = (IsAuthenticated,)
 
+    def get(self, request, service_id=None):
         if service_id is not None:
             service = get_service(service_id)
             json_response = self.get_resources(service)
-
         return JsonResponse(json_response, safe=False)
-
 
     def get_resources(self, service):
 
@@ -137,10 +143,6 @@ class ServiceResourcesView(View):
                 client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
                 resources['client_node']['client_port'] = client_port['interface_name']           
 
-
-             
- 
-        
         return resources
 
 
