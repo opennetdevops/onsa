@@ -2,13 +2,13 @@ from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
 
 import json
 import requests
 
 from core.utils.utils import *
+from core.views.ldap_jwt import *
 from enum import Enum
 
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
@@ -43,7 +43,7 @@ def delete_jeangrey_service(service_id):
 
 class ServiceView(APIView):
 
-    authentication_classes = ([JSONWebTokenAuthentication,])
+    authentication_classes = ([JSONWebTokenLDAPAuthentication,])
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, service_id=None):

@@ -116,6 +116,34 @@ def get_customer_location(client_id, cl_id):
 	return json_response
 
 def authenticate_ldap(username, password):
+	l = init_ldap()
+
+	r = search_user_ldap(l,username)
+
+	user_dn = r[0][0]
+	if user_dn is None:
+		return None
+
+	try:
+		l.simple_bind_s(user_dn, password)
+		username = r[0][1]['userPrincipalName'][0].decode("utf-8")
+		
+		return User(username=username, is_active=True)	
+
+	except ldap.INVALID_CREDENTIALS:
+		return None
+
+def search_user_ldap(l, username):
+	# Authenticate user
+	base = "dc=lab,dc=fibercorp,dc=com,dc=ar"
+	scope = ldap.SCOPE_SUBTREE
+	filter = "(userPrincipalName=" + username + ")"
+	attrs = ["userPrincipalName"]
+	r = l.search_s(base, scope, filter, attrs)
+	
+	return r
+
+def init_ldap():
 	host = "ldap://10.120.78.5"
 	dn = "cn=fc__netauto,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fibercorp,dc=com,dc=ar"
 	passw = 'F1b3rc0rp!'
@@ -124,30 +152,19 @@ def authenticate_ldap(username, password):
 	l = ldap.initialize(host)
 	l.set_option(ldap.OPT_REFERRALS, 0)
 	l.protocol_version = 3
-	
+
 	# Bind query user
 	l.simple_bind_s(dn,passw)
 
-	# Authenticate user
-	base = "dc=lab,dc=fibercorp,dc=com,dc=ar"
-	scope = ldap.SCOPE_SUBTREE
-	filter = "(userPrincipalName=" + username + ")"
-	attrs = ["sAMAccountName"]
-	r = l.search_s(base, scope, filter, attrs)
+	return l
+
+def search_user(username):
+	l = init_ldap()
+
+	r = search_user_ldap(l,username)
 	user_dn = r[0][0]
 
 	if user_dn is None:
 		return None
-
-	print(user_dn, password)
-
-	try:
-		print(l.simple_bind_s(user_dn, password))
-		username = r[0][1]['sAMAccountName'][0].decode("utf-8")
-		user = User(username=username, is_active=True)	
-		return user
-
-	except ldap.INVALID_CREDENTIALS:
-		return None
-			
-	
+	else:
+		return User(username=username, is_active=True)

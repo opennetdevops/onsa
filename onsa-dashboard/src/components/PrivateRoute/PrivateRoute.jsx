@@ -4,12 +4,11 @@ import { Route, Redirect } from 'react-router-dom';
 const PrivateRoute = ({ component: Component, ...attributes }) => (
     <Route {...attributes} render={(props) => {
       let token = sessionStorage.getItem('token');
-      console.log(token)
-      if (token !== null) {
-        return <Component {...props} displayNavbar={attributes.displayNavbar} />
+      if (token === null) {
+        return <Redirect to='/login' />
       }
       else {
-        return <Redirect to='/login' />
+        return <Component {...props} displayNavbar={attributes.displayNavbar} />
       }          
       }}/>
   )

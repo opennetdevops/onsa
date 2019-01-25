@@ -46,17 +46,16 @@ class Login extends React.Component {
       })
       .then(response => response.json())
       .then(myJson => {
-        let token = myJson['token']
-        if (token !== undefined) {
-          sessionStorage.setItem('token', token)
+        if ('token' in myJson) {
+          sessionStorage.setItem('token', myJson['token'])
         }
-        else {
-          sessionStorage.setItem('token', null)
-        }  
+      })
+      .then(() => {
+        this.props.history.push('/dashboard');
       })
 
 
-    this.props.history.push('/dashboard');
+    
   }
 
   render() {
