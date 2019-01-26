@@ -1,4 +1,4 @@
-import { Login, Dashboard, ServiceCreate, ServiceModify, Customers, CustomersLocations, ProjectCreate, ProjectAccessPort, ProjectLogicalUnit, ProjectVrf } from '../views';
+import { Login, Dashboard, ServiceCreate, ServiceModify, Customers, CustomersLocations, ProjectCreate, ProjectAccessPort, ProjectLogicalUnit, ProjectVrf } from '../pages';
 
 var publicRoutes = [{ path: "/login", name: "Login", component: Login }];
 

@@ -2,6 +2,7 @@ import React from 'react'
 
 import signInIcon from '../images/onsa-logo.png'
 import { Form, FormInput } from '../components/Form';
+import { Alert } from 'reactstrap';
 
 
 const spanStlye = {
@@ -49,18 +50,21 @@ class Login extends React.Component {
         if ('token' in myJson) {
           sessionStorage.setItem('token', myJson['token'])
         }
+        else {
+          sessionStorage.setItem('token', 'invalid')
+        }
       })
       .then(() => {
         this.props.history.push('/dashboard');
       })
-
-
     
   }
 
   render() {
 
     return (
+      <React.Fragment>
+      <div>{ sessionStorage.getItem('token') === 'invalid' ? <Alert color="danger"><strong>Error!</strong> Invalid credentials.</Alert> : null}</div>
       <div className="text-center form-div">
         <Form className="form-signin" onSubmit={this.handleSubmit}>
           <img className="mb-1" src={signInIcon} alt="" width="327" height="147"/>
@@ -71,6 +75,7 @@ class Login extends React.Component {
           <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </Form>
       </div>
+      </React.Fragment>
     );
   }
 
