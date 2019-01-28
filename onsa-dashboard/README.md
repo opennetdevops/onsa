@@ -12,15 +12,15 @@ This app is built with React library from Facebook. It provides flexibility such
 
 The project was build with `npx create-react-app myapp` command where you have some default folders and files.
 
-* public/ : where basically is the main .html file.
-* src/: where all your JavaScript code lives.
-    * components/ : stores all hand-made components.
-    * css/ : stores all css files. In this case there's only one.
-    * images/ : every image used should be in here.
-    * middleware/ : every piece of code that interacts with the outside world. Mainly networking functions.
-    * pages/ : this folder is important. Since in React there's only one real html page and you render components in it in any way you like, you can still have pages where the user navigates. Each page is modeled as a stateful component.
-    * routes/ : this folder stores the routes of the application. In it private and public routes can be found. Public routes do not need any kind of protection in comparison with private routes, where there's a protection (PrivateRoute component gives this functionality).
-    * App.js : is the main application component. Might need to pay attention to it in some cases.
+* `public/`: Where basically the main .html file is located.
+* `src/`: Where all your JavaScript code lives.
+    * `components/`: Stores all hand-made components.
+    * `css/`: Stores all css files. In this case there's only one.
+    * `images/`: Every image used should be in here.
+    * `middleware/`: Every piece of code that interacts with the outside world. Mainly networking functions.
+    * `pages/`: this folder is important. Since in React there's only one real html page and you render components in it in any way you like, you can still have pages where the user navigates. Each page is modeled as a stateful component.
+    * `routes/`: This folder stores the routes of the application. In it private and public routes can be found. Public routes do not need any kind of protection in comparison with private routes, where there's a protection (PrivateRoute component gives this functionality).
+    * `App.js`: Main application component. Might need to pay attention to it in some cases.
 
 ### Environment files
 
@@ -97,6 +97,6 @@ To add a new dependency, `npm install -s <dependency>`.
 
 In order for the app to grow some points should be considered.
 
-* React-redux: If the app continous to grow, the state of an app can be quit messy so there must be an integration with Redux to store and handle the state of the app.
-* GraphQL: The code should be as clean as possible and it should not be modified to change random things, such as the title. To solve this a GraphQL server should be running somewhere so that the app can query resources that may change periodically.
-* SASS or LESS: If CSS continous growing some new technologies like SASS or LESS should be taken into consideration.
+* `react-redux`: If the app continous to grow, the state of an app can be quit messy so there must be an integration with Redux to store and handle the state of the app.
+* `graphql`: The code should be as clean as possible and it should not be modified to change random things, such as the title. To solve this a GraphQL server should be running somewhere so that the app can query resources that may change periodically.
+* `sass/less`: If CSS continous growing some new technologies like SASS or LESS should be taken into consideration.
