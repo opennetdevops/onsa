@@ -16,9 +16,11 @@ class ClientView(View):
             else:
                 s = Client.objects.filter(name=name).values()[0]
                 return JsonResponse(s, safe=False)
-        else:
+        elif Client.objects.filter(pk=client_id).count() is not 0:
             s = Client.objects.filter(pk=client_id).values()[0]
             return JsonResponse(s, safe=False)
+        else:
+            return JsonResponse({'message':"Not found"}, status=404)
         
 
     def post(self, request):
