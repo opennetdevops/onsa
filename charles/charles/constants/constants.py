@@ -29,16 +29,15 @@ ERR549 = 529 # TBD
 
 
 ### Inventory constants
-
 # Error codes 52X
 ERR520 = 520
-ERR521 = 521 # No free access ports left at specific access node
-ERR522 = 522 # No free vlans left at specific access node
+ERR_NO_ACCESSPORTS = 521 # No free access ports left at specific access node
+ERR_NO_VLANS = 522 # No free vlans left at specific access node
 ERR_NO_CLIENTPORTS = 523 # No free client ports left at specific client node
-ERR524 = 524 # No free VRF lefts
+ERR_NO_VRFS = 524 # No free VRF lefts
 ERR_NO_LOGICALUNITS = 525 # No free logical units left at specific router node
-ERR526 = 526 # No free portgroups left at specific pod
-ERR527 = 527 # TBD
-ERR528 = 528 # TBD
-ERR529 = 529 # TBD
+ERR_NO_PORTGROUPS = 526 # No free portgroups left at specific pod
+ERR_NO_CUSTOMERLOCATION = 527 # No customer location
+ERR_INVALID_LOCATION = 528 # TBD
+ERR_NO_ROUTERNODE = 529 # TBD
 

@@ -1,5 +1,6 @@
 from pprint import pprint
 from charles.constants.constants import *
+from charles.exceptions import *
 import requests
 import json
 import os
@@ -537,10 +538,23 @@ def create_client(client_name):
     else:
         return None
 
-
-def create_core_service(data):
-    url = os.getenv('CORE_URL') +"services" 
+def login_core():
+    url = os.getenv('CORE_URL') +"login" 
     rheaders = {'Content-Type': 'application/json'}
+    data = {"username":"fc__netauto@lab.fibercorp.com.ar", "password":"F1b3rc0rp!"}
+    print(data)
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    print(json_response)
+    
+    if json_response:
+        return json_response['token']
+    else:
+        return None
+
+def create_core_service(data, token):
+    url = os.getenv('CORE_URL') +"services" 
+    rheaders = {'Content-Type': 'application/json', 'Authorization': "Bearer " + token}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     
@@ -566,7 +580,7 @@ def fetch_cpe_port_id(client_node_sn, client_name, customer_location):
     """
     cpe_port = get_free_cpe_port(client_node_sn)
     if cpe_port == []:
-        raise ValueError("Error - no client port available")
+        raise ClientPortException("")
     else:
         cpe_port_id = cpe_port['id']
         #Assign CPE Port (mark as used)

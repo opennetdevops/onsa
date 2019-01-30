@@ -10,7 +10,8 @@ from charles.utils.utils import *
 def create_mock_service(service_type, service_id, data):
     data['service_type'] = service_type
     data['id'] = service_id
-    create_core_service(data)
+    token = login_core()
+    create_core_service(data, token)
 
 
 @unittest.skip("testing irs")
