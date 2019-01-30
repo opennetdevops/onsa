@@ -1,25 +1,17 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from jeangrey.models.models import *
-from jeangrey.models import models
-from jeangrey.utils.utils import *
-from enum import Enum
+from jeangrey.models import *
+from jeangrey.utils import *
+import jeangrey.models as models
+
 import json
 import requests
+import logging
+import coloredlogs
 
-VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
-ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs']
-VPLS_SERVICES = ['vpls']
-PROJECT_SERVICES = ['projects']
-
-class ServiceTypes(Enum):
-    cpeless_irs = "CpelessIrs"
-    cpe_irs = "CpeIrs"
-    cpeless_mpls = "CpelessMpls"
-    cpe_mpls = "CpeMpls"
-    vcpe_irs = "VcpeIrs"
-    vpls = "Vpls"
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class ServiceView(View):
 
@@ -40,7 +32,7 @@ class ServiceView(View):
 
         if service_type is not None:
             if service_type in ALL_SERVICES:
-                ServiceClass = getattr(models, ServiceTypes[service_type].value)
+                ServiceClass = getattr(models, ServiceTypes[service_type])
                 services = ServiceClass.objects.filter(service_type=service_type).values()
                 return JsonResponse(list(services), safe=False)
 
@@ -73,68 +65,72 @@ class ServiceView(View):
 
         else:
             s = Service.objects.filter(pk=service_id).values()[0]
-            ServiceClass = getattr(models, ServiceTypes[s['service_type']].value)
+            ServiceClass = getattr(models, ServiceTypes[s['service_type']])
             s = ServiceClass.objects.filter(pk=service_id).values()[0]
             return JsonResponse(s, safe=False)
 
-    #Pre: JSON with following format
-    # { 
-    #  "location": "LAB",
-    #  "client": "client01",
-    #  "service_type": "cpeless_irs",
-    #  "id": "SVC001",
-    #  "bandwidth": "10",
-    #  "prefix":"29",
-    #  "vrf_name" : '' // xPLS
-    #  "client_network" : "192.168.0.0" // MPLS L3
-    # }
-    #
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
         client_name = data.pop('client')
         client = Client.objects.get(name=client_name)
+
+        try:        
+            location = data.pop('location')
+            location_id = get_location_id(location)
+            router_node = get_router_node(location_id)
+
+            if "access_port_id" not in data.keys():
+                access_port = get_free_access_port(location_id)           
+                access_port_id = str(access_port['id'])
+                use_port(access_port_id)
+            else:
+                access_port_id = data['access_port_id']
+                access_port = get_access_port(access_port_id)
+
+            access_node_id = str(access_port['access_node_id'])
+
+            vlan = get_free_vlan(access_node_id)
+            use_vlan(access_node_id, vlan['vlan_tag'])
+    
+            data['location_id'] = location_id
+            data['router_node_id'] = router_node['id']
+            data['access_port_id'] = access_port_id
+            data['client_id'] = client.id
+            data['vlan_id'] = vlan['vlan_tag']
+            data['access_node_id'] = access_node_id
+            data['customer_location_id'] = int(data['customer_location_id'])
+
+            ServiceClass = getattr(models, ServiceTypes[data['service_type']])
+
+            service = ServiceClass.objects.create(**data)
+            service.service_state = "in_construction"
+            service.save()
+            response = { "message": "Service requested" }
+
+            return JsonResponse(response)
         
-        location = data.pop('location')
-        location_id = get_location_id(location)
-        router_node = get_router_node(location_id)
-
-        if "access_port_id" not in data.keys():
-            access_port = get_free_access_port(location_id)           
-            access_port_id = str(access_port['id'])
-            use_port(access_port_id)
-        else:
-            access_port_id = data['access_port_id']
-            access_port = get_access_port(access_port_id)
-
-        access_node_id = str(access_port['access_node_id'])
-
-        vlan = get_free_vlan(access_node_id)
-        use_vlan(access_node_id, vlan['vlan_tag'])
- 
-        data['location_id'] = location_id
-        data['router_node_id'] = router_node['id']
-        data['access_port_id'] = access_port_id
-        data['client_id'] = client.id
-        data['vlan_id'] = vlan['vlan_tag']
-        data['access_node_id'] = access_node_id
-        data['customer_location_id'] = int(data['customer_location_id'])
-
-        ServiceClass = getattr(models, ServiceTypes[data['service_type']].value)
-
-        service = ServiceClass.objects.create(**data)
-        service.service_state = "in_construction"
-        service.save()
-        response = { "message": "Service requested" }
-
-        return JsonResponse(response)
-
-
+        except LocationException as msg:
+            logging.error(msg)
+            return HttpResponse(status=ERR_INVALID_LOCATION)
+        except RouterNodeException as msg:
+            logging.error(msg)
+            return HttpResponse(status=ERR_NO_ROUTERNODE)
+        except AccessPortException as msg:
+            logging.error(msg)
+            return HttpResponse(status=ERR_NO_ACCESSPORTS)
+        except VlanException as msg:
+            logging.error(msg)
+            return HttpResponse(status=ERR_NO_VLANS)
+        except Client.DoesNotExist as msg:
+            logging.error(msg)
+            return HttpResponse(status=500)
+        
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
         service_type = Service.objects.get(id=service_id).service_type
-        ServiceClass = getattr(models, ServiceTypes[service_type].value)
+        ServiceClass = getattr(models, ServiceTypes[service_type])
         
         service = ServiceClass.objects.filter(id=service_id)
         service.update(**data)

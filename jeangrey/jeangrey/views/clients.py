@@ -1,9 +1,10 @@
 from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
-from jeangrey.models.models import Client, CustomerLocation, Service
-import json
+from jeangrey.models import Client, CustomerLocation, Service
 from jeangrey.utils.utils import *
+
+import json
 
 class ClientView(View):
 
