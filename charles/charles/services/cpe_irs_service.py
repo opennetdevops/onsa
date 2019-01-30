@@ -216,7 +216,6 @@ def cpe_parameters(client, service):
     
     if service['client_port_id'] is None:
       customer_location = get_customer_location(client['id'],service['customer_location_id'])
-      #todo cl error
 
       client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)
 
@@ -241,7 +240,7 @@ def cpe_parameters(client, service):
     return ERR_NO_CLIENTPORTS
   except CustomerLocationException as err:
     logging.error(err)
-    return ERR_NO_CLIENTPORTS
+    return ERR_NO_CUSTOMERLOCATIONS
 
 
 

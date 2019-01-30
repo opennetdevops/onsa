@@ -501,7 +501,7 @@ def get_customer_location(client_id, customer_location_id):
     if json_response:
         return json_response
     else:
-        return None
+        raise CustomerLocationException("Invalid customer location")
 
 def get_customer_locations(client_id):
     url = os.getenv('JEAN_GREY_URL') + "clients/"  + str(client_id) +"/customerlocations"
@@ -511,7 +511,7 @@ def get_customer_locations(client_id):
     if json_response:
         return json_response
     else:
-        return None
+        raise CustomerLocationException("Invalid customer location")
 
 def create_customer_location(client_id):
     url = os.getenv('JEAN_GREY_URL') + "clients/"  + str(client_id) +"/customerlocations"
@@ -580,7 +580,7 @@ def fetch_cpe_port_id(client_node_sn, client_name, customer_location):
     """
     cpe_port = get_free_cpe_port(client_node_sn)
     if cpe_port == []:
-        raise ClientPortException("")
+        raise ClientPortException("No free client port on CPE")
     else:
         cpe_port_id = cpe_port['id']
         #Assign CPE Port (mark as used)
