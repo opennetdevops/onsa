@@ -7,6 +7,7 @@ from charles.utils.fsm import Fsm
 from enum import Enum
 from charles.utils.utils import *
 from pprint import pprint
+import logging
 import requests
 import json
 
@@ -45,9 +46,19 @@ class ServiceView(View):
 
         pprint(my_charles_service)
 
-        service_state = Fsm.run(my_charles_service)
-        print("service_state: ", service_state)
+        try:
+            service_state = Fsm.run(my_charles_service)
+        except ClientPortException as err:
+            logging.error(err)
+            return JsonResponse(status=ERR_NO_CLIENTPORTS)
+        except CustomerLocationException as err:
+            logging.error(err)
+            return JsonResponse(status=ERR_NO_CUSTOMERLOCATIONS)
+        except ClientNodeException as err:
+            logging.error(err)
+            return JsonResponse(status=ERR_NO_CLIENTNODE)
         
+
         if service_state is not None:
             charles_service.service_state = service_state
             response = { "message": "Service requested." }

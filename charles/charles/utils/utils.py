@@ -142,10 +142,10 @@ def get_client_node(client_node_sn):
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == ONSA_OK:
         return json_response
     else:
-        return None
+        raise ClientNodeException("Invalid client Node")
 
 def get_virtual_pod_downlink_portgroup(virtual_pod_id):
     url= os.getenv('INVENTORY_URL') + "virtualpods/"+ str(virtual_pod_id) + "/portgroups?used=false"
@@ -498,7 +498,7 @@ def get_customer_location(client_id, customer_location_id):
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == ONSA_OK:
         return json_response
     else:
         raise CustomerLocationException("Invalid customer location")
@@ -508,10 +508,10 @@ def get_customer_locations(client_id):
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == ONSA_OK:
         return json_response
     else:
-        raise CustomerLocationException("Invalid customer location")
+        raise CustomerLocationException("No available customer locations")
 
 def create_customer_location(client_id):
     url = os.getenv('JEAN_GREY_URL') + "clients/"  + str(client_id) +"/customerlocations"

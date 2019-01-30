@@ -30,7 +30,7 @@ ERR549 = 529 # TBD
 
 ### Inventory constants
 # Error codes 52X
-ERR520 = 520
+ERR5_NO_CLIENTNODE = 520
 ERR_NO_ACCESSPORTS = 521 # No free access ports left at specific access node
 ERR_NO_VLANS = 522 # No free vlans left at specific access node
 ERR_NO_CLIENTPORTS = 523 # No free client ports left at specific client node

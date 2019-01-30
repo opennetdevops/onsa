@@ -209,38 +209,32 @@ def bb_parameters(client, service):
 
 
 def cpe_parameters(client, service):
-  try:
-    location = get_location(service['location_id'])
-    client_node = get_client_node(service['client_node_sn'])
-    parameters = {}
-    
-    if service['client_port_id'] is None:
-      customer_location = get_customer_location(client['id'],service['customer_location_id'])
+  location = get_location(service['location_id'])
+  client_node = get_client_node(service['client_node_sn'])
+  parameters = {}
+  
+  if service['client_port_id'] is None:
+    customer_location = get_customer_location(client['id'],service['customer_location_id'])
 
-      client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)
+    client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)
 
-        
-      client_port = get_client_port(service['client_node_sn'], client_port_id)
-      parameters['client_port_id'] = client_port_id
+      
+    client_port = get_client_port(service['client_node_sn'], client_port_id)
+    parameters['client_port_id'] = client_port_id
 
-    else:
-      client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
+  else:
+    client_port = get_client_port(service['client_node_sn'], service['client_port_id'])
 
-    parameters['client_node'] = { 'vendor': client_node['vendor'],
-                                  'model': client_node['model'],
-                                  'mgmt_ip': client_node['mgmt_ip'],
-                                  'interface_name': client_port['interface_name'],
-                                  'wan_network': service['wan_network'],
-                                  'uplink_port' : client_node['uplink_port']
-                                }
+  parameters['client_node'] = { 'vendor': client_node['vendor'],
+                                'model': client_node['model'],
+                                'mgmt_ip': client_node['mgmt_ip'],
+                                'interface_name': client_port['interface_name'],
+                                'wan_network': service['wan_network'],
+                                'uplink_port' : client_node['uplink_port']
+                              }
 
-    return parameters
-  except ClientPortException as err:
-    logging.error(err)
-    return ERR_NO_CLIENTPORTS
-  except CustomerLocationException as err:
-    logging.error(err)
-    return ERR_NO_CUSTOMERLOCATIONS
+  return parameters
+
 
 
 

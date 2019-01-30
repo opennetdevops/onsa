@@ -47,6 +47,9 @@ class ClientView(View):
 class CustomerLocationView(View):
 
     def get(self, request, client_id, customer_location_id=None):
+        if Client.objects.filter(pk=client_id).count() is 0:
+            return JsonResponse({'message':"Not found"}, status=404)
+
         if customer_location_id is None:
             data = CustomerLocation.objects.filter(client_id=client_id).values()
             return JsonResponse(list(data), safe=False)
