@@ -27,17 +27,18 @@ def get_ip_wan_nsx(location, client_name, service_id):
     token = get_ipam_authentication_token()
 
     rheaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
+    #TODO Modify constant WAN_NSX
     data = { "description" : client_name + "-" + service_id, "owner" : "WAN_NSX_" + location, "ip_version" : 4 }
  
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     
-    print(json_response)
 
+        
     if "network" in json_response:
         return json_response["network"]
     else:
-        return None
+        raise IPAMException("No available IP on network")
 
 def get_wan_mpls_network(location,client_name,service_id):
     #Default prefix set by IDR
@@ -54,7 +55,7 @@ def get_wan_mpls_network(location,client_name,service_id):
     if "network" in json_response:
         return json_response["network"]
     else:
-        return None
+        raise IPAMException("No available subnet")
 
 def get_client_network(client_name,service_id,mask):
     description = client_name + "-" + str(service_id)
@@ -69,7 +70,7 @@ def get_client_network(client_name,service_id,mask):
     if "network" in json_response:
         return json_response["network"]
     else:
-        return None
+        raise IPAMException("No available IP/Subnet")
 
 def get_subnets_by_description(description):
     token = get_ipam_authentication_token()
@@ -77,45 +78,57 @@ def get_subnets_by_description(description):
     rheaders = {'Authorization': 'Bearer ' + token}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    return json_response
+    if json_response and response.status_code == ONSA_OK:
+        return json_response
+    else:
+        raise IPAMException("Not subnets in provided description")
 
 def release_ip(client_name,product_id):
     description = client_name + "-" + str(product_id)
-    subnet = _get_subnets_by_description(description)[0]
+    subnet = get_subnets_by_description(description)[0]
     subnet_id = subnet['id']
     token = get_ipam_authentication_token()
     url = os.getenv('IPAM_URL') + "/api/networks/" + str(subnet_id) + "/release"
     rheaders = {'Authorization': 'Bearer ' + token}
     response = requests.post(url, auth = None, verify = False, headers = rheaders)
+    if response.status_code == ONSA_OK:
+        return None
+    else:
+        raise IPAMException("Unable to release IP")
+
 
 def destroy_subnet(client_name,product_id):
     description = client_name + "-" + str(product_id)
-    subnet_to_destroy = _get_subnets_by_description(description)[0]
+    subnet_to_destroy = get_subnets_by_description(description)[0]
     subnet_id = subnet['id']
     token = get_ipam_authentication_token()
     url = os.getenv('IPAM_URL') + "/api/networks/" + str(subnet_id)
     rheaders = {'Authorization': 'Bearer ' + token}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    if response.status_code == ONSA_OK:
+        return None
+    else:
+        raise IPAMException("Unable to destroy subnet")
 
 def get_location(location_id):
     url = os.getenv('INVENTORY_URL') + "locations/" + str(location_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == ONSA_OK:
         return json_response
     else:
-        return None
+        raise LocationException("Invalid location")
 
 def get_router_node(router_node_id):
     url= os.getenv('INVENTORY_URL') + "routernodes/"+ str(router_node_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == ONSA_OK:
         return json_response
     else:
-        return None
+        raise RouterNodeException("Invalid Router Node")
 
 def get_virtual_pods(location_id):
     url= os.getenv('INVENTORY_URL') + "locations/"+ str(location_id) + "/virtualpods"
@@ -579,7 +592,7 @@ def fetch_cpe_port_id(client_node_sn, client_name, customer_location):
     mark it as a used port.
     """
     cpe_port = get_free_cpe_port(client_node_sn)
-    if cpe_port == []:
+    if cpe_port == [] or cpe_port is None:
         raise ClientPortException("No free client port on CPE")
     else:
         cpe_port_id = cpe_port['id']

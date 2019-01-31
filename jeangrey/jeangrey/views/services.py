@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views import View
 from jeangrey.models import *
 from jeangrey.utils import *
@@ -97,6 +97,7 @@ class ServiceView(View):
             access_node_id = str(access_port['access_node_id'])
 
             vlan = get_free_vlan(access_node_id)
+            #todo pasar exception
             use_vlan(access_node_id, vlan['vlan_tag'])
     
             data['location_id'] = location_id
@@ -117,13 +118,13 @@ class ServiceView(View):
         
         except LocationException as msg:
             logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_INVALID_LOCATION)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
         except RouterNodeException as msg:
             logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NO_ROUTERNODE)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
         except AccessPortException as msg:
             logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NO_ACCESSPORTS)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
         except VlanException as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NO_VLANS)

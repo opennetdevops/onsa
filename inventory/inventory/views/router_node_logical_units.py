@@ -18,7 +18,7 @@ class RouterNodeLogicalUnitsView(View):
         try:
             router_node = RouterNode.objects.get(pk=routernode_id)
         except ObjectDoesNotExist:
-                return HttpResponse(status=500)
+            return JsonResponse({'message':"Not found"}, status=404)
 
         used = request.GET.get('used', '').capitalize()
         

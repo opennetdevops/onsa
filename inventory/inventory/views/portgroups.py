@@ -8,9 +8,12 @@ import json
 
 class PortgroupView(View):
     def get(self, request, portgroup_id=None):
-        if not portgroup_id is None:
-            portgroups = Portgroup.objects.filter(pk=portgroup_id).values()
-            return JsonResponse(list(portgroups), safe=False)
+        if portgroup_id is not None:
+            if Portgroup.objects.filter(pk=portgroup_id).count() is not 0:
+                portgroups = Portgroup.objects.filter(pk=portgroup_id).values()
+                return JsonResponse(list(portgroups), safe=False)
+            else:
+                JsonResponse({'message':"Not found"}, status=404)
 
         portgroups = Portgroup.objects.all().values()
         return JsonResponse(list(portgroups), safe=False)

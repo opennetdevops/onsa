@@ -12,20 +12,18 @@ class RouterNodesView(View):
 	def get(self, request, routernode_id=None):
 
 		if routernode_id is not None:
-			router_nodes = RouterNode.objects.filter(id=routernode_id).values()[0]
-			return JsonResponse(router_nodes, safe=False)
-
-
+			if RouterNode.objects.filter(id=routernode_id).count() is not 0:
+			    router_nodes = RouterNode.objects.filter(id=routernode_id).values()[0]  
+			    return JsonResponse(router_nodes, safe=False)
+			else:
+			    return JsonResponse({'message':"Not found"}, status=404)
+			
 		router_nodes = RouterNode.objects.all().values()
 		return JsonResponse(list(router_nodes), safe=False)
-		
-		# data = serializers.serialize('json', router_nodes)
-		# return HttpResponse(data, content_type='application/json')
+
 
 	def post(self,request):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-
-		# location = Location.objects.get(pk=location_id)
 
 		#todo check location
 		router_node = RouterNode.objects.create(**data)
@@ -37,10 +35,9 @@ class RouterNodesView(View):
 
 	def put(self, request, routernode_id):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
-
 		router_node = RouterNode.objects.filter(pk=routernode_id)
 		router_node.update(**data)
-
+		
 		data = serializers.serialize('json', router_nodes)
 		return HttpResponse(data, content_type='application/json')
 

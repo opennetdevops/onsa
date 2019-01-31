@@ -2,4 +2,6 @@ from charles.exceptions.ClientPortException import ClientPortException
 from charles.exceptions.IPAMException import IPAMException
 from charles.exceptions.CustomerLocationException import CustomerLocationException
 from charles.exceptions.ClientNodeException import ClientNodeException
+from charles.exceptions.LocationException import LocationException
+from charles.exceptions.RouterNodeException import RouterNodeException
 

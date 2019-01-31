@@ -8,8 +8,7 @@ import json
 
 class LocationsView(View):
     
-    def get(self, request, location_id=None):
-        
+    def get(self, request, location_id=None):       
         if location_id is None:
             name = request.GET.get('name', None)
             
@@ -21,9 +20,11 @@ class LocationsView(View):
                 locations = Location.objects.all().values()
                 return JsonResponse(list(locations),safe=False)
             
-        else:
+        elif Location.objects.filter(pk=location_id).count() is not 0:
             location = Location.objects.filter(pk=location_id).values()[0]   
             return JsonResponse(location, safe=False)
+        else:
+            return JsonResponse({'message':"Not found"}, status=404)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))

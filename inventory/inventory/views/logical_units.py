@@ -15,8 +15,11 @@ class LogicalUnitsView(View):
             lus = LogicalUnit.objects.all().values()        
             return JsonResponse(list(lus), safe=False)
         else:
-            lu = LogicalUnit.objects.filter(pk=logicalunit_id).values()[0]        
-            return JsonResponse(lu, safe=False)
+            if LogicalUnit.objects.filter(pk=logicalunit_id).count() is not 0:
+                lu = LogicalUnit.objects.filter(pk=logicalunit_id).values()[0]        
+                return JsonResponse(lu, safe=False)
+            else:
+                JsonResponse({'message':"Not found"}, status=404)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))

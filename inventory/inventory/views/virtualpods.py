@@ -9,8 +9,11 @@ import json
 class VirtualPodsView(View):
     def get(self, request, virtualpod_id=None):
         if not virtualpod_id is None:
-            virtual_pods = VirtualVmwPod.objects.filter(pk=virtualpod_id).values()
-            return JsonResponse(list(virtual_pods), safe=False)
+            if VirtualVmwPod.objects.filter(pk=virtualpod_id).count() is not 0:
+                virtual_pods = VirtualVmwPod.objects.filter(pk=virtualpod_id).values()[0]
+                return JsonResponse(virtual_pods, safe=False)
+            else:
+                return JsonResponse({'message':"Not found"}, status=404)
 
         virtual_pods = VirtualVmwPod.objects.all().values()
         return JsonResponse(list(virtual_pods), safe=False)

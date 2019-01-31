@@ -9,8 +9,11 @@ import json
 class VrfView(View):
     def get(self, request, vrf_id=None):
         if vrf_id is not None:
-            vrf = Vrf.objects.filter(rt=vrf_id).values()[0]
-            return JsonResponse(vrf, safe=False)
+            if Vrf.objects.filter(rt=vrf_id).count() is not 0:
+                vrf = Vrf.objects.filter(rt=vrf_id).values()[0]
+                return JsonResponse(vrf, safe=False)
+            else:
+                return JsonResponse({'message':"Not found"}, status=404)
         name = request.GET.get('name')
         client = request.GET.get('client')
         used = request.GET.get('used')
