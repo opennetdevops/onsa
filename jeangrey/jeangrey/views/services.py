@@ -20,62 +20,68 @@ class ServiceView(View):
         service_type = request.GET.get('type', None)
         vrf_id = request.GET.get('vrf_id',None)
 
-        if vrf_id is not None:
+        try:
+            if vrf_id is not None:
+                cpeless_mpls_services = list(CpelessMpls.objects.filter(vrf_id=vrf_id).values())
+                cpe_mpls_services = list(CpeMpls.objects.filter(vrf_id=vrf_id).values())
+                vpls_services = list(Vpls.objects.filter(vrf_id=vrf_id).values())
 
-            cpeless_mpls_services = list(CpelessMpls.objects.filter(vrf_id=vrf_id).values())
-            cpe_mpls_services = list(CpeMpls.objects.filter(vrf_id=vrf_id).values())
-            vpls_services = list(Vpls.objects.filter(vrf_id=vrf_id).values())
+                services = cpe_mpls_services + cpeless_mpls_services + vpls_services
+                return JsonResponse(services, safe=False)
 
-            services = cpe_mpls_services + cpeless_mpls_services + vpls_services
-            return JsonResponse(services, safe=False)
-
-
-        if service_type is not None:
-            if service_type in ALL_SERVICES:
+            if service_type is not None:
                 ServiceClass = getattr(models, ServiceTypes[service_type])
                 services = ServiceClass.objects.filter(service_type=service_type).values()
                 return JsonResponse(list(services), safe=False)
 
-        elif service_id is None:            
-            if state in ["PENDING", "ERROR", "REQUESTED", "COMPLETED"]:
-                cpeless_irs_services = list(CpelessIrs.objects.filter(service_state=state).values())
-                cpe_irs_services = list(CpeIrs.objects.filter(service_state=state).values())
-                cpeless_mpls_services = list(CpelessMpls.objects.filter(service_state=state).values())
-                cpe_mpls_services = list(CpeMpls.objects.filter(service_state=state).values())
-                vcpe_irs_services = list(VcpeIrs.objects.filter(service_state=state).values())    
-                vpls_services = list(Vpls.objects.filter(service_state=state).values())
+            elif service_id is None:            
+                if state in ["PENDING", "ERROR", "REQUESTED", "COMPLETED"]:
+                    cpeless_irs_services = list(CpelessIrs.objects.filter(service_state=state).values())
+                    cpe_irs_services = list(CpeIrs.objects.filter(service_state=state).values())
+                    cpeless_mpls_services = list(CpelessMpls.objects.filter(service_state=state).values())
+                    cpe_mpls_services = list(CpeMpls.objects.filter(service_state=state).values())
+                    vcpe_irs_services = list(VcpeIrs.objects.filter(service_state=state).values())    
+                    vpls_services = list(Vpls.objects.filter(service_state=state).values())
 
-                services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                 + vpls_services + vcpe_irs_services + cpe_irs_services
+                    services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
+                    + vpls_services + vcpe_irs_services + cpe_irs_services
+
+                else:
+                    cpeless_irs_services = list(CpelessIrs.objects.all().values())
+                    cpe_irs_services = list(CpeIrs.objects.all().values())
+                    cpeless_mpls_services = list(CpelessMpls.objects.all().values())
+                    cpe_mpls_services = list(CpeMpls.objects.all().values())
+                    vcpe_irs_services = list(VcpeIrs.objects.all().values()) 
+                    vpls_services = list(Vpls.objects.all().values())
+
+                    services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
+                    + vpls_services + vcpe_irs_services + cpe_irs_services
+
+                return JsonResponse(services, safe=False)
 
             else:
-                cpeless_irs_services = list(CpelessIrs.objects.all().values())
-                cpe_irs_services = list(CpeIrs.objects.all().values())
-                cpeless_mpls_services = list(CpelessMpls.objects.all().values())
-                cpe_mpls_services = list(CpeMpls.objects.all().values())
-                vcpe_irs_services = list(VcpeIrs.objects.all().values()) 
-                vpls_services = list(Vpls.objects.all().values())
+                s = Service.objects.filter(pk=service_id).values()[0]
+                ServiceClass = getattr(models, ServiceTypes[s['service_type']])
+                s = ServiceClass.objects.filter(pk=service_id).values()[0]
+                return JsonResponse(s, safe=False)
 
-                pprint(vcpe_irs_services)
-
-                services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                 + vpls_services + vcpe_irs_services + cpe_irs_services
-
-            return JsonResponse(services, safe=False)
-
-        else:
-            s = Service.objects.filter(pk=service_id).values()[0]
-            ServiceClass = getattr(models, ServiceTypes[s['service_type']])
-            s = ServiceClass.objects.filter(pk=service_id).values()[0]
-            return JsonResponse(s, safe=False)
+        except IndexError:
+            msg = "Service not found."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+        except KeyError:
+            msg = "Service type does not exist."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+            
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        client_name = data.pop('client')
-        client = Client.objects.get(name=client_name)
-
         try:        
+            client_name = data.pop('client')
+            client = Client.objects.get(name=client_name)
+
             location = data.pop('location')
             location_id = get_location_id(location)
             router_node = get_router_node(location_id)
@@ -106,43 +112,52 @@ class ServiceView(View):
             service = ServiceClass.objects.create(**data)
             service.service_state = "in_construction"
             service.save()
-            response = { "message": "Service requested" }
 
-            return JsonResponse(response)
+            return JsonResponse({ "msg": "Service requested" }, safe=False)
         
         except LocationException as msg:
             logging.error(msg)
-            return HttpResponse(status=ERR_INVALID_LOCATION)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_INVALID_LOCATION)
         except RouterNodeException as msg:
             logging.error(msg)
-            return HttpResponse(status=ERR_NO_ROUTERNODE)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NO_ROUTERNODE)
         except AccessPortException as msg:
             logging.error(msg)
-            return HttpResponse(status=ERR_NO_ACCESSPORTS)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NO_ACCESSPORTS)
         except VlanException as msg:
             logging.error(msg)
-            return HttpResponse(status=ERR_NO_VLANS)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NO_VLANS)
         except Client.DoesNotExist as msg:
             logging.error(msg)
-            return HttpResponse(status=500)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+        except KeyError:
+            logging.error("Bad Request")
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_BAD_REQUEST)
         
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        service_type = Service.objects.get(id=service_id).service_type
-        ServiceClass = getattr(models, ServiceTypes[service_type])
-        
-        service = ServiceClass.objects.filter(id=service_id)
-        service.update(**data)
+        try:
+            service_type = Service.objects.get(id=service_id).service_type
+            ServiceClass = getattr(models, ServiceTypes[service_type])
+            
+            service = ServiceClass.objects.filter(id=service_id)
+            service.update(**data)
 
-        return JsonResponse(ServiceClass.objects.filter(id=service_id).values()[0], safe=False)
-
+            return JsonResponse(ServiceClass.objects.filter(id=service_id).values()[0], safe=False)
+        except Service.DoesNotExist as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
     def delete(self, request, service_id):
-        svc = Service.objects.filter(service_id=service_id)
-        svc.delete()
-        data = {"Message" : "Service deleted successfully"}
-        return JsonResponse(data)
+        try:
+            svc = Service.objects.get(id=service_id)
+            svc.delete()
+            data = {"Message" : "Service deleted successfully"}
+            return JsonResponse(data)
+        except Service.DoesNotExist as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
 
     
