@@ -13,6 +13,12 @@ ServiceTypes = {
 }
 
 
+INITIAL_SERVICE_STATE = "in_construction"
+
+#
+HTTP_201_CREATED = 201
+HTTP_200_OK = 200
+
 # HTTP Error Codes
 ERR_BAD_REQUEST = 400
 ERR_SERVER_INT_ERROR = 500

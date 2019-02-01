@@ -34,7 +34,7 @@ NextStateMap = (
                     'dst': "service_activated",
                     'next_state':"an_data_ack" },
 
-                    #From AN_DATA_ACK
+                    #From an_data_ack
                     {'src':"an_data_ack",
                     'dst': "an_activated",
                     'next_state':"an_activated" },
@@ -48,7 +48,7 @@ NextStateMap = (
                     'dst': "service_activated",
                     'next_state':"an_activated" },
 
-
+                    #From an_activation_in_progress
                     {'src':"an_activation_in_progress",
                     'dst': "an_activated",
                     'next_state':"an_activated" },
@@ -85,7 +85,7 @@ NextStateMap = (
                     'dst': "cpe_data_ack",
                     'next_state':"bb_activated" },
 
-
+                    # From bb_activation_in_progress
                     {'src':"bb_activation_in_progress",
                     'dst': "bb_activated",
                     'next_state':"bb_activated" },
@@ -96,16 +96,20 @@ NextStateMap = (
                     'dst': "service_activated",
                     'next_state':"bb_activated" },
 
-
+                    #From bb_activated
                     {'src':"bb_activated",
                     'dst': "cpe_data_ack",
                     'next_state':"cpe_data_ack" },
                     {'src':"bb_activated",
                     'dst': "service_activated",
                     'next_state':"cpe_data_ack" },
+
+                    #From cpe_activation_in_progress
                     {'src':"cpe_activation_in_progress",
                     'dst': "service_activated",
                     'next_state':"service_activated" },
+                    
+                    #From cpe_data_ack
                     {'src':"cpe_data_ack",
                     'dst': "service_activated",
                     'next_state':"service_activated" }

@@ -111,10 +111,10 @@ class ServiceView(View):
             ServiceClass = getattr(models, ServiceTypes[data['service_type']])
 
             service = ServiceClass.objects.create(**data)
-            service.service_state = "in_construction"
+            service.service_state = INITIAL_SERVICE_STATE
             service.save()
 
-            return JsonResponse({ "msg": "Service requested" }, safe=False)
+            return JsonResponse({ "msg": "Service requested" }, safe=False, status=HTTP_201_CREATED)
         
         except LocationException as msg:
             logging.error(msg)
