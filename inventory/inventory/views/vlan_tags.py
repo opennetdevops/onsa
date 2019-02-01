@@ -1,10 +1,16 @@
-from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
+from inventory.models import VlanTag, AccessPort
+from inventory.constants import *
+from inventory.exceptions import *
 
-from ..models import VlanTag, AccessPort
-
+import logging
+import coloredlogs
 import json
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
 
 class VlanTagsView(View):
 	def get(self, request):
@@ -14,5 +20,4 @@ class VlanTagsView(View):
 		data = json.loads(request.body.decode(encoding='UTF-8'))
 		vlan_tag = VlanTag.objects.create(**data)
 		vlan_tag.save()
-
-		return JsonResponse(data, safe=False)
+		return JsonResponse(data, safe=False, status=HTTP_201_CREATED)

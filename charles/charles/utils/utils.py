@@ -1,5 +1,5 @@
 from pprint import pprint
-from charles.constants.constants import *
+from charles.constants import *
 from charles.exceptions import *
 import requests
 import json

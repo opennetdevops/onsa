@@ -1,24 +1,33 @@
-# Django imports
-from django.core import serializers
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views import View
+from inventory.constants import *
+from inventory.exceptions import *
+from inventory.models import Vrf, Location
 
-# Python imports
+import logging
+import coloredlogs
 import json
 
-# ONSA imports
-from inventory.models import Vrf, Location
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
 
 class VrfLocationsView(View):
     def get(self, request, vrf_id, location_id=None):
+        try:
+            vrf = Vrf.objects.get(rt=vrf_id)
+        except Vrf.DoesNotExist as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
         if location_id is not None:
-            if Vrf.objects.filter(rt=vrf_id, locations=location_id).count() is not 0:
-                exists = Vrf.objects.filter(rt=vrf_id, locations=location_id).values().count()
-            else:
-                JsonResponse({'message':"Not found"}, status=404)
+            try:
+                my_loc = Location.objects.get(pk=location_id)
+            except Location.DoesNotExist as msg:
+                logging.error(msg)
+                return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
+            exists = Vrf.objects.filter(rt=vrf_id, locations=location_id).values().count()
             data = {}
             if exists:
                 data["exists"] = True
@@ -27,24 +36,42 @@ class VrfLocationsView(View):
             return JsonResponse(data, safe=False)
 
         else:
-            try:
-                vrf = Vrf.objects.get(rt=vrf_id)
-            except ObjectDoesNotExist:
-                return JsonResponse({'message':"Not found"}, status=404)
             return JsonResponse(list(vrf.locations.all().values()), safe=False)
 
 
     def put(self, request, vrf_id, location_id):
-        location = Location.objects.get(pk=location_id)
-        vrf = Vrf.objects.get(rt=vrf_id)
+        try:
+            location = Location.objects.get(pk=location_id)
+        except Location.DoesNotExist as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+        
+        try:
+            vrf = Vrf.objects.get(rt=vrf_id)
+        except Vrf.DoesNotExist as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+        
         vrf.locations.add(location)
         data = {"Message" : "Added location to vrf"}
         return JsonResponse(data, safe=False)
 
 
     def delete(self, request, vrf_id, location_id):
+        try:
+            my_vrf = Vrf.objects.get(rt=vrf_id)
+        except Vrf.DoesNotExist as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+        
         vrf = Vrf.objects.filter(rt=vrf_id)
-        location = Location.objects.get(pk=location_id)
+        
+        try:
+            location = Location.objects.get(pk=location_id)
+        except Location.DoesNotExist as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)        
+
         vrf.locations.remove(location)
         data = {"Message" : "Location deleted successfully from vrf"}
         return JsonResponse(data, safe=False)

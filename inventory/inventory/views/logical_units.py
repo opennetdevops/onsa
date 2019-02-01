@@ -1,45 +1,63 @@
 from django.core import serializers
-from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views import View
-from rest_framework import status
-
-
-from ..models import LogicalUnit
+from inventory.constants import *
+from inventory.exceptions import *
+from inventory.models import LogicalUnit
 
 import json
+import logging
+import coloredlogs
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class LogicalUnitsView(View):
     def get(self, request, logicalunit_id=None):
-        if logicalunit_id is None:
-            lus = LogicalUnit.objects.all().values()        
-            return JsonResponse(list(lus), safe=False)
-        else:
-            if LogicalUnit.objects.filter(pk=logicalunit_id).count() is not 0:
+        try:
+            if logicalunit_id is None:
+                lus = LogicalUnit.objects.all().values()        
+                return JsonResponse(list(lus), safe=False)
+            else:
                 lu = LogicalUnit.objects.filter(pk=logicalunit_id).values()[0]        
                 return JsonResponse(lu, safe=False)
-            else:
-                JsonResponse({'message':"Not found"}, status=404)
+        except IndexError:
+            msg = "LogicalUnit not found."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+
+
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         logical_unit = LogicalUnit.objects.create(**data)
         logical_unit.save()
-        return JsonResponse(data, status=status.HTTP_201_CREATED, safe=False)
+        return JsonResponse(data, status=HTTP_201_CREATED, safe=False)
 
 
     def put(self, request, logicalunit_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+        try:
+            logical_unit = LogicalUnit.objects.filter(pk=logicalunit_id)
+            my_lu = logical_unit.values()[0]
+            logical_unit.update(**data)
+            my_lu = logical_unit.values()[0]
+            return JsonResponse(my_lu,safe=False)
+        except IndexError:
+            msg = "LogicalUnit not found."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
-        logical_unit = LogicalUnit.objects.filter(pk=logicalunit_id)
-        logical_unit.update(**data)
-
-        data = serializers.serialize('json', logical_unit)
-        return HttpResponse(data, content_type='application/json')
 
     def delete(self, request, logicalunit_id):
-        logical_unit = LogicalUnit.objects.filter(pk=logicalunit_id)
-        logical_unit.delete()
-        
-        data = '{"Message" : "Logical Unit deleted successfully"}'
-        return HttpResponse(data, content_type='application/json')
+        try:
+            logical_unit = LogicalUnit.objects.filter(pk=logicalunit_id)
+            my_lu = logical_unit.values()[0]
+            logical_unit.delete()
+            data = '{"Message" : "LogicalUnit deleted successfully"}'
+            return JsonResponse(data,safe=False)
+        except IndexError:
+            msg = "LogicalUnit not found."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+

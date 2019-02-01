@@ -1,41 +1,40 @@
-from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
-
-from ..models import Vrf, Location
+from inventory.models import Vrf
+from inventory.constants import *
+from inventory.exceptions import *
 
 import json
+import logging
+import coloredlogs
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
 
 class VrfView(View):
     def get(self, request, vrf_id=None):
-        if vrf_id is not None:
-            if Vrf.objects.filter(rt=vrf_id).count() is not 0:
-                vrf = Vrf.objects.filter(rt=vrf_id).values()[0]
-                return JsonResponse(vrf, safe=False)
-            else:
-                return JsonResponse({'message':"Not found"}, status=404)
         name = request.GET.get('name')
         client = request.GET.get('client')
         used = request.GET.get('used')
-       
-        if name is not None:
-            if Vrf.objects.filter(name=name).count() is not 0:
-                vrf = Vrf.objects.filter(name=name).values()[0]
+        try:
+            if vrf_id is not None:
+                vrf = Vrf.objects.filter(rt=vrf_id).values()[0]
                 return JsonResponse(vrf, safe=False)
-            else:
-                return JsonResponse({}, safe=False)
-       
-        elif client is not None:
-            if Vrf.objects.filter(client=client).count() is not 0:
-                vrf = Vrf.objects.filter(client=client).values()
-                return JsonResponse(list(vrf), safe=False)
-            else:
-                return JsonResponse({}, safe=False)
+        except IndexError:
+            msg = "Vrf not found."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
+        if name is not None:
+            vrf = Vrf.objects.filter(name=name).values()[0]
+            return JsonResponse(vrf, safe=False)
+        elif client is not None:
+            vrfs = Vrf.objects.filter(client=client).values()
+            return JsonResponse(list(vrfs), safe=False)
         elif used is not None:
             vrfs = Vrf.objects.filter(used=used).values()
             return JsonResponse(list(vrfs), safe=False)
-
         else:
             vrfs = Vrf.objects.all().values()
             return JsonResponse(list(vrfs), safe=False)
@@ -43,21 +42,31 @@ class VrfView(View):
 
     def put(self, request, vrf_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        vrf = Vrf.objects.filter(rt=vrf_id)
-        vrf.update(**data)
-        return JsonResponse(vrf.values()[0], safe=False)
-
+        try:
+            vrf = Vrf.objects.filter(rt=vrf_id)
+            my_vrf = vrf.values()[0]
+            vrf.update(**data)
+            return JsonResponse(vrf.values()[0], safe=False)
+        except IndexError:
+            msg = "Vrf not found."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        location = Location.objects.filter(name=data['location_name'])
         vrf = Vrf.objects.create(**data)
         vrf.save()
-        return JsonResponse(vrf.values()[0], safe=False)       
+        return JsonResponse(vrf.values()[0], safe=False, status=HTTP_201_CREATED)       
 
 
     def delete(self, request, vrf_id):
-        vrf = Vrf.objects.filter(rt=vrf_id)
-        vrf.delete()
-        data = {"Message" : "Virtual Pod deleted successfully"}
-        return JsonResponse(data, safe=False)
+        try:
+            vrf = Vrf.objects.filter(rt=vrf_id)
+            my_vrf = vrf.values()[0]
+            vrf.delete()
+            data = {"Message" : "Vrf deleted successfully"}
+            return JsonResponse(data, safe=False)
+        except IndexError:
+            msg = "Vrf not found."
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)        

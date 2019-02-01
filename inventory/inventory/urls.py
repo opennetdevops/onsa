@@ -8,7 +8,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 from django.views.decorators.http import require_http_methods
 
-from .views import devices, portgroups, virtualpods, locations, router_nodes, access_nodes, access_ports
+from .views import portgroups, virtualpods, locations, router_nodes, access_nodes, access_ports
 from .views import router_node_logical_units, logical_units, location_access_nodes, location_router_nodes
 from .views import access_node_access_ports, location_access_ports, access_node_vlan_tags, locations_virtual_pod
 from .views import virtualpod_portgroups, client_nodes, vlan_tags, client_node_client_ports, client_node_ports
@@ -16,7 +16,6 @@ from .views import vrf, vrf_locations
 
 urlpatterns = [ 
     path('/api/login', obtain_jwt_token),
-    path('/api/devices', devices.devices),
     
     path('/api/locations', require_http_methods(["GET","POST"])(locations.LocationsView.as_view())),
     path('/api/locations/<int:location_id>', require_http_methods(["GET","PUT","DELETE"])(locations.LocationsView.as_view())),
