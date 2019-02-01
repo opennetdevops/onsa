@@ -1,45 +1,15 @@
 from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
+from core.utils import *
+from core.views.ldap_jwt import *
+from core.forms import *
+
 import json
 import requests
-
-from core.utils.utils import *
-from core.views.ldap_jwt import *
-from enum import Enum
-
-VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
-IRS_SERVICES = ['cpeless_irs', 'cpe_irs', 'vcpe_irs']
-ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs']
-VPLS_SERVICES = ['vpls']
-
-BB_STATES = ['bb_data_ack', 'bb_activated', 'bb_activation_in_progress']
-CPE_STATES = ['cpe_data_ack', 'cpe_activation_in_progress', 'service_activated']
-AN_STATES = ['an_data_ack', 'an_activation_in_progress']
-
-
-def delete_charles_service(service_id):
-    url = settings.CHARLES_URL + "services/"  + str(service_id)
-    rheaders = {'Content-Type': 'application/json'}
-    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response
-    else:
-        return None
-
-def delete_jeangrey_service(service_id):
-    url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
-    rheaders = {'Content-Type': 'application/json'}
-    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response
-    else:
-        return None
 
 class ServiceView(APIView):
 
@@ -47,6 +17,7 @@ class ServiceView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, service_id=None):
+
         state = request.GET.get('state', None)
         service_type = request.GET.get('type', None)
 
@@ -68,12 +39,24 @@ class ServiceView(APIView):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        url = settings.JEAN_GREY_URL + "services"
-        rheaders = { 'Content-Type': 'application/json' }
-        response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-        json_response = json.loads(response.text)
+        form = ServiceForm(data)
 
-        return JsonResponse(json_response, safe=False)
+        if form.is_valid():
+            url = settings.JEAN_GREY_URL + "services"
+            rheaders = { 'Content-Type': 'application/json' }
+            response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+            json_response = json.loads(response.text)
+
+            return JsonResponse(json_response, safe=False)
+        else:
+            json_response = {"msg": "Form is invalid.", "errors": form.errors}
+
+            return JsonResponse(json_response, safe=False, status=ERR_BAD_REQUEST)
+
+
+        
+       
+  
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

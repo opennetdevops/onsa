@@ -1,22 +1,14 @@
 from django.conf import settings
-from django.core import serializers
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
+
+from core.utils import *
+from core.views.ldap_jwt import *
 
 import json
 import requests
-import logging
-
-from pprint import pprint
-from enum import Enum
-
-VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
-AS_SERVICES = ['cpe_mpls']
-CLIENT_NETWORK_SERVICES = ['cpeless_mpls']
-PREFIX_SERVICES = ['cpeless_irs', 'vcpe_irs', 'cpeless_mpls']
 
 class ServiceActivationView(APIView):
 	

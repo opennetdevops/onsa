@@ -1,7 +1,8 @@
-import requests
 from django.conf import settings
 from django.contrib.auth.models import User
-from pprint import pprint
+
+from core.constants import *
+from core.exceptions import *
 
 import json
 import requests
@@ -169,3 +170,23 @@ def search_user(username):
 		return None
 	else:
 		return User(username=username, is_active=True)
+
+def delete_charles_service(service_id):
+    url = settings.CHARLES_URL + "services/"  + str(service_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def delete_jeangrey_service(service_id):
+    url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None

@@ -1,11 +1,16 @@
 from django.conf import settings
-from django.core import serializers
-from django.http import JsonResponse, HttpResponse
-from django.views import View
+from django.http import JsonResponse
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
+from core.utils import *
+from core.views.ldap_jwt import *
+
 import json
 import requests
 
-class VlansView(View):
+class VlansView(APIView):
 
 	def get(self, request, access_node_id):
 		used = request.GET.get('used')
@@ -35,7 +40,7 @@ class VlansView(View):
 			return None
 
 
-class LogicalUnitsView(View):
+class LogicalUnitsView(APIView):
 	def get(self, request):
 	   return _get_all_logicalunits()
 
@@ -107,7 +112,7 @@ class LogicalUnitsView(View):
 		else:
 			return None
 
-class LocationsView(View):
+class LocationsView(APIView):
 	def get(self, request):
 		rheaders = {'Content-Type': 'application/json'}
 		response = requests.get(settings.INVENTORY_URL + "locations", auth = None, verify = False, headers = rheaders)
@@ -125,7 +130,7 @@ class LocationsView(View):
 		pass
 
 
-class CustomerLocationsView(View):
+class CustomerLocationsView(APIView):
 	def get(self, request, client_id, customer_location_id=None):
 		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
 
@@ -148,7 +153,7 @@ class CustomerLocationsView(View):
 
 		return JsonResponse(json_response, safe=False)
 
-class VrfsView(View):
+class VrfsView(APIView):
 	def get(self, request):
 		client = request.GET.get('client')
 		url = settings.INVENTORY_URL + "vrfs"
@@ -255,7 +260,7 @@ class VrfsView(View):
 			return None
 
 
-class ClientView(View):
+class ClientView(APIView):
 	def get(self, request, client_id=None):
 
 		url = settings.JEAN_GREY_URL + "clients"
@@ -289,7 +294,7 @@ class ClientView(View):
 		pass
 
 
-class ClientCustomerLocationAccessPortsView(View):
+class ClientCustomerLocationAccessPortsView(APIView):
 	def get(self, request, client_id, customer_location_id):
 		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations/" + str(customer_location_id) + "/accessports"
 		rheaders = { 'Content-Type': 'application/json' }
