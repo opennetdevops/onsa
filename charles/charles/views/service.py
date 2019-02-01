@@ -6,9 +6,13 @@ from charles.utils.fsm import Fsm
 from charles.utils.utils import *
 from pprint import pprint
 
-import logging
 import requests
 import json
+import logging
+import coloredlogs
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
 class ServiceView(View):
@@ -25,37 +29,38 @@ class ServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        # Retry support
+        
         if not self._existing_service(data['service_id']):
+            #Create Service instance on charles
             charles_service = Service.objects.create(service_id=data['service_id'], target_state=data['target_state'], deployment_mode=data['deployment_mode'])
         else:
+            #If service already exists, just modify his initial state
             charles_service = Service.objects.get(service_id=data['service_id'])
             charles_service.target_state = data['target_state']
+            charles_service.service_state = charles_service.last_state
             charles_service.deployment_mode = data['deployment_mode']
+            charles_service.save()
 
-
+        #Update charles service with JeanGrey's data
         service = get_service(data['service_id'])
-        charles_service_state = service['service_state']
-
-        #for persistence
-        charles_service.save()
-
         my_charles_service = Service.objects.filter(service_id=data['service_id']).values()[0]
         my_charles_service.update(service)
-
-        pprint(my_charles_service)
+        logging.debug(my_charles_service)
 
         try:
             service_state = Fsm.run(my_charles_service)
-        except ClientPortException as err:
-            logging.error(err)
-            return JsonResponse(status=ERR_NO_CLIENTPORTS)
-        except CustomerLocationException as err:
-            logging.error(err)
-            return JsonResponse(status=ERR_NO_CUSTOMERLOCATIONS)
-        except ClientNodeException as err:
-            logging.error(err)
-            return JsonResponse(status=ERR_NO_CLIENTNODE)
+        
+        except ClientPortException as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, status=ERR_NO_CLIENTPORTS)
+        
+        except CustomerLocationException as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, status=ERR_NO_CUSTOMERLOCATIONS)
+        
+        except ClientNodeException as msg:
+            logging.error(msg)
+            return JsonResponse({"msg": str(msg)}, status=ERR_NO_CLIENTNODE)
         
 
         if service_state is not None:

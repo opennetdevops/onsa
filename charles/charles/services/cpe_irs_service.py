@@ -28,8 +28,8 @@ def bb_data_ack_automated_request(service):
   else:
     service_data['service_state'] = "error"
 
-  update_service(service['service_id'], service_data)
-  return service_data['service_state']
+  
+  return service_data
 
 
 
@@ -61,8 +61,8 @@ def bb_activated_automated_request(service):
   configure_service(config)
   service_data = {}
   service_data['service_state'] = "bb_activation_in_progress"
-  update_service(service['service_id'], service_data)
-  return service_data['service_state']
+  
+  return service_data
 
 
 
@@ -70,8 +70,8 @@ def an_data_ack_automated_request(service):
   if DEBUG: print("an_data_ack_automated_request")
   service_data = {}
   service_data['service_state'] = "an_data_ack"
-  update_service(service['service_id'], service_data)
-  return service_data['service_state']
+  
+  return service_data
 
 
 
@@ -101,8 +101,8 @@ def an_activated_automated_request(service):
   else:
     service_data['service_state'] = "error"
 
-  update_service(service['service_id'], service_data)
-  return service_data['service_state']
+  
+  return service_data
 
 
 
@@ -116,8 +116,8 @@ def cpe_data_ack_automated_request(service):
     service_data = { "client_port_id": parameters['client_port_id']}
 
   service_data['service_state'] = "cpe_data_ack"
-  update_service(service['service_id'], service_data)
-  return service_data['service_state']
+  
+  return service_data
 
 
 def service_activated_automated_request(service):
@@ -151,8 +151,8 @@ def service_activated_automated_request(service):
   else:
     service_data['service_state'] = "error"
   
-  update_service(service['service_id'], service_data)
-  return service_data['service_state']
+  
+  return service_data
 
 def bb_parameters(client, service):
     location = get_location(service['location_id'])
@@ -202,7 +202,7 @@ def bb_parameters(client, service):
                                   'mgmt_ip': router_node['mgmt_ip']
                                 }
 
-    parameters['status'] = ONSA_OK
+    parameters['status'] = HTTP_200_OK
 
     return parameters
 

@@ -1,7 +1,13 @@
 from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service, cpe_irs_service
 from charles.services import vpls_service
 from enum import Enum
+from charles.utils.utils import *
 
+import logging
+import coloredlogs
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
 class ServiceTypes(Enum):
@@ -124,16 +130,23 @@ def next_state(source_state,target_state):
 class Fsm():
     def run(service):
         state = next_state(service['service_state'], service['target_state'])
-        print(state)
+        logging.debug(state)
         generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
-        req_state = generate_request(service)
+        service_data = generate_request(service)
 
-        if req_state is not "error":
-            if req_state != service['target_state']:
-                state = next_state(req_state, service['target_state'])
+        if service_data['service_state'] is not "error":
+            #update charles, JG will be updated from the main service view
+            charles_service = Service.objects.get(service_id=service_data['service_id'])
+            charles_service.last_state = charles_service.service_state
+            charles_service.service_state = service_data['service_state']
+            charles_service.save()
+
+            #While current_state != target_state keep working
+            if service_data['service_state'] != service['target_state']:
+                state = next_state(service_data['service_state'], service['target_state'])
                 generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
-                req_state = generate_request(service)
-            return req_state
+                service_data = generate_request(service)
+            return service_data['service_state']
         return None
 
     def to_next_state(service):
