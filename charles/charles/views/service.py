@@ -1,12 +1,11 @@
 from django.conf import settings
-from django.core import serializers
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views import View
 from charles.models import Service
 from charles.utils.fsm import Fsm
-from enum import Enum
 from charles.utils.utils import *
 from pprint import pprint
+
 import logging
 import requests
 import json
@@ -69,7 +68,7 @@ class ServiceView(View):
         charles_service.save()
         update_service(data['service_id'], {'service_state': service_state} )
 
-        return JsonResponse(response)
+        return JsonResponse(response, status=HTTP_201_CREATED)
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
