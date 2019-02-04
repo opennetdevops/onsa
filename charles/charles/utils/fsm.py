@@ -129,8 +129,12 @@ def next_state(source_state,target_state):
 
 class Fsm():
     def run(service):
+        #Search next state in FSM MAP
         state = next_state(service['service_state'], service['target_state'])
+        
         logging.debug(state)
+        
+        #Execute first run
         generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
         service_data = generate_request(service)
 
@@ -146,8 +150,9 @@ class Fsm():
                 state = next_state(service_data['service_state'], service['target_state'])
                 generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
                 service_data = generate_request(service)
+
             return service_data['service_state']
-        return None
+        return "error"
 
     def to_next_state(service):
         state = next_state(service['service_state'], service['target_state'])
@@ -157,78 +162,41 @@ class Fsm():
 
 
 class State():
-    def do_automated(service):
-        print("not implemented")
-        return
+    def do_manual(self, service):
+        return self.__class__.__name__
+
+    def do_automated(self, service):  
+        generate_request = getattr(ServiceTypes[service['service_type']].value, self.__class__.__name__+ "_" + service['deployment_mode'] + "_request")
+        return generate_request(service)
+
 
 class bb_data_ack(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "bb_data_ack"
-
-    def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, "bb_data_ack_" + service['deployment_mode'] + "_request")
-        return  generate_request(service)
+    pass
 
 class bb_activated(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "bb_activated"
-
-    def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, "bb_activated_" + service['deployment_mode'] + "_request")
-        return  generate_request(service)
+    pass
 
 class an_data_ack(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "an_data_ack"
-
-    def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, "an_data_ack_" + service['deployment_mode'] + "_request")
-        return  generate_request(service)
+    pass
 
 class an_activated(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "an_activated"
-
-    def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, "an_activated_" + service['deployment_mode'] + "_request")
-        return  generate_request(service)
+    pass
 
 class cpe_data_ack(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "cpe_data_ack"
-
-    def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, "cpe_data_ack_" + service['deployment_mode'] + "_request")
-        return  generate_request(service)
+    pass
 
 class service_activated(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "service_activated"
-
-    def do_automated(service):
-        generate_request = getattr(ServiceTypes[service['service_type']].value, "service_activated_" + service['deployment_mode'] + "_request")
-        return  generate_request(service)
+    pass
 
 class bb_activation_in_progress(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "bb_activation_in_progress"
+    pass
 
 class cpe_activation_in_progress(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "cpe_activation_in_progress"
+    pass
 
 class an_activation_in_progress(State):
-    def do_manual(service):
-        #TODO ESTO SE HACE POR REFLECTION FACIL
-        return "cpe_activation_in_progress"
+    pass
+
 
 class StateTypes(Enum):
     # Access node states

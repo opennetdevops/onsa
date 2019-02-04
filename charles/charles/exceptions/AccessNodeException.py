@@ -1,4 +1,5 @@
+from charles.exceptions.error import Error
 
-class AccessNodeException(Exception):
+class AccessNodeException(Error):
    """Raised when there is an issue with AccessNode """
    pass

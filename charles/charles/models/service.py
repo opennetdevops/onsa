@@ -12,6 +12,13 @@ class Service(models.Model):
     def __str__(self):
         return self.service_id
 
+    def reprocess(self):
+        #If service already exists (in error state), just modify his initial state
+        if self.service_state == "error":
+            self.service_state = self.last_state
+            self.save()
+        else:
+            raise ServiceException("Unable to reprocess requested service id")
 
 
 

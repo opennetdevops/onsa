@@ -20,31 +20,34 @@ ERR_NOT_FOUND = 404
 ONSA_OK = 200
 HTTP_201_CREATED = 201
 HTTP_200_OK = 200
+HTTP_400_BADREQUEST = 400
 
-# Error codes 54X
-ERR540 = 540
+
+#IPAM Error codes
+ERR_GENERIC_IPAM = 540
 ERR_NO_PUBLICNETWORKS = 541 # No public networks available
-ERR544 = 542 # No WAN networks available
-ERR543 = 543 # No MGMT networks available
-ERR544 = 544 # TBD
-ERR545 = 545 # TBD
-ERR546 = 546 # TBD
-ERR547 = 547 # TBD
-ERR548 = 548 # TBD
-ERR549 = 529 # TBD
+ERR_NO_WAN = 542 # No WAN networks available
+ERR_NO_MGMT = 543 # No MGMT networks available
 
 
+#Inventory Error codes
+ERR_INVALID_ACCESSPORT = 521
+ERR_INVALID_VLANTAG = 522
+ERR_INVALID_CLIENTPORT = 523 
+ERR_INVALID_VRF = 524
+ERR_INVALID_LOGICALUNIT = 525
+ERR_INVALID_PORTGROUP = 526
+ERR_INVALID_CUSTOMERLOCATION = 527
+ERR_INVALID_LOCATION = 528
+ERR_INVALID_ROUTERNODE = 529
+ERR_INVALID_CLIENTNODE = 530
+ERR_INVALID_ACCESSNODE = 531
+ERR_INVALID_CLIENT = 532
+ERR_INVALID_VIRTUALPOD = 533
 
-### Inventory constants
-# Error codes 52X
-ERR5_NO_CLIENTNODE = 520
-ERR_NO_ACCESSPORTS = 521 # No free access ports left at specific access node
-ERR_NO_VLANS = 522 # No free vlans left at specific access node
-ERR_NO_CLIENTPORTS = 523 # No free client ports left at specific client node
-ERR_NO_VRFS = 524 # No free VRF lefts
-ERR_NO_LOGICALUNITS = 525 # No free logical units left at specific router node
-ERR_NO_PORTGROUPS = 526 # No free portgroups left at specific pod
-ERR_NO_CUSTOMERLOCATION = 527 # No customer location
-ERR_INVALID_LOCATION = 528 # TBD
-ERR_NO_ROUTERNODE = 529 # TBD
+
+#Service related error codes
+ERR_INVALID_SERVICE = 550
+ERR_COULDNT_REPROCESS = 551
+
 

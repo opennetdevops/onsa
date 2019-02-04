@@ -29,51 +29,32 @@ class ServiceView(View):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        
-        if not self._existing_service(data['service_id']):
-            #Create Service instance on charles
-            charles_service = Service.objects.create(service_id=data['service_id'], target_state=data['target_state'], deployment_mode=data['deployment_mode'])
-        else:
-            #If service already exists, just modify his initial state
-            charles_service = Service.objects.get(service_id=data['service_id'])
-            charles_service.target_state = data['target_state']
-            charles_service.service_state = charles_service.last_state
-            charles_service.deployment_mode = data['deployment_mode']
-            charles_service.save()
-
-        #Update charles service with JeanGrey's data
-        service = get_service(data['service_id'])
-        my_charles_service = Service.objects.filter(service_id=data['service_id']).values()[0]
-        my_charles_service.update(service)
-        logging.debug(my_charles_service)
-
         try:
+            if not self._existing_service(data['service_id']):
+                #Create Service instance on charles
+                Service.objects.create(service_id=data['service_id'], target_state=data['target_state'], deployment_mode=data['deployment_mode'])
+            else:
+                charles_service = Service.objects.get(service_id=data['service_id'])
+                charles_service.reprocess()
+
+            #Update charles service with JeanGrey's data
+            service = get_service(data['service_id'])
+            my_charles_service = Service.objects.filter(service_id=data['service_id']).values()[0]
+            my_charles_service.update(service)
+            logging.debug(my_charles_service)
+
+            #Run FSM over charles service
             service_state = Fsm.run(my_charles_service)
-        
-        except ClientPortException as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, status=ERR_NO_CLIENTPORTS)
-        
-        except CustomerLocationException as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, status=ERR_NO_CUSTOMERLOCATIONS)
-        
-        except ClientNodeException as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, status=ERR_NO_CLIENTNODE)
-        
+            
+            #Update JG
+            update_service(data['service_id'], {'service_state': service_state} )
 
-        if service_state is not None:
-            charles_service.service_state = service_state
-            response = { "message": "Service requested." }
-        else:
-            charles_service.service_state = "error"
-            response = { "message": "Service request failed." }
+        except Error as e:
+            return e.handle()
 
-        charles_service.save()
-        update_service(data['service_id'], {'service_state': service_state} )
+        msg = { "message": "Service requested." }
+        return JsonResponse(msg, status=HTTP_201_CREATED)
 
-        return JsonResponse(response, status=HTTP_201_CREATED)
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
@@ -149,4 +130,9 @@ class ProcessView(View):
         my_service_obj.service_state = service_state
         my_service_obj.save()
         return JsonResponse(response, safe=False)
+
+
+
+
+
 
