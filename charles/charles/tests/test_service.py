@@ -20,8 +20,8 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_18")
+        cls.client_id = get_client_by_name("test_client_18")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -32,7 +32,7 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
 
         #define service data
         self.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_18",
                             "bandwidth": 10,
                             "location": self.location,
                             "customer_location_id": self.customer_location_id
@@ -137,8 +137,8 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_18")
+        cls.client_id = get_client_by_name("test_client_18")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -147,7 +147,7 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
 
         #define service data
         cls.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_18",
                             "bandwidth": 10,
                             "location": cls.location,
                             "customer_location_id": cls.customer_location_id
@@ -213,8 +213,8 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_18")
+        cls.client_id = get_client_by_name("test_client_18")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -225,7 +225,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
         #define service data
         self.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_18",
                             "bandwidth": 10,
                             "location": self.location,
                             "customer_location_id": self.customer_location_id,
@@ -345,8 +345,8 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_18")
+        cls.client_id = get_client_by_name("test_client_18")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -355,7 +355,7 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
 
         #define service data
         cls.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_18",
                             "bandwidth": 10,
                             "location": cls.location,
                             "customer_location_id": cls.customer_location_id,

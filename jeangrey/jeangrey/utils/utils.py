@@ -144,9 +144,8 @@ def get_free_vlan(access_node_id):
     url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response and response.status_code == HTTP_200_OK:
-        return json_response
+    if response.json() and response.status_code == HTTP_200_OK:
+        return response.json()[0]
     else:
         raise AccessNodeException("Invalid access node.", status_code=ERR_NOT_FOUND)
 

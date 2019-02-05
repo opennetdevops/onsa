@@ -47,8 +47,7 @@ class ClientView(View):
 		if form.is_valid():
 			client = Client.objects.create(**data)
 			client.save()
-			response = {"message" : "Client requested"}
-			return JsonResponse(response, safe=False, status=HTTP_201_CREATED)
+			return JsonResponse(client.fields(), safe=False, status=HTTP_201_CREATED)
 		else:
 			json_response = {"msg": "Form is invalid.", "errors": form.errors}
 

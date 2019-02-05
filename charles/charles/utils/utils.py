@@ -529,7 +529,7 @@ def get_customer_locations(client_id):
 def create_customer_location(client_id):
     url = os.getenv('JEAN_GREY_URL') + "clients/"  + str(client_id) +"/customerlocations"
     rheaders = {'Content-Type': 'application/json'}
-    data = {}
+    data = {"address":"my_address","description":"some_description"}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
         return response.json()
