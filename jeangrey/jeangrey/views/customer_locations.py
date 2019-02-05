@@ -80,7 +80,7 @@ class CustomerLocationView(View):
 			cl = CustomerLocation.objects.get(pk=customer_location_id)
 			cl.delete()
 			
-			return HttpResponse(status_code=HTTP_204_NO_CONTENT)
+			return HttpResponse(status=HTTP_204_NO_CONTENT)
 			
 		except CustomerLocation.DoesNotExist as e:
 			logging.error(e)

@@ -87,7 +87,7 @@ class ServiceView(View):
         svc = Service.objects.filter(service_id=service_id)
         svc.delete()
         data = {"Message" : "Service deleted successfully"}
-        return JsonResponse(data)
+        return JsonResponse(data,status=HTTP_204_NO_CONTENT)
 
 
     def _existing_service(self, service_id):

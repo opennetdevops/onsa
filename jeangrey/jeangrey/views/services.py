@@ -150,7 +150,7 @@ class ServiceView(View):
         try:
             svc = Service.objects.get(id=service_id)
             svc.delete()
-            return HttpResponse(status_code=HTTP_204_NO_CONTENT)
+            return HttpResponse(status=HTTP_204_NO_CONTENT)
 
         except Service.DoesNotExist as msg:
             logging.error(msg)

@@ -57,7 +57,7 @@ class ServiceView(APIView):
         delete_jeangrey_service(service_id)
         delete_charles_service(service_id)
         data = {"Message" : "Service deleted successfully"}
-        return JsonResponse(data)
+        return JsonResponse(data,status=204)
 
 class ServiceResourcesView(APIView):
     authentication_classes = ([JSONWebTokenAuthentication,])

@@ -80,7 +80,7 @@ class ClientView(View):
 			client = Client.objects.get(pk=client_id)
 			client.delete()
 
-			return HttpResponse(status=HTTP_NO_CONTENT)
+			return HttpResponse(status=HTTP_204_NO_CONTENT)
 
 		except Client.DoesNotExist as msg:
 			logging.error(msg)
