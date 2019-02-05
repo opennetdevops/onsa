@@ -2,39 +2,39 @@ from django.conf import settings
 from jeangrey.exceptions import *
 from jeangrey.constants import *
 
-import os
 import json
 import requests
 
 def get_access_node(access_node_id):
-    url= settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
+    url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise AccessNodeException("Invalid Access Node.", status_code=ERR_NOT_FOUND)
+
 
 def get_access_port(access_port_id):
     url = settings.INVENTORY_URL + "accessports/"+ str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise AccessPortException("Invalid Access Port.", status_code=ERR_NOT_FOUND)
 
 def get_service_vrfs(vrf_id):
     url = settings.JEAN_GREY_URL + "services?vrf_id="  + str(vrf_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise VrfException("Could not resolve request.", status_code=response.status_code)
 
 def assign_autonomous_system(vrf_id):    
     list_vrfs = get_service_vrfs(vrf_id)
@@ -156,17 +156,17 @@ def use_vlan(access_node_id, vlan_id):
     data = { 'vlan_id': vlan_id }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise AccessNodeException("Invalid access node.", status_code=ERR_NOT_FOUND)
 
 def get_vrf(vrf_name):
     url = settings.INVENTORY_URL + "vrfs?name="+ vrf_name
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise VrfException("Invalid VRF Id.", status_code=response.status_code)

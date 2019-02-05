@@ -11,3 +11,4 @@ class ServiceForm(forms.Form):
     client_network = forms.CharField(max_length=50, required=False, validators=[validate_ipv46_address])
     customer_location_id = forms.DecimalField(validators=[DecimalValidator(10,0)])
     prefix = forms.DecimalField(required=False, validators=[validate_prefix])
+    access_port_id = forms.DecimalField(required=False, validators=[DecimalValidator(10,0)])
