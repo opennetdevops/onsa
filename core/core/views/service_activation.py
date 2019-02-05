@@ -61,3 +61,6 @@ class ServiceActivationView(APIView):
 		data = { "service_id": service_id, "deployment_mode": deployment_mode, "target_state": target_state }	
 		r = requests.post(url, data = json.dumps(data), headers = rheaders)
 		return r
+
+
+service_activation_view = ServiceActivationView.as_view()

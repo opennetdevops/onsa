@@ -14,108 +14,138 @@ def pop_empty_keys(d):
 def get_router_node(router_node_id):
 	url = settings.INVENTORY_URL + "routernodes/" + router_node_id
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+	
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise RouterNodeException("Invalid router node.", status_code=r.status_code)
 	else:
-		return None
+		raise RouterNodeException("Unable to fetch router node.", status_code=r.status_code)
+
 
 def get_access_node(access_node_id):
 	url = settings.INVENTORY_URL + "accessnodes/" + str(access_node_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise AccessNodeException("Invalid access node.", status_code=r.status_code)
 	else:
-		return None
+		raise AccessNodeException("Unable to fetch access node.", status_code=r.status_code)
+
 
 def get_access_port(access_port_id):
 	url = settings.INVENTORY_URL + "accessports/" + str(access_port_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise AccessPortException("Invalid access port.", status_code=r.status_code)
 	else:
-		return None
+		raise AccessPortException("Unable to fetch access port.", status_code=r.status_code)
+
 
 def get_client(client_id):
 	url = settings.JEAN_GREY_URL + "clients/" + str(client_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise ClientException("Invalid client.", status_code=r.status_code)
 	else:
-		return None
+		raise ClientException("Unable to fetch client.", status_code=r.status_code)
 
 def get_client_node(client_node_id):
 	url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise ClientNodeException("Invalid client node.", status_code=r.status_code)
 	else:
-		return None
+		raise ClientNodeException("Unable to fetch client node.", status_code=r.status_code)
 
 def get_client_port(client_node_sn, client_port_id):
 	url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn) + "/clientports/" + str(client_port_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+	# TODO: how to raise exception client_node_sn or client_port_id ?
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise ClientPortException("Invalid client.", status_code=r.status_code)
 	else:
-		return None
+		raise ClientPortException("Unable to fetch client.", status_code=r.status_code)
 
 
 def get_free_access_port(location_id):
 	url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
 	rheaders = {'Content-Type': 'application/json'}
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response[0]
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise LocationException("Invalid location.", status_code=r.status_code)
 	else:
-		return None
+		raise AccessPortException("Unable to fetch access ports.", status_code=r.status_code)
 
 
 def get_vrf(vrf_name):
 	url = settings.INVENTORY_URL + "vrfs?name="+ vrf_name
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-	if json_response:
-		return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
 	else:
-		return None
+		raise VrfException("Unable to fetch VRFs.", status_code=r.status_code)
 
 def get_service(service_id):
 	url = settings.JEAN_GREY_URL + "services/" + str(service_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
-
-	return json_response
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
+	
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise ServiceException("Invalid service.", status_code=r.status_code)
+	else:
+		raise ServiceException("Unable to fetch service.", status_code=r.status_code)
 
 def get_location(location_id):
 	url = settings.INVENTORY_URL + "locations/" + str(location_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
-	return json_response
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise LocationException("Invalid location.", status_code=r.status_code)
+	else:
+		raise LocationException("Unable to fetch location.", status_code=r.status_code)
 
 def get_customer_location(client_id, cl_id):
 	url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations/" + str(cl_id)
 	rheaders = { 'Content-Type': 'application/json' }
-	response = requests.get(url, auth = None, verify = False, headers = rheaders)
-	json_response = json.loads(response.text)
+	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
-	return json_response
+	if r.json() and r.status_code == HTTP_200_OK:
+		return r.json()
+	elif r.status_code == HTTP_404_NOT_FOUND:
+		raise CustomerLocationException("Invalid customer location.", status_code=r.status_code)
+	else:
+		raise CustomerLocationException("Unable to fetch customer location.", status_code=r.status_code)
 
 def authenticate_ldap(username, password):
 	l = init_ldap()
@@ -172,21 +202,21 @@ def search_user(username):
 		return User(username=username, is_active=True)
 
 def delete_charles_service(service_id):
-    url = settings.CHARLES_URL + "services/"  + str(service_id)
-    rheaders = {'Content-Type': 'application/json'}
-    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response
-    else:
-        return None
+	url = settings.CHARLES_URL + "services/"  + str(service_id)
+	rheaders = {'Content-Type': 'application/json'}
+	r = requests.delete(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json():
+		return r.json()
+	else:
+		return None
 
 def delete_jeangrey_service(service_id):
-    url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
-    rheaders = {'Content-Type': 'application/json'}
-    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response
-    else:
-        return None
+	url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
+	rheaders = {'Content-Type': 'application/json'}
+	r = requests.delete(url, auth = None, verify = False, headers = rheaders)
+
+	if r.json():
+		return r.json()
+	else:
+		return None
