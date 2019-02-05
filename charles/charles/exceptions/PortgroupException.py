@@ -1,5 +1,5 @@
-from charles.exceptions.error import Error
+from charles.exceptions.BaseException import BaseException
 
-class PortgroupException(Exception):
+class PortgroupException(BaseException):
    """Raised when there is an issue with portgroups """
    pass

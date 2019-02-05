@@ -1,5 +1,5 @@
-from charles.exceptions.error import Error
+from charles.exceptions.BaseException import BaseException
 
-class LocationException(Exception):
+class LocationException(BaseException):
    """Raised when there is an issue with the location """
    pass

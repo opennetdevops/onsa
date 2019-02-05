@@ -57,6 +57,7 @@ class ServiceView(APIView):
         delete_jeangrey_service(service_id)
         delete_charles_service(service_id)
         data = {"Message" : "Service deleted successfully"}
+
         return JsonResponse(data)
     
 service_view = ServiceView.as_view()

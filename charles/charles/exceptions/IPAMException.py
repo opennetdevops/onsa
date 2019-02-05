@@ -1,5 +1,5 @@
-from charles.exceptions.error import Error
+from charles.exceptions.BaseException import BaseException
 
-class IPAMException(Exception):
+class IPAMException(BaseException):
    """Raised when there is an issue with the IPAM """
    pass

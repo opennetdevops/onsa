@@ -47,8 +47,7 @@ class ClientView(View):
 		if form.is_valid():
 			client = Client.objects.create(**data)
 			client.save()
-			response = {"message" : "Client requested"}
-			return JsonResponse(response, safe=False)
+			return JsonResponse(client.fields(), safe=False, status=HTTP_201_CREATED)
 		else:
 			json_response = {"msg": "Form is invalid.", "errors": form.errors}
 
@@ -81,7 +80,7 @@ class ClientView(View):
 			client = Client.objects.get(pk=client_id)
 			client.delete()
 
-			return HttpResponse(status=HTTP_NO_CONTENT)
+			return HttpResponse(status=HTTP_204_NO_CONTENT)
 
 		except Client.DoesNotExist as msg:
 			logging.error(msg)

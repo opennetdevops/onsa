@@ -1,14 +1,11 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-
+from django.views import View
 from jeangrey.models import *
 from jeangrey.utils import *
+from jeangrey.forms import *
 
 import jeangrey.models as models
-
 import json
 import logging
 import coloredlogs
@@ -16,7 +13,7 @@ import coloredlogs
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
-class CustomerLocationView(APIView):
+class CustomerLocationView(View):
 
 	def get(self, request, client_id, customer_location_id=None):
 
@@ -44,9 +41,12 @@ class CustomerLocationView(APIView):
 		if form.is_valid():		
 			cl = CustomerLocation.objects.create(**data)
 			cl.save()
-			return HttpResponse(status_code=HTTP_201_CREATED)
+			return JsonResponse(cl.fields(), safe=False, status=HTTP_201_CREATED)
 		else:
-			json_response = {"msg": "Form is invalid.", "errors": form.errors}
+			msg = "Form is invalid."
+			logging.error(msg)
+			logging.error(form.errors)
+			json_response = {"msg": msg, "errors": form.errors}
 			return JsonResponse(json_response, safe=False, status=ERR_BAD_REQUEST)
 
 
@@ -80,7 +80,7 @@ class CustomerLocationView(APIView):
 			cl = CustomerLocation.objects.get(pk=customer_location_id)
 			cl.delete()
 			
-			return HttpResponse(status_code=HTTP_204_NO_CONTENT)
+			return HttpResponse(status=HTTP_204_NO_CONTENT)
 			
 		except CustomerLocation.DoesNotExist as e:
 			logging.error(e)

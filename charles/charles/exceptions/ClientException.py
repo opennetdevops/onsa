@@ -1,5 +1,5 @@
-from charles.exceptions.error import Error
+from charles.exceptions.BaseException import BaseException
 
-class ClientException(Exception):
+class ClientException(BaseException):
    """Raised when there is an issue with Client """
    pass

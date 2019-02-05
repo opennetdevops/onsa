@@ -100,7 +100,9 @@ class ServiceView(View):
                 access_node_id = str(access_port['access_node_id'])
 
                 vlan = get_free_vlan(access_node_id)
+                print(vlan)
                 #todo pasar exception
+
                 use_vlan(access_node_id, vlan['vlan_tag'])
         
                 data['location_id'] = location_id
@@ -117,7 +119,7 @@ class ServiceView(View):
                 service.service_state = INITIAL_SERVICE_STATE
                 service.save()
 
-                return JsonResponse({ "msg": "Service requested" }, safe=False, status=HTTP_201_CREATED)
+                return JsonResponse(service.fields(), safe=False, status=HTTP_201_CREATED)
             
             except ExceptionHandler as e:
                 return e.handle()
@@ -148,7 +150,7 @@ class ServiceView(View):
         try:
             svc = Service.objects.get(id=service_id)
             svc.delete()
-            return HttpResponse(status_code=HTTP_204_NO_CONTENT)
+            return HttpResponse(status=HTTP_204_NO_CONTENT)
 
         except Service.DoesNotExist as msg:
             logging.error(msg)

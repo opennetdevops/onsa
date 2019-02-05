@@ -1,21 +1,17 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
-
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-
+from django.views import View
 from jeangrey.models import *
 from jeangrey.utils import *
 
 import jeangrey.models as models
-
 import logging
 import coloredlogs
 
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
-class CustomerLocationAccessPortsView(APIView):
+class CustomerLocationAccessPortsView(View):
 
 	def get(self, request, client_id, customer_location_id):
 		try:

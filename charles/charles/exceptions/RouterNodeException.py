@@ -1,5 +1,5 @@
-from charles.exceptions.error import Error
+from charles.exceptions.BaseException import BaseException
 
-class RouterNodeException(Exception):
+class RouterNodeException(BaseException):
    """Raised when there is an issue with router nodes """
    pass

@@ -20,8 +20,8 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_23")
+        cls.client_id = get_client_by_name("test_client_23")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -32,7 +32,7 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
 
         #define service data
         self.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_23",
                             "bandwidth": 10,
                             "location": self.location,
                             "customer_location_id": self.customer_location_id
@@ -137,8 +137,8 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_23")
+        cls.client_id = get_client_by_name("test_client_23")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -147,7 +147,7 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
 
         #define service data
         cls.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_23",
                             "bandwidth": 10,
                             "location": cls.location,
                             "customer_location_id": cls.customer_location_id
@@ -166,11 +166,12 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
         #free access port
         release_access_port(service['access_port_id'])
 
+        #delete customer location
+        delete_customer_location(cls.client_id, cls.customer_location_id)
+
         #delete client
         delete_client(cls.client_id)
 
-        #delete customer location
-        delete_customer_location(cls.client_id, cls.customer_location_id)
         # print("jean grey services: ", get_services())
         # print("charles services: ", get_charles_services())
 
@@ -213,8 +214,8 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_23")
+        cls.client_id = get_client_by_name("test_client_23")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -225,7 +226,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
         #define service data
         self.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_23",
                             "bandwidth": 10,
                             "location": self.location,
                             "customer_location_id": self.customer_location_id,
@@ -345,8 +346,8 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        create_client("test_client_23")
+        cls.client_id = get_client_by_name("test_client_23")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -355,7 +356,7 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
 
         #define service data
         cls.service_data =  {
-                            "client": "test_client",
+                            "client": "test_client_23",
                             "bandwidth": 10,
                             "location": cls.location,
                             "customer_location_id": cls.customer_location_id,
@@ -375,11 +376,13 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
         #free access port
         release_access_port(service['access_port_id'])
 
+        #delete customer location
+        delete_customer_location(cls.client_id, cls.customer_location_id)
+
         #delete client
         delete_client(cls.client_id)
 
-        #delete customer location
-        delete_customer_location(cls.client_id, cls.customer_location_id)
+
         # print("jean grey services: ", get_services())
         # print("charles services: ", get_charles_services())
 

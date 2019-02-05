@@ -143,7 +143,7 @@ def get_free_vlan(access_node_id):
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
 	if r.json() and r.status_code == HTTP_200_OK:
-		return r.json()
+		return r.json()[0]
 	else:
 		raise AccessNodeException("Invalid access node.", status_code=r.status_code)
 

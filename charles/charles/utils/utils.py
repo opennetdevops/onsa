@@ -405,8 +405,8 @@ def delete_client(client_id):
     url = os.getenv('JEAN_GREY_URL') + "clients/"  + str(client_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_200_OK:
-        return response.json()
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response
     else:
         raise ClientException("Invalid Client")
 
@@ -415,8 +415,8 @@ def delete_service(service_id):
     url = os.getenv('CORE_URL') + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_200_OK:
-        return response.json()
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response
     else:
         raise ServiceException("Invalid Service")
 
@@ -425,8 +425,8 @@ def delete_charles_service(service_id):
     url = os.getenv('CHARLES_URL') + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_200_OK:
-        return response.json()
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response
     else:
         raise ServiceException("Unable to delete charles Service")
 
@@ -434,8 +434,8 @@ def delete_jeangrey_service(service_id):
     url = os.getenv('JEAN_GREY_URL') + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_200_OK:
-        return response.json()
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response
     else:
         raise ServiceException("Unable to delete Jean Grey Service")
 
@@ -444,8 +444,8 @@ def delete_customer_location(client_id, customer_location_id):
     url = os.getenv('JEAN_GREY_URL') + "clients/"  + str(client_id) + "/customerlocations/" + str(customer_location_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_200_OK:
-        return response.json()
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response
     else:
         raise CustomerLocationException("Unable to delete Customer Location")
 
@@ -529,7 +529,7 @@ def get_customer_locations(client_id):
 def create_customer_location(client_id):
     url = os.getenv('JEAN_GREY_URL') + "clients/"  + str(client_id) +"/customerlocations"
     rheaders = {'Content-Type': 'application/json'}
-    data = {}
+    data = {"address":"my_address","description":"some_description"}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
         return response.json()
