@@ -70,10 +70,10 @@ def get_router_node(location_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)[0]
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        raise RouterNodeException("No router nodes in given location.")
+        raise LocationException("Invalid location.", status_code=ERR_NOT_FOUND)
 
 
 def get_free_access_port(location_id):
@@ -81,74 +81,74 @@ def get_free_access_port(location_id):
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response[0]
     else:
-        return None
+        raise LocationException("Invalid location.", status_code=ERR_NOT_FOUND)
 
 def get_location_id(location_name):
     url = settings.INVENTORY_URL + "locations?name=" + location_name
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response['id']
     else:
-        raise LocationException("Invalid location name.")
+        raise LocationException("Could not resolve request", status_code=response.status_code)
 
 def use_port(access_port_id):
-    url= settings.INVENTORY_URL + "accessports/" + access_port_id
+    url = settings.INVENTORY_URL + "accessports/" + access_port_id
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise AccessPortException("Invalid access port.", status_code=ERR_NOT_FOUND)
 
 def get_client_vrfs(client_name):
-    url= settings.INVENTORY_URL + "vrfs?client="+client_name
+    url = settings.INVENTORY_URL + "vrfs?client="+client_name
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise VrfException("Could not resolve request.", status_code=response.status_code)
 
 
 def get_free_vrf():
-    url= settings.INVENTORY_URL + "vrfs?used=False"
+    url = settings.INVENTORY_URL + "vrfs?used=False"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
-        return json_response[0]
+    if json_response and response.status_code == HTTP_200_OK:
+        return json_response
     else:
-        return None
+        raise VrfException("Could not resolve request.", status_code=response.status_code)
 
 
 def use_vrf(vrf_id, vrf_name, client_name):
-    url= settings.INVENTORY_URL + "vrfs/" + vrf_id
+    url = settings.INVENTORY_URL + "vrfs/" + vrf_id
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True, "name": vrf_name, "client": client_name}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
+    if json_response and response.status_code == HTTP_200_OK:
         return json_response
     else:
-        return None
+        raise VrfException("Invalid VRF Id.", status_code=ERR_NOT_FOUND)
 
 def get_free_vlan(access_node_id):
     url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
-    if json_response:
-        return json_response[0]
+    if json_response and response.status_code == HTTP_200_OK:
+        return json_response
     else:
-        return None
+        raise AccessNodeException("Invalid access node.", status_code=ERR_NOT_FOUND)
 
 def use_vlan(access_node_id, vlan_id):
     url = settings.INVENTORY_URL + "accessnodes/" + str(access_node_id) + "/vlantags"

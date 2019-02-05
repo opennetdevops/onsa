@@ -1,9 +1,13 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+
+from jeangrey.models.base_model import BaseModel
 from jeangrey.models.client import Client
 from jeangrey.models.customer_location import CustomerLocation
 
-class Service(models.Model):
+import json
+
+class Service(BaseModel):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     id = models.CharField(primary_key=True, max_length=100, unique=True, default=None)
     service_state = models.CharField(max_length=100, null=True)

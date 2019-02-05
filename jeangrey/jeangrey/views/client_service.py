@@ -1,24 +1,31 @@
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views import View
-from ..models import Service, Client
-import json
-import requests
-from pprint import pprint
 
-VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
-ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'project', 'cpeless_irs', 'vcpe_irs', 'cpe_irs']
-VPLS_SERVICES = ['vpls']
+from jeangrey.models import Service, Client
+from jeangrey.utils import *
+
+import logging
+import coloredlogs
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class ClientServiceView(View):
 
 	def get(self, request, client_id):
 		service_type = request.GET.get('type', None)
 
-		if service_type is not None:
-			if service_type in ALL_SERVICES:
-				services = Service.objects.filter(client=client_id, service_type=service_type).values()
-		else:
-			services = Service.objects.filter(client=client_id).values()
+		try:
+			if service_type is not None:
+				if service_type in ALL_SERVICES:
+					json_response = Service.objects.filter(client=client_id, service_type=service_type).values()
+			else:
+				s = Service.objects.get(client=client_id)
+				json_response = s.fields()
 
-		return JsonResponse(list(services), safe=False)
+			return JsonResponse(json_response, safe=False)
+
+		except Service.DoesNotExist as e:
+			logging.error(e)
+			return JsonResponse({"msg": str(e)}, safe=False, status=ERR_NOT_FOUND)

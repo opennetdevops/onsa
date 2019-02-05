@@ -6,7 +6,6 @@ from rest_framework.views import APIView
 
 from core.utils import *
 from core.views.ldap_jwt import *
-from core.forms import *
 
 import json
 import requests
@@ -39,24 +38,12 @@ class ServiceView(APIView):
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        form = ServiceForm(data)
+        url = settings.JEAN_GREY_URL + "services"
+        rheaders = { 'Content-Type': 'application/json' }
+        response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+        json_response = json.loads(response.text)
 
-        if form.is_valid():
-            url = settings.JEAN_GREY_URL + "services"
-            rheaders = { 'Content-Type': 'application/json' }
-            response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-            json_response = json.loads(response.text)
-
-            return JsonResponse(json_response, safe=False)
-        else:
-            json_response = {"msg": "Form is invalid.", "errors": form.errors}
-
-            return JsonResponse(json_response, safe=False, status=ERR_BAD_REQUEST)
-
-
-        
-       
-  
+        return JsonResponse(json_response, safe=False)     
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

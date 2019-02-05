@@ -1,12 +1,13 @@
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views import View
 from jeangrey.models import *
 from jeangrey.utils import *
+from jeangrey.forms import ServiceForm
+
 import jeangrey.models as models
 
 import json
-import requests
 import logging
 import coloredlogs
 
@@ -60,80 +61,73 @@ class ServiceView(View):
                 return JsonResponse(services, safe=False)
 
             else:
-                s = Service.objects.filter(pk=service_id).values()[0]
-                ServiceClass = getattr(models, ServiceTypes[s['service_type']])
-                s = ServiceClass.objects.filter(pk=service_id).values()[0]
-                return JsonResponse(s, safe=False)
+                s = Service.objects.get(pk=service_id)
+                ServiceClass = getattr(models, ServiceTypes[s.service_type])
+                s = ServiceClass.objects.get(pk=service_id)
+                data = s.fields()
 
-        except IndexError:
-            msg = "Service not found."
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
+                return JsonResponse(data, safe=False)
+
+        except Service.DoesNotExist as e:
+            logging.error(e)
+            return JsonResponse({"msg": str(e)}, safe=False, status=ERR_NOT_FOUND)
         except KeyError:
-            msg = "Service type does not exist."
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-            
+            return JsonResponse([], safe=False)
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
-        try:        
-            client_name = data.pop('client')
-            client = Client.objects.get(name=client_name)
+        form = ServiceForm(data)
 
-            location = data.pop('location')
-            location_id = get_location_id(location)
-            router_node = get_router_node(location_id)
+        if form.is_valid():
 
-            if "access_port_id" not in data.keys():
-                access_port = get_free_access_port(location_id)           
-                access_port_id = str(access_port['id'])
-                use_port(access_port_id)
-            else:
-                access_port_id = data['access_port_id']
-                access_port = get_access_port(access_port_id)
+            try:        
+                client_name = data.pop('client')
+                client = Client.objects.get(name=client_name)
 
-            access_node_id = str(access_port['access_node_id'])
+                location = data.pop('location')
+                location_id = get_location_id(location)
+                router_node = get_router_node(location_id)
 
-            vlan = get_free_vlan(access_node_id)
-            #todo pasar exception
-            use_vlan(access_node_id, vlan['vlan_tag'])
-    
-            data['location_id'] = location_id
-            data['router_node_id'] = router_node['id']
-            data['access_port_id'] = access_port_id
-            data['client_id'] = client.id
-            data['vlan_id'] = vlan['vlan_tag']
-            data['access_node_id'] = access_node_id
-            data['customer_location_id'] = int(data['customer_location_id'])
+                if "access_port_id" not in data.keys():
+                    access_port = get_free_access_port(location_id)           
+                    access_port_id = str(access_port['id'])
+                    use_port(access_port_id)
+                else:
+                    access_port_id = data['access_port_id']
+                    access_port = get_access_port(access_port_id)
 
-            ServiceClass = getattr(models, ServiceTypes[data['service_type']])
+                access_node_id = str(access_port['access_node_id'])
 
-            service = ServiceClass.objects.create(**data)
-            service.service_state = INITIAL_SERVICE_STATE
-            service.save()
-
-            return JsonResponse({ "msg": "Service requested" }, safe=False, status=HTTP_201_CREATED)
+                vlan = get_free_vlan(access_node_id)
+                #todo pasar exception
+                use_vlan(access_node_id, vlan['vlan_tag'])
         
-        except LocationException as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-        except RouterNodeException as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-        except AccessPortException as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-        except VlanException as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NO_VLANS)
-        except Client.DoesNotExist as msg:
-            logging.error(msg)
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-        except KeyError:
-            logging.error("Bad Request")
-            return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_BAD_REQUEST)
+                data['location_id'] = location_id
+                data['router_node_id'] = router_node['id']
+                data['access_port_id'] = access_port_id
+                data['client_id'] = client.id
+                data['vlan_id'] = vlan['vlan_tag']
+                data['access_node_id'] = access_node_id
+                data['customer_location_id'] = int(data['customer_location_id'])
+
+                ServiceClass = getattr(models, ServiceTypes[data['service_type']])
+
+                service = ServiceClass.objects.create(**data)
+                service.service_state = INITIAL_SERVICE_STATE
+                service.save()
+
+                return JsonResponse({ "msg": "Service requested" }, safe=False, status=HTTP_201_CREATED)
+            
+            except ExceptionHandler as e:
+                return e.handle()
+            except Client.DoesNotExist as e:
+                logging.error(e)
+                return JsonResponse({"msg": str(e)}, safe=False, status=ERR_NOT_FOUND)
+
+        else:
+            json_response = {"msg": "Form is invalid.", "errors": form.errors}
+            return JsonResponse(json_response, safe=False, status=ERR_BAD_REQUEST)
         
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
@@ -154,8 +148,8 @@ class ServiceView(View):
         try:
             svc = Service.objects.get(id=service_id)
             svc.delete()
-            data = {"Message" : "Service deleted successfully"}
-            return JsonResponse(data)
+            return HttpResponse(status_code=HTTP_204_NO_CONTENT)
+
         except Service.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)

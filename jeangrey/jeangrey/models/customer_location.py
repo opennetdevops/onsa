@@ -1,7 +1,8 @@
 from django.db import models
+from jeangrey.models.base_model import BaseModel
 from jeangrey.models.client import Client
 
-class CustomerLocation(models.Model):
+class CustomerLocation(BaseModel):
     address = models.CharField(max_length=50, blank=True, null=True)
     description = models.CharField(max_length=50, blank=True, null=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)

@@ -1,4 +1,6 @@
+from jeangrey.exceptions.ExceptionHandler import ExceptionHandler
 from jeangrey.exceptions.LocationException import LocationException
 from jeangrey.exceptions.RouterNodeException import RouterNodeException
 from jeangrey.exceptions.AccessPortException import AccessPortException
 from jeangrey.exceptions.VlanException import VlanException
+from jeangrey.exceptions.VrfException import VrfException

@@ -1,92 +1,89 @@
-from django.core import serializers
-from django.http import JsonResponse
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse
 from django.views import View
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 from jeangrey.models import Client, CustomerLocation, Service
-from jeangrey.utils.utils import *
+from jeangrey.utils import *
+from jeangrey.forms import *
 
 import json
+import logging
+import coloredlogs
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class ClientView(View):
 
-    def get(self, request, client_id=None):
-        if client_id is None:
-            name = request.GET.get('name', None)
-            if name is None:
-                s = Client.objects.all().values()
-                return JsonResponse(list(s), safe=False)
-            else:
-                s = Client.objects.filter(name=name).values()[0]
-                return JsonResponse(s, safe=False)
-        elif Client.objects.filter(pk=client_id).count() is not 0:
-            s = Client.objects.filter(pk=client_id).values()[0]
-            return JsonResponse(s, safe=False)
-        else:
-            return JsonResponse({'message':"Not found"}, status=404)
-        
+	def get(self, request, client_id=None):
+		try:
+			if client_id is None:
+				name = request.GET.get('name', None)
+				if name is None:
+					s = Client.objects.all().values()
+					return JsonResponse(list(s), safe=False)
+				else:
+					s = Client.objects.get(name=name)
+					json_response = s.fields()
+					return JsonResponse(json_response, safe=False)
+			else:
+				s = Client.objects.get(pk=client_id)
+				json_response = s.fields()
+				return JsonResponse(json_response, safe=False)
 
-    def post(self, request):
-        data = json.loads(request.body.decode(encoding='UTF-8'))
-        client = Client.objects.create(**data)
-        client.save()
-        response = {"message" : "Client requested"}
-        return JsonResponse(response)
+		except Client.DoesNotExist as e:
+			logging.error(e)
+			return JsonResponse({"msg": str(e)}, safe=False, status=ERR_NOT_FOUND)
+		
 
-    def put(self, request, client_id):
-        data = json.loads(request.body.decode(encoding='UTF-8'))
-        client = Client.objects.get(pk=client_id)
-        client.update(**data)
-        return JsonResponse(data, safe=False)
+	def post(self, request):
+		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-    def delete(self, request, client_id):
-        client = Client.objects.filter(pk=client_id)
-        client.delete()
-        data = {"Message" : "Client deleted successfully"}
-        return JsonResponse(data)
+		form = ClientForm(data)
 
+		if form.is_valid():
+			client = Client.objects.create(**data)
+			client.save()
+			response = {"message" : "Client requested"}
+			return JsonResponse(response, safe=False)
+		else:
+			json_response = {"msg": "Form is invalid.", "errors": form.errors}
 
+			return JsonResponse(json_response, safe=False, status=ERR_BAD_REQUEST)
 
-class CustomerLocationView(View):
+	def put(self, request, client_id):
+		data = json.loads(request.body.decode(encoding='UTF-8'))
 
-    def get(self, request, client_id, customer_location_id=None):
-        if Client.objects.filter(pk=client_id).count() is 0:
-            return JsonResponse({'message':"Not found"}, status=404)
+		form = ClientForm(data)
 
-        if customer_location_id is None:
-            data = CustomerLocation.objects.filter(client_id=client_id).values()
-            return JsonResponse(list(data), safe=False)
-        else:
-            data = CustomerLocation.objects.filter(pk=customer_location_id).values()[0]
-            return JsonResponse(data, safe=False)        
+		try:
+			if form.is_valid():
+				client = Client.objects.get(pk=client_id)
+				client.update(**data)
 
-    def post(self, request, client_id):
-        data = json.loads(request.body.decode(encoding='UTF-8'))
-        data['client_id'] = client_id
-        cl = CustomerLocation.objects.create(**data)
-        cl.save()
-        response = {"message" : "CustomerLocation requested", "id": cl.id}
-        return JsonResponse(response)
+				json_response = Client.objects.filter(pk=client_id).values()
 
-    def put(self, request, client_id, customer_location_id):
-        data = json.loads(request.body.decode(encoding='UTF-8'))
-        cl = CustomerLocation.objects.get(pk=client_id).customer_location
-        cl.update(**data)
-        return JsonResponse(data, safe=False)
+				return JsonResponse(json_response, safe=False)
+			else:
+				json_response = {"msg": "Form is invalid.", "errors": form.errors}
 
-    def delete(self, request, client_id, customer_location_id):
-        cl = CustomerLocation.objects.filter(pk=customer_location_id)
-        cl.delete()
-        data = {"Message" : "CustomerLocation deleted successfully"}
-        return JsonResponse(data)
+				return JsonResponse(json_response, safe=False, status=ERR_BAD_REQUEST)
 
-class CustomerLocationAccessPortsView(View):
+		except Client.DoesNotExist as msg:
+			logging.error(msg)
+			return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)           
 
-    def get(self, request, client_id, customer_location_id):
-        data = Service.objects.filter(client_id=client_id, customer_location_id=customer_location_id).values()
-        
-        response = []
-        for s in data:
-            access_port = get_access_port(s['access_port_id'])
-            access_node = get_access_node(s['access_node_id'])
-            response.append({'access_port': access_port['port'], 'access_node': access_node['name']})
+	def delete(self, request, client_id):
+		try:
+			client = Client.objects.get(pk=client_id)
+			client.delete()
 
-        return JsonResponse(list(response), safe=False)
+			return HttpResponse(status=HTTP_NO_CONTENT)
+
+		except Client.DoesNotExist as msg:
+			logging.error(msg)
+			
+			return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
