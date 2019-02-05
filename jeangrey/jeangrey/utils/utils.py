@@ -68,7 +68,7 @@ def get_router_node(location_id):
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
 	if r.json() and r.status_code == HTTP_200_OK:
-		return r.json()
+		return r.json()[0]
 	else:
 		raise LocationException("Invalid location.", status_code=r.status_code)
 
@@ -79,7 +79,7 @@ def get_free_access_port(location_id):
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
 	if r.json() and r.status_code == HTTP_200_OK:
-		return r.json()
+		return r.json()[0]
 	else:
 		raise LocationException("Invalid location.", status_code=r.status_code)
 
@@ -121,7 +121,7 @@ def get_free_vrf():
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
 	if r.json() and r.status_code == HTTP_200_OK:
-		return r.json()
+		return r.json()[0]
 	else:
 		raise VrfException("Could not resolve request.", status_code=r.status_code)
 
@@ -153,7 +153,7 @@ def use_vlan(access_node_id, vlan_id):
 	data = { 'vlan_id': vlan_id }
 	r = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 
-	if r.json() and r.status_code == HTTP_200_OK:
+	if r.json() and r.status_code == HTTP_201_CREATED:
 		return r.json()
 	else:
 		raise AccessNodeException("Invalid access node.", status_code=r.status_code)
