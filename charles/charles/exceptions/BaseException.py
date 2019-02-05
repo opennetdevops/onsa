@@ -3,7 +3,7 @@ from charles.constants import *
 import logging
 
 
-class Error(Exception):
+class BaseException(Exception):
 
     exceptionDict = {
         "AccessNodeException":ERR_INVALID_ACCESSNODE,

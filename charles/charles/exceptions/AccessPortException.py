@@ -1,5 +1,5 @@
-from charles.exceptions.error import Error
+from charles.exceptions.BaseException import BaseException
 
-class AccessPortException(Exception):
+class AccessPortException(BaseException):
    """Raised when there is an issue with AccessPort """
    pass
