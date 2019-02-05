@@ -49,7 +49,7 @@ class ServiceView(View):
             #Update JG
             update_service(data['service_id'], {'service_state': service_state} )
 
-        except Error as e:
+        except BaseException as e:
             return e.handle()
 
         msg = { "message": "Service requested." }

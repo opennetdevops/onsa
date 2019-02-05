@@ -130,13 +130,14 @@ def next_state(source_state,target_state):
 class Fsm():
     def run(service):
         #Search next state in FSM MAP
-        state = next_state(service['service_state'], service['target_state'])
+        state = State(next_state(service['service_state'], service['target_state']))
         
         logging.debug(state)
         
         #Execute first run
-        generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
-        service_data = generate_request(service)
+        # generate_request = getattr("State", "do_" + service['deployment_mode'])
+        # service_data = generate_request(service)
+        state.run(service)
 
         if service_data['service_state'] is not "error":
             #update charles, JG will be updated from the main service view
@@ -147,70 +148,87 @@ class Fsm():
 
             #While current_state != target_state keep working
             if service_data['service_state'] != service['target_state']:
-                state = next_state(service_data['service_state'], service['target_state'])
-                generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
-                service_data = generate_request(service)
+                state.name = next_state(service_data['service_state'], service['target_state'])
+                state.run(service)
+                # generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
+                # service_data = generate_request(service)
 
             return service_data['service_state']
         return "error"
 
+    #Manually return next state name
     def to_next_state(service):
-        state = next_state(service['service_state'], service['target_state'])
-        generate_request = getattr(StateTypes[state].value, "do_manual")
-        return generate_request(service)
+        state = State(next_state(service['service_state'], service['target_state']))
+        return state.do_manual()
+        # generate_request = getattr(StateTypes[state].value, "do_manual")
+        # return generate_request(service)
         
 
 
 class State():
-    def do_manual(self, service):
-        return self.__class__.__name__
+
+    name = None
+
+    def __init__(self,name):
+        self.name = name
+
+    def run(self,service):
+        logging.debug(service)
+        logging.debug(service['deployment_mode'])
+        if service['deployment_mode'] == "manual":
+            return self.do_manual()
+        return self.do_automated(service)
+
+
+    def do_manual(self):
+        return self.name
 
     def do_automated(self, service):  
-        generate_request = getattr(ServiceTypes[service['service_type']].value, self.__class__.__name__+ "_" + service['deployment_mode'] + "_request")
+        generate_request = getattr(ServiceTypes[service['service_type']].value, self.name+ "_" + service['deployment_mode'] + "_request")
         return generate_request(service)
 
 
-class bb_data_ack(State):
-    pass
+# class bb_data_ack(State):
+#     pass
 
-class bb_activated(State):
-    pass
+# class bb_activated(State):
+#     pass
 
-class an_data_ack(State):
-    pass
+# class an_data_ack(State):
+#     pass
 
-class an_activated(State):
-    pass
+# class an_activated(State):
+#     pass
 
-class cpe_data_ack(State):
-    pass
+# class cpe_data_ack(State):
+#     pass
 
-class service_activated(State):
-    pass
+# class service_activated(State):
+#     pass
 
-class bb_activation_in_progress(State):
-    pass
+# class bb_activation_in_progress(State):
+#     pass
 
-class cpe_activation_in_progress(State):
-    pass
+# class cpe_activation_in_progress(State):
+#     pass
 
-class an_activation_in_progress(State):
-    pass
+# class an_activation_in_progress(State):
+#     pass
 
 
-class StateTypes(Enum):
-    # Access node states
-    an_data_ack = an_data_ack
-    an_activation_in_progress = an_activation_in_progress
-    an_activated = an_activated
+# class StateTypes(Enum):
+#     # Access node states
+#     an_data_ack = an_data_ack
+#     an_activation_in_progress = an_activation_in_progress
+#     an_activated = an_activated
 
-    # Backbone states
-    bb_data_ack = bb_data_ack
-    bb_activation_in_progress = bb_activation_in_progress
-    bb_activated = bb_activated
+#     # Backbone states
+#     bb_data_ack = bb_data_ack
+#     bb_activation_in_progress = bb_activation_in_progress
+#     bb_activated = bb_activated
 
-    # CPE states
-    cpe_data_ack = cpe_data_ack
-    cpe_activation_in_progress = cpe_activation_in_progress
-    service_activated = service_activated
+#     # CPE states
+#     cpe_data_ack = cpe_data_ack
+#     cpe_activation_in_progress = cpe_activation_in_progress
+#     service_activated = service_activated
 

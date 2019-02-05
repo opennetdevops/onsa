@@ -20,8 +20,8 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client_30")
-        cls.client_id = get_client_by_name("test_client_30")['id']
+        create_client("test_client_03")
+        cls.client_id = get_client_by_name("test_client_03")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -32,7 +32,7 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
 
         #define service data
         self.service_data =  {
-                            "client": "test_client_30",
+                            "client": "test_client_03",
                             "bandwidth": 10,
                             "location": self.location,
                             "customer_location_id": self.customer_location_id
@@ -137,8 +137,8 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client_30")
-        cls.client_id = get_client_by_name("test_client_30")['id']
+        create_client("test_client_03")
+        cls.client_id = get_client_by_name("test_client_03")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -147,7 +147,7 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
 
         #define service data
         cls.service_data =  {
-                            "client": "test_client_30",
+                            "client": "test_client_03",
                             "bandwidth": 10,
                             "location": cls.location,
                             "customer_location_id": cls.customer_location_id
@@ -184,10 +184,10 @@ class TestCpeMplsManualServiceMethods(unittest.TestCase):
         self.assertEqual(service_manual['service_state'], "in_construction")
 
 
-    # def test_002_manual_from_in_construction_to_bb_data_ack(self):
-    #     push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "bb_data_ack")
-    #     service = get_service(self.cpe_mpls_manual_service_id)
-    #     self.assertEqual(service['service_state'], "bb_data_ack")
+    def test_002_manual_from_in_construction_to_bb_data_ack(self):
+        push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "bb_data_ack")
+        service = get_service(self.cpe_mpls_manual_service_id)
+        self.assertEqual(service['service_state'], "bb_data_ack")
 
     # def test_003_manual_from_bb_data_ack_to_bb_activated(self):
     #     push_service_to_orchestrator(self.cpe_mpls_manual_service_id, "manual", "bb_activated")
@@ -214,8 +214,8 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client_30")
-        cls.client_id = get_client_by_name("test_client_30")['id']
+        create_client("test_client_03")
+        cls.client_id = get_client_by_name("test_client_03")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -226,7 +226,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
         #define service data
         self.service_data =  {
-                            "client": "test_client_30",
+                            "client": "test_client_03",
                             "bandwidth": 10,
                             "location": self.location,
                             "customer_location_id": self.customer_location_id,
@@ -346,8 +346,8 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client_30")
-        cls.client_id = get_client_by_name("test_client_30")['id']
+        create_client("test_client_03")
+        cls.client_id = get_client_by_name("test_client_03")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
 
@@ -356,7 +356,7 @@ class TestCpeIrsManualServiceMethods(unittest.TestCase):
 
         #define service data
         cls.service_data =  {
-                            "client": "test_client_30",
+                            "client": "test_client_03",
                             "bandwidth": 10,
                             "location": cls.location,
                             "customer_location_id": cls.customer_location_id,
