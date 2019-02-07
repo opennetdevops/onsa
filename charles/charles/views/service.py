@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
 from charles.models import Service
-from charles.utils.fsm import Fsm
+from charles.utils.fsm import *
 from charles.utils.utils import *
 from pprint import pprint
 
@@ -99,23 +99,34 @@ class ProcessView(View):
 
     def post(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
+        logging.debug(str("processing service id:" + service_id + " with code: " + data['service_state']))
         my_service = Service.objects.filter(service_id=service_id).values()[0]
         my_service_obj = Service.objects.get(service_id=service_id)
         service = get_service(service_id)
         my_service.update(service)
+        logging.debug("Updated service: ")
+        logging.debug(my_service)
 
         if data['service_state'] != "ERROR":
-            service_state = Fsm.to_next_state(my_service)
+            
+            service_state = next_state(my_service['service_state'],my_service['target_state'])
+            
+            logging.debug(str("Going to update JG service to: " + service_state))
             data = {'service_state': service_state}
             update_service(my_service['service_id'], data)
+            logging.debug("JG updated, updating charles...")
+
             my_service_obj.service_state = service_state
             my_service_obj.save()
+            logging.debug("Charles updated")
+
             my_service = Service.objects.filter(service_id=service_id).values()[0]
             my_service.update(service)
             my_service['service_state'] = service_state
             
 
             if service_state != my_service['target_state']:
+                logging.debug("current state different than target_state")
                 service_state = Fsm.run(my_service)
                 print("second: ", service_state)
                 print(my_service)

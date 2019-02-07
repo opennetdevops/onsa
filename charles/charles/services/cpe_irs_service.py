@@ -5,6 +5,7 @@ from pprint import pprint
 # ONSA imports
 from charles.utils.utils import *
 from charles.constants import *
+from charles.models import *
 
 logging.basicConfig(level=logging.DEBUG)
 DEBUG = True
@@ -22,14 +23,14 @@ def bb_data_ack_automated_request(service):
                       'wan_network':  parameters['wan_network']
                     }
     service_data['public_network'] = parameters['client_network']
-    service_data['service_state'] = "bb_data_ack"
+    service_state = "bb_data_ack"
 
 
   else:
-    service_data['service_state'] = "error"
+    service_state = "error"
 
-  
-  return service_data
+  service = update_charles_service(service, service_state)
+  return service
 
 
 
@@ -59,19 +60,19 @@ def bb_activated_automated_request(service):
   config['devices'] =  [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']}]
 
   configure_service(config)
-  service_data = {}
-  service_data['service_state'] = "bb_activation_in_progress"
-  
-  return service_data
+  # service_data = {}
+  # service_data['service_state'] = "bb_activation_in_progress"
+  service = update_charles_service(service, "bb_activation_in_progress")
+  return service
 
 
 
 def an_data_ack_automated_request(service):
   if DEBUG: print("an_data_ack_automated_request")
-  service_data = {}
-  service_data['service_state'] = "an_data_ack"
-  
-  return service_data
+  # service_data = {}
+  # service_data['service_state'] = "an_data_ack"
+  service = update_charles_service(service, "an_data_ack")
+  return service
 
 
 
@@ -94,15 +95,14 @@ def an_activated_automated_request(service):
                   }
     config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
 
-    configure_service(config)
-    service_data['service_state'] = "an_activation_in_progress"
+    service_state = "an_activation_in_progress"
     configure_service(config) 
 
   else:
-    service_data['service_state'] = "error"
-
+    service_state = "error"
   
-  return service_data
+  service = update_charles_service(service, service_state)
+  return service
 
 
 
@@ -115,9 +115,10 @@ def cpe_data_ack_automated_request(service):
   if parameters['client_port_id']:
     service_data = { "client_port_id": parameters['client_port_id']}
 
-  service_data['service_state'] = "cpe_data_ack"
-  
-  return service_data
+  service_state = "cpe_data_ack"
+
+  service = update_charles_service(service, service_state)  
+  return service
 
 
 def service_activated_automated_request(service):
@@ -146,13 +147,13 @@ def service_activated_automated_request(service):
     config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
 
 
-    service_data['service_state'] = "cpe_activation_in_progress"
+    service_state = "cpe_activation_in_progress"
     configure_service(config)
   else:
-    service_data['service_state'] = "error"
+    service_state = "error"
   
-  
-  return service_data
+  service = update_charles_service(service, service_state)  
+  return service
 
 def bb_parameters(client, service):
     location = get_location(service['location_id'])
@@ -215,10 +216,7 @@ def cpe_parameters(client, service):
   
   if service['client_port_id'] is None:
     customer_location = get_customer_location(client['id'],service['customer_location_id'])
-
-    client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)
-
-      
+    client_port_id = fetch_cpe_port_id(service['client_node_sn'], client['name'], customer_location)      
     client_port = get_client_port(service['client_node_sn'], client_port_id)
     parameters['client_port_id'] = client_port_id
 
@@ -235,6 +233,16 @@ def cpe_parameters(client, service):
 
   return parameters
 
+
+
+def update_charles_service(service, state):
+    charles_service = Service.objects.get(service_id=service['service_id'])
+    charles_service.last_state = charles_service.service_state
+    service['last_state'] = charles_service.service_state
+    charles_service.service_state = state
+    service['service_state'] = state
+    charles_service.save()
+    return service
 
 
 

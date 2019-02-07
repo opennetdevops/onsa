@@ -139,19 +139,21 @@ class Fsm():
             
             state = State(next_state(service['service_state'], service['target_state']))
             logging.debug(str("proposed next state " + state.name))
-            
-            result_state = state.run(service)
+            print(service)
+            service = state.run(service)
+            print("after run")
+            print(service)
 
-            while result_state != "error" and keep_processing(result_state) and result_state != service['target_state']:
-                #update charles, JG will be updated from the main service view
-                service = update_charles_service(service, result_state)
-
+            while service['service_state'] != "error" and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
                 #Execute next step
-                state.name = next_state(result_state, service['target_state'])
+                logging.debug(str("from service: "+service['service_state'] +" to: "+ service['target_state']))
+                state.name = next_state(service['service_state'], service['target_state'])
                 logging.debug(str("running " +state.name))
-                result_state = state.run(service)
+                service = state.run(service)
+                print("after last run")
+                print(service)            
             
-            return result_state
+            return service['service_state']
         
         except Service.DoesNotExist as msg:
             logging.error(msg)
@@ -160,16 +162,17 @@ class Fsm():
     #Manually return next state name
     def to_next_state(service):
         state = State(next_state(service['service_state'], service['target_state']))
-        return state.do_manual()
-
+        return state.do_manual(service)
 
 
 def update_charles_service(service, state):
     charles_service = Service.objects.get(service_id=service['service_id'])
     charles_service.last_state = charles_service.service_state
+    service['last_state'] = charles_service.service_state
     charles_service.service_state = state
+    service['service_state'] = state
     charles_service.save()
-    return charles_service.fields()
+    return service
 
 def keep_processing(state):
     # logging.debug(state)
@@ -181,7 +184,6 @@ def keep_processing(state):
 
 
 class State():
-
     name = None
 
     def __init__(self,name):
@@ -191,59 +193,14 @@ class State():
         # logging.debug(service)
         # logging.debug(service['deployment_mode'])
         if service['deployment_mode'] == "manual":
-            return self.do_manual()
+            return self.do_manual(service)
         return self.do_automated(service)
 
-
-    def do_manual(self):
-        return self.name
+    def do_manual(self, service):
+        service['service_state'] = self.name
+        return service
 
     def do_automated(self, service):  
         generate_request = getattr(ServiceTypes[service['service_type']].value, self.name+ "_" + service['deployment_mode'] + "_request")
         return generate_request(service)
-
-
-# class bb_data_ack(State):
-#     pass
-
-# class bb_activated(State):
-#     pass
-
-# class an_data_ack(State):
-#     pass
-
-# class an_activated(State):
-#     pass
-
-# class cpe_data_ack(State):
-#     pass
-
-# class service_activated(State):
-#     pass
-
-# class bb_activation_in_progress(State):
-#     pass
-
-# class cpe_activation_in_progress(State):
-#     pass
-
-# class an_activation_in_progress(State):
-#     pass
-
-
-# class StateTypes(Enum):
-#     # Access node states
-#     an_data_ack = an_data_ack
-#     an_activation_in_progress = an_activation_in_progress
-#     an_activated = an_activated
-
-#     # Backbone states
-#     bb_data_ack = bb_data_ack
-#     bb_activation_in_progress = bb_activation_in_progress
-#     bb_activated = bb_activated
-
-#     # CPE states
-#     cpe_data_ack = cpe_data_ack
-#     cpe_activation_in_progress = cpe_activation_in_progress
-#     service_activated = service_activated
 

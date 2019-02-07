@@ -42,7 +42,8 @@ class WorkerView(View):
 			service.save()
 		else:
 			service = Service.objects.filter(service_id=data['service_id'])
-			service.update(parameters=data['parameters'])
+			# service.update(parameters=data['parameters'])
+			service = service[0]
 
 
 

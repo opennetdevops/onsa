@@ -20,9 +20,10 @@ def configure_service(config):
 def get_ipam_authentication_token():
     url = "/api/authenticate"
     rheaders = {'Content-Type': 'application/json'}
-    #App User
+    #App User - todo change
     data = {"email":"malvarez@lab.fibercorp.com.ar", "password":"Matias.2015"}
     response = requests.post(os.getenv('IPAM_URL') + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    logging.debug(response.text)
     return json.loads(response.text)['auth_token']
 
 
@@ -352,7 +353,7 @@ def get_free_cpe_port(client_node_sn):
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if r.status_code == HTTP_200_OK:
-        return r.json()
+        return r.json()[0]
     else:
         raise ClientPortException("Invalid ClientNode/Port pair")
 
