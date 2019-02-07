@@ -1,5 +1,5 @@
-from jeangrey.exceptions.BaseException import BaseException
+from jeangrey.exceptions.CustomException import CustomException
 
-class VlanException(BaseException):
+class VlanException(CustomException):
    """ Raised when there is an issue with vlans """
    pass

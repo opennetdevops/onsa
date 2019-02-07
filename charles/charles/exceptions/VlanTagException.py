@@ -1,5 +1,5 @@
-from charles.exceptions.BaseException import BaseException
+from charles.exceptions.CustomException import CustomException
 
-class VlanTagException(BaseException):
+class VlanTagException(CustomException):
    """Raised when there is an issue with VlanTag """
    pass

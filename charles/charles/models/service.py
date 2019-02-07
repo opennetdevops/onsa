@@ -1,8 +1,8 @@
 from django.db import models
-from charles.utils.fsm import Fsm
-from charles.utils.utils import *
+from charles.models.base_model import BaseModel
+from charles.exceptions import *
 
-class Service(models.Model):
+class Service(BaseModel):
     service_id = models.CharField(max_length=50)
     service_state = models.CharField(max_length=50, blank=True, null=True)
     last_state = models.CharField(max_length=50, blank=True, null=True)
@@ -12,13 +12,12 @@ class Service(models.Model):
     def __str__(self):
         return self.service_id
 
-    def reprocess(self):
-        #If service already exists (in error state), just modify his initial state
-        if self.service_state == "error":
-            self.service_state = self.last_state
-            self.save()
-        else:
-            raise ServiceException("Unable to reprocess requested service id")
+    def reprocess(self, target_state, deployment_mode):
+        self.service_state = self.last_state
+        self.target_state = target_state
+        self.deployment_mode = deployment_mode
+        self.save()
+
 
 
 

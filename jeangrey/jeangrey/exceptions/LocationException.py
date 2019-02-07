@@ -1,5 +1,5 @@
-from jeangrey.exceptions.BaseException import BaseException
+from jeangrey.exceptions.CustomException import CustomException
 
-class LocationException(BaseException):
+class LocationException(CustomException):
    """ Raised when there is an issue with locations """
    pass

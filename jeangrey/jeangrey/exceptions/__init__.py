@@ -1,4 +1,4 @@
-from jeangrey.exceptions.BaseException import BaseException
+from jeangrey.exceptions.CustomException import CustomException
 from jeangrey.exceptions.LocationException import LocationException
 from jeangrey.exceptions.RouterNodeException import RouterNodeException
 from jeangrey.exceptions.AccessPortException import AccessPortException

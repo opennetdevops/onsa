@@ -1,5 +1,5 @@
-from jeangrey.exceptions.BaseException import BaseException
+from jeangrey.exceptions.CustomException import CustomException
 
-class AccessPortException(BaseException):
+class AccessPortException(CustomException):
    """ Raised when there is an issue with access ports """
    pass

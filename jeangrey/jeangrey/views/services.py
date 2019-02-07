@@ -121,7 +121,7 @@ class ServiceView(View):
 
                 return JsonResponse(service.fields(), safe=False, status=HTTP_201_CREATED)
             
-            except BaseException as e:
+            except CustomException as e:
                 return e.handle()
             except Client.DoesNotExist as e:
                 logging.error(e)

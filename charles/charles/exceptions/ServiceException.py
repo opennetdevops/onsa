@@ -1,5 +1,5 @@
-from charles.exceptions.BaseException import BaseException
+from charles.exceptions.CustomException import CustomException
 
-class ServiceException(BaseException):
+class ServiceException(CustomException):
    """Raised when there is an issue with Service """
    pass

@@ -35,7 +35,7 @@ class ServiceView(View):
                 Service.objects.create(service_id=data['service_id'], target_state=data['target_state'], deployment_mode=data['deployment_mode'])
             else:
                 charles_service = Service.objects.get(service_id=data['service_id'])
-                charles_service.reprocess()
+                charles_service.reprocess(target_state=data['target_state'],deployment_mode=data['deployment_mode'])
 
             #Update charles service with JeanGrey's data
             service = get_service(data['service_id'])

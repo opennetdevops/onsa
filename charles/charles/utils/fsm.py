@@ -1,5 +1,6 @@
 from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service, cpe_irs_service
 from charles.services import vpls_service
+from charles.models import *
 from enum import Enum
 from charles.utils.utils import *
 
@@ -52,6 +53,9 @@ NextStateMap = (
                     'next_state':"an_activated" },
                     {'src':"an_data_ack",
                     'dst': "service_activated",
+                    'next_state':"an_activated" },
+                    {'src':"an_data_ack",
+                    'dst': "bb_data_ack",
                     'next_state':"an_activated" },
 
                     #From an_activation_in_progress
@@ -129,40 +133,51 @@ def next_state(source_state,target_state):
 
 class Fsm():
     def run(service):
-        #Search next state in FSM MAP
-        state = State(next_state(service['service_state'], service['target_state']))
+        try:
+            #Search next state in FSM MAP
+            logging.debug(str("from service: "+service['service_state'] +" to: "+ service['target_state']))
+            
+            state = State(next_state(service['service_state'], service['target_state']))
+            logging.debug(str("proposed next state " + state.name))
+            
+            result_state = state.run(service)
+
+            while result_state != "error" and keep_processing(result_state) and result_state != service['target_state']:
+                #update charles, JG will be updated from the main service view
+                service = update_charles_service(service, result_state)
+
+                #Execute next step
+                state.name = next_state(result_state, service['target_state'])
+                logging.debug(str("running " +state.name))
+                result_state = state.run(service)
+            
+            return result_state
         
-        logging.debug(state)
-        
-        #Execute first run
-        # generate_request = getattr("State", "do_" + service['deployment_mode'])
-        # service_data = generate_request(service)
-        state.run(service)
-
-        if service_data['service_state'] is not "error":
-            #update charles, JG will be updated from the main service view
-            charles_service = Service.objects.get(service_id=service_data['service_id'])
-            charles_service.last_state = charles_service.service_state
-            charles_service.service_state = service_data['service_state']
-            charles_service.save()
-
-            #While current_state != target_state keep working
-            if service_data['service_state'] != service['target_state']:
-                state.name = next_state(service_data['service_state'], service['target_state'])
-                state.run(service)
-                # generate_request = getattr(StateTypes[state].value, "do_" + service['deployment_mode'])
-                # service_data = generate_request(service)
-
-            return service_data['service_state']
-        return "error"
+        except Service.DoesNotExist as msg:
+            logging.error(msg)
+            raise ServiceException("Invalid Service")
 
     #Manually return next state name
     def to_next_state(service):
         state = State(next_state(service['service_state'], service['target_state']))
         return state.do_manual()
-        # generate_request = getattr(StateTypes[state].value, "do_manual")
-        # return generate_request(service)
-        
+
+
+
+def update_charles_service(service, state):
+    charles_service = Service.objects.get(service_id=service['service_id'])
+    charles_service.last_state = charles_service.service_state
+    charles_service.service_state = state
+    charles_service.save()
+    return charles_service.fields()
+
+def keep_processing(state):
+    # logging.debug(state)
+    if "in_progress" in state:
+        return False
+    return True
+
+
 
 
 class State():
@@ -173,8 +188,8 @@ class State():
         self.name = name
 
     def run(self,service):
-        logging.debug(service)
-        logging.debug(service['deployment_mode'])
+        # logging.debug(service)
+        # logging.debug(service['deployment_mode'])
         if service['deployment_mode'] == "manual":
             return self.do_manual()
         return self.do_automated(service)

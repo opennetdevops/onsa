@@ -1,5 +1,5 @@
-from charles.exceptions.BaseException import BaseException
+from charles.exceptions.CustomException import CustomException
 
-class VirtualPodException(BaseException):
+class VirtualPodException(CustomException):
    """Raised when there is an issue with VirtualPods """
    pass

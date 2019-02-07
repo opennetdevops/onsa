@@ -1,5 +1,5 @@
-from charles.exceptions.BaseException import BaseException
+from charles.exceptions.CustomException import CustomException
 
-class VrfException(BaseException):
+class VrfException(CustomException):
    """Raised when there is an issue with Vrf """
    pass

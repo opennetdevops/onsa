@@ -1,5 +1,5 @@
-from jeangrey.exceptions.BaseException import BaseException
+from jeangrey.exceptions.CustomException import CustomException
 
-class RouterNodeException(BaseException):
+class RouterNodeException(CustomException):
    """ Raised when there is an issue with router nodes """
    pass

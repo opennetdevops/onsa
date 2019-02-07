@@ -1,5 +1,5 @@
-from charles.exceptions.BaseException import BaseException
+from charles.exceptions.CustomException import CustomException
 
-class ClientPortException(BaseException):
+class ClientPortException(CustomException):
    """Raised when there is an issue with client ports """
    pass

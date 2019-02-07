@@ -1,5 +1,5 @@
-from jeangrey.exceptions.BaseException import BaseException
+from jeangrey.exceptions.CustomException import CustomException
 
-class AccessNodeException(BaseException):
+class AccessNodeException(CustomException):
    """ Raised when there is an issue with access nodes """
    pass

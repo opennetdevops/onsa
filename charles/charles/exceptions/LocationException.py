@@ -1,5 +1,5 @@
-from charles.exceptions.BaseException import BaseException
+from charles.exceptions.CustomException import CustomException
 
-class LocationException(BaseException):
+class LocationException(CustomException):
    """Raised when there is an issue with the location """
    pass

@@ -1,5 +1,5 @@
-from charles.exceptions.BaseException import BaseException
+from charles.exceptions.CustomException import CustomException
 
-class AccessPortException(BaseException):
+class AccessPortException(CustomException):
    """Raised when there is an issue with AccessPort """
    pass
