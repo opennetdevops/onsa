@@ -1,5 +1,6 @@
 from charles.constants import *
 from charles.exceptions import *
+from charles.models import Service
 
 import requests
 import json
@@ -713,3 +714,11 @@ def use_vlan(access_node_id, vlan_id):
     else:
         raise VlanTagException("Unable to update VlanTag")
 
+def update_charles_service(service, state):
+    charles_service = Service.objects.get(service_id=service['service_id'])
+    charles_service.last_state = charles_service.service_state
+    service['last_state'] = charles_service.service_state
+    charles_service.service_state = state
+    service['service_state'] = state
+    charles_service.save()
+    return service

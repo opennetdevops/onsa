@@ -25,12 +25,23 @@ def bb_data_ack_automated_request(service):
     service_data['public_network'] = parameters['client_network']
     service_state = "bb_data_ack"
 
-
   else:
     service_state = "error"
 
+  service_data['service_state']=service_state
+  update_service(service['service_id'], service_data)
+  print("before update")
+  print(service)
   service = update_charles_service(service, service_state)
-  return service
+  print("after update charles")
+  print(service)
+  print("service data")
+  print(service_data)
+  service.update(service_data)
+  my_service = service
+  print("after update service with service data")
+  print(my_service)
+  return my_service
 
 
 
@@ -62,16 +73,22 @@ def bb_activated_automated_request(service):
   configure_service(config)
   # service_data = {}
   # service_data['service_state'] = "bb_activation_in_progress"
-  service = update_charles_service(service, "bb_activation_in_progress")
-  return service
+  service_state = "bb_activation_in_progress"
+  service_data = {'service_state' : service_state}
+  update_service(service['service_id'], service_data)
+  service = update_charles_service(service, service_state)
 
+  return service
 
 
 def an_data_ack_automated_request(service):
   if DEBUG: print("an_data_ack_automated_request")
   # service_data = {}
   # service_data['service_state'] = "an_data_ack"
-  service = update_charles_service(service, "an_data_ack")
+  service_state = "an_data_ack"
+  service_data = {'service_state' : service_state}
+  update_service(service['service_id'], service_data)
+  service = update_charles_service(service, service_state)
   return service
 
 
@@ -100,7 +117,9 @@ def an_activated_automated_request(service):
 
   else:
     service_state = "error"
-  
+
+  service_data['service_state'] = service_state
+  update_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
 
@@ -117,9 +136,11 @@ def cpe_data_ack_automated_request(service):
 
   service_state = "cpe_data_ack"
 
+  service_data['service_state']=service_state
+  update_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)  
+  service.update(service_data)
   return service
-
 
 def service_activated_automated_request(service):
   if DEBUG: print("service_activated_automated_request")
@@ -151,7 +172,9 @@ def service_activated_automated_request(service):
     configure_service(config)
   else:
     service_state = "error"
-  
+
+  service_data['service_state'] = service_state
+  update_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)  
   return service
 
@@ -235,14 +258,7 @@ def cpe_parameters(client, service):
 
 
 
-def update_charles_service(service, state):
-    charles_service = Service.objects.get(service_id=service['service_id'])
-    charles_service.last_state = charles_service.service_state
-    service['last_state'] = charles_service.service_state
-    charles_service.service_state = state
-    service['service_state'] = state
-    charles_service.save()
-    return service
+
 
 
 

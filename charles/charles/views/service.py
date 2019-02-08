@@ -47,7 +47,7 @@ class ServiceView(View):
             service_state = Fsm.run(my_charles_service)
             
             #Update JG
-            update_service(data['service_id'], {'service_state': service_state} )
+            # update_service(data['service_id'], {'service_state': service_state} )
 
         except BaseException as e:
             return e.handle()
@@ -126,7 +126,8 @@ class ProcessView(View):
             
 
             if service_state != my_service['target_state']:
-                logging.debug("current state different than target_state")
+                logging.debug("current state different than target_state, running FSM with service:")
+                logging.debug(str(my_service))
                 service_state = Fsm.run(my_service)
                 print("second: ", service_state)
                 print(my_service)

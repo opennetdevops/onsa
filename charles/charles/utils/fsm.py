@@ -139,10 +139,10 @@ class Fsm():
             
             state = State(next_state(service['service_state'], service['target_state']))
             logging.debug(str("proposed next state " + state.name))
-            print(service)
             service = state.run(service)
-            print("after run")
+            logging.debug(str("Service after run:" + str(service)))
             print(service)
+
 
             while service['service_state'] != "error" and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
                 #Execute next step
@@ -150,8 +150,7 @@ class Fsm():
                 state.name = next_state(service['service_state'], service['target_state'])
                 logging.debug(str("running " +state.name))
                 service = state.run(service)
-                print("after last run")
-                print(service)            
+                logging.debug(str("Service after inner while run:" + str(service)))
             
             return service['service_state']
         
@@ -165,14 +164,6 @@ class Fsm():
         return state.do_manual(service)
 
 
-def update_charles_service(service, state):
-    charles_service = Service.objects.get(service_id=service['service_id'])
-    charles_service.last_state = charles_service.service_state
-    service['last_state'] = charles_service.service_state
-    charles_service.service_state = state
-    service['service_state'] = state
-    charles_service.save()
-    return service
 
 def keep_processing(state):
     # logging.debug(state)
@@ -197,7 +188,11 @@ class State():
         return self.do_automated(service)
 
     def do_manual(self, service):
+        logging.debug("Manual")
         service['service_state'] = self.name
+        service_data = {'service_state': self.name}
+        update_service(service['service_id'], service_data)
+        service = update_charles_service(service, self.name)
         return service
 
     def do_automated(self, service):  
