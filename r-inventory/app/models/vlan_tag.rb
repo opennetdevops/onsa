@@ -1,0 +1,2 @@
+class VlanTag < ApplicationRecord
+end

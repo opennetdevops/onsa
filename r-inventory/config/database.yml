@@ -1,0 +1,8 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: inventory_development
+  pool: 5
+  username: inventory
+  password: inventory
+  host: localhost

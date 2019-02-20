@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  mgmt_ip: 
+  model: MyString
+  vendor: MyString
+  location_id: 1
+  uplink_interface: MyString
+  uplink_ports: MyString
+  provider_vlan: 1
+  logical_unit_id: 1
+
+two:
+  name: MyString
+  mgmt_ip: 
+  model: MyString
+  vendor: MyString
+  location_id: 1
+  uplink_interface: MyString
+  uplink_ports: MyString
+  provider_vlan: 1
+  logical_unit_id: 1
