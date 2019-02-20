@@ -2,7 +2,13 @@ class LogicalUnitsController < ApplicationController
 
   def index
     if params[:used]
-      @logical_units
+      router_node_lus = RouterNode.logical_units
+      if params[:used] == "true"
+      @logical_units = LogicalUnit.all.where(id:router_node_lus.pluck(:id))
+      end
+      if params[:used] == "false"
+      @logical_units = LogicalUnit.all.where.not(id:router_node_lus.pluck(:id))
+      end
     else
       @logical_units = RouterNode.find(params[:router_node_id]).logical_units
     end
