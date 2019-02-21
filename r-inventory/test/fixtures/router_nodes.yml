@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  mgmt_ip: 
+  model: MyString
+  vendor: MyString
+  location_id: 1
+  private_wan_ip: 
+  loopback: 
+
+two:
+  name: MyString
+  mgmt_ip: 
+  model: MyString
+  vendor: MyString
+  location_id: 1
+  private_wan_ip: 
+  loopback: 

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  interface_name: MyString
+  client_node_id: 1
+  used: false
+  service_id: MyString
+
+two:
+  interface_name: MyString
+  client_node_id: 1
+  used: false
+  service_id: MyString
