@@ -1,5 +1,22 @@
 [
 {"pk":"1", "model": "inventory.vlantag", "fields": {"vlan_tag":"3100"}},
 {"pk":"2", "model": "inventory.vlantag", "fields": {"vlan_tag":"3101"}},
-{"pk":"3", "model": "inventory.vlantag", "fields": {"vlan_tag":"3102"}}
+{"pk":"3", "model": "inventory.vlantag", "fields": {"vlan_tag":"3102"}},
+{"pk":"4", "model": "inventory.vlantag", "fields": {"vlan_tag":"3103"}},
+{"pk":"5", "model": "inventory.vlantag", "fields": {"vlan_tag":"3104"}},
+{"pk":"6", "model": "inventory.vlantag", "fields": {"vlan_tag":"3105"}},
+{"pk":"7", "model": "inventory.vlantag", "fields": {"vlan_tag":"3106"}},
+{"pk":"8", "model": "inventory.vlantag", "fields": {"vlan_tag":"3107"}},
+{"pk":"9", "model": "inventory.vlantag", "fields": {"vlan_tag":"3108"}},
+{"pk":"10", "model": "inventory.vlantag", "fields": {"vlan_tag":"3109"}},
+{"pk":"11", "model": "inventory.vlantag", "fields": {"vlan_tag":"3110"}},
+{"pk":"12", "model": "inventory.vlantag", "fields": {"vlan_tag":"3111"}},
+{"pk":"13", "model": "inventory.vlantag", "fields": {"vlan_tag":"3112"}},
+{"pk":"14", "model": "inventory.vlantag", "fields": {"vlan_tag":"3113"}},
+{"pk":"15", "model": "inventory.vlantag", "fields": {"vlan_tag":"3114"}},
+{"pk":"16", "model": "inventory.vlantag", "fields": {"vlan_tag":"3115"}},
+{"pk":"17", "model": "inventory.vlantag", "fields": {"vlan_tag":"3116"}},
+{"pk":"18", "model": "inventory.vlantag", "fields": {"vlan_tag":"3117"}},
+{"pk":"19", "model": "inventory.vlantag", "fields": {"vlan_tag":"3118"}},
+{"pk":"20", "model": "inventory.vlantag", "fields": {"vlan_tag":"3119"}}
 ]

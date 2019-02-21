@@ -2,8 +2,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views import View
 from charles.models import Service
-from charles.utils.fsm import *
-from charles.utils.utils import *
+from charles.utils import *
 from pprint import pprint
 
 import requests

@@ -3,6 +3,8 @@ from charles.services import vpls_service
 from charles.models import *
 from enum import Enum
 from charles.utils.utils import *
+from charles.utils.inventory_utils import *
+from charles.utils.ipam_utils import *
 
 import logging
 import coloredlogs

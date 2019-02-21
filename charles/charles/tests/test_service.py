@@ -2,8 +2,7 @@
 import unittest
 
 from charles.models import Service
-from charles.utils.fsm import Fsm
-from charles.utils.utils import *
+from charles.utils import *
 # from time import sleep
 
 
@@ -89,7 +88,7 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
         self.assertEqual(service['service_state'], "bb_activation_in_progress")
         update_charles_service_state(self.service_id, "ERROR")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "error")
+        self.assertEqual(service['service_state'], "ERROR")
 
     def test_004_hybrid_manual_till_bb_data_ack_then_automated(self):
         push_service_to_orchestrator(self.service_id, "manual", "bb_data_ack")
@@ -297,7 +296,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         self.assertEqual(service['service_state'], "an_activation_in_progress")
         update_charles_service_state(self.service_id, "ERROR")
         service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "error")
+        self.assertEqual(service['service_state'], "ERROR")
 
     def test_004_hybrid_manual_till_an_data_ack_then_automated(self):
         push_service_to_orchestrator(self.service_id, "manual", "an_data_ack")

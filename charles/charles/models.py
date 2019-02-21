@@ -1,6 +1,5 @@
 from django.db import models
-from charles.utils.fsm import Fsm
-from charles.utils.utils import *
+from charles.utils import *
 
 
 # Create your models here.

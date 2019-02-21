@@ -2,7 +2,7 @@
 from pprint import pprint
 
 # ONSA imports
-from charles.utils.utils import *
+from charles.utils import *
 from charles.constants import *
 
 DEBUG = True

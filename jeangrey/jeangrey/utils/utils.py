@@ -100,7 +100,7 @@ def get_location_id(location_name):
 	else:
 		raise LocationException("Could not resolve request", status_code=r.status_code)
 
-def use_port(access_port_id):
+def use_access_port(access_port_id):
 	url = settings.INVENTORY_URL + "accessports/" + access_port_id
 	rheaders = {'Content-Type': 'application/json'}
 	data = {"used":True}

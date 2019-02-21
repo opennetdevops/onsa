@@ -92,7 +92,7 @@ class ServiceView(View):
                 if "access_port_id" not in data.keys():
                     access_port = get_free_access_port(location_id)           
                     access_port_id = str(access_port['id'])
-                    use_port(access_port_id)
+                    use_access_port(access_port_id)
                 else:
                     access_port_id = data['access_port_id']
                     access_port = get_access_port(access_port_id)
