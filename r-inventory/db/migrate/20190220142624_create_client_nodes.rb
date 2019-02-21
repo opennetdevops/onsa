@@ -9,6 +9,7 @@ class CreateClientNodes < ActiveRecord::Migration[5.2]
       t.string :client
       t.string :uplink_port
       t.string :customer_location
+      t.integer :location_id
       t.timestamps
     end
   end
