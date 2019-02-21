@@ -39,7 +39,8 @@ class VrfLocationsView(View):
             return JsonResponse(list(vrf.locations.all().values()), safe=False)
 
 
-    def put(self, request, vrf_id, location_id):
+    def post(self, request, vrf_id):
+        data = json.loads(request.body.decode(encoding='UTF-8'))
         try:
             location = Location.objects.get(pk=location_id)
         except Location.DoesNotExist as msg:
@@ -47,12 +48,13 @@ class VrfLocationsView(View):
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
         
         try:
-            vrf = Vrf.objects.get(rt=vrf_id)
+            vrf = Vrf.objects.get(rt=data['vrf_id'])
         except Vrf.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
         
         vrf.locations.add(location)
+        vrf.save()
         data = {"Message" : "Added location to vrf"}
         return JsonResponse(data, safe=False)
 

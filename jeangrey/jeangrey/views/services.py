@@ -103,7 +103,7 @@ class ServiceView(View):
                 print(vlan)
                 #todo pasar exception
 
-                use_vlan(access_node_id, vlan['vlan_tag'])
+                use_vlan(access_node_id, vlan['id'])
         
                 data['location_id'] = location_id
                 data['router_node_id'] = router_node['id']

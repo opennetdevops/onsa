@@ -128,13 +128,24 @@ class ProcessView(View):
             if service_state != my_service['target_state']:
                 logging.debug("current state different than target_state, running FSM with service:")
                 logging.debug(str(my_service))
-                service_state = Fsm.run(my_service)
+                
+                try:
+                    service_state = Fsm.run(my_service)
+                
+                except BaseException as e:
+                    service_state = "ERROR"
+                    data = {'service_state': service_state}
+                    update_service(my_service['service_id'], data)
+                    my_service_obj.service_state = service_state
+                    my_service_obj.save()
+                    return e.handle()
+                
                 print("second: ", service_state)
                 print(my_service)
             response = { "message": "Service stated updated" }
 
         else:
-            service_state = "error"
+            service_state = "ERROR"
             response = { "message": "Service update failed" }
 
         data = {'service_state': service_state}

@@ -4,6 +4,11 @@ from jeangrey.constants import *
 
 import json
 import requests
+import logging
+import coloredlogs
+
+coloredlogs.install(level='DEBUG')
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 def get_access_node(access_node_id):
 	url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
@@ -77,9 +82,11 @@ def get_free_access_port(location_id):
 	url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
 	rheaders = {'Content-Type': 'application/json'}
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
-
+	print(r.json())
 	if r.json() and r.status_code == HTTP_200_OK:
 		return r.json()[0]
+	elif not r.json():
+		raise LocationException("Not available AccessPort", status_code=HTTP_503_SERVICE_UNAVAILABLE)
 	else:
 		raise LocationException("Invalid location.", status_code=r.status_code)
 
@@ -141,11 +148,14 @@ def get_free_vlan(access_node_id):
 	url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
 	rheaders = { 'Content-Type': 'application/json' }
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
-
+	logging.debug(r.json())
 	if r.json() and r.status_code == HTTP_200_OK:
 		return r.json()[0]
+	elif not r.json():
+		raise AccessNodeException("Not available VLANs", status_code=HTTP_503_SERVICE_UNAVAILABLE)
 	else:
 		raise AccessNodeException("Invalid access node.", status_code=r.status_code)
+
 
 def use_vlan(access_node_id, vlan_id):
 	url = settings.INVENTORY_URL + "accessnodes/" + str(access_node_id) + "/vlantags"

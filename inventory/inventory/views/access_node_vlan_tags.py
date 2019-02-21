@@ -37,7 +37,7 @@ class AccesNodeVlanTagsView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         try:
             access_node = AccessNode.objects.get(pk=access_node_id)
-            vlan_tag = VlanTag.objects.get(vlan_tag=data['vlan_id'])
+            vlan_tag = VlanTag.objects.get(pk=data['vlan_id'])
             vlan_tag.access_nodes.add(access_node)
             vlan_tag.save()
             

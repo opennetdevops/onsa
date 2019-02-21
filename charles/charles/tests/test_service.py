@@ -131,7 +131,7 @@ class TestCpeMplsAutomatedServiceMethods(unittest.TestCase):
 
 
 
-
+@unittest.skip("testing irs")
 class TestCpeMplsManualServiceMethods(unittest.TestCase):
 
     @classmethod
@@ -217,6 +217,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         cls.client_id = get_client_by_name("test_client_03")['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.location = "LAB"
+        cls.initial_id = 1
 
 
     def setUp(self):
@@ -232,7 +233,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
                             "prefix": 29
                             }
 
-        self.service_id = "SVC01-A"
+        self.service_id = "SVC01-A_" + str(self.initial_id)
         self.service_data['client_node_sn'] = self.client_node_sn
         create_mock_service("cpe_irs", self.service_id, self.service_data )
 
@@ -249,6 +250,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
         #delete service at charles & JeanGrey
         delete_charles_service(self.service_id)
+        self.initial_id = self.initial_id + 1
 
         # sleep(10)
 
@@ -269,7 +271,11 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "an_activation_in_progress")
-        update_charles_service_state(self.service_id, "COMPLETED")
+        try:
+            update_charles_service_state(self.service_id, "COMPLETED")
+        except BaseException as e:
+            service = get_service(self.service_id)
+            print(service['service_state'])
 
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "bb_activation_in_progress")
@@ -285,54 +291,54 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         #release client node port for further tests
         release_client_node_port(self.client_node_sn, service['client_port_id'])
 
-    # def test_003_automated_from_in_construction_to_service_activated_error(self):
-    #     push_service_to_orchestrator(self.service_id, "automated", "service_activated")
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "an_activation_in_progress")
-    #     update_charles_service_state(self.service_id, "ERROR")
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "error")
+    def test_003_automated_from_in_construction_to_service_activated_error(self):
+        push_service_to_orchestrator(self.service_id, "automated", "service_activated")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
+        update_charles_service_state(self.service_id, "ERROR")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "error")
 
-    # def test_004_hybrid_manual_till_an_data_ack_then_automated(self):
-    #     push_service_to_orchestrator(self.service_id, "manual", "an_data_ack")
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "an_data_ack")
+    def test_004_hybrid_manual_till_an_data_ack_then_automated(self):
+        push_service_to_orchestrator(self.service_id, "manual", "an_data_ack")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "an_data_ack")
         
-    #     push_service_to_orchestrator(self.service_id, "automated", "service_activated")
+        push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "an_activation_in_progress")
-    #     update_charles_service_state(self.service_id, "COMPLETED")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
+        update_charles_service_state(self.service_id, "COMPLETED")
 
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "bb_activation_in_progress")
-    #     update_charles_service_state(self.service_id, "COMPLETED")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "bb_activation_in_progress")
+        update_charles_service_state(self.service_id, "COMPLETED")
 
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "cpe_activation_in_progress")
-    #     update_charles_service_state(self.service_id, "COMPLETED")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "cpe_activation_in_progress")
+        update_charles_service_state(self.service_id, "COMPLETED")
         
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "service_activated")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "service_activated")
 
-    #     #release client node port for further tests
-    #     release_client_node_port(self.client_node_sn, service['client_port_id'])
+        #release client node port for further tests
+        release_client_node_port(self.client_node_sn, service['client_port_id'])
 
-    # def test_005_manual_till_an_activated(self):
-    #     push_service_to_orchestrator(self.service_id, "manual", "an_data_ack")
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "an_data_ack")
-    #     push_service_to_orchestrator(self.service_id, "manual", "an_activated")
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "an_activated")
+    def test_005_manual_till_an_activated(self):
+        push_service_to_orchestrator(self.service_id, "manual", "an_data_ack")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "an_data_ack")
+        push_service_to_orchestrator(self.service_id, "manual", "an_activated")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "an_activated")
 
-    # def test_006_automated_till_an_activated(self):
-    #     push_service_to_orchestrator(self.service_id, "automated", "an_activated")
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "an_activation_in_progress")
-    #     update_charles_service_state(self.service_id, "COMPLETED")
-    #     service = get_service(self.service_id)
-    #     self.assertEqual(service['service_state'], "an_activated")
+    def test_006_automated_till_an_activated(self):
+        push_service_to_orchestrator(self.service_id, "automated", "an_activated")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "an_activation_in_progress")
+        update_charles_service_state(self.service_id, "COMPLETED")
+        service = get_service(self.service_id)
+        self.assertEqual(service['service_state'], "an_activated")
 
 
 

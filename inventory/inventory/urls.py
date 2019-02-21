@@ -58,8 +58,8 @@ urlpatterns = [
 
     path('/api/vrfs', require_http_methods(["GET","POST"])(vrf.VrfView.as_view())),
     path('/api/vrfs/<int:vrf_id>', require_http_methods(["GET","PUT","DELETE"])(vrf.VrfView.as_view())),
-    path('/api/vrfs/<int:vrf_id>/locations', require_http_methods(["GET"])(vrf_locations.VrfLocationsView.as_view())),
-    path('/api/vrfs/<int:vrf_id>/locations/<int:location_id>', require_http_methods(["GET", "PUT", "DELETE"])(vrf_locations.VrfLocationsView.as_view())),
+    path('/api/vrfs/<int:vrf_id>/locations', require_http_methods(["GET", "POST"])(vrf_locations.VrfLocationsView.as_view())),
+    path('/api/vrfs/<int:vrf_id>/locations/<int:location_id>', require_http_methods(["GET", "DELETE"])(vrf_locations.VrfLocationsView.as_view())),
 
  ]
  

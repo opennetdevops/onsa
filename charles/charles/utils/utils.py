@@ -722,3 +722,284 @@ def update_charles_service(service, state):
     service['service_state'] = state
     charles_service.save()
     return service
+
+def create_accessnode(data):
+    url = os.getenv('INVENTORY_URL') + "accessnodes"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+def create_routernode(data):
+    url = os.getenv('INVENTORY_URL') + "routernodes"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_location(data):
+    url = os.getenv('INVENTORY_URL') + "locations"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_logicalunit(data):
+    url = os.getenv('INVENTORY_URL') + "logicalunits"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_clientnode(data):
+    url = os.getenv('INVENTORY_URL') + "clientnodes"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_vrf(data):
+    url = os.getenv('INVENTORY_URL') + "vrfs"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_portgroup(data):
+    url = os.getenv('INVENTORY_URL') + "portgroups"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_virtualpod(data):
+    url = os.getenv('INVENTORY_URL') + "virtualpods"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_vlantag(data):
+    url = os.getenv('INVENTORY_URL') + "vlantags"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_accessport(data):
+    url = os.getenv('INVENTORY_URL') + "accessports"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+def create_clientport(data):
+    url = os.getenv('INVENTORY_URL') + "clientports"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+def add_vlan_to_accessnode(access_node_id,data):
+    url = os.getenv('INVENTORY_URL') + "accessnodes/" + str(access_node_id) + "/vlantags"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def add_vrf_to_location(location_id,data):
+    url = os.getenv('INVENTORY_URL') + "locations/" + str(location_id) + "/vrfs"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def add_logicalunit_to_routernode(router_node_id,data):
+    url = os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def remove_vlan_from_accessnode(access_node_id,vlan_id):
+    url = os.getenv('INVENTORY_URL') + "accessnodes/" + str(access_node_id) + "/vlantags/" +str(vlan_id)
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.delete(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def remove_vrf_from_location(location_id,vrf_id):
+    url = os.getenv('INVENTORY_URL') + "locations/" + str(location_id) + "/vrfs/" + str(vrf_id)
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def remove_logicalunit_from_routernode(router_node_id,logical_unit_id):
+    url = os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits/" +str(logical_unit_id)
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.delete(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+
+
+
+def create_accessnode(data):
+    url = os.getenv('INVENTORY_URL') + "accessnodes"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+def create_routernode(data):
+    url = os.getenv('INVENTORY_URL') + "routernodes"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_location(data):
+    url = os.getenv('INVENTORY_URL') + "locations"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_logicalunit(data):
+    url = os.getenv('INVENTORY_URL') + "logicalunits"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_clientnode(data):
+    url = os.getenv('INVENTORY_URL') + "clientnodes"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_vrf(data):
+    url = os.getenv('INVENTORY_URL') + "vrfs"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_portgroup(data):
+    url = os.getenv('INVENTORY_URL') + "portgroups"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_virtualpod(data):
+    url = os.getenv('INVENTORY_URL') + "virtualpods"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_vlantag(data):
+    url = os.getenv('INVENTORY_URL') + "vlantags"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+def create_accessport(data):
+    url = os.getenv('INVENTORY_URL') + "accessports"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+def create_clientport(data):
+    url = os.getenv('INVENTORY_URL') + "clientports"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_201_CREATED:
+        return response.json()
+    else:
+        raise ServiceException("Unable to create service")
+
+
+
+
