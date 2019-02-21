@@ -1,2 +1,2 @@
-[{"pk":"1", "model": "inventory.portgroup", "fields": {"name":"PG-VCPE-IRS-VL3500", "vlan_tag" : "3500", "vmw_pod" : 2, "used" : "False", "dvportgroup_id" : "dvportgroup-2459"}},
-{"pk":"2", "model": "inventory.portgroup", "fields" : {"name":"PG-VCPE-IRS-VL3501", "vlan_tag" : "3501", "vmw_pod" : 2, "used" : "False", "dvportgroup_id" : "dvportgroup-2460"}}]
+[{"pk":"1", "model": "inventory.portgroup", "fields": {"name":"PG-VCPE-IRS-VL3500", "vlan_tag" : "3500", "vmw_pod" : 1, "used" : "False", "dvportgroup_id" : "dvportgroup-2459"}},
+{"pk":"2", "model": "inventory.portgroup", "fields" : {"name":"PG-VCPE-IRS-VL3501", "vlan_tag" : "3501", "vmw_pod" : 1, "used" : "False", "dvportgroup_id" : "dvportgroup-2460"}}]

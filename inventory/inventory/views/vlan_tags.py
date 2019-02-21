@@ -13,11 +13,12 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
 class VlanTagsView(View):
-	def get(self, request):
-		return JsonResponse(list(VlanTag.objects.all().values()), safe=False)
+    def get(self, request):
+        return JsonResponse(list(VlanTag.objects.all().values()), safe=False)
 
-	def post(self, request):
-		data = json.loads(request.body.decode(encoding='UTF-8'))
-		vlan_tag = VlanTag.objects.create(**data)
-		vlan_tag.save()
-		return JsonResponse(data, safe=False, status=HTTP_201_CREATED)
+    def post(self, request):
+        data = json.loads(request.body.decode(encoding='UTF-8'))
+        vlan_tag = VlanTag.objects.create(**data)
+        vlan_tag.save()
+        vlan_tag = VlanTag.objects.filter(vlan_tag=data["vlan_tag"]).values()[0]
+        return JsonResponse(vlan_tag, safe=False, status=HTTP_201_CREATED)

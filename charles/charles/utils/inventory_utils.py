@@ -103,8 +103,8 @@ def create_vlan_tag(data):
         raise ServiceException("Unable to create service")
 
 
-def create_access_port(data):
-    url = os.getenv('INVENTORY_URL') + "accessports"
+def create_access_port_at_access_node(access_node_id, data):
+    url = os.getenv('INVENTORY_URL') +"accessnodes/" + str(access_node_id) + "/accessports"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -112,8 +112,8 @@ def create_access_port(data):
     else:
         raise ServiceException("Unable to create service")
 
-def create_client_port(data):
-    url = os.getenv('INVENTORY_URL') + "clientports"
+def create_client_port_at_client_node(client_node_sn, data):
+    url = os.getenv('INVENTORY_URL') + "clientnodes/"+ str(client_node_sn) + "/clientports"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -245,8 +245,8 @@ def update_cpe(client_node_sn, data):
 
 
 ### DELETE METHODS 
-def delete_access_node(data):
-    url = os.getenv('INVENTORY_URL') + "accessnodes"
+def delete_access_node(elem_id):
+    url = os.getenv('INVENTORY_URL') + "accessnodes/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -254,18 +254,8 @@ def delete_access_node(data):
     else:
         raise ServiceException("Unable to delete service")
 
-def delete_router_node(data):
-    url = os.getenv('INVENTORY_URL') + "routernodes"
-    rheaders = { 'Content-Type': 'application/json' }
-    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
-    else:
-        raise ServiceException("Unable to delete service")
-
-
-def delete_location(data):
-    url = os.getenv('INVENTORY_URL') + "locations"
+def delete_router_node(elem_id):
+    url = os.getenv('INVENTORY_URL') + "routernodes/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -274,8 +264,8 @@ def delete_location(data):
         raise ServiceException("Unable to delete service")
 
 
-def delete_logicalunit(data):
-    url = os.getenv('INVENTORY_URL') + "logicalunits"
+def delete_location(elem_id):
+    url = os.getenv('INVENTORY_URL') + "locations/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -284,8 +274,8 @@ def delete_logicalunit(data):
         raise ServiceException("Unable to delete service")
 
 
-def delete_client_node(data):
-    url = os.getenv('INVENTORY_URL') + "clientnodes"
+def delete_logicalunit(elem_id):
+    url = os.getenv('INVENTORY_URL') + "logicalunits/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -294,8 +284,8 @@ def delete_client_node(data):
         raise ServiceException("Unable to delete service")
 
 
-def delete_vrf(data):
-    url = os.getenv('INVENTORY_URL') + "vrfs"
+def delete_client_node(elem_id):
+    url = os.getenv('INVENTORY_URL') + "clientnodes/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -304,8 +294,8 @@ def delete_vrf(data):
         raise ServiceException("Unable to delete service")
 
 
-def delete_portgroup(data):
-    url = os.getenv('INVENTORY_URL') + "portgroups"
+def delete_vrf(elem_id):
+    url = os.getenv('INVENTORY_URL') + "vrfs/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -314,8 +304,8 @@ def delete_portgroup(data):
         raise ServiceException("Unable to delete service")
 
 
-def delete_virtual_pod(data):
-    url = os.getenv('INVENTORY_URL') + "virtualpods"
+def delete_portgroup(elem_id):
+    url = os.getenv('INVENTORY_URL') + "portgroups/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -324,8 +314,8 @@ def delete_virtual_pod(data):
         raise ServiceException("Unable to delete service")
 
 
-def delete_vlan_tag(data):
-    url = os.getenv('INVENTORY_URL') + "vlantags"
+def delete_virtual_pod(elem_id):
+    url = os.getenv('INVENTORY_URL') + "virtualpods/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -334,8 +324,8 @@ def delete_vlan_tag(data):
         raise ServiceException("Unable to delete service")
 
 
-def delete_access_port(data):
-    url = os.getenv('INVENTORY_URL') + "accessports"
+def delete_vlan_tag(elem_id):
+    url = os.getenv('INVENTORY_URL') + "vlantags/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -343,8 +333,18 @@ def delete_access_port(data):
     else:
         raise ServiceException("Unable to delete service")
 
-def delete_client_port(data):
-    url = os.getenv('INVENTORY_URL') + "clientports"
+
+def delete_access_port(elem_id):
+    url = os.getenv('INVENTORY_URL') + "accessports/"+ str(elem_id)
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.delete(url, auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_204_NO_CONTENT:
+        return response.json()
+    else:
+        raise ServiceException("Unable to delete service")
+
+def delete_client_port(elem_id):
+    url = os.getenv('INVENTORY_URL') + "clientports/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:

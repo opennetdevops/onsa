@@ -54,11 +54,13 @@ class ClientNodeClientPortsView(View):
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
 
 
-    def post(self, request):
+    def post(self, client_node_sn, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        client_port = ClientNodePort.objects.create(**data)
+        data["client_node_sn"] = client_node_sn
+        client_port = ClientNodePort.objects.create(**data, client_node=client_node_sn)         
         client_port.save()
-        return JsonResponse(data, safe=False, status=HTTP_201_CREATED)
+        client_port = ClientNodePort.objects.filter(interface_name=data['interface_name'],client_node=client_node_sn).values()[0]
+        return JsonResponse(client_port, safe=False, status=HTTP_201_CREATED)
 
 
     def delete(self, request, client_node_sn, client_port_id):
