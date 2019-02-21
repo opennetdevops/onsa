@@ -51,13 +51,11 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "client_nodes", force: :cascade do |t|
+  create_table "client_nodes", primary_key: "serial_number", id: :string, force: :cascade do |t|
     t.string "name"
     t.inet "mgmt_ip"
     t.string "model"
     t.string "vendor"
-    t.integer "location_id"
-    t.string "serial_number"
     t.string "client"
     t.string "uplink_port"
     t.string "customer_location"
@@ -73,7 +71,7 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "locations_vrves", id: false, force: :cascade do |t|
+  create_table "locations_vrfs", id: false, force: :cascade do |t|
     t.bigint "location_id", null: false
     t.bigint "vrf_id", null: false
   end
@@ -106,7 +104,7 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "vrves", force: :cascade do |t|
+  create_table "vrfs", force: :cascade do |t|
     t.string "rt"
     t.string "name"
     t.boolean "used"
