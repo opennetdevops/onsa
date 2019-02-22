@@ -96,7 +96,7 @@ def create_virtual_pod(data):
 
 
 def create_vlan_tag(data):
-    url = os.getenv('INVENTORY_URL') + "vlan_tags"
+    url = os.getenv('INVENTORY_URL') + "vlans"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -124,7 +124,7 @@ def create_client_port_at_client_node(client_node_sn, data):
         raise ServiceException("Unable to create service")
 
 def add_vlan_to_access_node(access_node_id,data):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlan_tags"
+    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlans"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -157,7 +157,7 @@ def add_vrf_to_location(location_id,data):
 
 
 def remove_vlan_from_access_node(access_node_id,vlan_id):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlan_tags/" +str(vlan_id)
+    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlans/" +str(vlan_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -327,7 +327,7 @@ def delete_virtual_pod(elem_id):
 
 
 def delete_vlan_tag(elem_id):
-    url = os.getenv('INVENTORY_URL') + "vlan_tags/"+ str(elem_id)
+    url = os.getenv('INVENTORY_URL') + "vlans/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -577,7 +577,7 @@ def use_vrf(vrf_id, vrf_name, client_name):
 
 
 def get_free_vlan(access_node_id):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/"+ str(access_node_id) + "/vlan_tags?used=false"
+    url = os.getenv('INVENTORY_URL') + "access_nodes/"+ str(access_node_id) + "/vlans?used=false"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -587,7 +587,7 @@ def get_free_vlan(access_node_id):
         raise VlanTagException("Unable to retrieve VlanTag")
 
 def use_vlan(access_node_id, vlan_id):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlan_tags"
+    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlans"
     rheaders = { 'Content-Type': 'application/json' }
     data = { 'vlan_tag_id': vlan_id }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)

@@ -316,23 +316,24 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        #delete access node
-        delete_access_node(cls.access_node["id"])
+        # #delete access node
+        # delete_access_node(cls.access_node["id"])
 
-        #delete router node
-        delete_router_node(cls.router_node["id"])
+        # #delete router node
+        # delete_router_node(cls.router_node["id"])
 
-        #create client node
-        delete_client_node(cls.client_node["serial_number"])
+        # #create client node
+        # delete_client_node(cls.client_node["serial_number"])
 
-        #delete location
-        delete_location(cls.location["id"])
+        # #delete location
+        # delete_location(cls.location["id"])
 
-        #delete customer location
-        delete_customer_location(cls.client_id, cls.customer_location_id)
+        # #delete customer location
+        # delete_customer_location(cls.client_id, cls.customer_location_id)
 
-        #delete client
-        delete_client(cls.client_id)
+        # #delete client
+        # delete_client(cls.client_id)
+        pass
 
 
 

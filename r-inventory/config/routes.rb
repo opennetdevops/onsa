@@ -8,7 +8,7 @@ Rails.application.routes.draw do
     end
     resources :access_nodes do 
       resources :access_ports, only:[:create]
-      resources :vlan_tags, only:[:index,:create,:destroy]
+      resources :vlans, only:[:index,:create,:destroy]
     end
     resources :locations do
       resources :vrfs
@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :access_nodes, only:[:index]
       resources :access_ports, only:[:index]
     end
-    resources :vlan_tags, only:[:index,:create,:destroy]
+    resources :vlans, only:[:index,:create,:destroy]
     resources :vrfs
     resources :access_ports
     resources :logical_units, only:[:index,:create,:destroy]

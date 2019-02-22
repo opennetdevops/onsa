@@ -27,6 +27,7 @@ class AccessPortsController < ApplicationController
   def create
     @access_port = AccessPort.new(access_port_params)
 
+    @access_port.save!
     if @access_port.save
       render json: @access_port, status: :created, location: @access_port
     else

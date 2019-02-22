@@ -29,9 +29,9 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "access_nodes_vlan_tags", id: false, force: :cascade do |t|
+  create_table "access_nodes_vlans", id: false, force: :cascade do |t|
     t.bigint "access_node_id", null: false
-    t.bigint "vlan_tag_id", null: false
+    t.bigint "vlan_id", null: false
   end
 
   create_table "access_ports", force: :cascade do |t|
@@ -99,8 +99,8 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "vlan_tags", force: :cascade do |t|
-    t.integer "vlan_label"
+  create_table "vlans", force: :cascade do |t|
+    t.integer "vlan_tag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
