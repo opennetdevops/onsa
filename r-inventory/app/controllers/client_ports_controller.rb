@@ -1,14 +1,13 @@
 class ClientPortsController < ApplicationController
   before_action :set_client_port, only: [:show, :update, :destroy]
+  before_action :set_client_node
 
   def index
     if params[:used]
-      client_node = ClientNode.find(client_port_params[:client_node_id])
-      @client_ports = client_node.client_ports.where(used:params[:used])
+      @client_ports = @client_node.client_ports.where(used:params[:used])
     else
-      @client_ports = ClientNode.find(params[:client_node_id].client_ports
+      @client_ports = @client_node.client_ports
     end
-    render json: @client_ports
   end
 
   def show
@@ -39,7 +38,11 @@ class ClientPortsController < ApplicationController
 
   private
     def set_client_port
-      @client_port = ClientPort.find(params[:id])
+      @client_port = @client_node.client_ports.find(params[:id])
+    end
+
+    def set_client_node
+      @client_node = ClientNode.find(params[:client_node_id])
     end
 
     def client_port_params

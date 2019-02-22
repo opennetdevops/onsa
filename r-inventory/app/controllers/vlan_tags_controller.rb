@@ -31,9 +31,13 @@ class VlanTagsController < ApplicationController
   end
 
   def destroy
-    access_node = AccessNode.find(params[:access_node_id])
-    @vlan_tag = VlanTag.where(vlan_tag:params[:vlan_id]).first
-    access_node.vlan_tags.delete(@vlan_tag)
+    @vlan_tag = VlanTag.find(params[:id])
+    if params[:access_node_id]
+      access_node = AccessNode.find(params[:access_node_id])
+      access_node.vlan_tags.delete(@vlan_tag)
+    else
+      @vlan_tag.destroy  
+    end
   end
 
   private

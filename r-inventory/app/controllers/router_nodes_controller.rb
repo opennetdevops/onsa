@@ -37,12 +37,10 @@ class RouterNodesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_router_node
       @router_node = RouterNode.find(params[:id])
     end
 
-    # Only allow a trusted parameter "white list" through.
     def router_node_params
       params.permit(:name,:mgmt_ip,:model,:vendor,:location_id,:private_wan_ip,:loopback)
     end

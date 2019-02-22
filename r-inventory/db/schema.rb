@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
     t.string "client"
     t.string "uplink_port"
     t.string "customer_location"
+    t.integer "location_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -6,10 +6,10 @@ class LogicalUnitsController < ApplicationController
       if params[:used]
         router_node_lus = RouterNode.logical_units
         if params[:used] == "true"
-        @logical_units = LogicalUnit.all.where(id:router_node_lus.pluck(:id))
+          @logical_units = LogicalUnit.all.where(id:router_node_lus.pluck(:id))
         end
         if params[:used] == "false"
-        @logical_units = LogicalUnit.all.where.not(id:router_node_lus.pluck(:id))
+          @logical_units = LogicalUnit.all.where.not(id:router_node_lus.pluck(:id))
         end
       else
         @logical_units = RouterNode.find(params[:router_node_id]).logical_units
@@ -39,7 +39,7 @@ class LogicalUnitsController < ApplicationController
   def destroy
     if params[:router_node_id]
       router_node = RouterNode.find(params[:router_node_id])
-      @logical_unit = LogicalUnit.find(params[:logical_unit_id])
+      @logical_unit = LogicalUnit.find(params[:id])
       router_node.logical_units.delete(@logical_unit)
     else
       @logical_unit.destroy

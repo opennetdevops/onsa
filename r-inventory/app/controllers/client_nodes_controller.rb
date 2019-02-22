@@ -7,7 +7,6 @@ class ClientNodesController < ApplicationController
   end
 
   def show
-    puts params[:id]
     render json: @client_node
   end
 

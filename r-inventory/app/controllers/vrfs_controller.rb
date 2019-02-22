@@ -5,22 +5,22 @@ class VrfsController < ApplicationController
     if params[:location_id]
       @vrfs = Location.find(:location_id).vrfs
     else
-      @vrfs = Vrf.all
+      if params[:client]
+        @vrfs = Vrf.where(client:params[:client])
+      elsif params[:used]
+        @vrfs = Vrf.where.(used:params[:used])
+      else
+        @vrfs = Vrf.all
+      end
     end
     render json: @vrfs
   end
 
   def show
-    render json: @vrf
-  end
-
-  def create
-    @vrf = Vrf.new(vrf_params)
-
-    if @vrf.save
-      render json: @vrf, status: :created, location: @vrf
+    if params[:location_id]
+      @vrfs = Location.find(:location_id).vrfs.find(params[:id])
     else
-      render json: @vrf.errors, status: :unprocessable_entity
+      render json: @vrf
     end
   end
 
@@ -49,7 +49,12 @@ class VrfsController < ApplicationController
   end
 
   def destroy
-    @vrf.destroy
+    if params[:location_id]
+      location = Location.find(params[:location_id])
+      location.vrfs.delete(@vrf)
+    else
+      @vrf.destroy
+    end
   end
 
   private
