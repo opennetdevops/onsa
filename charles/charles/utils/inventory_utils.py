@@ -44,7 +44,7 @@ def create_location(data):
 
 
 def create_logicalunit(data):
-    url = os.getenv('INVENTORY_URL') + "logicalunits"
+    url = os.getenv('INVENTORY_URL') + "logical_units"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -96,7 +96,7 @@ def create_virtual_pod(data):
 
 
 def create_vlan_tag(data):
-    url = os.getenv('INVENTORY_URL') + "vlantags"
+    url = os.getenv('INVENTORY_URL') + "vlan_tags"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -106,7 +106,7 @@ def create_vlan_tag(data):
 
 
 def create_access_port_at_access_node(access_node_id, data):
-    url = os.getenv('INVENTORY_URL') +"access_nodes/" + str(access_node_id) + "/accessports"
+    url = os.getenv('INVENTORY_URL') +"access_nodes/" + str(access_node_id) + "/access_ports"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -124,7 +124,7 @@ def create_client_port_at_client_node(client_node_sn, data):
         raise ServiceException("Unable to create service")
 
 def add_vlan_to_access_node(access_node_id,data):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlantags"
+    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlan_tags"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -147,7 +147,7 @@ def add_vrf_to_location(location_id,data):
 
 
 # def add_logicalunit_to_router_node(router_node_id,data):
-#     url = os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logicalunits"
+#     url = os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logical_units"
 #     rheaders = { 'Content-Type': 'application/json' }
 #     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 #     if response.status_code == HTTP_201_CREATED:
@@ -157,7 +157,7 @@ def add_vrf_to_location(location_id,data):
 
 
 def remove_vlan_from_access_node(access_node_id,vlan_id):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlantags/" +str(vlan_id)
+    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlan_tags/" +str(vlan_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -177,7 +177,7 @@ def remove_vrf_from_location(location_id,vrf_id):
 
 
 def remove_logicalunit_from_router_node(router_node_id,logical_unit_id):
-    url = os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logicalunits/" +str(logical_unit_id)
+    url = os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logical_units/" +str(logical_unit_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -187,7 +187,7 @@ def remove_logicalunit_from_router_node(router_node_id,logical_unit_id):
 
 
 def release_access_port(access_port_id):
-    url= os.getenv('INVENTORY_URL') + "accessports/" + str(access_port_id)
+    url= os.getenv('INVENTORY_URL') + "access_ports/" + str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":False}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -199,7 +199,7 @@ def release_access_port(access_port_id):
 
 
 def use_access_port(access_port_id):
-    url= os.getenv('INVENTORY_URL') + "accessports/" + str(access_port_id)
+    url= os.getenv('INVENTORY_URL') + "access_ports/" + str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     data = {"used":True}
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -277,7 +277,7 @@ def delete_location(elem_id):
 
 
 def delete_logicalunit(elem_id):
-    url = os.getenv('INVENTORY_URL') + "logicalunits/"+ str(elem_id)
+    url = os.getenv('INVENTORY_URL') + "logical_units/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -327,7 +327,7 @@ def delete_virtual_pod(elem_id):
 
 
 def delete_vlan_tag(elem_id):
-    url = os.getenv('INVENTORY_URL') + "vlantags/"+ str(elem_id)
+    url = os.getenv('INVENTORY_URL') + "vlan_tags/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -337,7 +337,7 @@ def delete_vlan_tag(elem_id):
 
 
 def delete_access_port(elem_id):
-    url = os.getenv('INVENTORY_URL') + "accessports/"+ str(elem_id)
+    url = os.getenv('INVENTORY_URL') + "access_ports/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -429,7 +429,7 @@ def use_portgroup(portgroup_id):
         raise PortgroupException("Invalid Portgroup")
 
 def get_free_logical_units(router_node_id):
-    url = os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logicalunits?used=false"
+    url = os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logical_units?used=false"
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
@@ -439,7 +439,7 @@ def get_free_logical_units(router_node_id):
         raise LogicalUnitException("Invalid LogicalUnit")
 
 def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id=None):
-    url= os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logicalunits"
+    url= os.getenv('INVENTORY_URL') + "router_nodes/" + str(router_node_id) + "/logical_units"
     rheaders = {'Content-Type': 'application/json'}
     data = {"logical_unit_id":logical_unit_id}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -450,7 +450,7 @@ def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id=No
         raise LogicalUnitException("Unable to add LogicalUnit")
 
 def get_free_access_port(location_id):
-    url= os.getenv('INVENTORY_URL') + "locations/"+ str(location_id) + "/accessports?used=false"
+    url= os.getenv('INVENTORY_URL') + "locations/"+ str(location_id) + "/access_ports?used=false"
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if (r.status_code == HTTP_200_OK):
@@ -523,7 +523,7 @@ def vrf_exists_in_location(vrf_id,location_id):
 
 
 def get_access_port(access_port_id):
-    url= os.getenv('INVENTORY_URL') + "accessports/"+ str(access_port_id)
+    url= os.getenv('INVENTORY_URL') + "access_ports/"+ str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -577,7 +577,7 @@ def use_vrf(vrf_id, vrf_name, client_name):
 
 
 def get_free_vlan(access_node_id):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/"+ str(access_node_id) + "/vlantags?used=false"
+    url = os.getenv('INVENTORY_URL') + "access_nodes/"+ str(access_node_id) + "/vlan_tags?used=false"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
@@ -587,7 +587,7 @@ def get_free_vlan(access_node_id):
         raise VlanTagException("Unable to retrieve VlanTag")
 
 def use_vlan(access_node_id, vlan_id):
-    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlantags"
+    url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlan_tags"
     rheaders = { 'Content-Type': 'application/json' }
     data = { 'vlan_tag_id': vlan_id }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)

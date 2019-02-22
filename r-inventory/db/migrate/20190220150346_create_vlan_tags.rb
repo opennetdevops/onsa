@@ -1,8 +1,7 @@
-class CreateVlanTags < ActiveRecord::Migration[5.2]
+class CreateVlans < ActiveRecord::Migration[5.2]
   def change
-    create_table :vlan_tags do |t|
+    create_table :vlans do |t|
       t.integer :vlan_tag
-
       t.timestamps
     end
   end

@@ -100,7 +100,7 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
   end
 
   create_table "vlan_tags", force: :cascade do |t|
-    t.integer "vlan_tag"
+    t.integer "vlan_label"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
