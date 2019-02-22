@@ -49,7 +49,8 @@ class ClientNodesView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         client_node = ClientNode.objects.create(**data)
         client_node.save()
-        return JsonResponse(data, safe=False, status=HTTP_201_CREATED)
+        client_node = ClientNode.objects.filter(name=data["name"]).values()[0]
+        return JsonResponse(client_node, safe=False, status=HTTP_201_CREATED)
 
 
     def delete(self, request, client_node_sn):
@@ -58,7 +59,7 @@ class ClientNodesView(View):
             my_client_node = client_node.values()[0]
             client_node.delete()
             data = {"Message" : "Client Node deleted successfully"}
-            return JsonResponse(data)
+            return JsonResponse(data, status=HTTP_204_NO_CONTENT)
         except IndexError:
             msg = "ClientNode not found."
             logging.error(msg)

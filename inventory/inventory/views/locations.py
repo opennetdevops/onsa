@@ -59,7 +59,7 @@ class LocationsView(View):
             my_location = location.values()[0]
             location.delete()
             data = '{"Message" : "Location deleted successfully"}'
-            return JsonResponse(data,safe=False)
+            return JsonResponse(data,safe=False, status=HTTP_204_NO_CONTENT)
         except IndexError:
             msg = "Location not found."
             logging.error(msg)

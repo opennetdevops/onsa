@@ -38,6 +38,6 @@ class ClientNodesController < ApplicationController
     end
 
     def client_node_params
-      params.permit(:name,:mgmt_ip,:model,:vendor,:client,:uplink_port,:customer_location)
+      params.permit(:name,:mgmt_ip,:model,:vendor,:client,:uplink_port,:customer_location,:serial_number)
     end
 end

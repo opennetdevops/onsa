@@ -52,7 +52,7 @@ class AccessNodesView(View):
             access_node = AccessNode.objects.filter(pk=accessnode_id)
             access_node.delete()
             data = {"Message" : "AccessNode deleted successfully"}
-            return JsonResponse(data)
+            return JsonResponse(data, status=HTTP_204_NO_CONTENT)
         except AccessNode.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)

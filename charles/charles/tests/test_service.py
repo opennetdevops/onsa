@@ -215,9 +215,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         cls.client_name = "test_client"
         create_client(cls.client_name)
         cls.client_id = get_client_by_name(cls.client_name)['id']
-        cls.client_node_sn = "CCCC3333CCCC"
-        cls.access_node_id = 1
-        cls.router_node_id = 1
+        cls.client_node_sn = "CCCC333CCCC"
         cls.initial_id = 1
 
         #create location
@@ -227,7 +225,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         #create access node
         data = {"name":"LAB-SCO", "device_type" : "AccessNode", "mgmt_ip" : "10.120.80.56", "model" : "s4224",
                 "location_id" : cls.location["id"], "provider_vlan" : "1", "logical_unit_id" : "10",
-                "access_node_id" : "10", "uplink_interface" : "ae1", "vendor" : "transition", 
+                "uplink_interface" : "ae1", "vendor" : "transition", 
                 "uplink_ports":"10GigabitEthernet 1/3, 10GigabitEthernet 1/4"}
         cls.access_node = create_access_node(data)
 
@@ -236,12 +234,14 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
                 "location_id" : cls.location["id"], "private_wan_ip" : "100.64.0.1", "vendor" : "juniper",
                 "loopback":"10.120.104.1"}
         cls.router_node = create_router_node(data)
+        # print(cls.router_node)
 
         #create client node
         data = {"name":"LAB-HOR-NID", "device_type" : "ClientNode", "mgmt_ip" : "10.120.80.121", 
                 "location_id" : cls.location["id"], "model" : "s3290-5", "serial_number" : cls.client_node_sn, 
                 "vendor" : "transition", "uplink_port": "2.5GigabitEthernet 1/1"}
         cls.client_node = create_client_node(data)
+        # print(cls.client_node)
 
         #create customer location
         cls.customer_location_id = create_customer_location(cls.client_id)['id']
@@ -251,7 +251,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         #create VLAN
         data = {"vlan_tag":"3100"}
         self.vlan_tag = create_vlan_tag(data)
-        print(self.vlan_tag)
+        # print(self.vlan_tag)
 
         #add VLAN to access_node --> this means: "use vlan"
         # data = {"vlan_id":self.vlan_tag["id"]}
@@ -266,11 +266,11 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
         #create access_port
         data = {"used" : "False", "port" : "GigabitEthernet 1/19"}
-        self.access_port = create_access_port_at_access_node(self.access_node_id, data)
+        self.access_port = create_access_port_at_access_node(self.access_node["id"], data)
 
         #create client node port
         data = {"interface_name":"GigabitEthernet 1/1", "used" : "False", "service_id" : ""}
-        self.client_node_port = create_client_port_at_client_node(self.client_node_sn, data)
+        self.client_node_port = create_client_port_at_client_node(self.client_node["serial_number"], data)
 
         #define service data
         self.service_data =  {
@@ -282,7 +282,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
                             }
 
         self.service_id = "SVC01-A_" + str(self.initial_id)
-        self.service_data['client_node_sn'] = self.client_node_sn
+        self.service_data['client_node_sn'] = self.client_node["serial_number"]
         
         #create mock service
         create_mock_service("cpe_irs", self.service_id, self.service_data )
@@ -323,7 +323,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         delete_router_node(cls.router_node["id"])
 
         #create client node
-        delete_client_node(cls.client_node["id"])
+        delete_client_node(cls.client_node["serial_number"])
 
         #delete location
         delete_location(cls.location["id"])

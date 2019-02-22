@@ -3,7 +3,8 @@ source setenv
 
 rootlevel=`eval "cd $PWD;cd ../..;pwd"`
 
-declare -a projects=("charles" "core" "inventory" "jeangrey" "worker")
+#declare -a projects=("charles" "core" "inventory" "jeangrey" "worker")
+declare -a projects=("charles" "core" "jeangrey" "worker")
 
 for project in "${projects[@]}"
 do

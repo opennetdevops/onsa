@@ -34,8 +34,8 @@ class RouterNodesView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         router_node = RouterNode.objects.create(**data)
         router_node.save()
-        router_node = RouterNode.objects.filter(name=data['name'])
-        return JsonResponse(data, safe=False, status=HTTP_201_CREATED)
+        router_node = RouterNode.objects.filter(name=data['name']).values()[0]
+        return JsonResponse(router_node, safe=False, status=HTTP_201_CREATED)
 
 
     def put(self, request, routernode_id):
@@ -58,7 +58,7 @@ class RouterNodesView(View):
             router_node.delete()
             router_node.delete()
             data = {"Message" : "RouterNode deleted successfully"}
-            return JsonResponse(data)
+            return JsonResponse(data, status=HTTP_204_NO_CONTENT)
         except IndexError:
             msg = "RouterNode not found."
             logging.error(msg)
