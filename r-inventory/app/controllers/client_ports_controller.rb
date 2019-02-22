@@ -46,6 +46,6 @@ class ClientPortsController < ApplicationController
     end
 
     def client_port_params
-      params.permit(:interface_name,:client_node_id,:used,:service_id)
+      params.fetch(:client_port,{}).permit(:interface_name,:client_node_id,:used,:service_id)
     end
 end

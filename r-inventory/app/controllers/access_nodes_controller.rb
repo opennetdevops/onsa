@@ -42,6 +42,6 @@ class AccessNodesController < ApplicationController
     end
 
     def access_node_params
-      params.permit(:location_id,:name,:mgmt_ip,:model,:vendor,:uplink_interface,:uplink_ports,:provider_vlan,:logical_unit_id)
+      params.fetch(:access_node,{}).permit(:location_id,:name,:mgmt_ip,:model,:vendor,:uplink_interface,:uplink_ports,:provider_vlan,:logical_unit_id)
     end
 end

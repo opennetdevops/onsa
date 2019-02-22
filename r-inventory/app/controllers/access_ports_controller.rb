@@ -52,6 +52,6 @@ class AccessPortsController < ApplicationController
     end
 
     def access_port_params
-      params.permit(:port,:used,:access_node_id)
+      params.fetch(:access_port,{}).permit(:port,:used,:access_node_id)
     end
 end

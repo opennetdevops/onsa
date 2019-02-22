@@ -63,6 +63,6 @@ class VrfsController < ApplicationController
     end
 
     def vrf_params
-      params.permit(:rt,:name,:used,:description,:client)
+      params.fetch(:vrf,{}).permit(:rt,:name,:used,:description,:client)
     end
 end

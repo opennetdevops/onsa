@@ -68,6 +68,6 @@ class LogicalUnitsController < ApplicationController
     end
 
     def logical_unit_params
-      params.permit(:logical_unit_id)
+      params.fetch(:logical_unit,{}).permit(:logical_unit_id)
     end
 end

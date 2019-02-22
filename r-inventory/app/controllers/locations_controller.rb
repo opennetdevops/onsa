@@ -39,6 +39,6 @@ class LocationsController < ApplicationController
     end
 
     def location_params
-      params.permit(:name,:address,:pop_size)
+      params.fetch(:location,{}).permit(:name,:address,:pop_size)
     end
 end

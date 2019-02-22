@@ -43,7 +43,7 @@ class VlanTagsController < ApplicationController
   private
 
     def vlan_tag_params
-      params.permit(:access_node_id,:vlan_tag)
+      params.fetch(:vlan_tag,{}).permit(:access_node_id,:vlan_tag)
     end
 
 end

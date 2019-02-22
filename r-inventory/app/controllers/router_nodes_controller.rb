@@ -42,6 +42,6 @@ class RouterNodesController < ApplicationController
     end
 
     def router_node_params
-      params.permit(:name,:mgmt_ip,:model,:vendor,:location_id,:private_wan_ip,:loopback)
+      params.fetch(:router_node,{}).permit(:name,:mgmt_ip,:model,:vendor,:location_id,:private_wan_ip,:loopback)
     end
 end

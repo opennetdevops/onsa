@@ -11,6 +11,7 @@ class ClientNodesController < ApplicationController
   end
 
   def create
+    puts params
     @client_node = ClientNode.new(client_node_params)
 
     if @client_node.save
@@ -38,6 +39,6 @@ class ClientNodesController < ApplicationController
     end
 
     def client_node_params
-      params.permit(:name,:mgmt_ip,:model,:vendor,:client,:uplink_port,:customer_location,:serial_number)
+      params.fetch(:client_node,{}).permit(:name,:mgmt_ip,:model,:vendor,:client,:uplink_port,:customer_location,:serial_number)
     end
 end
