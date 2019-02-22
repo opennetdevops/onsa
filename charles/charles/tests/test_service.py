@@ -218,8 +218,30 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         cls.client_node_sn = "CCCC3333CCCC"
         cls.access_node_id = 1
         cls.router_node_id = 1
-        cls.location = "LAB"
         cls.initial_id = 1
+
+        #create location
+        data = {"name":"LAB", "address":"Gral. Hornos 690", "pop_size":"large"}
+        cls.location = create_location(data)
+
+        #create access node
+        data = {"name":"LAB-SCO", "device_type" : "AccessNode", "mgmt_ip" : "10.120.80.56", "model" : "s4224",
+                "location_id" : cls.location["id"], "provider_vlan" : "1", "logical_unit_id" : "10",
+                "access_node_id" : "10", "uplink_interface" : "ae1", "vendor" : "transition", 
+                "uplink_ports":"10GigabitEthernet 1/3, 10GigabitEthernet 1/4"}
+        cls.access_node = create_access_node(data)
+
+        #create router node
+        data = {"name":"LAB-HOR", "device_type":"RouterNode", "mgmt_ip" : "10.120.80.61", "model" : "mx104",
+                "location_id" : cls.location["id"], "private_wan_ip" : "100.64.0.1", "vendor" : "juniper",
+                "loopback":"10.120.104.1"}
+        cls.router_node = create_router_node(data)
+
+        #create client node
+        data = {"name":"LAB-HOR-NID", "device_type" : "ClientNode", "mgmt_ip" : "10.120.80.121", 
+                "location_id" : cls.location["id"], "model" : "s3290-5", "serial_number" : cls.client_node_sn, 
+                "vendor" : "transition", "uplink_port": "2.5GigabitEthernet 1/1"}
+        cls.client_node = create_client_node(data)
 
         #create customer location
         cls.customer_location_id = create_customer_location(cls.client_id)['id']
@@ -254,7 +276,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         self.service_data =  {
                             "client": self.client_name,
                             "bandwidth": 10,
-                            "location": self.location,
+                            "location": self.location["name"],
                             "customer_location_id": self.customer_location_id,
                             "prefix": 29
                             }
@@ -294,6 +316,18 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        #delete access node
+        delete_access_node(cls.access_node["id"])
+
+        #delete router node
+        delete_router_node(cls.router_node["id"])
+
+        #create client node
+        delete_client_node(cls.client_node["id"])
+
+        #delete location
+        delete_location(cls.location["id"])
+
         #delete customer location
         delete_customer_location(cls.client_id, cls.customer_location_id)
 

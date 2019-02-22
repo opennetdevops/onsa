@@ -37,8 +37,8 @@ class LocationsView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         location = Location.objects.create(**data)
         location.save()
-        my_location = Location.objects.filter(name=data['name']).values()
-        return JsonResponse(list(my_location), safe=False, status=HTTP_201_CREATED)
+        my_location = Location.objects.filter(name=data['name']).values()[0]
+        return JsonResponse(my_location, safe=False, status=HTTP_201_CREATED)
 
     def put(self, request, location_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

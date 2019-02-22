@@ -30,8 +30,8 @@ class AccessNodesView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         access_node = AccessNode.objects.create(**data)
         access_node.save()
-        access_node = AccessNode.objects.filter(name=data['name']).values()
-        return JsonResponse(list(access_node), safe=False, status=HTTP_201_CREATED)
+        access_node = AccessNode.objects.filter(name=data['name']).values()[0]
+        return JsonResponse(access_node, safe=False, status=HTTP_201_CREATED)
 
     def put(self, request, accessnode_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

@@ -1,3 +1,0 @@
-[
-{"pk":"1", "model": "inventory.virtualvmwpod", "fields" : {"name" : "VmwPodLab", "device_type" : "VmwPod", "mgmt_ip" : "10.120.80.21", "model" : "NSX", "location" : 1, "transport_zone_name":"HOR", "respool_id":"resgroup-457", "cluster_name" : "LAB", "datastore_id" : "datastore-16", "uplink_pg" : "PG-VCPE-IRS-UPLINK", "uplink_pg_id" : "dvportgroup-2458", "datacenter_id":"datacenter-2","uplink_interface" : "ae1", "vendor" : "vmware"}}
-]
