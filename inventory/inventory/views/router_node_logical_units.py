@@ -44,15 +44,16 @@ class RouterNodeLogicalUnitsView(View):
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
         
-        lu_id = data['logical_unit_id'] 
-        product_id = data['product_id'] 
         try:
-            lu = LogicalUnit.objects.get(logical_unit_id=lu_id)
+            lu = LogicalUnit.objects.get(pk=data['logical_unit_id'])
         except LogicalUnit.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
         
-        lu.product_id = product_id
+        if 'product_id' in data.keys():
+            product_id = data['product_id'] 
+            lu.product_id = product_id
+
         lu.router_nodes.add(router_node)
         lu.save()
         return JsonResponse(data, safe=False, status=HTTP_201_CREATED)

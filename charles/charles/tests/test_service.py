@@ -239,7 +239,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         self.lu = create_logicalunit(data)
 
         #add LU to routerNode
-        add_logicalunit_to_router_node(self.router_node_id,self.lu["id"])
+        add_logical_unit_to_router_node(self.router_node_id,self.lu["id"])
 
         #create access_port
         data = {"used" : "False", "port" : "GigabitEthernet 1/19"}
@@ -248,7 +248,6 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         #create client node port
         data = {"interface_name":"GigabitEthernet 1/1", "used" : "False", "service_id" : ""}
         self.client_node_port = create_client_port_at_client_node(self.client_node_sn, data)
-
 
         #define service data
         self.service_data =  {
@@ -304,30 +303,30 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         service_manual = get_service(self.service_id)
         self.assertEqual(service_manual['service_state'], "in_construction")
 
-    def test_002_automated_from_in_construction_to_service_activated_ok(self):
-        push_service_to_orchestrator(self.service_id, "automated", "service_activated")
+    # def test_002_automated_from_in_construction_to_service_activated_ok(self):
+    #     push_service_to_orchestrator(self.service_id, "automated", "service_activated")
         
-        service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "an_activation_in_progress")
-        try:
-            update_charles_service_state(self.service_id, "COMPLETED")
-        except BaseException as e:
-            service = get_service(self.service_id)
-            print(service['service_state'])
+    #     service = get_service(self.service_id)
+    #     self.assertEqual(service['service_state'], "an_activation_in_progress")
+    #     try:
+    #         update_charles_service_state(self.service_id, "COMPLETED")
+    #     except BaseException as e:
+    #         service = get_service(self.service_id)
+    #         print(service['service_state'])
 
-        service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "bb_activation_in_progress")
-        update_charles_service_state(self.service_id, "COMPLETED")
+    #     service = get_service(self.service_id)
+    #     self.assertEqual(service['service_state'], "bb_activation_in_progress")
+    #     update_charles_service_state(self.service_id, "COMPLETED")
 
-        service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "cpe_activation_in_progress")
-        update_charles_service_state(self.service_id, "COMPLETED")
+    #     service = get_service(self.service_id)
+    #     self.assertEqual(service['service_state'], "cpe_activation_in_progress")
+    #     update_charles_service_state(self.service_id, "COMPLETED")
 
-        service = get_service(self.service_id)
-        self.assertEqual(service['service_state'], "service_activated")
+    #     service = get_service(self.service_id)
+    #     self.assertEqual(service['service_state'], "service_activated")
         
-        #release client node port for further tests
-        release_client_node_port(self.client_node_sn, service['client_port_id'])
+    #     #release client node port for further tests
+    #     release_client_node_port(self.client_node_sn, service['client_port_id'])
 
     # def test_003_automated_from_in_construction_to_service_activated_error(self):
     #     push_service_to_orchestrator(self.service_id, "automated", "service_activated")

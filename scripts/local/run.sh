@@ -15,6 +15,6 @@ do
 
 done
 
-python3 $rootlevel\/$projects\/manage.py createsuperuser
+#python3 $rootlevel\/$projects\/manage.py createsuperuser
 
 

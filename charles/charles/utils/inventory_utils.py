@@ -144,14 +144,14 @@ def add_vrf_to_location(location_id,data):
         raise ServiceException("Unable to create service")
 
 
-def add_logicalunit_to_router_node(router_node_id,data):
-    url = os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits"
-    rheaders = { 'Content-Type': 'application/json' }
-    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_201_CREATED:
-        return response.json()
-    else:
-        raise ServiceException("Unable to create service")
+# def add_logicalunit_to_router_node(router_node_id,data):
+#     url = os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits"
+#     rheaders = { 'Content-Type': 'application/json' }
+#     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+#     if response.status_code == HTTP_201_CREATED:
+#         return response.json()
+#     else:
+#         raise ServiceException("Unable to create service")
 
 
 def remove_vlan_from_access_node(access_node_id,vlan_id):
@@ -436,7 +436,7 @@ def get_free_logical_units(router_node_id):
     else:
         raise LogicalUnitException("Invalid LogicalUnit")
 
-def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id):
+def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id=None):
     url= os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits"
     rheaders = {'Content-Type': 'application/json'}
     data = {"logical_unit_id":logical_unit_id,

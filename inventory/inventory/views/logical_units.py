@@ -32,7 +32,8 @@ class LogicalUnitsView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         logical_unit = LogicalUnit.objects.create(**data)
         logical_unit.save()
-        return JsonResponse(data, status=HTTP_201_CREATED, safe=False)
+        logical_unit = LogicalUnit.objects.filter(logical_unit_id=data["logical_unit_id"]).values()[0]
+        return JsonResponse(logical_unit, status=HTTP_201_CREATED, safe=False)
 
 
     def put(self, request, logicalunit_id):
