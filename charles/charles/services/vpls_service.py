@@ -126,8 +126,9 @@ def bb_parameters(client, service):
 
     if logical_unit_id:
         if not vrf_exists:
-            add_location_to_vrf(vrf['rt'], location['id'])
-        #Add logical unit to router node
+            vrf = {"vrf_id":data['vrf_id']}
+            add_vrf_to_location(location['id'],vrf)        
+            #Add logical unit to router node
         add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
         
 

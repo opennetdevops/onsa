@@ -49,10 +49,6 @@ class RouterNodeLogicalUnitsView(View):
         except LogicalUnit.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-        
-        if 'product_id' in data.keys():
-            product_id = data['product_id'] 
-            lu.product_id = product_id
 
         lu.router_nodes.add(router_node)
         lu.save()

@@ -39,9 +39,9 @@ class AccessNodeAccessPortsView(View):
 
             access_port = AccessPort.objects.create(**data, access_node=access_node)
             access_port.save()
-            access_port = AccessPort.objects.filter(port=data['port']).values()
+            access_port = AccessPort.objects.filter(port=data['port']).values()[0]
             
-            return JsonResponse(list(access_port), safe=False, status=HTTP_201_CREATED)
+            return JsonResponse(access_port, safe=False, status=HTTP_201_CREATED)
         except IndexError:
             msg = "AccessNode not found."
             logging.error(msg)

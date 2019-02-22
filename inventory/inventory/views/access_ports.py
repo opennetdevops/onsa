@@ -49,7 +49,7 @@ class AccessPortsView(View):
             access_port = AccessPort.objects.filter(pk=accessport_id)
             access_port.delete()
             data = {"Message" : "AccessPort deleted successfully"}
-            return JsonResponse(data)
+            return JsonResponse(data, status=HTTP_204_NO_CONTENT)
         except AccessPort.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)

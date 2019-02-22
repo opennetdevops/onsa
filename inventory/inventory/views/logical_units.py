@@ -56,7 +56,7 @@ class LogicalUnitsView(View):
             my_lu = logical_unit.values()[0]
             logical_unit.delete()
             data = '{"Message" : "LogicalUnit deleted successfully"}'
-            return JsonResponse(data,safe=False)
+            return JsonResponse(data,safe=False, status=HTTP_204_NO_CONTENT)
         except IndexError:
             msg = "LogicalUnit not found."
             logging.error(msg)

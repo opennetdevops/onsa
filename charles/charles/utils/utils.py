@@ -197,7 +197,7 @@ def create_client(client_name):
 def login_core():
     url = os.getenv('CORE_URL') +"login" 
     rheaders = {'Content-Type': 'application/json'}
-    data = {"username":"fc__netauto@lab.fibercorp.com.ar", "password":"F1b3rc0rp!"}
+    data = {"username":"aliguori@lab.fibercorp.com.ar", "password":"Desarma21!"}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     if json_response and response.status_code == HTTP_200_OK:

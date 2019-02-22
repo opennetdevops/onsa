@@ -250,7 +250,7 @@ def delete_access_node(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -259,7 +259,7 @@ def delete_router_node(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -269,7 +269,7 @@ def delete_location(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -279,7 +279,7 @@ def delete_logicalunit(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -289,7 +289,7 @@ def delete_client_node(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -299,7 +299,7 @@ def delete_vrf(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -309,7 +309,7 @@ def delete_portgroup(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -319,7 +319,7 @@ def delete_virtual_pod(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -329,7 +329,7 @@ def delete_vlan_tag(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -339,16 +339,16 @@ def delete_access_port(elem_id):
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
-def delete_client_port(elem_id):
-    url = os.getenv('INVENTORY_URL') + "clientports/"+ str(elem_id)
+def delete_client_port(client_node_sn, elem_id):
+    url = os.getenv('INVENTORY_URL') + "clientnodes/" + str(client_node_sn) + "/clientports/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
-        return response.json()
+        return response
     else:
         raise ServiceException("Unable to delete service")
 
@@ -439,8 +439,7 @@ def get_free_logical_units(router_node_id):
 def add_logical_unit_to_router_node(router_node_id,logical_unit_id,product_id=None):
     url= os.getenv('INVENTORY_URL') + "routernodes/" + str(router_node_id) + "/logicalunits"
     rheaders = {'Content-Type': 'application/json'}
-    data = {"logical_unit_id":logical_unit_id,
-                    "product_id":product_id}
+    data = {"logical_unit_id":logical_unit_id}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
     if json_response and response.status_code == HTTP_201_CREATED:
@@ -501,7 +500,7 @@ def get_free_cpe_port(client_node_sn):
 
 
 def vrf_exists_in_location(vrf_id,location_id):
-    url = os.getenv('INVENTORY_URL') + "vrfs/" + str(vrf_id) + "/locations/" + str(location_id)
+    url = os.getenv('INVENTORY_URL') + "locations/" + str(location_id) + "/vrfs/" + str(vrf_id)
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
@@ -510,15 +509,15 @@ def vrf_exists_in_location(vrf_id,location_id):
     else:
         raise VrfException("Invalid Vrf/Location pair")
 
-def add_location_to_vrf(vrf_id,location_id):
-    url = os.getenv('INVENTORY_URL') + "vrfs/" + str(vrf_id) + "/locations/" + str(location_id)
-    rheaders = {'Content-Type': 'application/json'}
-    response = requests.put(url, auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if response.status_code == HTTP_200_OK:
-        return json_response
-    else:
-        raise LocationException("Invalid VRF/Location pair")
+# def add_location_to_vrf(vrf_id,location_id):
+#     url = os.getenv('INVENTORY_URL') + "vrfs/" + str(vrf_id) + "/locations/" + str(location_id)
+#     rheaders = {'Content-Type': 'application/json'}
+#     response = requests.put(url, auth = None, verify = False, headers = rheaders)
+#     json_response = json.loads(response.text)
+#     if response.status_code == HTTP_200_OK:
+#         return json_response
+#     else:
+#         raise LocationException("Invalid VRF/Location pair")
 
 
 def get_access_port(access_port_id):
@@ -588,7 +587,7 @@ def get_free_vlan(access_node_id):
 def use_vlan(access_node_id, vlan_id):
     url = os.getenv('INVENTORY_URL') + "accessnodes/" + str(access_node_id) + "/vlantags"
     rheaders = { 'Content-Type': 'application/json' }
-    data = { 'vlan_id': vlan_id }
+    data = { 'vlan_tag_id': vlan_id }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
         return response.json()

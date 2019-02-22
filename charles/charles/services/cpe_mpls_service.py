@@ -198,7 +198,8 @@ def bb_parameters(client, service):
 		wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
 		if wan_network: 
 			if not vrf_exists:
-				add_location_to_vrf(data['vrf_id'], location['id'])
+				vrf = {"vrf_id":data['vrf_id']}
+				add_vrf_to_location(location['id'],vrf)
 			#Add logical unit to router node
 			add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
 			

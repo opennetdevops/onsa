@@ -212,8 +212,9 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         #create client
-        create_client("test_client")
-        cls.client_id = get_client_by_name("test_client")['id']
+        cls.client_name = "test_client"
+        create_client(cls.client_name)
+        cls.client_id = get_client_by_name(cls.client_name)['id']
         cls.client_node_sn = "CCCC3333CCCC"
         cls.access_node_id = 1
         cls.router_node_id = 1
@@ -230,16 +231,16 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         self.vlan_tag = create_vlan_tag(data)
         print(self.vlan_tag)
 
-        #add VLAN to access_node
-        data = {"vlan_id":self.vlan_tag["id"]}
-        add_vlan_to_access_node(self.access_node_id,data)
+        #add VLAN to access_node --> this means: "use vlan"
+        # data = {"vlan_id":self.vlan_tag["id"]}
+        # add_vlan_to_access_node(self.access_node_id,data)
 
         #create LogicalUnit
         data = {"logical_unit_id":15000}
         self.lu = create_logicalunit(data)
 
-        #add LU to routerNode
-        add_logical_unit_to_router_node(self.router_node_id,self.lu["id"])
+        #add LU to routerNode --> this means: "use LU"
+        # add_logical_unit_to_router_node(self.router_node_id,self.lu["id"])
 
         #create access_port
         data = {"used" : "False", "port" : "GigabitEthernet 1/19"}
@@ -251,7 +252,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
         #define service data
         self.service_data =  {
-                            "client": "test_client_03",
+                            "client": self.client_name,
                             "bandwidth": 10,
                             "location": self.location,
                             "customer_location_id": self.customer_location_id,
@@ -282,7 +283,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
         delete_access_port(self.access_port["id"])
 
         #delete client_port
-        delete_client_port(self.client_node_port)
+        delete_client_port(self.client_node_sn, self.client_node_port["id"])
 
         #delete service at charles & JeanGrey
         delete_charles_service(self.service_id)
@@ -293,11 +294,13 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        #delete customer location
+        delete_customer_location(cls.client_id, cls.customer_location_id)
+
         #delete client
         delete_client(cls.client_id)
 
-        #delete customer location
-        delete_customer_location(cls.client_id, cls.customer_location_id)
+
 
     def test_001_initial_service_state(self):      
         service_manual = get_service(self.service_id)
