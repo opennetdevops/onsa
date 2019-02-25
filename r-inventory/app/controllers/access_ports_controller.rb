@@ -25,10 +25,9 @@ class AccessPortsController < ApplicationController
   end
 
   def create
+    access_node = AccessNode.find(params[:access_node_id])
     @access_port = AccessPort.new(access_port_params)
-
-    @access_port.save!
-    if @access_port.save
+    if access_node.access_ports<<@access_port
       render json: @access_port, status: :created, location: @access_port
     else
       render json: @access_port.errors, status: :unprocessable_entity
@@ -53,6 +52,6 @@ class AccessPortsController < ApplicationController
     end
 
     def access_port_params
-      params.fetch(:access_port,{}).permit(:port,:used,:access_node_id)
+      params.fetch(:access_port,{}).permit(:port,:used)
     end
 end

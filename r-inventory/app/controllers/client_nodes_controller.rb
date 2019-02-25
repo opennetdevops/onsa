@@ -11,7 +11,6 @@ class ClientNodesController < ApplicationController
   end
 
   def create
-    puts params
     @client_node = ClientNode.new(client_node_params)
 
     if @client_node.save

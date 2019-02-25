@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       resources :client_ports
     end
     resources :access_nodes do 
-      resources :access_ports, only:[:create]
+      resources :access_ports, only:[:create,:index]
       resources :vlans, only:[:index,:create,:destroy]
     end
     resources :locations do
