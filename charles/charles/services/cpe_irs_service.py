@@ -196,7 +196,7 @@ def bb_parameters(client, service):
           parameters['status'] = ERR_NO_LOGICALUNITS
           return parameters
       else:
-          logical_unit_id = free_logical_units[0]['logical_unit_id']
+          logical_unit_id = free_logical_units[0]['id']
           client_network = get_client_network(client['name'], service['id'], service['prefix'])
           if client_network:
               add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])

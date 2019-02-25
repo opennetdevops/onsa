@@ -11,7 +11,7 @@ coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 def get_access_node(access_node_id):
-	url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id)
+	url = settings.INVENTORY_URL + "access_nodes/"+ str(access_node_id)
 	rheaders = {'Content-Type': 'application/json'}
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 	if r.json() and r.status_code == HTTP_200_OK:
@@ -20,7 +20,7 @@ def get_access_node(access_node_id):
 		raise AccessNodeException("Invalid Access Node.", status_code=r.status_code)
 
 def get_access_port(access_port_id):
-	url = settings.INVENTORY_URL + "accessports/"+ str(access_port_id)
+	url = settings.INVENTORY_URL + "access_ports/"+ str(access_port_id)
 	rheaders = {'Content-Type': 'application/json'}
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 	if r.json() and r.status_code == HTTP_200_OK:
@@ -67,8 +67,10 @@ def assign_autonomous_system(vrf_id):
 			else:
 				return proposed_as
 
+
+#TODO SE USA
 def get_router_node(location_id):
-	url = settings.INVENTORY_URL + "locations/" + str(location_id) + "/routernodes"
+	url = settings.INVENTORY_URL + "locations/" + str(location_id) + "/router_nodes"
 	rheaders = { 'Content-Type': 'application/json' }
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
@@ -79,7 +81,7 @@ def get_router_node(location_id):
 
 
 def get_free_access_port(location_id):
-	url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/accessports?used=false"
+	url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/access_ports?used=false"
 	rheaders = {'Content-Type': 'application/json'}
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 	print(r.json())
@@ -96,12 +98,12 @@ def get_location_id(location_name):
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
 	if r.json() and r.status_code == HTTP_200_OK:
-		return r.json()['id']
+		return r.json()[0]['id']
 	else:
 		raise LocationException("Could not resolve request", status_code=r.status_code)
 
 def use_access_port(access_port_id):
-	url = settings.INVENTORY_URL + "accessports/" + access_port_id
+	url = settings.INVENTORY_URL + "access_ports/" + access_port_id
 	rheaders = {'Content-Type': 'application/json'}
 	data = {"used":True}
 	r = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -123,7 +125,7 @@ def get_client_vrfs(client_name):
 
 
 def get_free_vrf():
-	url = settings.INVENTORY_URL + "vrfs?used=False"
+	url = settings.INVENTORY_URL + "vrfs?used=false"
 	rheaders = {'Content-Type': 'application/json'}
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
@@ -145,7 +147,7 @@ def use_vrf(vrf_id, vrf_name, client_name):
 		raise VrfException("Invalid VRF Id.", status_code=r.status_code)
 
 def get_free_vlan(access_node_id):
-	url = settings.INVENTORY_URL + "accessnodes/"+ str(access_node_id) + "/vlantags?used=false"
+	url = settings.INVENTORY_URL + "access_nodes/"+ str(access_node_id) + "/vlans?used=false"
 	rheaders = { 'Content-Type': 'application/json' }
 	r = requests.get(url, auth = None, verify = False, headers = rheaders)
 	logging.debug(r.json())
@@ -158,7 +160,7 @@ def get_free_vlan(access_node_id):
 
 
 def use_vlan(access_node_id, vlan_id):
-	url = settings.INVENTORY_URL + "accessnodes/" + str(access_node_id) + "/vlantags"
+	url = settings.INVENTORY_URL + "access_nodes/" + str(access_node_id) + "/vlans"
 	rheaders = { 'Content-Type': 'application/json' }
 	data = { 'vlan_id': vlan_id }
 	r = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)

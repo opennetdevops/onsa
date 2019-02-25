@@ -3,7 +3,7 @@ class VlansController < ApplicationController
   def index
     if params[:access_node_id]
       if params[:used]
-        access_node_vlan_tags = AccessNode.vlans
+        access_node_vlans = AccessNode.find(params[:access_node_id]).vlans
         if params[:used] == "true"
         @vlans = Vlan.all.where(vlan_tag:access_node_vlans.pluck(:vlan_tag))
         end
@@ -22,12 +22,17 @@ class VlansController < ApplicationController
   def create
     if params[:access_node_id]
       access_node = AccessNode.find(params[:access_node_id])
-      @vlan = Vlan.find(params[:vlan_tag_id])
+      @vlan = Vlan.find(params[:vlan_id])
       access_node.vlans << @vlan
+      render json: @vlan, status: :created, location: @vlan
     else
       @vlan = Vlan.new(vlan_params)
+      if @vlan.save
+        render json: @vlan, status: :created, location: @vlan
+      else
+        render json: @vlan.errors, status: :unprocessable_entity
+      end
     end
-    render json: @vlan, status: :created, location: @vlan
   end
 
   def destroy

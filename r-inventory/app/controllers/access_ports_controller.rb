@@ -9,9 +9,9 @@ class AccessPortsController < ApplicationController
 
       @access_nodes.each do |an|
         if params[:used]
-          all_ports << an.access_ports.where(used:params[:used])
+          all_ports += an.access_ports.where(used:params[:used])
         else
-          all_ports << an.access_ports
+          all_ports += an.access_ports
         end
       end
       render json: all_ports

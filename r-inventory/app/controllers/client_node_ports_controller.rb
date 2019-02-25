@@ -1,6 +1,6 @@
 class ClientNodePortsController < ApplicationController
   before_action :set_client_node_port, only: [:show, :update, :destroy]
-  before_action :set_client_node, only: [:create, :show, :index]
+  before_action :set_client_node, only: [:create, :index]
 
   def index
     if params[:used]
@@ -38,7 +38,8 @@ class ClientNodePortsController < ApplicationController
 
   private
     def set_client_node_port
-      @client_node_port = @client_node.client_node_ports.find(params[:id])
+      client_node = ClientNode.find(params[:client_node_id])
+      @client_node_port = client_node.client_node_ports.find(params[:id])
     end
 
     def set_client_node

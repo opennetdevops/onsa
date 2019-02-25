@@ -492,7 +492,7 @@ def get_vrfs():
 
 
 def get_free_cpe_port(client_node_sn):
-    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_sn) + "/client_node_ports?used=False"
+    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_sn) + "/client_node_ports?used=false"
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if r.status_code == HTTP_200_OK:
@@ -554,7 +554,7 @@ def get_client_vrfs(client_name):
 
 
 def get_free_vrf():
-    url= os.getenv('INVENTORY_URL') + "vrfs?used=False"
+    url= os.getenv('INVENTORY_URL') + "vrfs?used=false"
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
