@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
 
   create_table "client_node_ports", force: :cascade do |t|
     t.string "interface_name"
-    t.integer "client_node_id"
+    t.string "client_node_id"
     t.boolean "used"
     t.string "service_id"
     t.datetime "created_at", null: false

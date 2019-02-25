@@ -8,6 +8,7 @@ class ClientNodePortsController < ApplicationController
     else
       @client_node_ports = @client_node.client_node_ports
     end
+    render json: @client_node_ports
   end
 
   def show
@@ -16,9 +17,8 @@ class ClientNodePortsController < ApplicationController
 
   def create
     @client_node_port = ClientNodePort.new(client_node_port_params)
-
     if @client_node.client_node_ports<<@client_node_port
-      render json: @client_node_port, status: :created
+      render json: @client_node_port, status: :created, location: [@client_node,@client_node_port]
     else
       render json: @client_node_port.errors, status: :unprocessable_entity
     end
