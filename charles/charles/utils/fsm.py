@@ -193,7 +193,7 @@ class State():
         logging.debug("Manual")
         service['service_state'] = self.name
         service_data = {'service_state': self.name}
-        update_service(service['service_id'], service_data)
+        update_jeangrey_service(service['service_id'], service_data)
         service = update_charles_service(service, self.name)
         return service
 
