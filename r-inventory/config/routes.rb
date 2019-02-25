@@ -4,10 +4,10 @@ Rails.application.routes.draw do
     	resources :logical_units, only:[:index,:create,:destroy]
     end
     resources :client_nodes do
-      resources :client_ports
+      resources :client_node_ports
     end
     resources :access_nodes do 
-      resources :access_ports, only:[:create,:index]
+      resources :access_ports
       resources :vlans, only:[:index,:create,:destroy]
     end
     resources :locations do

@@ -115,7 +115,7 @@ def create_access_port_at_access_node(access_node_id, data):
         raise ServiceException("Unable to create service")
 
 def create_client_port_at_client_node(client_node_sn, data):
-    url = os.getenv('INVENTORY_URL') + "client_nodes/"+ str(client_node_sn) + "/clientports"
+    url = os.getenv('INVENTORY_URL') + "client_nodes/"+ str(client_node_sn) + "/client_node_ports"
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
@@ -211,7 +211,7 @@ def use_access_port(access_port_id):
 
 
 def use_client_node_port(client_node_id, client_port_id):
-    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_id) + "/clientports/" + str(client_port_id)
+    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_id) + "/client_node_ports/" + str(client_port_id)
     rheaders = { 'Content-Type': 'application/json' }
     data = { "used": True }
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -222,7 +222,7 @@ def use_client_node_port(client_node_id, client_port_id):
 
 
 def release_client_node_port(client_node_id, client_port_id):
-    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_id) + "/clientports/" + str(client_port_id)
+    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_id) + "/client_node_ports/" + str(client_port_id)
     rheaders = { 'Content-Type': 'application/json' }
     data = { "used": False }
     response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
@@ -346,7 +346,7 @@ def delete_access_port(elem_id):
         raise ServiceException("Unable to delete service")
 
 def delete_client_port(client_node_sn, elem_id):
-    url = os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_sn) + "/clientports/"+ str(elem_id)
+    url = os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_sn) + "/client_node_ports/"+ str(elem_id)
     rheaders = { 'Content-Type': 'application/json' }
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_204_NO_CONTENT:
@@ -471,7 +471,7 @@ def get_access_node(access_node_id):
 
 
 def get_client_port(client_node_id, client_port_id):
-    url = os.getenv('INVENTORY_URL') + "client_nodes/"  + str(client_node_id) + "/clientports/" + str(client_port_id)
+    url = os.getenv('INVENTORY_URL') + "client_nodes/"  + str(client_node_id) + "/client_node_ports/" + str(client_port_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_200_OK:
@@ -492,7 +492,7 @@ def get_vrfs():
 
 
 def get_free_cpe_port(client_node_sn):
-    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_sn) + "/clientports?used=False"
+    url= os.getenv('INVENTORY_URL') + "client_nodes/" + str(client_node_sn) + "/client_node_ports?used=False"
     rheaders = {'Content-Type': 'application/json'}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if r.status_code == HTTP_200_OK:

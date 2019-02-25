@@ -1,5 +1,6 @@
 class AccessPortsController < ApplicationController
   before_action :set_access_port, only: [:show, :update, :destroy]
+  before_action :set_access_node, only: [:create]
 
   def index
     if params[:location_id]
@@ -25,9 +26,8 @@ class AccessPortsController < ApplicationController
   end
 
   def create
-    access_node = AccessNode.find(params[:access_node_id])
     @access_port = AccessPort.new(access_port_params)
-    if access_node.access_ports<<@access_port
+    if @access_node.access_ports<<@access_port
       render json: @access_port, status: :created, location: @access_port
     else
       render json: @access_port.errors, status: :unprocessable_entity
@@ -49,6 +49,10 @@ class AccessPortsController < ApplicationController
   private
     def set_access_port
       @access_port = AccessPort.find(params[:id])
+    end
+
+    def set_access_node
+      @access_node = AccessNode.find(params[:access_node_id])
     end
 
     def access_port_params
