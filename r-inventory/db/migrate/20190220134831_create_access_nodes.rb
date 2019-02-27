@@ -2,7 +2,7 @@ class CreateAccessNodes < ActiveRecord::Migration[5.2]
   def change
     create_table :access_nodes do |t|
       t.string :name
-      t.inet :mgmt_ip
+      t.cidr :mgmt_ip
       t.string :model
       t.string :vendor
       t.integer :location_id
