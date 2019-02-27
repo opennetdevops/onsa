@@ -1,4 +1,4 @@
-class ClientNodePortsController < ApplicationController
+class ClientNodePortsController < ApiController
   before_action :set_client_node_port, only: [:show, :update, :destroy]
   before_action :set_client_node, only: [:create, :index]
 

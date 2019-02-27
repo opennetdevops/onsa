@@ -1,4 +1,4 @@
-class VrfsController < ApplicationController
+class VrfsController < ApiController
   before_action :set_vrf, only: [:show, :update, :destroy]
 
   def index
