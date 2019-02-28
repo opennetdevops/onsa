@@ -21,7 +21,7 @@ class ServiceActivationView(APIView):
 		if 'cpe_sn' in data.keys():
 			if self.is_valid_cpe(data['cpe_sn']):
 				service_data = { "client_node_sn": data['cpe_sn']}
-				self.update_service(service_id, service_data)
+				self.update_jeangrey_service(service_id, service_data)
 			else:
 				response = { "message" : "CPE not valid." }
 				return JsonResponse(response, safe=False)
@@ -44,7 +44,7 @@ class ServiceActivationView(APIView):
 		else:
 			return None	
 
-	def update_service(self, service_id, data):
+	def update_jeangrey_service(self, service_id, data):
 		url = settings.JEAN_GREY_URL + "services/" + str(service_id)
 		rheaders = { 'Content-Type': 'application/json' }
 		response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)

@@ -46,7 +46,7 @@ class ServiceView(View):
             service_state = Fsm.run(my_charles_service)
             
             #Update JG
-            # update_service(data['service_id'], {'service_state': service_state} )
+            # update_jeangrey_service(data['service_id'], {'service_state': service_state} )
 
         except BaseException as e:
             return e.handle()
@@ -63,7 +63,7 @@ class ServiceView(View):
         #   service.service_state = NextStateE2e[service.service_state].value
         #   service.save()
 
-        #   update_service(service_id, {'service_state': service.service_state})
+        #   update_jeangrey_service(service_id, {'service_state': service.service_state})
 
         #   if service.service_state != service.target_state:
         #       service = get_service(service_id)
@@ -112,7 +112,7 @@ class ProcessView(View):
             
             logging.debug(str("Going to update JG service to: " + service_state))
             data = {'service_state': service_state}
-            update_service(my_service['service_id'], data)
+            update_jeangrey_service(my_service['service_id'], data)
             logging.debug("JG updated, updating charles...")
 
             my_service_obj.service_state = service_state
@@ -134,7 +134,7 @@ class ProcessView(View):
                 except BaseException as e:
                     service_state = "ERROR"
                     data = {'service_state': service_state}
-                    update_service(my_service['service_id'], data)
+                    update_jeangrey_service(my_service['service_id'], data)
                     my_service_obj.service_state = service_state
                     my_service_obj.save()
                     return e.handle()
@@ -148,7 +148,7 @@ class ProcessView(View):
             response = { "message": "Service update failed" }
 
         data = {'service_state': service_state}
-        update_service(my_service['service_id'], data)
+        update_jeangrey_service(my_service['service_id'], data)
         my_service_obj.service_state = service_state
         my_service_obj.save()
         return JsonResponse(response, safe=False)

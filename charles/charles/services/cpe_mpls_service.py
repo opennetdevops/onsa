@@ -26,11 +26,11 @@ def bb_data_ack_automated_request(service):
 
 		service_data['client_network'] = service['client_network']
 		service_data['service_state'] = "bb_data_ack"
-		update_service(service['service_id'], service_data)
+		update_jeangrey_service(service['service_id'], service_data)
 
 	else:
 		service_data['service_state'] = "error"
-		update_service(service['service_id'], service_data)
+		update_jeangrey_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -68,7 +68,7 @@ def bb_activated_automated_request(service):
 	configure_service(config)
 	service_data = {}
 	service_data['service_state'] = "bb_activation_in_progress"
-	update_service(service['service_id'], service_data)
+	update_jeangrey_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -77,7 +77,7 @@ def an_data_ack_automated_request(service):
 	if DEBUG: print("an_data_ack_automated_request")
 	service_data = {}
 	service_data['service_state'] = "an_data_ack"
-	update_service(service['service_id'], service_data)
+	update_jeangrey_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -107,7 +107,7 @@ def an_activated_automated_request(service):
 	else:
 		service_data['service_state'] = "error"
 
-	update_service(service['service_id'], service_data)
+	update_jeangrey_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -124,7 +124,7 @@ def cpe_data_ack_automated_request(service):
 	service_data['service_state'] = "cpe_data_ack"
 	service_data['wan_network'] = service['wan_network'] 	
 
-	update_service(service['service_id'], service_data)
+	update_jeangrey_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 
@@ -159,7 +159,7 @@ def service_activated_automated_request(service):
 	else:
 		service_data['service_state'] = "error"
 	
-	update_service(service['service_id'], service_data)
+	update_jeangrey_service(service['service_id'], service_data)
 	return service_data['service_state']
 
 

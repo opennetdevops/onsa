@@ -19,7 +19,7 @@ def bb_data_ack_automated_request(service):
 
   if DEBUG: print(parameters)
 
-  #Handle parameters error
+  #Handle parameters ERROR
   if parameters is not None:
     service_data = {  'logical_unit_id': parameters['logical_unit_id'],
                       'wan_network':  parameters['wan_network']
@@ -28,21 +28,14 @@ def bb_data_ack_automated_request(service):
     service_state = "bb_data_ack"
 
   else:
-    service_state = "error"
+    service_data = {}
+    service_state = "ERROR"
 
   service_data['service_state']=service_state
-  update_service(service['service_id'], service_data)
-  print("before update")
-  print(service)
+  update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
-  print("after update charles")
-  print(service)
-  print("service data")
-  print(service_data)
   service.update(service_data)
   my_service = service
-  print("after update service with service data")
-  print(my_service)
   return my_service
 
 
@@ -77,7 +70,7 @@ def bb_activated_automated_request(service):
   # service_data['service_state'] = "bb_activation_in_progress"
   service_state = "bb_activation_in_progress"
   service_data = {'service_state' : service_state}
-  update_service(service['service_id'], service_data)
+  update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
 
   return service
@@ -89,7 +82,7 @@ def an_data_ack_automated_request(service):
   # service_data['service_state'] = "an_data_ack"
   service_state = "an_data_ack"
   service_data = {'service_state' : service_state}
-  update_service(service['service_id'], service_data)
+  update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
 
@@ -118,10 +111,10 @@ def an_activated_automated_request(service):
     configure_service(config) 
 
   else:
-    service_state = "error"
+    service_state = "ERROR"
 
   service_data['service_state'] = service_state
-  update_service(service['service_id'], service_data)
+  update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
 
@@ -139,7 +132,7 @@ def cpe_data_ack_automated_request(service):
   service_state = "cpe_data_ack"
 
   service_data['service_state']=service_state
-  update_service(service['service_id'], service_data)
+  update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)  
   service.update(service_data)
   return service
@@ -173,10 +166,10 @@ def service_activated_automated_request(service):
     service_state = "cpe_activation_in_progress"
     configure_service(config)
   else:
-    service_state = "error"
+    service_state = "ERROR"
 
   service_data['service_state'] = service_state
-  update_service(service['service_id'], service_data)
+  update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)  
   return service
 
@@ -187,7 +180,7 @@ def bb_parameters(client, service):
     access_node = get_access_node(service['access_node_id'])
 
     """
-    Fetch for logical units
+    Fetch  logical units
     """
     if service['logical_unit_id'] is None:
       free_logical_units = get_free_logical_units(router_node['id'])

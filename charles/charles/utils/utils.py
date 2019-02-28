@@ -21,7 +21,7 @@ def configure_service(config):
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 
 
-def update_service(service_id, data):
+def update_jeangrey_service(service_id, data):
     url = os.getenv('JEAN_GREY_URL') + "services/" + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
 

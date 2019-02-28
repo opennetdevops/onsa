@@ -52,7 +52,7 @@ def generate_vcpe_irs_request(client, service, code=None):
 		elif code == "bb":
 			service_data['service_state'] = "bb_activation_in_progress"
 
-		update_service(service['id'], service_data)
+		update_jeangrey_service(service['id'], service_data)
 
 	elif code in CPE_CODES:
 		parameters = cpe_parameters(client, service)
@@ -73,7 +73,7 @@ def generate_vcpe_irs_request(client, service, code=None):
 		elif code == "cpe":
 			service_data = { "service_state": "cpe_activation_in_progress" }
 
-		update_service(service['id'], service_data) 
+		update_jeangrey_service(service['id'], service_data) 
 
 	if code in DATA_CODES:
 		print("DATA_FECTH")
