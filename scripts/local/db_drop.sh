@@ -11,3 +11,7 @@ ALTER role automation SET timezone TO 'UTC';
 GRANT ALL PRIVILEGES ON DATABASE onsa to automation;
 \q
 SQL
+
+rootlevel=`eval "cd $PWD;cd ../..;pwd"`
+cd $rootlevel\/r-inventory\/
+rake db:reset

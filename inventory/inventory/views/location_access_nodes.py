@@ -11,16 +11,17 @@ import coloredlogs
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
+
 class LocationAccessNodesView(View):
     def get(self, request, location_id):
         try:
             location = Location.objects.get(pk=location_id)
-            access_nodes =  AccessNode.objects.filter(location_id=location_id).values()
+            access_nodes = AccessNode.objects.filter(
+                location_id=location_id).values()
             return JsonResponse(list(access_nodes), safe=False)
         except Location.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-
 
     def post(self, request, location_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

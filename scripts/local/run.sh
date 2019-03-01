@@ -16,6 +16,9 @@ do
 
 done
 
+cd $rootlevel\/r-inventory\/
+rails s -p $INVENTORY_PORT &
+
 #python3 $rootlevel\/$projects\/manage.py createsuperuser
 
 
