@@ -1,4 +1,4 @@
-class LogicalUnitsController < ApplicationController
+class LogicalUnitsController < ApiController
   before_action :set_logical_unit, only: [:show, :update, :destroy]
 
   def index

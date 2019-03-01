@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
 
   create_table "access_nodes", force: :cascade do |t|
     t.string "name"
-    t.inet "mgmt_ip"
+    t.cidr "mgmt_ip"
     t.string "model"
     t.string "vendor"
     t.integer "location_id"
@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
 
   create_table "client_nodes", primary_key: "serial_number", id: :string, force: :cascade do |t|
     t.string "name"
-    t.inet "mgmt_ip"
+    t.cidr "mgmt_ip"
     t.string "model"
     t.string "vendor"
     t.string "client"
@@ -89,12 +89,12 @@ ActiveRecord::Schema.define(version: 2019_02_20_150407) do
 
   create_table "router_nodes", force: :cascade do |t|
     t.string "name"
-    t.inet "mgmt_ip"
+    t.cidr "mgmt_ip"
     t.string "model"
     t.string "vendor"
     t.integer "location_id"
-    t.inet "private_wan_ip"
-    t.inet "loopback"
+    t.cidr "private_wan_ip"
+    t.cidr "loopback"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

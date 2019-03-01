@@ -1,4 +1,4 @@
-class RouterNodesController < ApplicationController
+class RouterNodesController < ApiController
   before_action :set_router_node, only: [:show, :update, :destroy]
 
   def index

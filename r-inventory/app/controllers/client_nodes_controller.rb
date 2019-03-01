@@ -1,4 +1,4 @@
-class ClientNodesController < ApplicationController
+class ClientNodesController < ApiController
   before_action :set_client_node, only: [:show, :update, :destroy]
 
   def index

@@ -1,4 +1,4 @@
-class AccessPortsController < ApplicationController
+class AccessPortsController < ApiController
   before_action :set_access_port, only: [:show, :update, :destroy]
   before_action :set_access_node, only: [:create]
 

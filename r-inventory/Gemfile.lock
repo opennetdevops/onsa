@@ -55,6 +55,7 @@ GEM
       activesupport (>= 4.2.0)
     i18n (1.5.1)
       concurrent-ruby (~> 1.0)
+    ipaddress (0.8.3)
     listen (3.1.1)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9.7)
@@ -133,6 +134,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (>= 1.1.0)
   byebug
+  ipaddress
   listen (>= 3.0.5, < 3.2)
   pg (>= 0.18, < 2.0)
   puma (~> 3.11)
@@ -142,7 +144,7 @@ DEPENDENCIES
   tzinfo-data
 
 RUBY VERSION
-   ruby 2.2.2p95
+   ruby 2.5.1p57
 
 BUNDLED WITH
    1.17.1

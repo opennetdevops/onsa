@@ -1,4 +1,4 @@
-class AccessNodesController < ApplicationController
+class AccessNodesController < ApiController
   before_action :set_access_node, only: [:show, :update, :destroy]
 
   def index

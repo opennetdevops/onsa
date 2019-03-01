@@ -1,4 +1,4 @@
-class VlansController < ApplicationController
+class VlansController < ApiController
   
   def index
     if params[:access_node_id]
