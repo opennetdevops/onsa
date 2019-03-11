@@ -93,8 +93,6 @@ GEM
       activesupport (>= 4.1)
     i18n (1.5.1)
       concurrent-ruby (~> 1.0)
-<<<<<<< HEAD
-=======
     inherited_resources (1.9.0)
       actionpack (>= 4.2, < 5.3)
       has_scope (~> 0.6)
@@ -116,7 +114,6 @@ GEM
       activerecord
       kaminari-core (= 1.1.1)
     kaminari-core (1.1.1)
->>>>>>> a7f68a6228efc03a7222d05941ce2528d844f524
     listen (3.1.1)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9.7)
