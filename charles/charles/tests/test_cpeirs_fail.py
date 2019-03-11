@@ -93,9 +93,6 @@ class TestFailCpeIrsAutomatedServiceMethods(unittest.TestCase):
         self.service_id = "SVC01-A_" + str(self.initial_id)
         self.service_data['client_node_sn'] = self.client_node["serial_number"]
 
-        # create mock service
-        create_mock_service("cpe_irs", self.service_id, self.service_data)
-
     def tearDown(self):
         service = get_service(self.service_id)
 
@@ -141,14 +138,20 @@ class TestFailCpeIrsAutomatedServiceMethods(unittest.TestCase):
         # pass
 
     def test_001_initial_service_state(self):
-        service_manual = get_service(self.service_id)
-        self.assertEqual(service_manual['service_state'], "in_construction")
-
-    def test_002_fail_not_enough_vlans(self):
 
         # add VLAN to access_node --> this means: "use vlan"
         data = {"vlan_id": self.vlan_tag["id"]}
         add_vlan_to_access_node(self.access_node["id"], data)
+
+        # create mock service
+        create_mock_service("cpe_irs", self.service_id, self.service_data)
+
+        service_manual = get_service(self.service_id)
+        self.assertEqual(service_manual['service_state'], "ERROR")
+
+    def test_002_fail_not_enough_vlans(self):
+
+        print(get_free_vlan(self.access_node["id"]))
 
         push_service_to_orchestrator(
             self.service_id, "automated", "service_activated")

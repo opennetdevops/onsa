@@ -586,6 +586,16 @@ def get_free_vlan(access_node_id):
     else:
         raise VlanTagException("Unable to retrieve VlanTag")
 
+def get_free_vlans(access_node_id):
+    url = os.getenv('INVENTORY_URL') + "access_nodes/"+ str(access_node_id) + "/vlans?used=false"
+    rheaders = { 'Content-Type': 'application/json' }
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if json_response and response.status_code == HTTP_200_OK:
+        return json_response
+    else:
+        raise VlanTagException("Unable to retrieve VlanTag")
+
 def use_vlan(access_node_id, vlan_id):
     url = os.getenv('INVENTORY_URL') + "access_nodes/" + str(access_node_id) + "/vlans"
     rheaders = { 'Content-Type': 'application/json' }

@@ -10,13 +10,18 @@ from core.views.ldap_jwt import *
 import json
 import requests
 
-class LocationsView(APIView):
-	def get(self, request):
-		rheaders = {'Content-Type': 'application/json'}
-		response = requests.get(settings.INVENTORY_URL + "locations", auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
 
-		return JsonResponse(json_response, safe=False)
+class LocationsView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
+
+    def get(self, request):
+        rheaders = {'Content-Type': 'application/json'}
+        response = requests.get(
+            settings.INVENTORY_URL + "locations", auth=None, verify=False, headers=rheaders)
+        json_response = json.loads(response.text)
+
+        return JsonResponse(json_response, safe=False)
+
 
 locations_view = LocationsView.as_view()
-

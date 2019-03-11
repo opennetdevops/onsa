@@ -4,7 +4,7 @@ class AccessNode < ApplicationRecord
 	belongs_to :location
 
 	def mgmt_ip
-		"#{self[:mgmt_ip].to_s}/#{self[:mgmt_ip].prefix}")
+		"#{self[:mgmt_ip].to_s}/#{self[:mgmt_ip].prefix}"
 	end
 
 end

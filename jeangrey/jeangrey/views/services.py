@@ -14,49 +14,62 @@ import coloredlogs
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
+
 class ServiceView(View):
 
     def get(self, request, service_id=None):
         state = request.GET.get('state', '')
         service_type = request.GET.get('type', None)
-        vrf_id = request.GET.get('vrf_id',None)
+        vrf_id = request.GET.get('vrf_id', None)
 
         try:
             if vrf_id is not None:
-                cpeless_mpls_services = list(CpelessMpls.objects.filter(vrf_id=vrf_id).values())
-                cpe_mpls_services = list(CpeMpls.objects.filter(vrf_id=vrf_id).values())
-                vpls_services = list(Vpls.objects.filter(vrf_id=vrf_id).values())
+                cpeless_mpls_services = list(
+                    CpelessMpls.objects.filter(vrf_id=vrf_id).values())
+                cpe_mpls_services = list(
+                    CpeMpls.objects.filter(vrf_id=vrf_id).values())
+                vpls_services = list(
+                    Vpls.objects.filter(vrf_id=vrf_id).values())
 
                 services = cpe_mpls_services + cpeless_mpls_services + vpls_services
                 return JsonResponse(services, safe=False)
 
             if service_type is not None:
                 ServiceClass = getattr(models, ServiceTypes[service_type])
-                services = ServiceClass.objects.filter(service_type=service_type).values()
+                services = ServiceClass.objects.filter(
+                    service_type=service_type).values()
                 return JsonResponse(list(services), safe=False)
 
-            elif service_id is None:            
+            elif service_id is None:
                 if state in ["PENDING", "ERROR", "REQUESTED", "COMPLETED"]:
-                    cpeless_irs_services = list(CpelessIrs.objects.filter(service_state=state).values())
-                    cpe_irs_services = list(CpeIrs.objects.filter(service_state=state).values())
-                    cpeless_mpls_services = list(CpelessMpls.objects.filter(service_state=state).values())
-                    cpe_mpls_services = list(CpeMpls.objects.filter(service_state=state).values())
-                    vcpe_irs_services = list(VcpeIrs.objects.filter(service_state=state).values())    
-                    vpls_services = list(Vpls.objects.filter(service_state=state).values())
+                    cpeless_irs_services = list(
+                        CpelessIrs.objects.filter(service_state=state).values())
+                    cpe_irs_services = list(
+                        CpeIrs.objects.filter(service_state=state).values())
+                    cpeless_mpls_services = list(
+                        CpelessMpls.objects.filter(service_state=state).values())
+                    cpe_mpls_services = list(
+                        CpeMpls.objects.filter(service_state=state).values())
+                    vcpe_irs_services = list(
+                        VcpeIrs.objects.filter(service_state=state).values())
+                    vpls_services = list(Vpls.objects.filter(
+                        service_state=state).values())
 
                     services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                    + vpls_services + vcpe_irs_services + cpe_irs_services
+                        + vpls_services + vcpe_irs_services + cpe_irs_services
 
                 else:
-                    cpeless_irs_services = list(CpelessIrs.objects.all().values())
+                    cpeless_irs_services = list(
+                        CpelessIrs.objects.all().values())
                     cpe_irs_services = list(CpeIrs.objects.all().values())
-                    cpeless_mpls_services = list(CpelessMpls.objects.all().values())
+                    cpeless_mpls_services = list(
+                        CpelessMpls.objects.all().values())
                     cpe_mpls_services = list(CpeMpls.objects.all().values())
-                    vcpe_irs_services = list(VcpeIrs.objects.all().values()) 
+                    vcpe_irs_services = list(VcpeIrs.objects.all().values())
                     vpls_services = list(Vpls.objects.all().values())
 
                     services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                    + vpls_services + vcpe_irs_services + cpe_irs_services
+                        + vpls_services + vcpe_irs_services + cpe_irs_services
 
                 return JsonResponse(services, safe=False)
 
@@ -81,7 +94,7 @@ class ServiceView(View):
 
         if form.is_valid():
 
-            try:        
+            try:
                 client_name = data.pop('client')
                 client = Client.objects.get(name=client_name)
 
@@ -90,7 +103,7 @@ class ServiceView(View):
                 router_node = get_router_node(location_id)
 
                 if "access_port_id" not in data.keys():
-                    access_port = get_free_access_port(location_id)           
+                    access_port = get_free_access_port(location_id)
                     access_port_id = str(access_port['id'])
                     use_access_port(access_port_id)
                 else:
@@ -100,27 +113,29 @@ class ServiceView(View):
                 access_node_id = str(access_port['access_node_id'])
 
                 vlan = get_free_vlan(access_node_id)
-                print(vlan)
-                #todo pasar exception
+
+                # todo pasar exception
 
                 use_vlan(access_node_id, vlan['id'])
-        
+
                 data['location_id'] = location_id
                 data['router_node_id'] = router_node['id']
                 data['access_port_id'] = access_port_id
                 data['client_id'] = client.id
                 data['vlan_id'] = vlan['vlan_tag']
                 data['access_node_id'] = access_node_id
-                data['customer_location_id'] = int(data['customer_location_id'])
+                data['customer_location_id'] = int(
+                    data['customer_location_id'])
 
-                ServiceClass = getattr(models, ServiceTypes[data['service_type']])
+                ServiceClass = getattr(
+                    models, ServiceTypes[data['service_type']])
 
                 service = ServiceClass.objects.create(**data)
                 service.service_state = INITIAL_SERVICE_STATE
                 service.save()
 
                 return JsonResponse(service.fields(), safe=False, status=HTTP_201_CREATED)
-            
+
             except CustomException as e:
                 return e.handle()
             except Client.DoesNotExist as e:
@@ -130,14 +145,14 @@ class ServiceView(View):
         else:
             json_response = {"msg": "Form is invalid.", "errors": form.errors}
             return JsonResponse(json_response, safe=False, status=ERR_BAD_REQUEST)
-        
+
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
 
         try:
             service_type = Service.objects.get(id=service_id).service_type
             ServiceClass = getattr(models, ServiceTypes[service_type])
-            
+
             service = ServiceClass.objects.filter(id=service_id)
             service.update(**data)
 
@@ -155,6 +170,3 @@ class ServiceView(View):
         except Service.DoesNotExist as msg:
             logging.error(msg)
             return JsonResponse({"msg": str(msg)}, safe=False, status=ERR_NOT_FOUND)
-
-
-    

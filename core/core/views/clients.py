@@ -10,31 +10,36 @@ from core.views.ldap_jwt import *
 import json
 import requests
 
+
 class ClientView(APIView):
-	def get(self, request, client_id=None):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
 
-		url = settings.JEAN_GREY_URL + "clients"
-		name = request.GET.get('name', None)
+    def get(self, request, client_id=None):
 
-		if client_id is not None:
-			url += "/" + str(client_id)
-		elif name is not None:
-			url += "?name=" + name		
-		
-		rheaders = { 'Content-Type': 'application/json' }		
-		response = requests.get(url, auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
-		
-		return JsonResponse(json_response, safe=False)
+        url = settings.JEAN_GREY_URL + "clients"
+        name = request.GET.get('name', None)
 
-		
-	def post(self, request):
-		data = json.loads(request.body.decode(encoding='UTF-8'))
-		url = settings.JEAN_GREY_URL + "clients"
-		rheaders = { 'Content-Type': 'application/json' }
-		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
+        if client_id is not None:
+            url += "/" + str(client_id)
+        elif name is not None:
+            url += "?name=" + name
 
-		return JsonResponse(json_response, safe=False)
-		
+        rheaders = {'Content-Type': 'application/json'}
+        response = requests.get(url, auth=None, verify=False, headers=rheaders)
+        json_response = json.loads(response.text)
+
+        return JsonResponse(json_response, safe=False)
+
+    def post(self, request):
+        data = json.loads(request.body.decode(encoding='UTF-8'))
+        url = settings.JEAN_GREY_URL + "clients"
+        rheaders = {'Content-Type': 'application/json'}
+        response = requests.post(url, data=json.dumps(
+            data), auth=None, verify=False, headers=rheaders)
+        json_response = json.loads(response.text)
+
+        return JsonResponse(json_response, safe=False)
+
+
 client_view = ClientView.as_view()

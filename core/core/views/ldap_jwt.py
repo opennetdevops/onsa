@@ -31,6 +31,7 @@ jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 jwt_get_username_from_payload = api_settings.JWT_PAYLOAD_GET_USERNAME_HANDLER
 
+
 class JSONWebTokenLDAPAuthentication(JSONWebTokenAuthentication):
     def authenticate_credentials(self, payload):
         """
@@ -45,10 +46,11 @@ class JSONWebTokenLDAPAuthentication(JSONWebTokenAuthentication):
         user = search_user(username)
 
         if user is None:
-            msg = _('Invalid signature.')
-            raise exceptions.AuthenticationFailed(msg)      
-        
+            msg = _('Invalid signature (Empty User).')
+            raise exceptions.AuthenticationFailed(msg)
+
         return user
+
 
 class JSONWebTokenLDAPSerializer(JSONWebTokenSerializer):
     def validate(self, attrs):
@@ -78,11 +80,13 @@ class JSONWebTokenLDAPSerializer(JSONWebTokenSerializer):
             msg = msg.format(username_field=self.username_field)
             raise serializers.ValidationError(msg)
 
+
 class ObtainJSONWebTokenLDAP(JSONWebTokenAPIView):
     """
     API View that receives a POST with a user's username and password.
     Returns a JSON Web Token that can be used for authenticated requests.
     """
     serializer_class = JSONWebTokenLDAPSerializer
+
 
 obtain_ldap_jwt_token = ObtainJSONWebTokenLDAP.as_view()
