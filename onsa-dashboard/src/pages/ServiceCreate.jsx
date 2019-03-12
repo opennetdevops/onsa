@@ -45,12 +45,13 @@ async function getJson(url, token) {
   return jsonResponse;
 }
 
-async function postJson(url, data) {
+async function postJson(url, token, data) {
   let response = await fetch(url, {
     method: "POST",
     mode: "cors",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
     },
     body: JSON.stringify(data)
   });
@@ -247,7 +248,7 @@ class ServiceCreate extends React.Component {
 
     let url = "http://localhost:8000/core/api/services";
 
-    postJson(url, data).then(() => {
+    postJson(url, this.state.token, data).then(() => {
       this.setState({ successAlert: true });
     });
 
