@@ -32,7 +32,6 @@ async function coreLogin(url) {
 }
 
 async function getJson(url, token) {
-  console.log(token);
   let response = await fetch(url, {
     method: "GET",
     mode: "cors",
@@ -57,6 +56,7 @@ async function postJson(url, data) {
   });
 
   let jsonResponse = await response.json();
+  // response.json();
 
   return jsonResponse;
 }
@@ -98,12 +98,14 @@ class ServiceCreate extends React.Component {
 
     coreLogin(url).then(jsonResponse => {
       this.setState({ token: jsonResponse.token });
+
       url = "http://localhost:8000/core/api/clients";
       getJson(url, jsonResponse.token).then(jsonResponse => {
         this.setState({ clients: jsonResponse });
       });
+
       url = "http://localhost:8000/core/api/locations";
-      getJson(url, this.state.token).then(jsonResponse => {
+      getJson(url, jsonResponse.token).then(jsonResponse => {
         this.setState({ locations: jsonResponse });
       });
     });
@@ -137,7 +139,7 @@ class ServiceCreate extends React.Component {
             "/customerlocations/" +
             this.state.customerLocId +
             "/accessports";
-          getJson(url).then(jsonResponse =>
+          getJson(url, this.state.token).then(jsonResponse =>
             this.setState({ portsList: jsonResponse })
           );
         }
@@ -269,7 +271,7 @@ class ServiceCreate extends React.Component {
       let url =
         "http://localhost:8000/core/api/vrfs?client=" + this.state.client;
 
-      getJson(url).then(jsonResponse => {
+      getJson(url, this.state.token).then(jsonResponse => {
         this.state.client !== "Choose..."
           ? this.setState({ vrfs: jsonResponse })
           : this.setState({ vrfs: [] });
@@ -277,7 +279,7 @@ class ServiceCreate extends React.Component {
 
       url = "http://localhost:8000/core/api/clients?name=" + this.state.client;
 
-      getJson(url)
+      getJson(url, this.state.token)
         .then(client => {
           this.state.client !== "Choose..."
             ? this.setState({ clientId: client.id })
@@ -289,7 +291,7 @@ class ServiceCreate extends React.Component {
             this.state.clientId +
             "/customerlocations";
 
-          getJson(url).then(jsonResponse => {
+          getJson(url, this.state.token).then(jsonResponse => {
             this.state.client !== "Choose..."
               ? this.setState({ customerLocations: jsonResponse })
               : this.setState({ customerLocations: [] });

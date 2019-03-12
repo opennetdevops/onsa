@@ -10,27 +10,35 @@ from core.views.ldap_jwt import *
 import json
 import requests
 
+
 class CustomerLocationsView(APIView):
-	def get(self, request, client_id, customer_location_id=None):
-		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
 
-		if customer_location_id is not None:
-			url += "/" + str(customer_location_id)
+    def get(self, request, client_id, customer_location_id=None):
+        url = settings.JEAN_GREY_URL + "clients/" + \
+            str(client_id) + "/customerlocations"
 
-		rheaders = {'Content-Type': 'application/json'}	
-		response = requests.get(url, auth = None, verify = False, headers = rheaders)
+        if customer_location_id is not None:
+            url += "/" + str(customer_location_id)
 
-		json_response = json.loads(response.text)
+        rheaders = {'Content-Type': 'application/json'}
+        response = requests.get(url, auth=None, verify=False, headers=rheaders)
 
-		return JsonResponse(json_response, safe=False)
+        json_response = json.loads(response.text)
 
-	def post(self, request, client_id):
-		data = json.loads(request.body.decode(encoding='UTF-8'))
-		url = settings.JEAN_GREY_URL + "clients/" + str(client_id) + "/customerlocations"
-		rheaders = {'Content-Type': 'application/json'}	
-		response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-		json_response = json.loads(response.text)
+        return JsonResponse(json_response, safe=False)
 
-		return JsonResponse(json_response, safe=False)
+    def post(self, request, client_id):
+        data = json.loads(request.body.decode(encoding='UTF-8'))
+        url = settings.JEAN_GREY_URL + "clients/" + \
+            str(client_id) + "/customerlocations"
+        rheaders = {'Content-Type': 'application/json'}
+        response = requests.post(url, data=json.dumps(
+            data), auth=None, verify=False, headers=rheaders)
+        json_response = json.loads(response.text)
+
+        return JsonResponse(json_response, safe=False)
+
 
 customer_locations_view = CustomerLocationsView.as_view()
