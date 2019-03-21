@@ -3,6 +3,6 @@ development:
   encoding: unicode
   database: inventory_development
   pool: 5
-  username: inventory
-  password: inventory
+  username: automation
+  password: F1b3rc0rp
   host: localhost
