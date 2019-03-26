@@ -38,21 +38,23 @@ JQUERY_URL = True
 
 INSTALLED_APPS = [
     #  'django.contrib.admin',
+    'corsheaders',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core.apps.CoreConfig',
-    'corsheaders'
+    'core.apps.CoreConfig'
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -63,6 +65,9 @@ MIDDLEWARE = [
 APPEND_SLASH = False
 
 ROOT_URLCONF = 'settings.urls'
+
+CSRF_TRUSTED_ORIGINS = ['localhost:3000', '10.120.78.58:3000']
+
 
 TEMPLATES = [
     {
@@ -162,7 +167,7 @@ JWT_AUTH = {
 
 MAX_ATTEMPTS = 0
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 # CORS Headers
 CORS_ORIGIN_WHITELIST = (
     'google.com',
@@ -170,6 +175,7 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
     '127.0.0.1:9000',
     '10.120.78.58:3000',
+    'http://10.120.78.58:3000',
     '10.120.78.59:3000',
     '10.120.78.60:3000'
 )

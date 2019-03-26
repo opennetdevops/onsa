@@ -2,6 +2,7 @@
   "name": "onsa-dash",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.6",
     "@fortawesome/free-solid-svg-icons": "^5.4.1",
@@ -31,7 +32,10 @@
   },
   "description": "This project was developed by R&D Team from FibercorpLabs for networking automation and service provisioning.",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "concurrently": "^4.1.0",
+    "cors": "^2.8.5"
+  },
   "author": "alvgaona@gmail.com",
   "license": "ISC",
   "browserslist": [

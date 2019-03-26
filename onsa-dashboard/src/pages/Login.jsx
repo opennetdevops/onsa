@@ -9,7 +9,7 @@ async function coreLogin(url) {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
-    },
+        },
     body: JSON.stringify({
       username: "fc__netauto@lab.fibercorp.com.ar",
       password: "F1b3rc0rp!"

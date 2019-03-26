@@ -12,12 +12,18 @@ do
     python3 $rootlevel\/$project\/manage.py migrate
     python3 $rootlevel\/$project\/manage.py loaddata $rootlevel\/$project\/$project\/fixtures\/local\/*
     port=$(echo "$project" | tr '[:lower:]' '[:upper:]')_PORT
-    python3 $rootlevel\/$project\/manage.py runserver 127.0.0.1:${!port} &
+    python3 $rootlevel\/$project\/manage.py runserver 0.0.0.0:${!port} &
 
 done
 
 cd $rootlevel\/r-inventory\/
 rails s -p $INVENTORY_PORT &
+
+cd $rootlevel\/onsa-projects\/
+./app.py &
+
+cd $rootlevel\/onsa-dashboard\/
+npm start &
 
 #python3 $rootlevel\/$projects\/manage.py createsuperuser
 

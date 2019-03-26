@@ -4,6 +4,6 @@ from controllers import *
 from settings import *
 
 if __name__ == '__main__':
-	app.secret_key = os.getenv('SECRET_KEY')
+	app.secret_key = os.getenv('FLASK_SECRET_KEY')
 	app.debug = os.getenv('DEBUG')
-	app.run(host = os.getenv('HOST'), port = os.getenv('PORT'))
+	app.run(host = os.getenv('FLASK_HOST'), port = os.getenv('FLASK_PORT'))
