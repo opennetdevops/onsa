@@ -4,15 +4,15 @@ import signInIcon from "../images/onsa-logo.png";
 import { Form, FormInput } from "../components/Form";
 import { Alert } from "reactstrap";
 
-async function coreLogin(url) {
+async function coreLogin(url, username, password) {
   let response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
         },
     body: JSON.stringify({
-      username: "fc__netauto@lab.fibercorp.com.ar",
-      password: "F1b3rc0rp!"
+      username: username,
+      password: password
     })
   });
   let jsonResponse = await response.json();
@@ -47,10 +47,11 @@ class Login extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    const data = { username: this.state.email, password: this.state.password };
+    const username = this.state.email
+    const password = this.state.password 
 
-    let url = "http://127.0.0.1:8000/core/api/login";
-    coreLogin(url)
+    let url = "http://10.120.78.58:8000/core/api/login";
+    coreLogin(url, username, password)
       .then(jsonResponse => {
         if ("token" in jsonResponse) {
           sessionStorage.setItem("token", jsonResponse.token);
