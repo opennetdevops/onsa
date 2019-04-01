@@ -40,7 +40,11 @@ class Dashboard extends React.Component {
 	componentDidMount() {
 		console.log(sessionStorage.getItem('token'))
 
-		let url = "http://localhost:8000/core/api/services";
+		// let url = "http://localhost:8000/core/api/services";
+		// let url = "http://10.120.78.60:8000/core/api/services";
+
+		let url = process.env.REACT_APP_CORE_URL + "/core/api/services";
+
 		getJson(url).then(myJson => this.setState({ services: myJson }))
 
 		this.props.displayNavbar(false); 
@@ -56,7 +60,9 @@ class Dashboard extends React.Component {
 		switch(name) {
 			case "resources":
 				
-				let url = "http://localhost:8000/core/api/services/" + service.id + "/resources";
+				// let url = "http://localhost:8000/core/api/services/" + service.id + "/resources";
+				let url = process.env.REACT_APP_CORE_URL + "/" + service.id + "/resources";
+
 
 				getJson(url).then((jsonResponse) => {
 

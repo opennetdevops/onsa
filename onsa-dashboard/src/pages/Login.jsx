@@ -4,6 +4,8 @@ import signInIcon from "../images/onsa-logo.png";
 import { Form, FormInput } from "../components/Form";
 import { Alert } from "reactstrap";
 
+
+
 async function coreLogin(url) {
   let response = await fetch(url, {
     method: "POST",
@@ -49,7 +51,11 @@ class Login extends React.Component {
     event.preventDefault();
     const data = { username: this.state.email, password: this.state.password };
 
-    let url = "http://127.0.0.1:8000/core/api/login";
+    // let url = "http://10.120.78.60:8000/core/api/login";
+    let url = process.env.REACT_APP_CORE_URL + "/core/api/login";
+    // console.log(" Environment variable:  " + process.env.REACT_APP_CORE_URL);
+    
+
     coreLogin(url)
       .then(jsonResponse => {
         if ("token" in jsonResponse) {

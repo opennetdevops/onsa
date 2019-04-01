@@ -27,3 +27,4 @@ export FLASK_ENV=development
 export FLASK_SECRET_KEY=super_secret_key
 export FLASK_HOST=0.0.0.0
 export FLASK_PORT=3001
+export REACT_APP_CORE_URL=http://10.120.78.60:$CORE_PORT

@@ -53,7 +53,10 @@ class Customers extends React.Component {
     event.preventDefault();
 
     const data = { "name": this.state.client };
-    let url = "http://localhost:8000/core/api/clients";
+    
+    // let url = "http://10.120.78.60:8000/core/api/clients";
+
+    let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
 
     postJson(url, data).then(() => { this.setState({successAlert: true}) })
 
