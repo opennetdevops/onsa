@@ -41,8 +41,7 @@ class Dashboard extends React.Component {
 		console.log(sessionStorage.getItem('token'))
 
 		// let url = "http://localhost:8000/core/api/services";
-		// let url = "http://10.120.78.60:8000/core/api/services";
-
+		
 		let url = process.env.REACT_APP_CORE_URL + "/core/api/services";
 
 		getJson(url).then(myJson => this.setState({ services: myJson }))
@@ -61,6 +60,7 @@ class Dashboard extends React.Component {
 			case "resources":
 				
 				// let url = "http://localhost:8000/core/api/services/" + service.id + "/resources";
+				
 				let url = process.env.REACT_APP_CORE_URL + "/" + service.id + "/resources";
 
 
