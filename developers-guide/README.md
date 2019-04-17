@@ -99,6 +99,7 @@ ALTER role automation SET client_encoding TO 'utf8';
 ALTER role automation SET default_transaction_isolation TO 'read committed';
 ALTER role automation SET timezone TO 'UTC';
 GRANT ALL PRIVILEGES ON DATABASE onsa to automation;
+ALTER USER automation WITH SUPERUSER;
 \q
 ```
 El modulo r-inventory si bien usa PostgreSQL se conecta desde ruby con lo cual la creacion se debe ejecutar desde rails:
