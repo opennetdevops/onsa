@@ -39,6 +39,6 @@ class LocationsController < ApiController
     end
 
     def location_params
-      params.fetch(:location,{}).permit(:name,:address,:pop_size)
+      params.fetch(:location,{}).permit(:name,:shortname,:region,:address,:pop_size)
     end
 end

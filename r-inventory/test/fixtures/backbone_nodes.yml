@@ -1,0 +1,29 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  hostname: MyString
+  mgmt_ip: 
+  location_id: 1
+  loopback: 
+  device_model_id: 1
+  serial_number: MyString
+  firmware_version: MyString
+  ot: MyString
+  intallation_date: 2019-04-17
+  config_status: MyString
+  comments: MyString
+  contract_id: 1
+
+two:
+  hostname: MyString
+  mgmt_ip: 
+  location_id: 1
+  loopback: 
+  device_model_id: 1
+  serial_number: MyString
+  firmware_version: MyString
+  ot: MyString
+  intallation_date: 2019-04-17
+  config_status: MyString
+  comments: MyString
+  contract_id: 1

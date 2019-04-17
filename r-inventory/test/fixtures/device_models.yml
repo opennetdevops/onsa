@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  brand: MyString
+  model: MyString
+  end_of_life: 2019-04-17
+  end_of_support: 2019-04-17
+
+two:
+  brand: MyString
+  model: MyString
+  end_of_life: 2019-04-17
+  end_of_support: 2019-04-17

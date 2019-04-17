@@ -7,7 +7,7 @@ class AccessNodesController < ApiController
     else
       @access_nodes = AccessNode.all
     end
-    render json: @access_nodes
+    render json: @access_nodes.as_json(include:[:device_model])
   end
 
   def show
@@ -42,6 +42,6 @@ class AccessNodesController < ApiController
     end
 
     def access_node_params
-      params.fetch(:access_node,{}).permit(:location_id,:name,:mgmt_ip,:model,:vendor,:uplink_interface,:uplink_ports,:provider_vlan,:logical_unit_id)
+      params.fetch(:access_node,{}).permit(:location_id,:name,:mgmt_ip,:remote_ports,:uplink_ports,:provider_vlan,:logical_unit_id)
     end
 end

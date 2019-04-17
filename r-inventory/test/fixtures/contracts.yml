@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  number: MyString
+  end_of_contract: 2019-04-17
+  provider: MyString
+
+two:
+  number: MyString
+  end_of_contract: 2019-04-17
+  provider: MyString

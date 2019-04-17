@@ -10,23 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_28_172032) do
+ActiveRecord::Schema.define(version: 2019_04_17_190952) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "access_nodes", force: :cascade do |t|
-    t.string "name"
+    t.string "hostname"
     t.cidr "mgmt_ip"
-    t.string "model"
-    t.string "vendor"
     t.integer "location_id"
-    t.string "uplink_interface"
+    t.string "remote_ports"
     t.string "uplink_ports"
     t.integer "provider_vlan"
     t.integer "logical_unit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "device_model_id"
+    t.string "serial_number"
+    t.string "firmware_version"
+    t.string "ot"
+    t.string "comments"
+    t.string "config_status"
+    t.integer "contract_id"
+    t.date "installation_date"
+    t.bigint "remote_device_id"
+    t.index ["remote_device_id"], name: "index_access_nodes_on_remote_device_id"
   end
 
   create_table "access_nodes_vlans", id: false, force: :cascade do |t|
@@ -73,6 +81,23 @@ ActiveRecord::Schema.define(version: 2019_02_28_172032) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
+  create_table "backbone_nodes", force: :cascade do |t|
+    t.string "hostname"
+    t.cidr "mgmt_ip"
+    t.integer "location_id"
+    t.cidr "loopback"
+    t.integer "device_model_id"
+    t.string "serial_number"
+    t.string "firmware_version"
+    t.string "ot"
+    t.date "intallation_date"
+    t.string "config_status"
+    t.string "comments"
+    t.integer "contract_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "client_node_ports", force: :cascade do |t|
     t.string "interface_name"
     t.string "client_node_id"
@@ -85,14 +110,50 @@ ActiveRecord::Schema.define(version: 2019_02_28_172032) do
   create_table "client_nodes", primary_key: "serial_number", id: :string, force: :cascade do |t|
     t.string "name"
     t.cidr "mgmt_ip"
-    t.string "model"
-    t.string "vendor"
     t.string "client"
     t.string "uplink_port"
     t.string "customer_location"
     t.integer "location_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "device_model_id"
+  end
+
+  create_table "contracts", force: :cascade do |t|
+    t.string "number"
+    t.date "end_of_contract"
+    t.string "provider"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "device_models", force: :cascade do |t|
+    t.string "brand"
+    t.string "model"
+    t.date "end_of_life"
+    t.date "end_of_support"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "distribution_nodes", force: :cascade do |t|
+    t.string "hostname"
+    t.cidr "mgmt_ip"
+    t.integer "location_id"
+    t.string "remote_ports"
+    t.string "uplink_ports"
+    t.integer "device_model_id"
+    t.string "serial_number"
+    t.string "firmware_version"
+    t.string "ot"
+    t.string "comments"
+    t.string "config_status"
+    t.integer "contract_id"
+    t.date "installation_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "remote_device_id"
+    t.index ["remote_device_id"], name: "index_distribution_nodes_on_remote_device_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -101,6 +162,8 @@ ActiveRecord::Schema.define(version: 2019_02_28_172032) do
     t.string "pop_size"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "region"
+    t.string "shortname"
   end
 
   create_table "locations_vrfs", id: false, force: :cascade do |t|
@@ -119,15 +182,21 @@ ActiveRecord::Schema.define(version: 2019_02_28_172032) do
   end
 
   create_table "router_nodes", force: :cascade do |t|
-    t.string "name"
+    t.string "hostname"
     t.cidr "mgmt_ip"
-    t.string "model"
-    t.string "vendor"
     t.integer "location_id"
     t.cidr "private_wan_ip"
     t.cidr "loopback"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "device_model_id"
+    t.string "serial_number"
+    t.string "firmware_version"
+    t.string "ot"
+    t.date "installation_date"
+    t.string "config_status"
+    t.string "comments"
+    t.integer "contract_id"
   end
 
   create_table "vlans", force: :cascade do |t|
@@ -146,4 +215,6 @@ ActiveRecord::Schema.define(version: 2019_02_28_172032) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "access_nodes", "distribution_nodes", column: "remote_device_id"
+  add_foreign_key "distribution_nodes", "router_nodes", column: "remote_device_id"
 end

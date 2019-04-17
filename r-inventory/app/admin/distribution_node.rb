@@ -1,4 +1,4 @@
-ActiveAdmin.register AccessNode do
+ActiveAdmin.register DistributionNode do
   controller do
     def permitted_params
       params.permit!

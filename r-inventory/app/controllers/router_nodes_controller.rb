@@ -7,7 +7,7 @@ class RouterNodesController < ApiController
   	else
     	@router_nodes = RouterNode.all
     end
-    render json: @router_nodes
+    render json: @router_nodes.as_json(include:[:device_model])
   end
 
   def show
