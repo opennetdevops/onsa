@@ -8,7 +8,7 @@ Para desarrollar se necesitan ciertas librerías que deben estar instaladas.
 * PostgreSQL &gt;= 10.4
 * pip3 &gt;= 19.0.3
 * Ruby &gt;= 2.5.0
-* Django &gt;= 2.0.1
+* Django &gt;= 2.1.8
 * pyMongo &gt;= 3.7.2
 * NodeJS &gt;= 10.10 
 * npm &gt;= 6.4.1
@@ -58,10 +58,22 @@ rails -v
 ```
 Source and detailed explanation: https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-18-04
 
-
 ## Instalación Django
+Refresh the local package index.
 ```bash
-sudo apt install python3-django
+sudo apt update
+```
+Check the version of Python you have installed (should be 3.5.2 or above):
+```bash
+python3 -V
+```
+Install PIP from Ubuntu repositories:
+```bash
+sudo apt install python3-pip
+```
+Install Django using PIP to get a scpecific version:
+```bash
+pip install Django==2.1.8
 ```
 Source and detailed explanation: https://www.digitalocean.com/community/tutorials/how-to-install-the-django-web-framework-on-ubuntu-18-04
 
