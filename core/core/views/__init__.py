@@ -9,3 +9,5 @@ from core.views.vrfs import vrfs_view
 from core.views.service import service_view
 from core.views.service_activation import service_activation_view
 from core.views.ldap_jwt import *
+from core.views.monitoring import status_monitoring_view
+from core.views.traffic_monitoring import traffic_monitoring_view

@@ -12,6 +12,7 @@ import requests
 
 
 class VlansView(APIView):
+    #swagger_schema = None # exclude from swagger schema
     permission_classes = (IsAuthenticated,)
     authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
 

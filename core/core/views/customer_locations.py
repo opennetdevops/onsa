@@ -10,11 +10,13 @@ from core.views.ldap_jwt import *
 import json
 import requests
 
+from drf_yasg.utils import no_body, swagger_auto_schema
 
 class CustomerLocationsView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
 
+    @swagger_auto_schema(tags=['customerlocations'])
     def get(self, request, client_id, customer_location_id=None):
         url = settings.JEAN_GREY_URL + "clients/" + \
             str(client_id) + "/customerlocations"
@@ -28,7 +30,8 @@ class CustomerLocationsView(APIView):
         json_response = json.loads(response.text)
 
         return JsonResponse(json_response, safe=False)
-
+        
+    @swagger_auto_schema(tags=['customerlocations'])
     def post(self, request, client_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         url = settings.JEAN_GREY_URL + "clients/" + \

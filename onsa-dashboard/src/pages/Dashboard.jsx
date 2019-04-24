@@ -39,6 +39,7 @@ class Dashboard extends React.Component {
 
 	componentDidMount() {
 		console.log(sessionStorage.getItem('token'))
+		
 
 		// let url = "http://localhost:8000/core/api/services";
 		

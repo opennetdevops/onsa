@@ -31,9 +31,11 @@ class ServiceView(APIView):
 
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.get(url, auth = None, verify = False, headers = rheaders)
-        json_response = json.loads(response.text)
+        # json_response = json.loads(response.text) # ToDo - try to user r.json
 
-        return JsonResponse(json_response, safe=False)
+        #return JsonResponse(json_response, safe=False)
+        return JsonResponse(response.json(), safe=False)
+
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))

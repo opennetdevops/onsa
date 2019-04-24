@@ -8,14 +8,14 @@ async function postJson(url, data) {
         mode: "cors", 
         headers: {
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + sessionStorage.getItem('token')
         },
         body: JSON.stringify(data)
       });
-
+    
     let jsonResponse = await response.json();
 
-    return jsonResponse;
-}
+    return jsonResponse;} 
 
 
 class Customers extends React.Component {
@@ -31,6 +31,8 @@ class Customers extends React.Component {
   }
 
   componentDidMount() {
+   
+
     this.props.displayNavbar(false); 
   }
 
@@ -54,23 +56,22 @@ class Customers extends React.Component {
 
     const data = { "name": this.state.client };
     
-    // let url = "http://10.120.78.60:8000/core/api/clients";
-
+    
     let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
 
-    postJson(url, data).then(() => { this.setState({successAlert: true}) })
-
+    postJson(url, data).then(() => this.setState({successBox: true}) ) 
+    
+    
     this.resetFormFields();
   }
 
     render() {
 
       let alertBox = null;
-      if (this.state.successAlert) {
-        alertBox = <Alert bsStyle="success"><strong>Success!</strong> Customer created.</Alert>;
-      }
-
-
+      if (this.state.successBox) {
+        alertBox = <Alert className="success"><strong>Success!</strong> Customer created.</Alert>;
+        } 
+       
       return (
           <React.Fragment>
           <div>{alertBox}</div>

@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'jeangrey.apps.JeangreyConfig',
-    'corsheaders'
+    'corsheaders',
+    'drf_yasg',
+
 ]
 
 MIDDLEWARE = [
@@ -185,3 +187,22 @@ INVENTORY_URL = "http://127.0.0.1:" + \
     os.getenv('INVENTORY_PORT') + "/inventory/api/"
 WORKER_URL = "http://127.0.0.1:" + os.getenv('WORKER_PORT') + "/worker/api/"
 IPAM_URL = "http://10.120.78.90"
+
+
+# Swagger
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    # 'SUPPORTED_SUBMIT_METHODS' : ['get'],
+    'DEFAULT_MODEL_RENDERING': 'example',
+    'SECURITY_DEFINITIONS': {
+    #   'Bearer': {
+    #         'type': 'apiKey',
+    #         'name': 'Authorization',
+    #         'in': 'header'
+    #      }
+        'Basic': {
+            'type': 'basic'
+      },
+    }
+}

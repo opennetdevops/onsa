@@ -7,6 +7,14 @@ from jeangrey.forms import ServiceForm
 
 import jeangrey.models as models
 
+from rest_framework.views import APIView
+
+#serializer trial:
+from ..utils.swagger_util import ServiceSerializer
+from drf_yasg.utils import no_body, swagger_auto_schema
+
+
+
 import json
 import logging
 import coloredlogs
@@ -15,8 +23,15 @@ coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
-class ServiceView(View):
 
+class ServiceView(View):
+# changed base class from View to APIVew.
+    @swagger_auto_schema(
+    # query_serializer=ListQuerySerializer, # query params serializar
+    responses={200: ServiceSerializer(many=True)}, # response serializer
+    operation_description="Obtain the actual status of the device.", tags=['services'],
+    
+     )
     def get(self, request, service_id=None):
         state = request.GET.get('state', '')
         service_type = request.GET.get('type', None)

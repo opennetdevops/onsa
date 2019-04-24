@@ -27,6 +27,7 @@ class Service(BaseModel):
 
     class Meta:
         unique_together = (('vlan_id', 'access_node_id', 'access_port_id'),)
+        
 
     def __str__(self):
         return "SERVICE_ID: " + str(self.id)

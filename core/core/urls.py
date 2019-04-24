@@ -1,15 +1,33 @@
-from django.contrib import admin
-from django.conf import settings
+# from django.contrib import admin
+# from django.conf import settings
 
-from django.urls import path
+from django.urls import path, reverse
 from django.conf.urls import url, include
 from django.conf.urls.static import static
-
-from rest_framework_jwt.views import obtain_jwt_token
-from core.views.ldap_jwt import obtain_ldap_jwt_token
 from django.views.decorators.http import require_http_methods
+# from rest_framework.permissions import IsAuthenticated
+# from rest_framework_jwt.views import obtain_jwt_token
+
+# Imports para drf_yasg
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 from core.views import *
+from core.views.ldap_jwt import obtain_ldap_jwt_token
+from core.views.ldap_jwt import *
+from core.utils.swagger import swagger_info
+
+
+# Swagger Schema View setup.
+schema_view = get_schema_view(
+	swagger_info,
+	url="http://10.120.78.60:8000/core",
+	public=True,
+	permission_classes=(permissions.IsAuthenticatedOrReadOnly,),
+	authentication_classes = ([JSONWebTokenLDAPAuthentication, ]),
+)
+# Routes
 
 urlpatterns = [
     path('/api/login', obtain_ldap_jwt_token),
@@ -37,4 +55,18 @@ urlpatterns = [
          require_http_methods(["GET", "POST", "DELETE"])(vlans_view)),
     path('/api/vrfs',
          require_http_methods(["GET", "PUT", "DELETE"])(vrfs_view)),
-]
+
+	 #Test for Monitoring
+	path('/api/monitoring/<str:service_id>/status',
+         require_http_methods(["GET"])(status_monitoring_view)),
+  	path('/api/monitoring/<str:service_id>/traffic',
+         require_http_methods(["GET"])(traffic_monitoring_view)),
+     
+     #Swagger & Redoc Routes
+     url('/swagger', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+     url('/redoc', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+	url('/api', schema_view.with_ui('swagger', cache_timeout=0)),
+	url('/api/docs', schema_view.with_ui('swagger', cache_timeout=0)),
+	url('/docs', schema_view.with_ui('swagger', cache_timeout=0)),
+     ]
+

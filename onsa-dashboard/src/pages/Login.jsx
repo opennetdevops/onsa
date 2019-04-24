@@ -53,7 +53,9 @@ class Login extends React.Component {
     // let url = "http://10.120.78.60:8000/core/api/login";
     let url = process.env.REACT_APP_CORE_URL + "/core/api/login";
     
-    coreLogin(url,username, password)
+
+    coreLogin(url, username, password)
+
       .then(jsonResponse => {
         if ("token" in jsonResponse) {
           sessionStorage.setItem("token", jsonResponse.token);

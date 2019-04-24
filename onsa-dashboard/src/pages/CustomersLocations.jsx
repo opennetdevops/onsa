@@ -8,30 +8,13 @@ import {
 } from "../components/Form";
 import { Alert } from "reactstrap";
 
-async function coreLogin(url) {
-  let response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: "fc__netauto@lab.fibercorp.com.ar",
-      password: "F1b3rc0rp!"
-    })
-  });
-  let jsonResponse = await response.json();
-  // this.setState({ token: jsonResponse });
-
-  return jsonResponse;
-}
-
-async function getJson(url, token) {
+async function getJson(url) {
   let response = await fetch(url, {
     method: "GET",
     mode: "cors",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token
+      "Authorization": "Bearer " + sessionStorage.getItem('token')
     }
   });
 
@@ -39,13 +22,13 @@ async function getJson(url, token) {
   return jsonResponse;
 }
 
-async function postJson(url, token, data) {
+async function postJson(url, data) {
   let response = await fetch(url, {
     method: "POST",
     mode: "cors",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token
+      Authorization: "Bearer " + sessionStorage.getItem('token')
     },
     body: JSON.stringify(data)
   });
@@ -71,17 +54,13 @@ class CustomersLocations extends React.Component {
   }
 
   componentDidMount() {
-    let url = "http://localhost:8000/core/api/login";
 
-    coreLogin(url).then(jsonResponse => {
-      this.setState({ token: jsonResponse.token });
+      let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
 
-      url = "http://localhost:8000/core/api/clients";
-
-      getJson(url, jsonResponse.token).then(jsonResponse => {
+      getJson(url).then(jsonResponse => {
         this.setState({ clients: jsonResponse });
       });
-    });
+
     this.props.displayNavbar(false);
   }
 
@@ -119,12 +98,12 @@ class CustomersLocations extends React.Component {
       address: this.state.address,
       description: this.state.description
     };
-
+    console.log(this.state.clientId)
     let url =
-      "http://localhost:8000/core/api/clients/" +
+      process.env.REACT_APP_CORE_URL + "/core/api/clients/" +
       this.state.clientId +
       "/customerlocations";
-    postJson(url, this.state.token, data).then(() => {
+    postJson(url, data).then(() => {
       this.setState({ successAlert: true });
     });
 
@@ -184,6 +163,7 @@ class CustomersLocations extends React.Component {
                   name="address"
                   value={this.state.address}
                   onChange={this.handleChange}
+                  maxLength= "50"
                   placeholder="Calle Falsa 123"
                   required
                 />
@@ -200,6 +180,7 @@ class CustomersLocations extends React.Component {
                   name="description"
                   value={this.state.description}
                   onChange={this.handleChange}
+                  maxLength= "50"
                   placeholder="Description"
                   required
                 />
