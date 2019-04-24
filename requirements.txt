@@ -20,3 +20,4 @@ django-cors-headers
 netmiko
 coloredlogs
 gunicorn
+drf-yasg
