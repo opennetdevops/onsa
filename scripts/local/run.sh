@@ -29,6 +29,9 @@ cd $rootlevel\/onsa-projects\/
 cd ..
 cd scripts/local/
 
+cd ..
+cd scripts/local/
+
 #python3 $rootlevel\/$projects\/manage.py createsuperuser
 
 

@@ -57,10 +57,13 @@ urlpatterns = [
          require_http_methods(["GET", "PUT", "DELETE"])(vrfs_view)),
 
 	 #Test for Monitoring
-	path('/api/monitoring/<str:service_id>/status',
-         require_http_methods(["GET"])(status_monitoring_view)),
-  	path('/api/monitoring/<str:service_id>/traffic',
-         require_http_methods(["GET"])(traffic_monitoring_view)),
+
+ # path('/api/monitoring/<str:service_id>/status',
+ #     require_http_methods(["GET"])(status_monitoring_view)),
+ # path('/api/monitoring/<str:service_id>/traffic',
+ #     require_http_methods(["GET"])(traffic_monitoring_view)),
+
+
      
      #Swagger & Redoc Routes
      url('/swagger', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

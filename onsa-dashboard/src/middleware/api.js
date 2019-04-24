@@ -7,7 +7,9 @@ async function HTTPGet(url) {
 				mode: "cors",
 				headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json"
+                    "Accept": "application/json",
+                    Authorization: "Bearer " + sessionStorage.getItem('token')
+
 				},
 		});
 
@@ -23,7 +25,8 @@ async function HTTPPost(url, data) {
         mode: "cors",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          "Accept": "application/json",
+          Authorization: "Bearer " + sessionStorage.getItem('token')
         },
         body: JSON.stringify(data)
       });
@@ -33,10 +36,10 @@ async function HTTPPost(url, data) {
     return jsonResponse;
 }
 
-const URLs = { "service_creation": "http://localhost:8000/core/api/services",
-         "projects": "http://localhost:8000/core/api/projects",
-         "locations": "http://localhost:8000/core/api/locations",
-         "clients": "http://localhost:8000/core/api/clients"
+const URLs = { "service_creation": process.env.REACT_APP_CORE_URL + "/core/api/services",
+         "projects": process.env.REACT_APP_CORE_URL + "/core/api/projects",
+         "locations": process.env.REACT_APP_CORE_URL + "/core/api/locations",
+         "clients": process.env.REACT_APP_CORE_URL + "/core/api/clients"
          }
 
 export { URLs, HTTPGet, HTTPPost }
