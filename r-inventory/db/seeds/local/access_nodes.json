@@ -1,4 +1,5 @@
-{
+[
+  {
     "id": 1,
     "hostname": null,
     "mgmt_ip": "10.120.80.56/32",
@@ -16,4 +17,5 @@
     "contract_id": 1,
     "installation_date": null,
     "remote_device_id": 1
-}
+  }
+]

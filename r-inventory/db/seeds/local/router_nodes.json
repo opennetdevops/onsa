@@ -1,9 +1,11 @@
-{
-    "hostname":"LAB-HOR",
-    "mgmt_ip" : "10.120.80.61",
-    "location_id" : 1,
-    "private_wan_ip" : "100.64.0.1",
-    "loopback":"10.120.104.1",
+[
+  {
+    "hostname": "LAB-HOR",
+    "mgmt_ip": "10.120.80.61",
+    "location_id": 1,
+    "private_wan_ip": "100.64.0.1",
+    "loopback": "10.120.104.1",
     "contract_id": 1,
     "device_model_id": 1
-}
+  }
+]
