@@ -5,10 +5,10 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-files = Dir["db/seeds/local/*.json"]
+files = Dir["db/seeds/local/*.json"].sort
 files.each do |a|
     json = ActiveSupport::JSON.decode(File.read(a))
-    file_name = File.basename(a, ".*")
+    file_name = File.basename(a, ".*").sub /^\w+-/, ''
     json.each do |b|
         c = Object.const_get(file_name.singularize.camelcase).new(b)
         c.save(validate: false)

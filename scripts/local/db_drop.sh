@@ -14,4 +14,4 @@ SQL
 
 rootlevel=`eval "cd $PWD;cd ../..;pwd"`
 cd $rootlevel\/r-inventory\/
-rake db:reset
+rails db:reset
