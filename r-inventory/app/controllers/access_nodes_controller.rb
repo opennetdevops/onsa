@@ -42,6 +42,6 @@ class AccessNodesController < ApiController
     end
 
     def access_node_params
-      params.fetch(:access_node,{}).permit(:location_id,:name,:mgmt_ip,:remote_ports,:uplink_ports,:provider_vlan,:logical_unit_id)
+      params.fetch(:access_node,{}).permit(:location_id,:name,:mgmt_ip,:remote_ports,:uplink_ports,:provider_vlan,:logical_unit_id,:device_model_id, :contract_id, :remote_device_id)
     end
 end

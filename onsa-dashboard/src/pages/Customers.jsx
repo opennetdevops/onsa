@@ -12,7 +12,7 @@ async function postJson(url, data) {
         },
         body: JSON.stringify(data)
       });
-    
+    // ver opcion de devolver response.
     let jsonResponse = await response.json();
 
     return jsonResponse;} 
@@ -25,8 +25,8 @@ class Customers extends React.Component {
 
     this.state = {
       client: '',
-      clientId: '',
-      successBox: false
+      cuic: '',
+      successBox: null
     };
   }
 
@@ -39,7 +39,7 @@ class Customers extends React.Component {
   resetFormFields = () => {
     this.setState({
       client: "",
-      clientId: "",
+      cuic: "",
     })
   }
 
@@ -54,12 +54,13 @@ class Customers extends React.Component {
   handleSubmit = (event) => {
     event.preventDefault();
 
-    const data = { "name": this.state.client };
+    const data = { "name": this.state.client, 
+                    "cuic": this.state.cuic, };
     
     
     let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
 
-    postJson(url, data).then(() => this.setState({successBox: true}) ) 
+    postJson(url, data).then(() => this.setState({successBox: true} ) ) //acá pregunto por el status, 2xx o 5xx y en base a eso seteo success  box.
     
     
     this.resetFormFields();
@@ -71,7 +72,10 @@ class Customers extends React.Component {
       if (this.state.successBox) {
         alertBox = <Alert className="success"><strong>Success!</strong> Customer created.</Alert>;
         } 
-       
+       else if (this.state.successBox!= null) {
+        alertBox = <Alert className="alert-danger"><strong>Error!</strong> Customer not created.</Alert>;
+
+       }
       return (
           <React.Fragment>
           <div>{alertBox}</div>
@@ -84,13 +88,13 @@ class Customers extends React.Component {
                   <input type="text" className="form-control" id="client" name="client" value={this.state.client} onChange={this.handleChange} placeholder="Name" required/>
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label htmlFor="clientId">ID</label>
-                  <input type="text" className="form-control" id="clientId" name="clientId" value={this.state.clientId} onChange={this.handleChange} placeholder="Id" required/>
+                  <label htmlFor="cuic">ID</label>
+                  <input type="text" className="form-control" id="cuic" name="cuic" value={this.state.cuic} onChange={this.handleChange} placeholder="Id" required/>
                 </div>
               </div>
               <hr className="mb-4"/>
              
-              <button className="btn btn-primary btn-lg btn-block" disabled={!(this.state.client && this.state.clientId) ? true : false} type="submit" value="Submit">Create</button>
+              <button className="btn btn-primary btn-lg btn-block" disabled={!(this.state.client && this.state.cuic) ? true : false} type="submit" value="Submit">Create</button>
             </form>
             </div>
           </React.Fragment>

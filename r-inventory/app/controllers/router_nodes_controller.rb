@@ -42,6 +42,6 @@ class RouterNodesController < ApiController
     end
 
     def router_node_params
-      params.fetch(:router_node,{}).permit(:name,:mgmt_ip,:model,:vendor,:location_id,:private_wan_ip,:loopback)
+      params.fetch(:router_node,{}).permit(:name,:mgmt_ip,:model,:vendor,:location_id,:private_wan_ip,:loopback,:contract_id,:device_model_id)
     end
 end

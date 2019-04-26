@@ -43,9 +43,10 @@ class ServiceView(APIView):
         url = settings.JEAN_GREY_URL + "services"
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-        json_response = json.loads(response.text)
+        
+        # json_response = json.loads(response.text)
 
-        return JsonResponse(json_response, safe=False)     
+        return JsonResponse(response.json(), safe=False, status=response.status_code)     
 
     def put(self, request, service_id):
         data = json.loads(request.body.decode(encoding='UTF-8'))

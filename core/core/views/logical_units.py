@@ -23,6 +23,7 @@ class LogicalUnitsView(APIView):
 
         location = self._get_location(body['location_name'])
         router_node = self._get_router_node(location['id'])
+               
         router_node_id = str(router_node['id'])
 
         free_logical_units = self._get_free_logical_units(router_node_id)

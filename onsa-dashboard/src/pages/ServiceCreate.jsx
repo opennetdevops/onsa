@@ -57,6 +57,7 @@ async function postJson(url, token, data) {
   });
 
   let jsonResponse = await response.json();
+  console.log(jsonResponse)
   // response.json();
 
   return jsonResponse;

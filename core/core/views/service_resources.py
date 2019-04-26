@@ -22,12 +22,15 @@ class ServiceResourcesView(APIView):
         return JsonResponse(json_response, safe=False)
 
     def get_resources(self, service):
-
+        # desarmamos el service para armar el "listado" de resources involucrados y presentarlos como objetos.
         service = pop_empty_keys(service)
 
         router_node = get_router_node(service['router_node_id'])
         access_node = get_access_node(service['access_node_id'])
         access_port = get_access_port(service['access_port_id'])
+        
+        an_device_model = get_device_model(access_node['device_model_id'])
+
         location = get_location(service['location_id'])
         customer_location = get_customer_location(
             service['client_id'], service['customer_location_id'])
@@ -37,9 +40,9 @@ class ServiceResourcesView(APIView):
             "customer": client['name'],
             "location": location['name'],
             "customer_location": customer_location['address'],
-            "router_node": {'name': router_node['name']},
-            "access_node": {"model": access_node['model'],
-                            "name": access_node['name'],
+            "router_node": {'name': router_node['hostname']},
+            "access_node": {"model": an_device_model['model'],
+                            "name": access_node['hostname'],
                             "access_port": access_port['port']},
             "vlan_id": service['vlan_id'],
         }

@@ -22,5 +22,8 @@ Rails.application.routes.draw do
     resources :vrfs
     resources :access_ports
     resources :logical_units, only:[:index,:create,:destroy]
+    resources :contracts, only:[:show]
+    resources :device_models, only:[:index,:show]
+
   end
 end

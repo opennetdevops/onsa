@@ -115,7 +115,10 @@ class ServiceView(View):
 
                 location = data.pop('location')
                 location_id = get_location_id(location)
-                router_node = get_router_node(location_id)
+                router_nodes = get_router_nodes(location_id)
+                
+                if not router_nodes:
+                    raise RouterNodeException("Invalid location: no routers nodes location.", status_code=HTTP_503_SERVICE_UNAVAILABLE)
 
                 if "access_port_id" not in data.keys():
                     access_port = get_free_access_port(location_id)
@@ -134,7 +137,7 @@ class ServiceView(View):
                 use_vlan(access_node_id, vlan['id'])
 
                 data['location_id'] = location_id
-                data['router_node_id'] = router_node['id']
+                data['router_node_id'] = router_nodes[0]['id']
                 data['access_port_id'] = access_port_id
                 data['client_id'] = client.id
                 data['vlan_id'] = vlan['vlan_tag']
