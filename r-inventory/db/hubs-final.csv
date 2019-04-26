@@ -72,7 +72,7 @@ Id,short_name,name,region,pop_size,Created at,Updated at
 41,FLO,Florida,AMBA,large,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
 40,FIR1,Firmat,,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:18 UTC
 39,ESP,Esperanza,LITORAL,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
-38,DOL1,Dolores,,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:18 UTC
+38,DOL,Dolores,,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:18 UTC
 37,DEV,Devoto,AMBA,large,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
 36,CRS,Corrientes,LITORAL,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
 35,CBS,Cordoba Sur,CENTRO,small,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
@@ -100,7 +100,6 @@ Id,short_name,name,region,pop_size,Created at,Updated at
 13,BON,Bonpland,AMBA,large,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
 12,BOL,Bolivar,BUENOS AIRES,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
 11,BER,Berisso,BUENOS AIRES,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
-10,VER,Berazategui,,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:18 UTC
 9,BEL,Belgrano,AMBA,large,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
 8,BAR,Baradero,,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:18 UTC
 7,BCE,Balcarce,BUENOS AIRES,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
@@ -113,3 +112,11 @@ Id,short_name,name,region,pop_size,Created at,Updated at
 ,RET-TECO,Retiro TECO,,,
 ,VCR,Villa Crespo,,,
 ,SUI,Suipacha,,,
+,BVI,Bell Ville,,,
+,BZA,Berazategui,,,
+,LAB,Laboulaye,,,
+,LOR,Rosario San Lorenzo,,,
+,ROJ,,,,
+,SPC,,,,
+,SUA,,,,
+,TUE,,,,
