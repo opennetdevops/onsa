@@ -23,7 +23,7 @@ cd $rootlevel\/onsa-projects\/
 ./app.py &
 
 
-#cd $rootlevel\/onsa-dashboard\/
+cd $rootlevel\/onsa-dashboard\/
 npm start &
 
 cd ..

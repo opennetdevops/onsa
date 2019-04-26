@@ -16,6 +16,13 @@ ServiceTypes = {
     "vcpe_irs": "VcpeIrs",
     "vpls": "Vpls"
 }
+#
+HTTP_200_OK = 200
+HTTP_201_CREATED = 201
+HTTP_204_NO_CONTENT = 204
+HTTP_500_INTERNAL_SERVER_ERROR = 500
+HTTP_503_SERVICE_UNAVAILABLE = 503
+HTTP_404_NOT_FOUND = 404
 
 
 # HTTP Error Codes

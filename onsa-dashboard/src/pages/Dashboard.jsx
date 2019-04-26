@@ -62,8 +62,8 @@ class Dashboard extends React.Component {
 				
 				// let url = "http://localhost:8000/core/api/services/" + service.id + "/resources";
 				
-				let url = process.env.REACT_APP_CORE_URL + "/" + service.id + "/resources";
-
+				let url = process.env.REACT_APP_CORE_URL + "/core/api/services/" + service.id + "/resources";
+				console.log("url: ", url)
 
 				getJson(url).then((jsonResponse) => {
 
