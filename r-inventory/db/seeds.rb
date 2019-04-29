@@ -5,15 +5,15 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-files = Dir["db/seeds/local/*.json"]
-files.each do |a|
-    json = ActiveSupport::JSON.decode(File.read(a))
-    file_name = File.basename(a, ".*")
-    json.each do |b|
-        c = Object.const_get(file_name.singularize.camelcase).new(b)
-        c.save(validate: false)
-    end
-end
+# files = Dir["db/seeds/local/*.json"]
+# files.each do |a|
+#     json = ActiveSupport::JSON.decode(File.read(a))
+#     file_name = File.basename(a, ".*")
+#     json.each do |b|
+#         c = Object.const_get(file_name.singularize.camelcase).new(b)
+#         c.save(validate: false)
+#     end
+# end
 
 DeviceModel.create(brand:"Transition Networks Inc",model:"S4224")
 DeviceModel.create(brand:"Transition Networks Inc",model:"SM24-100SFP-AH")
