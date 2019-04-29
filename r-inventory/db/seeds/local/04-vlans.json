@@ -1,5 +1,14 @@
 [
-  {
-    "vlan_tag": 3002
-  }
+  { "vlan_tag": 3001 },
+  { "vlan_tag": 3002 },
+  { "vlan_tag": 3003 },
+  { "vlan_tag": 3004 },
+  { "vlan_tag": 3005 },
+  { "vlan_tag": 3006 },
+  { "vlan_tag": 3007 },
+  { "vlan_tag": 3008 },
+  { "vlan_tag": 3009 },
+  { "vlan_tag": 3010 },
+  { "vlan_tag": 3011 },
+  { "vlan_tag": 3012 }
 ]

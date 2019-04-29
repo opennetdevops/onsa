@@ -1,7 +1,85 @@
 [
   {
     "id": 1,
+    "port": "GigabitEthernet 1/10",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/11",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/12",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/13",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/14",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/15",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/16",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/17",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/18",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
     "port": "GigabitEthernet 1/19",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/20",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/21",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/22",
+    "used": false,
+    "access_node_id": 1
+  },
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/23",
     "used": false,
     "access_node_id": 1
   }
