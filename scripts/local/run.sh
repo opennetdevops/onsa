@@ -17,6 +17,8 @@ do
 done
 
 cd $rootlevel\/r-inventory\/
+rails db:migrate
+rails db:seed
 rails s -b 0.0.0.0 -p $INVENTORY_PORT &
 
 cd $rootlevel\/onsa-projects\/
