@@ -13,4 +13,4 @@ production:
   pool: 5
   username: automation
   password: F1b3rc0rp
-  host: localhost
+  host: 10.120.54.67
