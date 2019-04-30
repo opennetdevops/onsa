@@ -37,7 +37,7 @@ async function getJson(url, token) {
     mode: "cors",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
+      Authorization: "Bearer " + token
     }
   });
 
@@ -57,7 +57,7 @@ async function postJson(url, token, data) {
   });
 
   let jsonResponse = await response.json();
-  console.log(jsonResponse)
+  console.log(jsonResponse);
   // response.json();
 
   return jsonResponse;
@@ -96,17 +96,22 @@ class ServiceCreate extends React.Component {
   }
 
   componentDidMount() {
-    let url = "http://10.120.78.60:8000/core/api/login";
+    let url =
+      "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/login";
 
     coreLogin(url).then(jsonResponse => {
       this.setState({ token: jsonResponse.token });
 
-      url = "http://10.120.78.60:8000/core/api/clients";
+      url =
+        "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/clients";
       getJson(url, jsonResponse.token).then(jsonResponse => {
         this.setState({ clients: jsonResponse });
       });
 
-      url = "http://10.120.78.60:8000/core/api/locations";
+      url =
+        "http://" +
+        process.env.REACT_APP_SERVER_IP +
+        ":8000/core/api/locations";
       getJson(url, jsonResponse.token).then(jsonResponse => {
         this.setState({ locations: jsonResponse });
       });
@@ -136,7 +141,9 @@ class ServiceCreate extends React.Component {
 
         if (this.state.client && this.state.customerLocId) {
           let url =
-            "http://10.120.78.60:8000/core/api/clients/" +
+            "http://" +
+            process.env.REACT_APP_SERVER_IP +
+            ":8000/core/api/clients/" +
             this.state.clientId +
             "/customerlocations/" +
             this.state.customerLocId +
@@ -247,7 +254,8 @@ class ServiceCreate extends React.Component {
       }
     }
 
-    let url = "http://10.120.78.60:8000/core/api/services";
+    let url =
+      "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/services";
 
     postJson(url, this.state.token, data).then(() => {
       this.setState({ successAlert: true });
@@ -271,7 +279,10 @@ class ServiceCreate extends React.Component {
   handleClient = () => {
     if (this.state.client !== "") {
       let url =
-        "http://10.120.78.60:8000/core/api/vrfs?client=" + this.state.client;
+        "http://" +
+        process.env.REACT_APP_SERVER_IP +
+        ":8000/core/api/vrfs?client=" +
+        this.state.client;
 
       getJson(url, this.state.token).then(jsonResponse => {
         this.state.client !== "Choose..."
@@ -279,7 +290,11 @@ class ServiceCreate extends React.Component {
           : this.setState({ vrfs: [] });
       });
 
-      url = "http://10.120.78.60:8000/core/api/clients?name=" + this.state.client;
+      url =
+        "http://" +
+        process.env.REACT_APP_SERVER_IP +
+        ":8000/core/api/clients?name=" +
+        this.state.client;
 
       getJson(url, this.state.token)
         .then(client => {
@@ -289,7 +304,9 @@ class ServiceCreate extends React.Component {
         })
         .then(() => {
           url =
-            "http://10.120.78.60:8000/core/api/clients/" +
+            "http://" +
+            process.env.REACT_APP_SERVER_IP +
+            ":8000/core/api/clients/" +
             this.state.clientId +
             "/customerlocations";
 

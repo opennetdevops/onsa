@@ -9,7 +9,7 @@ async function coreLogin(url, username, password) {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
-        },
+    },
     body: JSON.stringify({
       username: username,
       password: password
@@ -47,15 +47,13 @@ class Login extends React.Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    const username = this.state.email
-    const password = this.state.password 
+    const username = this.state.email;
+    const password = this.state.password;
 
-    // let url = "http://10.120.78.60:8000/core/api/login";
+    // let url = "http://$SERVER_IP:8000/core/api/login";
     let url = process.env.REACT_APP_CORE_URL + "/core/api/login";
-    
 
     coreLogin(url, username, password)
-
       .then(jsonResponse => {
         if ("token" in jsonResponse) {
           sessionStorage.setItem("token", jsonResponse.token);

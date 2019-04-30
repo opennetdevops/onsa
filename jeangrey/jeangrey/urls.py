@@ -23,7 +23,7 @@ from jeangrey.views import *
 # 	default_version='v1', 
 # 	description="Documentation for REST API endpoints.", 
 #     ),
-# 	url="http://10.120.78.60:8002/jeangrey/api",
+# 	url="http://$SERVER_IP:8002/jeangrey/api",
 # 	public=True,
 # 	permission_classes=(permissions.AllowAny,),
 # 	)

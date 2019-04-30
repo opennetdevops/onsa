@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     # 'rest_framework',
     'drf_yasg',
     # 'core.utils',
-    
+
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -181,7 +181,7 @@ CORS_ORIGIN_WHITELIST = (
     '10.120.78.58:3000',
     'http://10.120.78.58:3000',
     '10.120.78.59:3000',
-    '10.120.78.60:3000'
+    os.getenv('SERVER_IP')+':3000'
 )
 
 
@@ -202,10 +202,10 @@ SWAGGER_SETTINGS = {
     # 'SUPPORTED_SUBMIT_METHODS' : ['get'],
     'DEFAULT_MODEL_RENDERING': 'example',
     'SECURITY_DEFINITIONS': {
-      'Bearer': {
+        'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header'
-         }
+        }
     }
 }

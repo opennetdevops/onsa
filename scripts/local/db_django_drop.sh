@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 set -u
-RUN_PSQL="psql -X --set AUTOCOMMIT=off --set ON_ERROR_STOP=on postgres"
+RUN_PSQL="sudo -u postgres -i psql -X --set AUTOCOMMIT=off --set ON_ERROR_STOP=on postgres"
 ${RUN_PSQL} <<SQL
 drop database onsa;
 CREATE database onsa;
@@ -12,8 +12,4 @@ GRANT ALL PRIVILEGES ON DATABASE onsa to automation;
 ALTER USER automation WITH SUPERUSER;
 \q
 SQL
-
-rootlevel=`eval "cd $PWD;cd ../..;pwd"`
-cd $rootlevel\/r-inventory\/
-rails db:drop
-rails db:create
+exit
