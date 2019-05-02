@@ -48,8 +48,8 @@ class CustomersLocations extends React.Component {
       clients: [],
       client: null,
       clientId: null,
-      address: null,
-      description: null
+      address: '',
+      description: ''
     };
   }
 
@@ -68,8 +68,8 @@ class CustomersLocations extends React.Component {
     this.setState({
       client: "",
       clientId: "",
-      address: "",
-      description: "",
+      address: '',
+      description:'',
       successBox: false
     });
   };
@@ -82,13 +82,16 @@ class CustomersLocations extends React.Component {
   };
 
   handleOnSelect = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-    let id = event.target.options.selectedIndex;
+    let selectedClient = this.state.clients.filter(function(client) {
+      return client.id == event.target.value;
+    });
 
-    switch (name) {
-      default:
-        this.setState({ [name]: value, clientId: id });
+    if (selectedClient.length > 0){
+      console.log('el id seleccionado es: ', selectedClient[0].id);
+      console.log('el cliente seleccionado es: ', selectedClient[0].name);
+      this.setState({ client: selectedClient[0].name, clientId: selectedClient[0].id });
+    } else {
+      this.setState({ client:''});
     }
   };
 
@@ -112,7 +115,7 @@ class CustomersLocations extends React.Component {
 
   render() {
     const clientsList = this.state.clients.map(client => (
-      <option key={client.id} value={client.name}>
+      <option key={client.id} value={client.id}>
         {client.name}
       </option>
     ));
@@ -120,7 +123,7 @@ class CustomersLocations extends React.Component {
     let alertBox = null;
     if (this.state.successAlert) {
       alertBox = (
-        <Alert bsStyle="success">
+        <Alert className="success">
           <strong>Success!</strong> Customer location added.
         </Alert>
       );
@@ -143,14 +146,13 @@ class CustomersLocations extends React.Component {
                   className="custom-select d-block w-100"
                   id="client"
                   name="client"
-                  value={this.state.client}
                   onChange={this.handleOnSelect}
                   required
                 >
                   <option value="">Choose...</option>
                   {clientsList}
                 </FormSelect>
-                <div class="invalid-feedback">
+                <div className="invalid-feedback">
                   Example invalid feedback text
                 </div>
               </div>
@@ -191,13 +193,13 @@ class CustomersLocations extends React.Component {
             <button
               className="btn btn-primary btn-lg btn-block"
               disabled={
-                !(
+                (
                   this.state.client &&
                   this.state.address &&
                   this.state.description
                 )
-                  ? true
-                  : false
+                  ? false
+                  : true
               }
               type="submit"
               value="Submit"
