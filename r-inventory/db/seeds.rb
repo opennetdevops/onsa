@@ -1,3 +1,4 @@
+
 if Rails.env.development?
     files = Dir["db/seeds/local/*.json"].sort
     files.each do |a|
@@ -9,6 +10,7 @@ if Rails.env.development?
         end
     end
 end
+
 
 DeviceModel.create(brand:"Transition Networks Inc",model:"S4224")
 DeviceModel.create(brand:"Transition Networks Inc",model:"SM24-100SFP-AH")
