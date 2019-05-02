@@ -18,6 +18,10 @@ async function getJson(url) {
     }
   });
 
+    if (!response.ok){
+      throw new Error('HTTP error code: ' + response.status + ' (' + response.statusText + ')');
+    }
+
   let jsonResponse = await response.json();
   return jsonResponse;
 }
@@ -33,8 +37,12 @@ async function postJson(url, data) {
     body: JSON.stringify(data)
   });
 
+  if (!response.ok){
+    throw new Error('HTTP error code: ' + response.status + ' (' + response.statusText + ')');
+  }
+
   let jsonResponse = await response.json();
-  // response.json();
+  
 
   return jsonResponse;
 }
@@ -49,7 +57,8 @@ class CustomersLocations extends React.Component {
       client: null,
       clientId: null,
       address: '',
-      description: ''
+      description: '',
+      successAlert: null
     };
   }
 
@@ -59,6 +68,10 @@ class CustomersLocations extends React.Component {
 
       getJson(url).then(jsonResponse => {
         this.setState({ clients: jsonResponse });
+      } // onRejected: 
+        ,(error)=> {
+          console.error('Something happened!!: \n ', error);
+          this.setState({ clients: [] });
       });
 
     this.props.displayNavbar(false);
@@ -70,7 +83,7 @@ class CustomersLocations extends React.Component {
       clientId: "",
       address: '',
       description:'',
-      successBox: false
+      successAlert: null
     });
   };
 
@@ -87,8 +100,6 @@ class CustomersLocations extends React.Component {
     });
 
     if (selectedClient.length > 0){
-      console.log('el id seleccionado es: ', selectedClient[0].id);
-      console.log('el cliente seleccionado es: ', selectedClient[0].name);
       this.setState({ client: selectedClient[0].name, clientId: selectedClient[0].id });
     } else {
       this.setState({ client:''});
@@ -101,33 +112,43 @@ class CustomersLocations extends React.Component {
       address: this.state.address,
       description: this.state.description
     };
-    console.log(this.state.clientId)
+    
     let url =
-      process.env.REACT_APP_CORE_URL + "/core/api/clients/" +
-      this.state.clientId +
-      "/customerlocations";
+      process.env.REACT_APP_CORE_URL + "/core/api/clients/" + this.state.clientId + "/customerlocations";
+    
+//    console.log(this.state.clientId);
     postJson(url, data).then(() => {
-      this.setState({ successAlert: true });
-    });
+        this.setState({ successAlert: true });
+      },
+      (error)=> {
+        console.error('Something happened!!: \n ', error);
+        this.setState({ successAlert: false });
+      }
+    );
 
     this.resetFormFields();
   };
 
   render() {
-    const clientsList = this.state.clients.map(client => (
+    let clientsList = this.state.clients.map(client => (
       <option key={client.id} value={client.id}>
         {client.name}
       </option>
     ));
 
     let alertBox = null;
+    console.log("success box: ", this.state.successAlert);
     if (this.state.successAlert) {
       alertBox = (
         <Alert className="success">
           <strong>Success!</strong> Customer location added.
         </Alert>
       );
-    }
+    } else if (this.state.successAlert == false) {
+      alertBox = <Alert className="alert-danger"><strong>Error!</strong> Customer location not created.
+      </Alert>;
+      // clientsList = null;
+      }
 
     return (
       <React.Fragment>
