@@ -65,11 +65,9 @@ urlpatterns = [
 
 
 
-    # Swagger & Redoc Routes
+    # Swagger Routes
     url('/swagger', schema_view.with_ui('swagger',
                                         cache_timeout=0), name='schema-swagger-ui'),
-    url('/redoc', schema_view.with_ui('redoc',
-                                      cache_timeout=0), name='schema-redoc'),
     url('/api', schema_view.with_ui('swagger', cache_timeout=0)),
     url('/api/docs', schema_view.with_ui('swagger', cache_timeout=0)),
     url('/docs', schema_view.with_ui('swagger', cache_timeout=0)),
