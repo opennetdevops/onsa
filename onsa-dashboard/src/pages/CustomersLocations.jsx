@@ -77,6 +77,7 @@ class CustomersLocations extends React.Component {
     
     HTTPPost(url, data).then(() => {
         this.setState({ successAlert: true });
+        this.resetFormFields();
       },
       (error)=> {
         console.error('Something happened!!: \n ', error);
@@ -84,7 +85,6 @@ class CustomersLocations extends React.Component {
       }
     );
 
-    this.resetFormFields();
   };
 
   render() {
@@ -98,7 +98,7 @@ class CustomersLocations extends React.Component {
     
     if (this.state.successAlert) {
       alertBox = (
-        <Alert className="success col-8">
+        <Alert className="success col-md-8">
           <strong>Success!</strong> Customer location added.
         </Alert>
       );

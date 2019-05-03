@@ -1,21 +1,22 @@
 import React from 'react';
+import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
 import { Alert } from 'reactstrap';
 
-async function postJson(url, data) {
+// async function postJson(url, data) {
 
-    let response = await fetch(url, {
-        method: "POST",
-        mode: "cors", 
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + sessionStorage.getItem('token')
-        },
-        body: JSON.stringify(data)
-      });
-    // ver opcion de devolver response.
-    let jsonResponse = await response.json();
+//     let response = await fetch(url, {
+//         method: "POST",
+//         mode: "cors", 
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Authorization": "Bearer " + sessionStorage.getItem('token')
+//         },
+//         body: JSON.stringify(data)
+//       });
+//     // ver opcion de devolver response.
+//     let jsonResponse = await response.json();
 
-    return jsonResponse;} 
+//     return jsonResponse;} 
 
 
 class Customers extends React.Component {
@@ -26,7 +27,7 @@ class Customers extends React.Component {
     this.state = {
       client: '',
       cuic: '',
-      successBox: null
+      successAlert: null
     };
   }
 
@@ -55,27 +56,30 @@ class Customers extends React.Component {
     event.preventDefault();
 
     const data = { "name": this.state.client, 
-                    "cuic": this.state.cuic, };
+                   "cuic": this.state.cuic, };
     
-    
-    let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
-
-    postJson(url, data).then(() => this.setState({successBox: true} ) ) //acá pregunto por el status, 2xx o 5xx y en base a eso seteo success  box.
-    
-    
-    this.resetFormFields();
+    HTTPPost(URLs['clients'], data)
+      .then(() => {
+          this.setState({successAlert: true} );
+          this.resetFormFields();
+        }
+        ,(error) => {
+          console.error('Something happened!!: \n ', error);
+          this.setState({ successAlert: false });
+      }
+    );
   }
 
     render() {
 
       let alertBox = null;
-      if (this.state.successBox) {
-        alertBox = <Alert className="success"><strong>Success!</strong> Customer created.</Alert>;
+      if (this.state.successAlert) {
+        alertBox = <Alert className="success col-md-8"><strong>Success!</strong> Customer created.</Alert>;
         } 
-       else if (this.state.successBox!= null) {
-        alertBox = <Alert className="alert-danger"><strong>Error!</strong> Customer not created.</Alert>;
-
-       }
+       else if (this.state.successAlert== false) {
+        alertBox = <Alert className="alert-danger col-md-8"><strong>Error: </strong> Customer not created.</Alert>;
+        }
+      
       return (
           <React.Fragment>
           <div>{alertBox}</div>
@@ -88,7 +92,7 @@ class Customers extends React.Component {
                   <input type="text" className="form-control" id="client" name="client" value={this.state.client} onChange={this.handleChange} placeholder="Name" required/>
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label htmlFor="cuic">ID</label>
+                  <label htmlFor="cuic">CUIC</label>
                   <input type="text" className="form-control" id="cuic" name="cuic" value={this.state.cuic} onChange={this.handleChange} placeholder="Id" required/>
                 </div>
               </div>
