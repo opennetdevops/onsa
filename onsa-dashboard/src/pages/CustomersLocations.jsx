@@ -75,7 +75,8 @@ class CustomersLocations extends React.Component {
     let url =
       process.env.REACT_APP_CORE_URL + "/core/api/clients/" + this.state.clientId + "/customerlocations";
     
-    HTTPPost(url, data).then(() => {
+    HTTPPost(url, data)
+      .then(() => {
         this.setState({ successAlert: true });
         this.resetFormFields();
       },
@@ -84,7 +85,6 @@ class CustomersLocations extends React.Component {
         this.setState({ successAlert: false });
       }
     );
-
   };
 
   render() {

@@ -89,11 +89,13 @@ class Customers extends React.Component {
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="name">Customer</label>
-                  <input type="text" className="form-control" id="client" name="client" value={this.state.client} onChange={this.handleChange} placeholder="Name" required/>
+                  <input type="text" className="form-control" id="client" name="client" maxLength="100"
+                   value={this.state.client} onChange={this.handleChange} placeholder="Name" required/>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label htmlFor="cuic">CUIC</label>
-                  <input type="text" className="form-control" id="cuic" name="cuic" value={this.state.cuic} onChange={this.handleChange} placeholder="Id" required/>
+                  <input type="text" className="form-control" id="cuic" maxLength="20"
+                   name="cuic" value={this.state.cuic} onChange={this.handleChange} placeholder="Id" required/>
                 </div>
               </div>
               <hr className="mb-4"/>
