@@ -37,3 +37,13 @@ development:
   ssl: false
   # <<: *AUTHORIZATIONS
 
+production:
+  host: 10.120.48.138
+  port: 389
+  attribute: userPrincipalName
+  base: DC=int,DC=fibercorp,DC=com,DC=ar
+  admin_user: CN=app_operations,OU=OU Aplicaciones,OU=OU Usuarios,OU=OU Hornos,DC=int,DC=fibercorp,DC=com,DC=ar
+  admin_password: operations
+  ssl: false
+  # <<: *AUTHORIZATIONS
+
