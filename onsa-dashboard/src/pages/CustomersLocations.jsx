@@ -9,46 +9,6 @@ import {
 import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
 import { Alert } from "reactstrap";
 
-
-// async function getJson(url) {
-//   let response = await fetch(url, {
-//     method: "GET",
-//     mode: "cors",
-//     headers: {
-//       "Content-Type": "application/json",
-//       "Authorization": "Bearer " + sessionStorage.getItem('token')
-//     }
-//   });
-
-//   if (!response.ok){
-//     throw new Error('HTTP error code: ' + response.status + ' (' + response.statusText + ')');
-//   }
-
-//   let jsonResponse = await response.json();
-//   return jsonResponse;
-// }
-
-async function postJson(url, data) {
-  let response = await fetch(url, {
-    method: "POST",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + sessionStorage.getItem('token')
-    },
-    body: JSON.stringify(data)
-  });
-
-  if (!response.ok){
-    throw new Error('HTTP error code: ' + response.status + ' (' + response.statusText + ')');
-  }
-
-  let jsonResponse = await response.json();
-  
-
-  return jsonResponse;
-}
-
 class CustomersLocations extends React.Component {
   constructor(props) {
     super(props);
@@ -65,18 +25,15 @@ class CustomersLocations extends React.Component {
   }
 
   componentDidMount() {
+    HTTPGet(URLs['clients']).then(jsonResponse => {
+      this.setState({ clients: jsonResponse });
+    } // onRejected: 
+      ,(error)=> {
+        console.error('Something happened!!: \n ', error);
+        this.setState({ clients: [] });
+    });
 
-      let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
-
-      HTTPGet(URLs['clients']).then(jsonResponse => {
-        this.setState({ clients: jsonResponse });
-      } // onRejected: 
-        ,(error)=> {
-          console.error('Something happened!!: \n ', error);
-          this.setState({ clients: [] });
-      });
-
-    this.props.displayNavbar(false);
+  this.props.displayNavbar(false);
   }
 
   resetFormFields = () => {
@@ -118,7 +75,7 @@ class CustomersLocations extends React.Component {
     let url =
       process.env.REACT_APP_CORE_URL + "/core/api/clients/" + this.state.clientId + "/customerlocations";
     
-    postJson(url, data).then(() => {
+    HTTPPost(url, data).then(() => {
         this.setState({ successAlert: true });
       },
       (error)=> {
@@ -146,7 +103,7 @@ class CustomersLocations extends React.Component {
         </Alert>
       );
     } else if (this.state.successAlert == false) {
-      alertBox = <Alert className="alert-danger col-md-8"><strong>Error:</strong> Customer location not created.
+      alertBox = <Alert className="alert-danger col-8"><strong>Error:</strong> Customer location not created.
       </Alert>;
       
       }
