@@ -6,25 +6,27 @@ import {
   FormInput,
   FormSelect
 } from "../components/Form";
+import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
 import { Alert } from "reactstrap";
 
-async function getJson(url) {
-  let response = await fetch(url, {
-    method: "GET",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + sessionStorage.getItem('token')
-    }
-  });
 
-    if (!response.ok){
-      throw new Error('HTTP error code: ' + response.status + ' (' + response.statusText + ')');
-    }
+// async function getJson(url) {
+//   let response = await fetch(url, {
+//     method: "GET",
+//     mode: "cors",
+//     headers: {
+//       "Content-Type": "application/json",
+//       "Authorization": "Bearer " + sessionStorage.getItem('token')
+//     }
+//   });
 
-  let jsonResponse = await response.json();
-  return jsonResponse;
-}
+//   if (!response.ok){
+//     throw new Error('HTTP error code: ' + response.status + ' (' + response.statusText + ')');
+//   }
+
+//   let jsonResponse = await response.json();
+//   return jsonResponse;
+// }
 
 async function postJson(url, data) {
   let response = await fetch(url, {
@@ -52,10 +54,10 @@ class CustomersLocations extends React.Component {
     super(props);
 
     this.state = {
-      token: "",
+
       clients: [],
-      client: null,
-      clientId: null,
+      clientName: '',
+      clientId: '',
       address: '',
       description: '',
       successAlert: null
@@ -66,7 +68,7 @@ class CustomersLocations extends React.Component {
 
       let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
 
-      getJson(url).then(jsonResponse => {
+      HTTPGet(URLs['clients']).then(jsonResponse => {
         this.setState({ clients: jsonResponse });
       } // onRejected: 
         ,(error)=> {
@@ -79,7 +81,7 @@ class CustomersLocations extends React.Component {
 
   resetFormFields = () => {
     this.setState({
-      client: "",
+      clientName: "",
       clientId: "",
       address: '',
       description:'',
@@ -99,10 +101,10 @@ class CustomersLocations extends React.Component {
       return client.id == event.target.value;
     });
 
-    if (selectedClient.length > 0){
-      this.setState({ client: selectedClient[0].name, clientId: selectedClient[0].id });
+    if (selectedClient.length > 0 ){
+      this.setState({ clientName: selectedClient[0].name, clientId: selectedClient[0].id });
     } else {
-      this.setState({ client:''});
+      this.setState({ clientName:''});
     }
   };
 
@@ -116,7 +118,6 @@ class CustomersLocations extends React.Component {
     let url =
       process.env.REACT_APP_CORE_URL + "/core/api/clients/" + this.state.clientId + "/customerlocations";
     
-//    console.log(this.state.clientId);
     postJson(url, data).then(() => {
         this.setState({ successAlert: true });
       },
@@ -137,22 +138,22 @@ class CustomersLocations extends React.Component {
     ));
 
     let alertBox = null;
-    console.log("success box: ", this.state.successAlert);
+    
     if (this.state.successAlert) {
       alertBox = (
-        <Alert className="success">
+        <Alert className="success col-8">
           <strong>Success!</strong> Customer location added.
         </Alert>
       );
     } else if (this.state.successAlert == false) {
-      alertBox = <Alert className="alert-danger"><strong>Error!</strong> Customer location not created.
+      alertBox = <Alert className="alert-danger col-md-8"><strong>Error:</strong> Customer location not created.
       </Alert>;
-      // clientsList = null;
+      
       }
 
     return (
       <React.Fragment>
-        <div>{alertBox}</div>
+     <div>{alertBox}</div>
         <div className="col-md-8 order-md-1">
           <h4 className="mb-3">Add customer location</h4>
           <form
@@ -215,7 +216,7 @@ class CustomersLocations extends React.Component {
               className="btn btn-primary btn-lg btn-block"
               disabled={
                 (
-                  this.state.client &&
+                  this.state.clientName &&
                   this.state.address &&
                   this.state.description
                 )
