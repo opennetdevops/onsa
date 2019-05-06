@@ -74,12 +74,12 @@ class ServiceCreate extends React.Component {
       locations: [],
       location: "",
       portsList: [],
-      port: null,
+      port: '',
       portId: null,
       customerLocations: [],
-      customerLoc: null,
+      customerLoc: '',
       customerLocId: null,
-      client: "",
+      client: '',
       clientId: "",
       serviceType: "",
       bandwidth: "",
@@ -396,14 +396,14 @@ class ServiceCreate extends React.Component {
                   id="client"
                   name="client"
                   value={this.state.client}
-                  defaultValue={this.state.client}
+                  // defaultValue={this.state.client}
                   onChange={this.handleOnSelect}
                   required
                 >
                   <option value="">Choose...</option>
                   {clientsList}
                 </FormSelect>
-                <div class="invalid-feedback">
+                <div className="invalid-feedback">
                   Example invalid feedback text
                 </div>
               </div>
@@ -440,7 +440,7 @@ class ServiceCreate extends React.Component {
               </div>
             </FormRow>
 
-            <div class="d-block my-3">
+            <div className="d-block my-3">
               <div className="custom-control custom-radio">
                 <input
                   id="radio"

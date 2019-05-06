@@ -2,22 +2,6 @@ import React from 'react';
 import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
 import { Alert } from 'reactstrap';
 
-// async function postJson(url, data) {
-
-//     let response = await fetch(url, {
-//         method: "POST",
-//         mode: "cors", 
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Authorization": "Bearer " + sessionStorage.getItem('token')
-//         },
-//         body: JSON.stringify(data)
-//       });
-//     // ver opcion de devolver response.
-//     let jsonResponse = await response.json();
-
-//     return jsonResponse;} 
-
 
 class Customers extends React.Component {
 
