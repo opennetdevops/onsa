@@ -1,5 +1,6 @@
 class LogicalUnitsController < ApiController
   before_action :set_logical_unit, only: [:show, :update, :destroy]
+  before_action :authenticate_request
 
   def index
     if params[:router_node_id]

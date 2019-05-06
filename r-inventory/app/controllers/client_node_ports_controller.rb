@@ -1,6 +1,7 @@
 class ClientNodePortsController < ApiController
   before_action :set_client_node_port, only: [:show, :update, :destroy]
   before_action :set_client_node, only: [:create, :index]
+  before_action :authenticate_request
 
   def index
     if params[:used]

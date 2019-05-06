@@ -1,5 +1,6 @@
 class LocationsController < ApiController
   before_action :set_location, only: [:show, :update, :destroy]
+  before_action :authenticate_request
 
   def index
     @locations = Location.all

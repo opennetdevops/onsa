@@ -1,5 +1,6 @@
 class ClientNodesController < ApiController
   before_action :set_client_node, only: [:show, :update, :destroy]
+  before_action :authenticate_request
 
   def index
     @client_nodes = ClientNode.all
