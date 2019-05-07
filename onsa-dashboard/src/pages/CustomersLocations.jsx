@@ -20,18 +20,24 @@ class CustomersLocations extends React.Component {
       clientId: '',
       address: '',
       description: '',
-      successAlert: null
+      successAlert: null,
+      userErrorMsg:''
     };
   }
 
   componentDidMount() {
-    HTTPGet(URLs['clients']).then(jsonResponse => {
-      this.setState({ clients: jsonResponse });
-    } // onRejected: 
-      ,(error)=> {
-        console.error('Something happened!!: \n ', error);
-        this.setState({ clients: [] });
-    });
+    HTTPGet(URLs['clients'])
+      .then(jsonResponse => {
+          this.setState({ clients: jsonResponse });
+        } // onRejected: 
+        ,(error)=> {
+          console.error('Something went wrong:  \n ', error);
+          this.setState({ clients: [],
+                          userErrorMsg: error.message,
+                          successAlert: false
+                         });
+        }
+      );
 
   this.props.displayNavbar(false);
   }
@@ -42,8 +48,7 @@ class CustomersLocations extends React.Component {
       clientId: "",
       address: '',
       description:'',
-      successAlert: null
-    });
+      });
   };
 
   handleChange = event => {
@@ -59,7 +64,8 @@ class CustomersLocations extends React.Component {
     });
 
     if (selectedClient.length > 0 ){
-      this.setState({ clientName: selectedClient[0].name, clientId: selectedClient[0].id });
+      this.setState({ clientName: selectedClient[0].name, 
+                    clientId: selectedClient[0].id });
     } else {
       this.setState({ clientName:''});
     }
@@ -77,15 +83,14 @@ class CustomersLocations extends React.Component {
     
     HTTPPost(url, data)
       .then(() => {
-        this.setState({ successAlert: true });
+        this.setState({successAlert: true});
         this.resetFormFields();
       },
       (error)=> {
-        console.error('Something happened!!: \n ', error);
+        console.error('Something went wrong:  \n ', error);
         this.setState({ successAlert: false });
       }
-    );
-  };
+    )};
 
   render() {
     let clientsList = this.state.clients.map(client => (
@@ -97,17 +102,17 @@ class CustomersLocations extends React.Component {
     let alertBox = null;
     
     if (this.state.successAlert) {
-      alertBox = (
-        <Alert className="success col-md-8">
+      alertBox = 
+        <Alert className="alert-success col-md-8">
           <strong>Success!</strong> Customer location added.
-        </Alert>
-      );
-    } else if (this.state.successAlert == false) {
-      alertBox = <Alert className="alert-danger col-8"><strong>Error:</strong> Customer location not created.
+        </Alert>;
+    
+    }else if (this.state.successAlert == false) {
+      alertBox = <Alert className="alert-danger col-md-8">
+        <strong>Something went wrong: </strong> {this.state.userErrorMsg}
       </Alert>;
-      
-      }
-
+    }
+    // Customer location not created.
     return (
       <React.Fragment>
      <div>{alertBox}</div>
@@ -125,6 +130,7 @@ class CustomersLocations extends React.Component {
                   className="custom-select d-block w-100"
                   id="client"
                   name="client"
+                  value={this.state.clientId}
                   onChange={this.handleOnSelect}
                   required
                 >
