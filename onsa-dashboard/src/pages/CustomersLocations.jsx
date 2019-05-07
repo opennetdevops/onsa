@@ -4,10 +4,11 @@ import {
   FormRow,
   FormTitle,
   FormInput,
-  FormSelect
-} from "../components/Form";
+  FormSelect,
+  } from "../components/Form";
+import FormAlert from "../components/Form/FormAlert"
 import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
-import { Alert } from "reactstrap";
+
 
 class CustomersLocations extends React.Component {
   constructor(props) {
@@ -21,21 +22,19 @@ class CustomersLocations extends React.Component {
       address: '',
       description: '',
       successAlert: null,
-      userErrorMsg:''
+      displayMessage:''
     };
   }
 
   componentDidMount() {
+
     HTTPGet(URLs['clients'])
       .then(jsonResponse => {
           this.setState({ clients: jsonResponse });
         } // onRejected: 
         ,(error)=> {
-          console.error('Something went wrong:  \n ', error);
-          this.setState({ clients: [],
-                          userErrorMsg: error.message,
-                          successAlert: false
-                         });
+          this.showAlertBox(false, error.message );
+          this.setState({ clients: []});
         }
       );
 
@@ -50,6 +49,12 @@ class CustomersLocations extends React.Component {
       description:'',
       });
   };
+
+  showAlertBox = (result,message) => {
+    this.setState({
+      successAlert: result,
+      displayMessage: message })
+  } 
 
   handleChange = event => {
     const value = event.target.value;
@@ -83,12 +88,11 @@ class CustomersLocations extends React.Component {
     
     HTTPPost(url, data)
       .then(() => {
-        this.setState({successAlert: true});
+        this.showAlertBox(true,"Customer Location Added");
         this.resetFormFields();
       },
       (error)=> {
-        console.error('Something went wrong:  \n ', error);
-        this.setState({ successAlert: false });
+        this.showAlertBox(false, error.message)
       }
     )};
 
@@ -100,22 +104,12 @@ class CustomersLocations extends React.Component {
     ));
 
     let alertBox = null;
-    
-    if (this.state.successAlert) {
-      alertBox = 
-        <Alert className="alert-success col-md-8">
-          <strong>Success!</strong> Customer location added.
-        </Alert>;
-    
-    }else if (this.state.successAlert == false) {
-      alertBox = <Alert className="alert-danger col-md-8">
-        <strong>Something went wrong: </strong> {this.state.userErrorMsg}
-      </Alert>;
-    }
-    // Customer location not created.
+      
     return (
       <React.Fragment>
-     <div>{alertBox}</div>
+     <div className="col-md-8">
+      <FormAlert succesfull={this.state.successAlert} displayMessage={this.state.displayMessage} />
+     </div>
         <div className="col-md-8 order-md-1">
           <h4 className="mb-3">Add customer location</h4>
           <form
