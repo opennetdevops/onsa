@@ -25,14 +25,12 @@ cd $rootlevel\/onsa-projects\/
 ./app.py &
 
 
-cd $rootlevel\/onsa-dashboard\/
-npm start &
+#cd $rootlevel\/onsa-dashboard\/
+#npm start &
 
 cd ..
 cd scripts/local/
 
-cd ..
-cd scripts/local/
 
 #python3 $rootlevel\/$projects\/manage.py createsuperuser
 
