@@ -93,8 +93,8 @@ class CustomersLocations extends React.Component {
       },
       (error)=> {
         this.showAlertBox(false, error.message)
-      }
-    )};
+      });
+  }
 
   render() {
     let clientsList = this.state.clients.map(client => (
@@ -103,12 +103,12 @@ class CustomersLocations extends React.Component {
       </option>
     ));
 
-    let alertBox = null;
-      
+    
     return (
       <React.Fragment>
      <div className="col-md-8">
-      <FormAlert succesfull={this.state.successAlert} displayMessage={this.state.displayMessage} />
+       <FormAlert succesfull={this.state.successAlert} 
+        displayMessage={this.state.displayMessage} />
      </div>
         <div className="col-md-8 order-md-1">
           <h4 className="mb-3">Add customer location</h4>

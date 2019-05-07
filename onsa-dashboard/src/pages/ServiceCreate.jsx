@@ -12,24 +12,29 @@ import {
   FormInput,
   FormSelect
 } from "../components/Form";
-import { Alert } from "reactstrap";
+import FormAlert from "../components/Form/FormAlert"
 
-async function coreLogin(url) {
-  let response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: "fc__netauto@lab.fibercorp.com.ar",
-      password: "F1b3rc0rp!"
-    })
-  });
-  let jsonResponse = await response.json();
-  // this.setState({ token: jsonResponse });
 
-  return jsonResponse;
-}
+import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
+
+// async function coreLogin(url) {
+//   console.error("pasé por login")
+
+//   let response = await fetch(url, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json"
+//     },
+//     body: JSON.stringify({
+//       username: "fc__netauto@lab.fibercorp.com.ar",
+//       password: "F1b3rc0rp!"
+//     })
+//   });
+//   let jsonResponse = await response.json();
+//   // this.setState({ token: jsonResponse });
+
+//   return jsonResponse;
+// }
 
 async function getJson(url, token) {
   let response = await fetch(url, {
@@ -37,7 +42,7 @@ async function getJson(url, token) {
     mode: "cors",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + token
+      Authorization: "Bearer " + sessionStorage.token
     }
   });
 
@@ -45,23 +50,23 @@ async function getJson(url, token) {
   return jsonResponse;
 }
 
-async function postJson(url, token, data) {
-  let response = await fetch(url, {
-    method: "POST",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token
-    },
-    body: JSON.stringify(data)
-  });
+// async function postJson(url, token, data) {
+//   let response = await fetch(url, {
+//     method: "POST",
+//     mode: "cors",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: "Bearer " + token
+//     },
+//     body: JSON.stringify(data)
+//   });
 
-  let jsonResponse = await response.json();
-  console.log(jsonResponse);
-  // response.json();
+//   let jsonResponse = await response.json();
+//   console.log(jsonResponse);
+//   // response.json();
 
-  return jsonResponse;
-}
+//   return jsonResponse;
+// }
 
 class ServiceCreate extends React.Component {
   constructor(props) {
@@ -91,34 +96,60 @@ class ServiceCreate extends React.Component {
       showVrf: false,
       showPrefix: false,
       showClientNetwork: false,
-      successAlert: false
+      successAlert: null,
+      displayMessage:''
     };
   }
 
   componentDidMount() {
-    let url =
-      "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/login";
+    // let url =
+    //   "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/login";
 
-    coreLogin(url).then(jsonResponse => {
-      this.setState({ token: jsonResponse.token });
+    // coreLogin(url).then(jsonResponse => {
+    //   this.setState({ token: jsonResponse.token });
 
-      url =
-        "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/clients";
-      getJson(url, jsonResponse.token).then(jsonResponse => {
-        this.setState({ clients: jsonResponse });
+      // let url =
+      //   "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/clients";
+      // getJson(url).then(jsonResponse => {
+      //   this.setState({ clients: jsonResponse });
+      // });
+
+      // Fetch clients
+      HTTPGet(URLs['clients'])
+        .then(jsonResponse => {
+          this.setState({ clients: jsonResponse });
+        } // onRejected: 
+        ,(error)=> {
+          this.setState({ clients: [] });
+          this.showAlertBox(false, error.message );
       });
 
-      url =
-        "http://" +
-        process.env.REACT_APP_SERVER_IP +
-        ":8000/core/api/locations";
-      getJson(url, jsonResponse.token).then(jsonResponse => {
-        this.setState({ locations: jsonResponse });
+      // Fetch Locations
+      HTTPGet(URLs['locations'])
+        .then(jsonResponse => {
+            this.setState({ locations: jsonResponse });
+          } // onRejected: 
+          ,(error)=> {
+            this.setState({ locations: [] });
+            this.showAlertBox(false, error.message );
       });
-    });
+      // let url =
+      //   "http://" +
+      //   process.env.REACT_APP_SERVER_IP +
+      //   ":8000/core/api/locations";
+      // getJson(url).then(jsonResponse => {
+      //   this.setState({ locations: jsonResponse });
+      // });
+    // });
 
     this.props.displayNavbar(false);
   }
+  
+  showAlertBox = (result,message) => {
+    this.setState({
+      successAlert: result,
+      displayMessage: message })
+  } 
 
   handleDisplays = () => {
     let state = {};
@@ -148,8 +179,17 @@ class ServiceCreate extends React.Component {
             "/customerlocations/" +
             this.state.customerLocId +
             "/accessports";
-          getJson(url, this.state.token).then(jsonResponse =>
-            this.setState({ portsList: jsonResponse })
+          // getJson(url, this.state.token).then(jsonResponse =>
+          //   this.setState({ portsList: jsonResponse })
+          // );
+          HTTPGet(url)
+            .then(jsonResponse => 
+              {this.setState({ portsList: jsonResponse });
+            }
+            ,(error)=> {
+              this.showAlertBox(false, error.message );
+              this.setState({ portsList: []});
+            }  
           );
         }
 
@@ -257,12 +297,20 @@ class ServiceCreate extends React.Component {
     let url =
       "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/services";
 
-    postJson(url, this.state.token, data).then(() => {
-      this.setState({ successAlert: true });
-    });
+    // postJson(url, this.state.token, data).then(() => {
+    //   this.setState({ successAlert: true });
+    // });
 
-    this.resetFormFields();
-
+    HTTPPost(URLs['services'], data)
+      .then(() => {
+        this.showAlertBox(true,"Service created succesfully");
+        this.resetFormFields();
+      },
+      (error) => {
+        console.error("error debug: ", error.message);
+        this.showAlertBox(false, error.message);
+      });
+      
     // this.props.history.push('/dashboard');
   };
 
@@ -369,18 +417,21 @@ class ServiceCreate extends React.Component {
     let vrfList = this.createVrfElements();
     let customerLocsList = this.createCustLocsList();
 
-    let alertBox = null;
-    if (this.state.successAlert) {
-      alertBox = (
-        <Alert bsStyle="sucsess">
-          <strong>Success!</strong> Service created.
-        </Alert>
-      );
-    }
+    // let alertBox = null;
+    // if (this.state.successAlert) {
+    //   alertBox = (
+    //     <Alert bsStyle="sucsess">
+    //       <strong>Success!</strong> Service created.
+    //     </Alert>
+    //   );
+    // }
 
     return (
       <React.Fragment>
-        <div>{alertBox}</div>
+       <div className="col-md-8">
+         <FormAlert succesfull={this.state.successAlert}
+          displayMessage={this.state.displayMessage} />
+       </div>
         <div className="col-md-6 order-md-1">
           <FormTitle>New service</FormTitle>
           <Form
@@ -541,7 +592,7 @@ class ServiceCreate extends React.Component {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label htmlFor="location">Location</label>
+                <label htmlFor="location">HUB</label>
                 <FormSelect
                   className="custom-select d-block w-100"
                   id="location"
