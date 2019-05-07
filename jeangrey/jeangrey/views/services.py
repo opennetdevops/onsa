@@ -114,7 +114,9 @@ class ServiceView(View):
                 client = Client.objects.get(name=client_name)
 
                 location = data.pop('location')
+                print(location)
                 location_id = get_location_id(location)
+                print(location_id)
                 router_nodes = get_router_nodes(location_id)
                 
                 if not router_nodes:
