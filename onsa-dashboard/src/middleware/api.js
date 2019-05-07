@@ -13,7 +13,7 @@ async function HTTPGet(url) {
   });
 
   if (!response.ok){
-    throw new Error('HTTP error code: ' + response.status + ' (' + response.statusText + ')');
+    throw new Error('HTTP error code - ' + response.status + ' (' + response.statusText + ')');
   }
 
 	let jsonResponse = await response.json();
