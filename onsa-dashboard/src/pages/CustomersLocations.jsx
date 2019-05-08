@@ -4,57 +4,55 @@ import {
   FormRow,
   FormTitle,
   FormInput,
-  FormSelect,
-  } from "../components/Form";
-import FormAlert from "../components/Form/FormAlert"
-import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
-
+  FormSelect
+} from "../components/Form";
+import FormAlert from "../components/Form/FormAlert";
+import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
 class CustomersLocations extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-
       clients: [],
-      clientName: '',
-      clientId: '',
-      address: '',
-      description: '',
+      clientName: "",
+      clientId: "",
+      address: "",
+      description: "",
       successAlert: null,
-      displayMessage:''
+      displayMessage: ""
     };
   }
 
   componentDidMount() {
+    HTTPGet(URLs["clients"]).then(
+      jsonResponse => {
+        this.setState({ clients: jsonResponse });
+      }, // onRejected:
+      error => {
+        this.showAlertBox(false, error.message);
+        this.setState({ clients: [] });
+      }
+    );
 
-    HTTPGet(URLs['clients'])
-      .then(jsonResponse => {
-          this.setState({ clients: jsonResponse });
-        } // onRejected: 
-        ,(error)=> {
-          this.showAlertBox(false, error.message );
-          this.setState({ clients: []});
-        }
-      );
-
-  this.props.displayNavbar(false);
+    this.props.displayNavbar(false);
   }
 
   resetFormFields = () => {
     this.setState({
       clientName: "",
       clientId: "",
-      address: '',
-      description:'',
-      });
+      address: "",
+      description: ""
+    });
   };
 
-  showAlertBox = (result,message) => {
+  showAlertBox = (result, message) => {
     this.setState({
       successAlert: result,
-      displayMessage: message })
-  } 
+      displayMessage: message
+    });
+  };
 
   handleChange = event => {
     const value = event.target.value;
@@ -68,11 +66,13 @@ class CustomersLocations extends React.Component {
       return client.id == event.target.value;
     });
 
-    if (selectedClient.length > 0 ){
-      this.setState({ clientName: selectedClient[0].name, 
-                    clientId: selectedClient[0].id });
+    if (selectedClient.length > 0) {
+      this.setState({
+        clientName: selectedClient[0].name,
+        clientId: selectedClient[0].id
+      });
     } else {
-      this.setState({ clientName:''});
+      this.setState({ clientName: "" });
     }
   };
 
@@ -82,19 +82,23 @@ class CustomersLocations extends React.Component {
       address: this.state.address,
       description: this.state.description
     };
-    
+
     let url =
-      process.env.REACT_APP_CORE_URL + "/core/api/clients/" + this.state.clientId + "/customerlocations";
-    
-    HTTPPost(url, data)
-      .then(() => {
-        this.showAlertBox(true,"Customer Location Added");
+      process.env.REACT_APP_CORE_URL +
+      "/core/api/clients/" +
+      this.state.clientId +
+      "/customerlocations";
+
+    HTTPPost(url, data).then(
+      () => {
+        this.showAlertBox(true, "Customer Location Added");
         this.resetFormFields();
       },
-      (error)=> {
-        this.showAlertBox(false, error.message)
-      });
-  }
+      error => {
+        this.showAlertBox(false, error.message);
+      }
+    );
+  };
 
   render() {
     let clientsList = this.state.clients.map(client => (
@@ -103,13 +107,14 @@ class CustomersLocations extends React.Component {
       </option>
     ));
 
-    
     return (
       <React.Fragment>
-     <div className="col-md-8">
-       <FormAlert succesfull={this.state.successAlert} 
-        displayMessage={this.state.displayMessage} />
-     </div>
+        <div className="col-md-8">
+          <FormAlert
+            succesfull={this.state.successAlert}
+            displayMessage={this.state.displayMessage}
+          />
+        </div>
         <div className="col-md-8 order-md-1">
           <h4 className="mb-3">Add customer location</h4>
           <form
@@ -144,7 +149,7 @@ class CustomersLocations extends React.Component {
                   name="address"
                   value={this.state.address}
                   onChange={this.handleChange}
-                  maxLength= "50"
+                  maxLength="50"
                   placeholder="Calle Falsa 123"
                   required
                 />
@@ -161,7 +166,7 @@ class CustomersLocations extends React.Component {
                   name="description"
                   value={this.state.description}
                   onChange={this.handleChange}
-                  maxLength= "50"
+                  maxLength="50"
                   placeholder="Description"
                   required
                 />
@@ -172,11 +177,9 @@ class CustomersLocations extends React.Component {
             <button
               className="btn btn-primary btn-lg btn-block"
               disabled={
-                (
-                  this.state.clientName &&
-                  this.state.address &&
-                  this.state.description
-                )
+                this.state.clientName &&
+                this.state.address &&
+                this.state.description
                   ? false
                   : true
               }

@@ -1,95 +1,122 @@
-import React from 'react';
-import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
-import { Alert } from 'reactstrap';
-
+import React from "react";
+import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
+import { Alert } from "reactstrap";
+import FormAlert from "../components/Form/FormAlert";
 
 class Customers extends React.Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
-      client: '',
-      cuic: '',
-      successAlert: null
+      client: "",
+      cuic: "",
+      successAlert: null,
+      displayMessage: ""
     };
   }
 
   componentDidMount() {
-   
-
-    this.props.displayNavbar(false); 
+    this.props.displayNavbar(false);
   }
 
   resetFormFields = () => {
     this.setState({
       client: "",
-      cuic: "",
-    })
-  }
+      cuic: ""
+    });
+  };
 
-  handleChange = (event) => {
+  showAlertBox = (result, message) => {
+    this.setState({
+      successAlert: result,
+      displayMessage: message
+    });
+  };
 
+  handleChange = event => {
     const value = event.target.value;
-    const name = event.target.name
+    const name = event.target.name;
 
-    this.setState({[name]: value})
-  }
+    this.setState({ [name]: value });
+  };
 
-  handleSubmit = (event) => {
+  handleSubmit = event => {
     event.preventDefault();
 
-    const data = { "name": this.state.client, 
-                   "cuic": this.state.cuic, };
-    
-    HTTPPost(URLs['clients'], data)
-      .then(() => {
-          this.setState({successAlert: true} );
-          this.resetFormFields();
-        }
-        ,(error) => {
-          console.error('Something happened!!: \n ', error);
-          this.setState({ successAlert: false });
+    const data = { name: this.state.client, cuic: this.state.cuic };
+
+    HTTPPost(URLs["clients"], data).then(
+      () => {
+        this.showAlertBox(true, "Customer created.");
+        this.resetFormFields();
+      },
+      error => {
+        this.showAlertBox(false, error.message);
       }
     );
-  }
+  };
 
-    render() {
-
-      let alertBox = null;
-      if (this.state.successAlert) {
-        alertBox = <Alert className="success col-md-8"><strong>Success!</strong> Customer created.</Alert>;
-        } 
-       else if (this.state.successAlert== false) {
-        alertBox = <Alert className="alert-danger col-md-8"><strong>Error: </strong> Customer not created.</Alert>;
-        }
-      
-      return (
-          <React.Fragment>
-          <div>{alertBox}</div>
-          <div className="col-md-8 order-md-1">
-            <h4 className="mb-3">Create New Customer</h4>
-            <form className="needs-validation" noValidate onSubmit={this.handleSubmit}>
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="name">Customer</label>
-                  <input type="text" className="form-control" id="client" name="client" maxLength="100"
-                   value={this.state.client} onChange={this.handleChange} placeholder="Name" required/>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="cuic">CUIC</label>
-                  <input type="text" className="form-control" id="cuic" maxLength="20"
-                   name="cuic" value={this.state.cuic} onChange={this.handleChange} placeholder="Id" required/>
-                </div>
+  render() {
+    return (
+      <React.Fragment>
+        <div className="col-md-8">
+          <FormAlert
+            succesfull={this.state.successAlert}
+            displayMessage={this.state.displayMessage}
+          />
+        </div>
+        <div className="col-md-8 order-md-1">
+          <h4 className="mb-3">Create New Customer</h4>
+          <form
+            className="needs-validation"
+            noValidate
+            onSubmit={this.handleSubmit}
+          >
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="name">Customer</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="client"
+                  name="client"
+                  maxLength="100"
+                  value={this.state.client}
+                  onChange={this.handleChange}
+                  placeholder="Name"
+                  required
+                />
               </div>
-              <hr className="mb-4"/>
-             
-              <button className="btn btn-primary btn-lg btn-block" disabled={!(this.state.client && this.state.cuic) ? true : false} type="submit" value="Submit">Create</button>
-            </form>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="cuic">CUIC</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="cuic"
+                  maxLength="20"
+                  name="cuic"
+                  value={this.state.cuic}
+                  onChange={this.handleChange}
+                  placeholder="Id"
+                  required
+                />
+              </div>
             </div>
-          </React.Fragment>
+            <hr className="mb-4" />
+
+            <button
+              className="btn btn-primary btn-lg btn-block"
+              disabled={!(this.state.client && this.state.cuic) ? true : false}
+              type="submit"
+              value="Submit"
+            >
+              Create
+            </button>
+          </form>
+        </div>
+      </React.Fragment>
     );
-   }
-};
+  }
+}
 
 export default Customers;
