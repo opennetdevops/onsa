@@ -118,8 +118,8 @@ class ServiceCreate extends React.Component {
               this.setState({ portsList: jsonResponse });
             },
             error => {
-              this.setState({ portsList: [] });
               this.showAlertBox(false, error.message);
+              this.setState({ portsList: [] });
             }
           );
         }
@@ -380,7 +380,7 @@ class ServiceCreate extends React.Component {
               </div>
 
               <div className="col-md-6 mb-3">
-                <label htmlFor="serviceId">ID</label>
+                <label htmlFor="serviceId">Product ID</label>
                 <FormInput
                   type="text"
                   className="form-control"
