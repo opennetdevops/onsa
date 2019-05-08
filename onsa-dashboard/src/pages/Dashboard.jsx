@@ -15,6 +15,9 @@ import {
   UnsubscribeModal
 } from "../components/Modals";
 
+import FormAlert from "../components/Form/FormAlert";
+import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
+
 async function getJson(url) {
   let response = await fetch(url, {
     method: "GET",
@@ -41,21 +44,30 @@ class Dashboard extends React.Component {
       activateModal: false,
       accessNodeActivateModal: false,
       terminateModal: false,
-      modalService: { id: null, type: null }
+      modalService: { id: null, type: null },
+      successAlert: null,
+      displayMessage: ""
     };
   }
 
   componentDidMount() {
+    //TODO remove log
     console.log(sessionStorage.getItem("token"));
 
-    // let url = "http://localhost:8000/core/api/services";
-
-    let url = process.env.REACT_APP_CORE_URL + "/core/api/services";
-
-    getJson(url).then(myJson => this.setState({ services: myJson }));
+    HTTPGet(URLs["services"]).then(
+      jsonResponse => this.setState({ services: jsonResponse }),
+      error => this.showAlertBox(false, error.message)
+    );
 
     this.props.displayNavbar(false);
   }
+
+  showAlertBox = (result, message) => {
+    this.setState({
+      successAlert: result,
+      displayMessage: message
+    });
+  };
 
   handleOnClick = event => {
     const value = event.target.value;
@@ -65,22 +77,24 @@ class Dashboard extends React.Component {
 
     switch (name) {
       case "resources":
-        // let url = "http://localhost:8000/core/api/services/" + service.id + "/resources";
-
         let url =
           process.env.REACT_APP_CORE_URL +
           "/core/api/services/" +
           service.id +
           "/resources";
-        console.log("url: ", url);
 
-        getJson(url).then(jsonResponse => {
-          this.setState({
-            resources: jsonResponse,
-            resourcesModal: !this.state.resourcesModal,
-            modalService: { id: service.id, type: service.service_type }
-          });
-        });
+       HTTPGet(url).then(jsonResponse => {
+         this.setState(
+           {
+             resources: jsonResponse,
+             resourcesModal: !this.state.resourcesModal,
+             modalService: { id: service.id, type: service.service_type }
+           })
+          },
+           error => {
+            this.showAlertBox(false, error.message);}
+         ); //todo
+       
         break;
       case "activate":
         this.setState({
@@ -209,8 +223,15 @@ class Dashboard extends React.Component {
       <div className="container-fluid">
         {/*<div className="row">*/}
         {/*<Sidebar/>*/}
-        <table className="table table-hover">
-          <thead>
+        <div className="row justify-content-center">
+          <FormAlert
+            succesfull={this.state.successAlert}
+            displayMessage={this.state.displayMessage}
+          />
+        </div>
+        <div className="row">
+        <table className="table table-hover col-md-12">
+          <thead >
             <tr>
               <th scope="col">ID</th>
               <th scope="col">Service Type</th>
@@ -219,6 +240,8 @@ class Dashboard extends React.Component {
           </thead>
           <tbody>{tableRows}</tbody>
         </table>
+        </div>
+        
         <ResourcesModal
           isOpen={this.state.resourcesModal}
           service={this.state.modalService}

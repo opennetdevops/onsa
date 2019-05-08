@@ -12,61 +12,10 @@ import {
   FormInput,
   FormSelect
 } from "../components/Form";
-import FormAlert from "../components/Form/FormAlert"
+import FormAlert from "../components/Form/FormAlert";
 
+import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
-import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
-
-// async function coreLogin(url) {
-//   console.error("pasé por login")
-
-//   let response = await fetch(url, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json"
-//     },
-//     body: JSON.stringify({
-//       username: "fc__netauto@lab.fibercorp.com.ar",
-//       password: "F1b3rc0rp!"
-//     })
-//   });
-//   let jsonResponse = await response.json();
-//   // this.setState({ token: jsonResponse });
-
-//   return jsonResponse;
-// }
-
-async function getJson(url, token) {
-  let response = await fetch(url, {
-    method: "GET",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + sessionStorage.token
-    }
-  });
-
-  let jsonResponse = await response.json();
-  return jsonResponse;
-}
-
-// async function postJson(url, token, data) {
-//   let response = await fetch(url, {
-//     method: "POST",
-//     mode: "cors",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: "Bearer " + token
-//     },
-//     body: JSON.stringify(data)
-//   });
-
-//   let jsonResponse = await response.json();
-//   console.log(jsonResponse);
-//   // response.json();
-
-//   return jsonResponse;
-// }
 
 class ServiceCreate extends React.Component {
   constructor(props) {
@@ -79,12 +28,12 @@ class ServiceCreate extends React.Component {
       locations: [],
       location: "",
       portsList: [],
-      port: '',
+      port: "",
       portId: null,
       customerLocations: [],
-      customerLoc: '',
+      customerLoc: "",
       customerLocId: null,
-      client: '',
+      client: "",
       clientId: "",
       serviceType: "",
       bandwidth: "",
@@ -97,59 +46,43 @@ class ServiceCreate extends React.Component {
       showPrefix: false,
       showClientNetwork: false,
       successAlert: null,
-      displayMessage:''
+      displayMessage: ""
     };
   }
 
   componentDidMount() {
-    // let url =
-    //   "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/login";
 
-    // coreLogin(url).then(jsonResponse => {
-    //   this.setState({ token: jsonResponse.token });
+    // Fetch clients
+    HTTPGet(URLs["clients"]).then(
+      jsonResponse => {
+        this.setState({ clients: jsonResponse });
+      },
+      error => {
+        this.setState({ clients: [] });
+        this.showAlertBox(false, error.message);
+      }
+    );
 
-      // let url =
-      //   "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/clients";
-      // getJson(url).then(jsonResponse => {
-      //   this.setState({ clients: jsonResponse });
-      // });
-
-      // Fetch clients
-      HTTPGet(URLs['clients'])
-        .then(jsonResponse => {
-          this.setState({ clients: jsonResponse });
-        } // onRejected: 
-        ,(error)=> {
-          this.setState({ clients: [] });
-          this.showAlertBox(false, error.message );
-      });
-
-      // Fetch Locations
-      HTTPGet(URLs['locations'])
-        .then(jsonResponse => {
-            this.setState({ locations: jsonResponse });
-          } // onRejected: 
-          ,(error)=> {
-            this.setState({ locations: [] });
-            this.showAlertBox(false, error.message );
-      });
-      // let url =
-      //   "http://" +
-      //   process.env.REACT_APP_SERVER_IP +
-      //   ":8000/core/api/locations";
-      // getJson(url).then(jsonResponse => {
-      //   this.setState({ locations: jsonResponse });
-      // });
-    // });
+    // Fetch Locations
+    HTTPGet(URLs["locations"]).then(
+      jsonResponse => {
+        this.setState({ locations: jsonResponse });
+      },
+      error => {
+        this.setState({ locations: [] });
+        this.showAlertBox(false, error.message);
+      }
+    );
 
     this.props.displayNavbar(false);
   }
-  
-  showAlertBox = (result,message) => {
+
+  showAlertBox = (result, message) => {
     this.setState({
       successAlert: result,
-      displayMessage: message })
-  } 
+      displayMessage: message
+    });
+  };
 
   handleDisplays = () => {
     let state = {};
@@ -179,17 +112,15 @@ class ServiceCreate extends React.Component {
             "/customerlocations/" +
             this.state.customerLocId +
             "/accessports";
-          // getJson(url, this.state.token).then(jsonResponse =>
-          //   this.setState({ portsList: jsonResponse })
-          // );
-          HTTPGet(url)
-            .then(jsonResponse => 
-              {this.setState({ portsList: jsonResponse });
+        
+          HTTPGet(url).then(
+            jsonResponse => {
+              this.setState({ portsList: jsonResponse });
+            },
+            error => {
+              this.setState({ portsList: [] });
+              this.showAlertBox(false, error.message);
             }
-            ,(error)=> {
-              this.showAlertBox(false, error.message );
-              this.setState({ portsList: []});
-            }  
           );
         }
 
@@ -294,24 +225,19 @@ class ServiceCreate extends React.Component {
       }
     }
 
-    let url =
-      "http://" + process.env.REACT_APP_SERVER_IP + ":8000/core/api/services";
+    let url = URLs['services'];
 
-    // postJson(url, this.state.token, data).then(() => {
-    //   this.setState({ successAlert: true });
-    // });
-
-    HTTPPost(URLs['services'], data)
-      .then(() => {
-        this.showAlertBox(true,"Service created succesfully");
+    HTTPPost(URLs["services"], data).then(
+      () => {
+        this.showAlertBox(true, "Service created succesfully");
         this.resetFormFields();
       },
-      (error) => {
+      error => {
         console.error("error debug: ", error.message);
         this.showAlertBox(false, error.message);
-      });
-      
-    // this.props.history.push('/dashboard');
+      }
+    );
+
   };
 
   handleToggle = event => {
@@ -325,6 +251,7 @@ class ServiceCreate extends React.Component {
   };
 
   handleClient = () => {
+    //  handler Select  Client
     if (this.state.client !== "") {
       let url =
         "http://" +
@@ -332,7 +259,7 @@ class ServiceCreate extends React.Component {
         ":8000/core/api/vrfs?client=" +
         this.state.client;
 
-      getJson(url, this.state.token).then(jsonResponse => {
+      HTTPGet(url).then(jsonResponse => {
         this.state.client !== "Choose..."
           ? this.setState({ vrfs: jsonResponse })
           : this.setState({ vrfs: [] });
@@ -344,7 +271,7 @@ class ServiceCreate extends React.Component {
         ":8000/core/api/clients?name=" +
         this.state.client;
 
-      getJson(url, this.state.token)
+      HTTPGet(url)
         .then(client => {
           this.state.client !== "Choose..."
             ? this.setState({ clientId: client.id })
@@ -358,7 +285,7 @@ class ServiceCreate extends React.Component {
             this.state.clientId +
             "/customerlocations";
 
-          getJson(url, this.state.token).then(jsonResponse => {
+          HTTPGet(url).then(jsonResponse => {
             this.state.client !== "Choose..."
               ? this.setState({ customerLocations: jsonResponse })
               : this.setState({ customerLocations: [] });
@@ -417,21 +344,14 @@ class ServiceCreate extends React.Component {
     let vrfList = this.createVrfElements();
     let customerLocsList = this.createCustLocsList();
 
-    // let alertBox = null;
-    // if (this.state.successAlert) {
-    //   alertBox = (
-    //     <Alert bsStyle="sucsess">
-    //       <strong>Success!</strong> Service created.
-    //     </Alert>
-    //   );
-    // }
-
     return (
       <React.Fragment>
-       <div className="col-md-8">
-         <FormAlert succesfull={this.state.successAlert}
-          displayMessage={this.state.displayMessage} />
-       </div>
+        <div className="col-md-8">
+          <FormAlert
+            succesfull={this.state.successAlert}
+            displayMessage={this.state.displayMessage}
+          />
+        </div>
         <div className="col-md-6 order-md-1">
           <FormTitle>New service</FormTitle>
           <Form

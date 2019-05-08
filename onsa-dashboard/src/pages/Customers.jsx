@@ -1,6 +1,5 @@
 import React from "react";
 import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
-import { Alert } from "reactstrap";
 import FormAlert from "../components/Form/FormAlert";
 
 class Customers extends React.Component {
