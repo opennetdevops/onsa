@@ -2,7 +2,7 @@ import React from "react";
 
 import signInIcon from "../images/onsa-logo.png";
 import { Form, FormInput } from "../components/Form";
-import { Alert } from "reactstrap";
+import FormAlert from "../components/Form/FormAlert";
 
 async function coreLogin(url, username, password) {
   let response = await fetch(url, {
@@ -15,8 +15,15 @@ async function coreLogin(url, username, password) {
       password: password
     })
   });
+  if (!response.ok) {
+    if (response.status == 400){
+      throw new Error("Invalid credentials");
+    }
+    throw new Error(
+      "HTTP error code: " + response.status + " (" + response.statusText + ")"
+    );
+  }
   let jsonResponse = await response.json();
-  // this.setState({ token: jsonResponse });
 
   return jsonResponse;
 }
@@ -31,7 +38,9 @@ class Login extends React.Component {
 
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      successAlert: null,
+      displayMessage: ""
     };
   }
   componentDidMount() {
@@ -45,36 +54,45 @@ class Login extends React.Component {
     this.setState({ [name]: value });
   };
 
+  showAlertBox = (result, message) => {
+    this.setState({
+      successAlert: result,
+      displayMessage: message
+    });
+  };
+
   handleSubmit = event => {
     event.preventDefault();
     const username = this.state.email;
     const password = this.state.password;
 
-    // let url = "http://$SERVER_IP:8000/core/api/login";
     let url = process.env.REACT_APP_CORE_URL + "/core/api/login";
 
-    coreLogin(url, username, password)
-      .then(jsonResponse => {
+    coreLogin(url, username, password).then(
+      jsonResponse => {
         if ("token" in jsonResponse) {
           sessionStorage.setItem("token", jsonResponse.token);
+          this.props.history.push("/dashboard");
         } else {
-          sessionStorage.setItem("token", "invalid");
+          this.showAlertBox(false, "Invalid operation");
         }
-      })
-      .then(() => {
-        this.props.history.push("/dashboard");
-      });
+      },
+      error => {
+        this.showAlertBox(false, error.message);
+      }
+    );
   };
 
   render() {
     return (
       <React.Fragment>
-        <div>
-          {sessionStorage.getItem("token") === "invalid" ? (
-            <Alert color="danger">
-              <strong>Error!</strong> Invalid credentials.
-            </Alert>
-          ) : null}
+        <div className="row justify-content-center">
+          <FormAlert
+            succesfull={this.state.successAlert}
+            displayMessage={this.state.displayMessage}
+            msgLabel="Unable to login: "
+            className="col-md-8"
+          />
         </div>
         <div className="text-center form-div">
           <Form className="form-signin" onSubmit={this.handleSubmit}>
