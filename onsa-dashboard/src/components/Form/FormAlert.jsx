@@ -13,7 +13,8 @@ const customAlert = props => {
     alertBox = (
       <Alert className="alert-success">
         {/* <strong>Success!</strong> {props.displayMessage} */}
-        <strong>{props.msgLabel ? props.msgLabel : "Success!"}</strong>
+        <strong>{props.msgLabel ? props.msgLabel : "Success! "}</strong>
+        {props.displayMessage}
       </Alert>
     );
   } else if (props.succesfull == false) {
