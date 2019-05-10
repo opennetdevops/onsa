@@ -16,7 +16,16 @@ class AuthenticateUser
 
   def user
     user = AdminUser.find_by_email(email)
-    return user if user && user.valid_ldap_authentication?(password)
+
+    if user.nil?
+      user = AdminUser.new(email:email)
+      if user.valid_ldap_authentication?(password)
+        user.save
+        return user
+      end
+    end
+
+    return user if user.valid_ldap_authentication?(password)
 
     errors.add :user_authentication, 'invalid credentials'
     nil
