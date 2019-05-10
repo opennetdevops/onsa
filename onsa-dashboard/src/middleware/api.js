@@ -12,7 +12,7 @@ async function HTTPGet(url) {
 
   if (!response.ok) {
     throw new Error(
-      "HTTP error code - " + response.status + " (" + response.statusText + ")"
+      "HTTP error - " + response.status + " (" + response.statusText + ")"
     );
   }
 
@@ -35,7 +35,7 @@ async function HTTPPost(url, data) {
 
   if (!response.ok) {
     throw new Error(
-      "HTTP error code: " + response.status + " (" + response.statusText + ")"
+      "HTTP error - " + response.status + " (" + response.statusText + ")"
     );
   }
 

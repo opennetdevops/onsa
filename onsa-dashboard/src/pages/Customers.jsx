@@ -79,7 +79,7 @@ class Customers extends React.Component {
                   className="form-control"
                   id="client"
                   name="client"
-                  maxLength="100"
+                  maxLength="50"
                   value={this.state.client}
                   onChange={this.handleChange}
                   placeholder="Name"
