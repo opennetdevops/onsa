@@ -16,7 +16,6 @@ import FormAlert from "../components/Form/FormAlert";
 
 import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
-
 class ServiceCreate extends React.Component {
   constructor(props) {
     super(props);
@@ -51,7 +50,6 @@ class ServiceCreate extends React.Component {
   }
 
   componentDidMount() {
-
     // Fetch clients
     HTTPGet(URLs["clients"]).then(
       jsonResponse => {
@@ -112,7 +110,7 @@ class ServiceCreate extends React.Component {
             "/customerlocations/" +
             this.state.customerLocId +
             "/accessports";
-        
+
           HTTPGet(url).then(
             jsonResponse => {
               this.setState({ portsList: jsonResponse });
@@ -235,7 +233,6 @@ class ServiceCreate extends React.Component {
         this.showAlertBox(false, error.message);
       }
     );
-
   };
 
   handleToggle = event => {
@@ -344,243 +341,245 @@ class ServiceCreate extends React.Component {
 
     return (
       <React.Fragment>
-        <div className="col-md-8">
-          <FormAlert
-            succesfull={this.state.successAlert}
-            displayMessage={this.state.displayMessage}
-          />
-        </div>
-        <div className="col-md-6 order-md-1">
-          <FormTitle>New service</FormTitle>
-          <Form
-            className="needs-validation"
-            noValidate
-            onSubmit={this.handleSubmit}
-          >
-            <FormRow className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="client">Client</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="client"
-                  name="client"
-                  value={this.state.client}
-                  // defaultValue={this.state.client}
-                  onChange={this.handleOnSelect}
-                  required
-                >
-                  <option value="">Choose...</option>
-                  {clientsList}
-                </FormSelect>
-                <div className="invalid-feedback">
-                  Example invalid feedback text
+        <div className="row justify-content-center">
+          <div className="col-md-8">
+            <FormAlert
+              succesfull={this.state.successAlert}
+              displayMessage={this.state.displayMessage}
+            />
+          </div>
+          <div className="col-md-8 order-md-1">
+            <FormTitle>New service</FormTitle>
+            <Form
+              className="needs-validation"
+              noValidate
+              onSubmit={this.handleSubmit}
+            >
+              <FormRow className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="client">Client</label>
+                  <FormSelect
+                    className="custom-select d-block w-100"
+                    id="client"
+                    name="client"
+                    value={this.state.client}
+                    // defaultValue={this.state.client}
+                    onChange={this.handleOnSelect}
+                    required
+                  >
+                    <option value="">Choose...</option>
+                    {clientsList}
+                  </FormSelect>
+                  <div className="invalid-feedback">
+                    Example invalid feedback text
+                  </div>
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="serviceId">Product ID</label>
+                  <FormInput
+                    type="text"
+                    className="form-control"
+                    id="serviceId"
+                    placeholder="Id"
+                    name="serviceId"
+                    value={this.state.serviceId}
+                    onChange={this.handleChange}
+                    required
+                  />
+                </div>
+              </FormRow>
+
+              <FormRow className="row">
+                <div className="col-md-12 mb-3">
+                  <label htmlFor="customerLoc">Customer Location</label>
+                  <FormSelect
+                    className="custom-select d-block w-100"
+                    id="customerLoc"
+                    name="customerLoc"
+                    value={this.state.customerLoc}
+                    onChange={this.handleOnSelect}
+                    required
+                  >
+                    <option value="">Choose...</option>
+                    {customerLocsList}
+                  </FormSelect>
+                </div>
+              </FormRow>
+
+              <div className="d-block my-3">
+                <div className="custom-control custom-radio">
+                  <input
+                    id="radio"
+                    name="cpeExist"
+                    type="checkbox"
+                    onChange={this.handleChange}
+                    className="custom-control-input"
+                    disabled={!this.state.customerLocId}
+                    required
+                  />
+                  <label className="custom-control-label" htmlFor="radio">
+                    Existing CPE
+                  </label>
                 </div>
               </div>
 
-              <div className="col-md-6 mb-3">
-                <label htmlFor="serviceId">Product ID</label>
-                <FormInput
-                  type="text"
-                  className="form-control"
-                  id="serviceId"
-                  placeholder="Id"
-                  name="serviceId"
-                  value={this.state.serviceId}
-                  onChange={this.handleChange}
-                  required
-                />
-              </div>
-            </FormRow>
-
-            <FormRow className="row">
-              <div className="col-md-12 mb-3">
-                <label htmlFor="customerLoc">Customer Location</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="customerLoc"
-                  name="customerLoc"
-                  value={this.state.customerLoc}
-                  onChange={this.handleOnSelect}
-                  required
+              <FormRow className="row">
+                <div
+                  className="col-md-12 mb-3"
+                  style={
+                    this.state.cpeExist && this.state.customerLocId
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {customerLocsList}
-                </FormSelect>
-              </div>
-            </FormRow>
+                  <label htmlFor="port">Port</label>
+                  <FormSelect
+                    className="custom-select d-block w-100"
+                    id="port"
+                    name="port"
+                    value={this.state.port}
+                    onChange={this.handleOnSelect}
+                    required
+                  >
+                    <option value="">Choose...</option>
+                    {portsList}
+                  </FormSelect>
+                </div>
+              </FormRow>
 
-            <div className="d-block my-3">
-              <div className="custom-control custom-radio">
-                <input
-                  id="radio"
-                  name="cpeExist"
-                  type="checkbox"
-                  onChange={this.handleChange}
-                  className="custom-control-input"
-                  disabled={!this.state.customerLocId}
-                  required
-                />
-                <label className="custom-control-label" htmlFor="radio">
-                  Existing CPE
-                </label>
-              </div>
-            </div>
-
-            <FormRow className="row">
-              <div
-                className="col-md-12 mb-3"
-                style={
-                  this.state.cpeExist && this.state.customerLocId
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
-              >
-                <label htmlFor="port">Port</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="port"
-                  name="port"
-                  value={this.state.port}
-                  onChange={this.handleOnSelect}
-                  required
+              <FormRow className="row">
+                <div
+                  className={
+                    this.state.showPrefix ? "col-md-6 mb-3" : "col-md-6 mb-3"
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {portsList}
-                </FormSelect>
-              </div>
-            </FormRow>
+                  <label htmlFor="prefix">
+                    Bandwidth <span className="text-muted"> (In Mbps)</span>
+                  </label>
+                  <FormInput
+                    type="number"
+                    className="form-control"
+                    id="bandwidth"
+                    name="bandwidth"
+                    value={this.state.bandwidth}
+                    onChange={this.handleChange}
+                    placeholder="100"
+                    required
+                  />
+                </div>
 
-            <FormRow className="row">
-              <div
-                className={
-                  this.state.showPrefix ? "col-md-6 mb-3" : "col-md-6 mb-3"
-                }
-              >
-                <label htmlFor="prefix">
-                  Bandwidth <span className="text-muted"> (In Mbps)</span>
-                </label>
-                <FormInput
-                  type="number"
-                  className="form-control"
-                  id="bandwidth"
-                  name="bandwidth"
-                  value={this.state.bandwidth}
-                  onChange={this.handleChange}
-                  placeholder="100"
-                  required
-                />
-              </div>
-
-              <div
-                className="col-md-6 mb-3"
-                style={
-                  this.state.showPrefix
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
-              >
-                <label htmlFor="prefix">Prefix</label>
-                <FormInput
-                  type="number"
-                  className="form-control"
-                  id="prefix"
-                  name="prefix"
-                  value={this.state.prefix}
-                  onChange={this.handleChange}
-                  placeholder="24"
-                  required
-                />
-              </div>
-            </FormRow>
-
-            <FormRow className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="serviceType">Service type</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="serviceType"
-                  name="serviceType"
-                  value={this.state.serviceType}
-                  onChange={this.handleOnSelect}
-                  required
+                <div
+                  className="col-md-6 mb-3"
+                  style={
+                    this.state.showPrefix
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {serviceList}
-                </FormSelect>
-              </div>
+                  <label htmlFor="prefix">Prefix</label>
+                  <FormInput
+                    type="number"
+                    className="form-control"
+                    id="prefix"
+                    name="prefix"
+                    value={this.state.prefix}
+                    onChange={this.handleChange}
+                    placeholder="24"
+                    required
+                  />
+                </div>
+              </FormRow>
 
-              <div className="col-md-6 mb-3">
-                <label htmlFor="location">HUB</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="location"
-                  name="location"
-                  value={this.state.location}
-                  onChange={this.handleOnSelect}
-                  required
+              <FormRow className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="serviceType">Service type</label>
+                  <FormSelect
+                    className="custom-select d-block w-100"
+                    id="serviceType"
+                    name="serviceType"
+                    value={this.state.serviceType}
+                    onChange={this.handleOnSelect}
+                    required
+                  >
+                    <option value="">Choose...</option>
+                    {serviceList}
+                  </FormSelect>
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="location">HUB</label>
+                  <FormSelect
+                    className="custom-select d-block w-100"
+                    id="location"
+                    name="location"
+                    value={this.state.location}
+                    onChange={this.handleOnSelect}
+                    required
+                  >
+                    <option value="">Choose...</option>
+                    {locationsList}
+                  </FormSelect>
+                </div>
+              </FormRow>
+
+              <FormRow className="row">
+                <div
+                  className="col-md-6 mb-3"
+                  style={
+                    this.state.showVrf
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {locationsList}
-                </FormSelect>
-              </div>
-            </FormRow>
+                  <label htmlFor="prefix">VRF</label>
+                  <FormSelect
+                    className="custom-select d-block w-100"
+                    id="vrfName"
+                    name="vrfName"
+                    value={this.state.vrfName}
+                    onChange={this.handleOnSelect}
+                    required
+                  >
+                    <option defaultValue value="new">
+                      New
+                    </option>
+                    {vrfList.length ? vrfList : null}
+                  </FormSelect>
+                </div>
 
-            <FormRow className="row">
-              <div
-                className="col-md-6 mb-3"
-                style={
-                  this.state.showVrf
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
-              >
-                <label htmlFor="prefix">VRF</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="vrfName"
-                  name="vrfName"
-                  value={this.state.vrfName}
-                  onChange={this.handleOnSelect}
-                  required
+                <div
+                  className="col-md-6 mb-3"
+                  style={
+                    this.state.showClientNetwork
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option defaultValue value="new">
-                    New
-                  </option>
-                  {vrfList.length ? vrfList : null}
-                </FormSelect>
-              </div>
+                  <label htmlFor="clientNetwork">Client network</label>
+                  <FormInput
+                    type="text"
+                    className="form-control"
+                    id="clientNetwork"
+                    name="clientNetwork"
+                    value={this.state.clientNetwork}
+                    onChange={this.handleChange}
+                    placeholder="192.168.0.0/24"
+                    required
+                  />
+                </div>
+              </FormRow>
 
-              <div
-                className="col-md-6 mb-3"
-                style={
-                  this.state.showClientNetwork
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
+              <hr className="mb-4" />
+              <button
+                className="btn btn-primary btn-lg btn-block"
+                disabled={!this.state.serviceId ? true : false}
+                type="submit"
               >
-                <label htmlFor="clientNetwork">Client network</label>
-                <FormInput
-                  type="text"
-                  className="form-control"
-                  id="clientNetwork"
-                  name="clientNetwork"
-                  value={this.state.clientNetwork}
-                  onChange={this.handleChange}
-                  placeholder="192.168.0.0/24"
-                  required
-                />
-              </div>
-            </FormRow>
-
-            <hr className="mb-4" />
-            <button
-              className="btn btn-primary btn-lg btn-block"
-              disabled={!this.state.serviceId ? true : false}
-              type="submit"
-            >
-              Create
-            </button>
-          </Form>
+                Create
+              </button>
+            </Form>
+          </div>
         </div>
       </React.Fragment>
     );
