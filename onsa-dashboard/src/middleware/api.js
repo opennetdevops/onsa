@@ -1,4 +1,3 @@
-import React from "react";
 
 async function HTTPGet(url) {
   let response = await fetch(url, {

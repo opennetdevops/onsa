@@ -17,7 +17,7 @@ const customAlert = props => {
         {props.displayMessage}
       </Alert>
     );
-  } else if (props.succesfull == false) {
+  } else if (props.succesfull === false) {
     alertBox = (
       <Alert className="alert-danger">
         <strong>

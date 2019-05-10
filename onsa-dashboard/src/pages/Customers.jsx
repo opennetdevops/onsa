@@ -1,5 +1,5 @@
 import React from "react";
-import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
+import { URLs, HTTPPost } from "../middleware/api.js";
 import FormAlert from "../components/Form/FormAlert";
 
 class Customers extends React.Component {

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Form,
-  FormRow,
-  FormTitle,
-  FormInput,
-  FormSelect
-} from "../components/Form";
+import {FormSelect} from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
@@ -63,7 +57,7 @@ class CustomersLocations extends React.Component {
 
   handleOnSelect = event => {
     let selectedClient = this.state.clients.filter(function(client) {
-      return client.id == event.target.value;
+      return client.id === event.target.value;
     });
 
     if (selectedClient.length > 0) {

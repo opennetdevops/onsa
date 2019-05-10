@@ -6,7 +6,6 @@ import {
   onsaIrsServices,
   onsaVrfServices
 } from "../site-constants.js";
-import Sidebar from "../components/Sidebar";
 import {
   ResourcesModal,
   ActivateModal,
@@ -16,22 +15,7 @@ import {
 } from "../components/Modals";
 
 import FormAlert from "../components/Form/FormAlert";
-import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
-
-async function getJson(url) {
-  let response = await fetch(url, {
-    method: "GET",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + sessionStorage.getItem("token")
-    }
-  });
-
-  let jsonResponse = await response.json();
-
-  return jsonResponse;
-}
+import { URLs, HTTPGet } from "../middleware/api.js";
 
 class Dashboard extends React.Component {
   constructor(props) {

@@ -4,6 +4,7 @@ import signInIcon from "../images/onsa-logo.png";
 import { Form, FormInput } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 
+
 async function coreLogin(url, username, password) {
   let response = await fetch(url, {
     method: "POST",
@@ -16,7 +17,7 @@ async function coreLogin(url, username, password) {
     })
   });
   if (!response.ok) {
-    if (response.status == 400){
+    if (response.status === 400){
       throw new Error("Invalid credentials");
     }
     throw new Error(
@@ -27,11 +28,6 @@ async function coreLogin(url, username, password) {
 
   return jsonResponse;
 }
-
-const spanStlye = {
-  fontWeight: "bold"
-};
-
 class Login extends React.Component {
   constructor(props) {
     super(props);

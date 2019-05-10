@@ -225,8 +225,6 @@ class ServiceCreate extends React.Component {
       }
     }
 
-    let url = URLs['services'];
-
     HTTPPost(URLs["services"], data).then(
       () => {
         this.showAlertBox(true, "Service created succesfully");
