@@ -1,31 +1,36 @@
 import React from "react";
-import {FormSelect} from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
+import Select from "react-select";
 
 class CustomersLocations extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      clients: [],
       clientName: "",
       clientId: "",
       address: "",
       description: "",
       successAlert: null,
-      displayMessage: ""
+      displayMessage: "",
+      clientOptions: []
     };
   }
 
   componentDidMount() {
     HTTPGet(URLs["clients"]).then(
       jsonResponse => {
-        this.setState({ clients: jsonResponse });
+        let options = [...this.state.clientOptions];
+
+        jsonResponse.map(client => {
+          return options.push({ value: client.id, label: client.name });
+        });
+        this.setState({ clientOptions: options });
       }, // onRejected:
       error => {
         this.showAlertBox(false, error.message);
-        this.setState({ clients: [] });
+        this.setState({ clientOptions: [] });
       }
     );
 
@@ -54,20 +59,12 @@ class CustomersLocations extends React.Component {
 
     this.setState({ [name]: value });
   };
-
-  handleOnSelect = event => {
-    let selectedClient = this.state.clients.filter(function(client) {
-      return client.id === event.target.value;
+  
+  handleSelectOnChange = selectedOption => {
+    this.setState({
+      clientName: selectedOption.label,
+      clientId: selectedOption.value
     });
-
-    if (selectedClient.length > 0) {
-      this.setState({
-        clientName: selectedClient[0].name,
-        clientId: selectedClient[0].id
-      });
-    } else {
-      this.setState({ clientName: "" });
-    }
   };
 
   handleSubmit = event => {
@@ -95,14 +92,9 @@ class CustomersLocations extends React.Component {
   };
 
   render() {
-    let clientsList = this.state.clients.map(client => (
-      <option key={client.id} value={client.id}>
-        {client.name}
-      </option>
-    ));
-
     return (
       <React.Fragment>
+        <div className="row justify-content-center">
         <div className="col-md-8">
           <FormAlert
             succesfull={this.state.successAlert}
@@ -119,17 +111,12 @@ class CustomersLocations extends React.Component {
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label htmlFor="client">Client</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="client"
+                <Select
+                  onChange={this.handleSelectOnChange}
+                  options={this.state.clientOptions}
                   name="client"
-                  value={this.state.clientId}
-                  onChange={this.handleOnSelect}
-                  required
-                >
-                  <option value="">Choose...</option>
-                  {clientsList}
-                </FormSelect>
+                  placeholder="Choose a client.."
+                />
                 <div className="invalid-feedback">
                   Example invalid feedback text
                 </div>
@@ -144,7 +131,7 @@ class CustomersLocations extends React.Component {
                   value={this.state.address}
                   onChange={this.handleChange}
                   maxLength="50"
-                  placeholder="Calle Falsa 123"
+                  placeholder="Some address 123"
                   required
                 />
               </div>
@@ -161,7 +148,7 @@ class CustomersLocations extends React.Component {
                   value={this.state.description}
                   onChange={this.handleChange}
                   maxLength="50"
-                  placeholder="Description"
+                  placeholder="Enter a description"
                   required
                 />
               </div>
@@ -183,6 +170,7 @@ class CustomersLocations extends React.Component {
               Create
             </button>
           </form>
+        </div>
         </div>
       </React.Fragment>
     );
