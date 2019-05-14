@@ -13,8 +13,9 @@ import {
   FormSelect
 } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
+import Select from "react-select";
 
-import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
+import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
 class ServiceCreate extends React.Component {
   constructor(props) {
@@ -22,30 +23,33 @@ class ServiceCreate extends React.Component {
 
     this.state = {
       token: "",
-      clients: [],
+      // clients: [],
       vrfs: [],
       locations: [],
       location: "",
+      // customerLocations: [],
+      bandwidth: "",
+      clientId: "",
+      clientName: "",
+      clientOptions: [],
+      cpeExist: false,
+      // customerLoc: "",
+      customerLocId: null,
+      custLocationsOptions: [],
+      displayMessage: "",
+      modal: false,
       portsList: [],
       port: "",
       portId: null,
-      customerLocations: [],
-      customerLoc: "",
-      customerLocId: null,
-      client: "",
-      clientId: "",
-      serviceType: "",
-      bandwidth: "",
       prefix: "",
+      selectedCustLoc: "",
+      serviceType: "",
       serviceId: "",
-      vrfName: "",
-      cpeExist: false,
-      modal: false,
       showVrf: false,
       showPrefix: false,
       showClientNetwork: false,
       successAlert: null,
-      displayMessage: ""
+      vrfName: ""
     };
   }
 
@@ -53,11 +57,14 @@ class ServiceCreate extends React.Component {
     // Fetch clients
     HTTPGet(URLs["clients"]).then(
       jsonResponse => {
-        this.setState({ clients: jsonResponse });
+        let options = jsonResponse.map(client => {
+          return { value: client.id, label: client.name };
+        });
+        this.setState({ clientOptions: options });
       },
       error => {
-        this.setState({ clients: [] });
         this.showAlertBox(false, error.message);
+        this.setState({ clientOptions: [] });
       }
     );
 
@@ -101,7 +108,7 @@ class ServiceCreate extends React.Component {
       case "cpeExist":
         this.setState({ [name]: !this.state.cpeExist });
 
-        if (this.state.client && this.state.customerLocId) {
+        if (this.state.clientName && this.state.customerLocId) {
           let url =
             "http://" +
             process.env.REACT_APP_SERVER_IP +
@@ -138,12 +145,12 @@ class ServiceCreate extends React.Component {
     }
 
     switch (name) {
-      case "client":
-        this.setState({ [name]: value }, this.handleClient);
-        break;
-      case "customerLoc":
-        this.setState({ [name]: value, customerLocId: id });
-        break;
+      // case "client":
+      //   this.setState({ [name]: value }, this.handleClient);
+      //   break;
+      // case "customerLoc":
+      //   this.setState({ [name]: value, customerLocId: id });
+      //   break;
       case "port":
         this.setState({ [name]: value, portId: id });
         break;
@@ -179,7 +186,7 @@ class ServiceCreate extends React.Component {
 
     if (this.state.portId) {
       data = {
-        client: this.state.client,
+        client: this.state.clientName,
         location: this.state.location,
         id: this.state.serviceId,
         bandwidth: this.state.bandwidth,
@@ -190,7 +197,7 @@ class ServiceCreate extends React.Component {
       };
       if (onsaVrfServices.includes(this.state.serviceType)) {
         data = {
-          client: this.state.client,
+          client: this.state.clientName,
           location: this.state.location,
           id: this.state.serviceId,
           bandwidth: this.state.bandwidth,
@@ -202,7 +209,7 @@ class ServiceCreate extends React.Component {
       }
     } else {
       data = {
-        client: this.state.client,
+        client: this.state.clientName,
         location: this.state.location,
         id: this.state.serviceId,
         bandwidth: this.state.bandwidth,
@@ -212,7 +219,7 @@ class ServiceCreate extends React.Component {
       };
       if (onsaVrfServices.includes(this.state.serviceType)) {
         data = {
-          client: this.state.client,
+          client: this.state.clientName,
           location: this.state.location,
           id: this.state.serviceId,
           bandwidth: this.state.bandwidth,
@@ -245,53 +252,42 @@ class ServiceCreate extends React.Component {
     });
   };
 
-  handleClient = () => {
-    //  handler Select  Client
-    if (this.state.client !== "") {
-      let url =
-        "http://" +
-        process.env.REACT_APP_SERVER_IP +
-        ":8000/core/api/vrfs?client=" +
-        this.state.client;
+  getClientVRFs = clientName => {
+    let url = ClientURLs("clientVRFs", clientName);
 
-      HTTPGet(url).then(jsonResponse => {
-        this.state.client !== "Choose..."
-          ? this.setState({ vrfs: jsonResponse })
-          : this.setState({ vrfs: [] });
-      });
+    HTTPGet(url).then(
+      //add options mapping, like clientLocations
+      jsonResponse => {
+        this.setState({ vrfs: jsonResponse });
+      },
+      error => {
+        this.setState({ vrfs: [] });
+        this.showAlertBox(false, error.message);
+      }
+    );
+  };
 
-      url =
-        "http://" +
-        process.env.REACT_APP_SERVER_IP +
-        ":8000/core/api/clients?name=" +
-        this.state.client;
+  getClientLocations = clientId => {
+    //fetch customer location and creates options array for Select component
+    
+    let url = ClientURLs("customerLocation", clientId);
 
-      HTTPGet(url)
-        .then(client => {
-          this.state.client !== "Choose..."
-            ? this.setState({ clientId: client.id })
-            : this.setState({ clientId: "" });
-        })
-        .then(() => {
-          url =
-            "http://" +
-            process.env.REACT_APP_SERVER_IP +
-            ":8000/core/api/clients/" +
-            this.state.clientId +
-            "/customerlocations";
-
-          HTTPGet(url).then(jsonResponse => {
-            this.state.client !== "Choose..."
-              ? this.setState({ customerLocations: jsonResponse })
-              : this.setState({ customerLocations: [] });
-          });
+    HTTPGet(url).then(
+      jsonResponse => {
+        let options = jsonResponse.map(loc => {
+          return { value: loc.id, label: loc.address };
         });
-    } else {
-      this.setState({ clientId: null });
-    }
+        this.setState({custLocationsOptions: options})
+      },
+      error => {
+        this.setState({custLocationsOptions: [] })
+        this.showAlertBox(false, error.message);
+      }
+    );
   };
 
   createVrfElements = () => {
+    //change to use <Select>, use createable & fixed options
     if (this.state.vrfs.length > 0) {
       return this.state.vrfs.map(vrf => (
         <option key={vrf.rt} value={vrf.name}>
@@ -303,24 +299,42 @@ class ServiceCreate extends React.Component {
     }
   };
 
-  createCustLocsList = () => {
-    if (this.state.customerLocations.length > 0) {
-      return this.state.customerLocations.map(loc => (
-        <option key={loc.id} value={loc.address}>
-          {loc.address}
-        </option>
-      ));
-    } else {
-      return [];
-    }
+  handleClientOnChange = selectedOption => {
+    const clientId = selectedOption.value;
+    const clientName = selectedOption.label;
+    
+    this.getClientLocations(clientId);
+    //this.getClientVRFs(clientName);
+
+    // this.setClientAttributes(clientId, clientName);
+  // };
+
+  // setClientAttributes = (clientId, clientName) => {
+    
+    this.setState({
+      customerLocId: "",
+      selectedCustLoc: "",
+      clientName: clientName,
+      clientId: clientId
+    });
   };
 
+  handleCustLocationOnChange = selectedOption => {
+    this.setState({
+      // customerLoc: selectedOption.label,
+      customerLocId: selectedOption.value,
+      selectedCustLoc: selectedOption
+    });
+  };
+
+  // TODO:  createVrfElements refactorizar
+
   render() {
-    const clientsList = this.state.clients.map(client => (
-      <option key={client.id} value={client.name}>
-        {client.name}
-      </option>
-    ));
+    // const clientsList = this.state.clients.map(client => (
+    //   <option key={client.id} value={client.name}>
+    //     {client.name}
+    //   </option>
+    // ));
     const serviceList = onsaServices.map(service => (
       <option key={service.id} value={service.type}>
         {serviceEnum[service.type]}
@@ -337,7 +351,7 @@ class ServiceCreate extends React.Component {
       </option>
     ));
     let vrfList = this.createVrfElements();
-    let customerLocsList = this.createCustLocsList();
+    // let customerLocsList = this.createCustLocsList();
 
     return (
       <React.Fragment>
@@ -356,20 +370,16 @@ class ServiceCreate extends React.Component {
               onSubmit={this.handleSubmit}
             >
               <FormRow className="row">
+                {/* ********** CLIENT SELECT */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="client">Client</label>
-                  <FormSelect
-                    className="custom-select d-block w-100"
-                    id="client"
+                  <Select
+                    onChange={this.handleClientOnChange}
+                    options={this.state.clientOptions}
                     name="client"
-                    value={this.state.client}
-                    // defaultValue={this.state.client}
-                    onChange={this.handleOnSelect}
-                    required
-                  >
-                    <option value="">Choose...</option>
-                    {clientsList}
-                  </FormSelect>
+                    placeholder="Choose a client.."
+                  />
+
                   <div className="invalid-feedback">
                     Example invalid feedback text
                   </div>
@@ -391,19 +401,17 @@ class ServiceCreate extends React.Component {
               </FormRow>
 
               <FormRow className="row">
-                <div className="col-md-12 mb-3">
+                <div className="col-md-6 mb-3">
+                  {/* *************** CUSTOMER LOCATION SELECT ***/}
                   <label htmlFor="customerLoc">Customer Location</label>
-                  <FormSelect
-                    className="custom-select d-block w-100"
-                    id="customerLoc"
+                  <Select
+                    onChange={this.handleCustLocationOnChange}
+                    options={this.state.custLocationsOptions}
                     name="customerLoc"
-                    value={this.state.customerLoc}
-                    onChange={this.handleOnSelect}
+                    placeholder="Choose a customer location.."
+                    value={this.state.selectedCustLoc}
                     required
-                  >
-                    <option value="">Choose...</option>
-                    {customerLocsList}
-                  </FormSelect>
+                  />
                 </div>
               </FormRow>
 
@@ -459,6 +467,7 @@ class ServiceCreate extends React.Component {
                   </label>
                   <FormInput
                     type="number"
+                    min="0"
                     className="form-control"
                     id="bandwidth"
                     name="bandwidth"
@@ -544,6 +553,9 @@ class ServiceCreate extends React.Component {
                     <option defaultValue value="new">
                       New
                     </option>
+                    <option defaultValue value="legacy">
+                      Legacy
+                    </option>
                     {vrfList.length ? vrfList : null}
                   </FormSelect>
                 </div>
@@ -571,13 +583,17 @@ class ServiceCreate extends React.Component {
               </FormRow>
 
               <hr className="mb-4" />
-              <button
-                className="btn btn-primary btn-lg btn-block"
-                disabled={!this.state.serviceId ? true : false}
-                type="submit"
-              >
-                Create
-              </button>
+              <div className="row justify-content-center">
+                <div className="col-md-6 ">
+                  <button
+                    className="btn btn-primary btn-block btn-lg "
+                    disabled={!this.state.serviceId ? true : false}
+                    type="submit"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
             </Form>
           </div>
         </div>
