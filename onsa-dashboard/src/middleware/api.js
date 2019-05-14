@@ -1,4 +1,3 @@
-
 async function HTTPGet(url) {
   let response = await fetch(url, {
     method: "GET",
@@ -46,8 +45,24 @@ async function HTTPPost(url, data) {
 const URLs = {
   services: process.env.REACT_APP_CORE_URL + "/core/api/services",
   projects: process.env.REACT_APP_CORE_URL + "/core/api/projects",
+  //client is used as clientId or clientName
   locations: process.env.REACT_APP_CORE_URL + "/core/api/locations",
   clients: process.env.REACT_APP_CORE_URL + "/core/api/clients"
 };
 
-export { URLs, HTTPGet, HTTPPost };
+const ClientURLs = (key, client) => {
+  //client is used as clientId or clientName
+  const dict = {
+    customerLocation:
+      process.env.REACT_APP_CORE_URL +
+      "/core/api/clients/" +
+      client +
+      "/customerlocations",
+    clientVRFs:
+    process.env.REACT_APP_CORE_URL +
+    "/core/api/vrfs?client=" + client
+  };
+  return dict[key];
+};
+
+export { URLs, ClientURLs, HTTPGet, HTTPPost };
