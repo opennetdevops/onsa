@@ -23,17 +23,14 @@ class ServiceCreate extends React.Component {
 
     this.state = {
       token: "",
-      // clients: [],
       vrfs: [],
       locations: [],
-      location: "",
-      // customerLocations: [],
+      selectedLocation: "",
       bandwidth: "",
       clientId: "",
       clientName: "",
       clientOptions: [],
       cpeExist: false,
-      // customerLoc: "",
       customerLocId: null,
       custLocationsOptions: [],
       displayMessage: "",
@@ -49,11 +46,19 @@ class ServiceCreate extends React.Component {
       showPrefix: false,
       showClientNetwork: false,
       successAlert: null,
-      vrfName: ""
+      vrfName: "",
+      servicesOptions: []
     };
   }
 
   componentDidMount() {
+    if (this.state.servicesOptions.length === 0) {
+      let options = onsaServices.map(service => {
+        return { value: service.type, label: serviceEnum[service.type] };
+      });
+      this.setState({ servicesOptions: options });
+    }
+
     // Fetch clients
     HTTPGet(URLs["clients"]).then(
       jsonResponse => {
@@ -71,7 +76,10 @@ class ServiceCreate extends React.Component {
     // Fetch Locations
     HTTPGet(URLs["locations"]).then(
       jsonResponse => {
-        this.setState({ locations: jsonResponse });
+        let options = jsonResponse.map(hub => {
+          return { value: hub.id, label: hub.name };
+        });
+        this.setState({ locations: options });
       },
       error => {
         this.setState({ locations: [] });
@@ -187,7 +195,7 @@ class ServiceCreate extends React.Component {
     if (this.state.portId) {
       data = {
         client: this.state.clientName,
-        location: this.state.location,
+        location: this.state.selectedLocation.label,
         id: this.state.serviceId,
         bandwidth: this.state.bandwidth,
         prefix: this.state.prefix,
@@ -198,7 +206,7 @@ class ServiceCreate extends React.Component {
       if (onsaVrfServices.includes(this.state.serviceType)) {
         data = {
           client: this.state.clientName,
-          location: this.state.location,
+          location: this.state.selectedLocation.label,
           id: this.state.serviceId,
           bandwidth: this.state.bandwidth,
           service_type: this.state.serviceType,
@@ -210,7 +218,7 @@ class ServiceCreate extends React.Component {
     } else {
       data = {
         client: this.state.clientName,
-        location: this.state.location,
+        location: this.state.selectedLocation.label,
         id: this.state.serviceId,
         bandwidth: this.state.bandwidth,
         prefix: this.state.prefix,
@@ -220,7 +228,7 @@ class ServiceCreate extends React.Component {
       if (onsaVrfServices.includes(this.state.serviceType)) {
         data = {
           client: this.state.clientName,
-          location: this.state.location,
+          location: this.state.selectedLocation.label,
           id: this.state.serviceId,
           bandwidth: this.state.bandwidth,
           service_type: this.state.serviceType,
@@ -236,20 +244,9 @@ class ServiceCreate extends React.Component {
         this.resetFormFields();
       },
       error => {
-        console.error("error debug: ", error.message);
         this.showAlertBox(false, error.message);
       }
     );
-  };
-
-  handleToggle = event => {
-    if (event.target.id === "cancel") {
-      this.setState({ vrfName: "" });
-    }
-
-    this.setState({
-      modal: !this.state.modal
-    });
   };
 
   getClientVRFs = clientName => {
@@ -269,25 +266,24 @@ class ServiceCreate extends React.Component {
 
   getClientLocations = clientId => {
     //fetch customer location and creates options array for Select component
-    
-    let url = ClientURLs("customerLocation", clientId);
 
+    let url = ClientURLs("customerLocation", clientId);
     HTTPGet(url).then(
       jsonResponse => {
         let options = jsonResponse.map(loc => {
           return { value: loc.id, label: loc.address };
         });
-        this.setState({custLocationsOptions: options})
+        this.setState({ custLocationsOptions: options });
       },
       error => {
-        this.setState({custLocationsOptions: [] })
+        this.setState({ custLocationsOptions: [] });
         this.showAlertBox(false, error.message);
       }
     );
   };
 
   createVrfElements = () => {
-    //change to use <Select>, use createable & fixed options
+    //change to use <Select>, use & fixed options
     if (this.state.vrfs.length > 0) {
       return this.state.vrfs.map(vrf => (
         <option key={vrf.rt} value={vrf.name}>
@@ -302,15 +298,10 @@ class ServiceCreate extends React.Component {
   handleClientOnChange = selectedOption => {
     const clientId = selectedOption.value;
     const clientName = selectedOption.label;
-    
+
     this.getClientLocations(clientId);
     //this.getClientVRFs(clientName);
 
-    // this.setClientAttributes(clientId, clientName);
-  // };
-
-  // setClientAttributes = (clientId, clientName) => {
-    
     this.setState({
       customerLocId: "",
       selectedCustLoc: "",
@@ -321,38 +312,34 @@ class ServiceCreate extends React.Component {
 
   handleCustLocationOnChange = selectedOption => {
     this.setState({
-      // customerLoc: selectedOption.label,
       customerLocId: selectedOption.value,
       selectedCustLoc: selectedOption
     });
   };
 
+  handleLocationOnChange = selectedOption => {
+    this.setState({ selectedLocation: selectedOption });
+  };
+
+  handleServiceTypeOnChange = selectedOption => {
+    this.setState(
+      { serviceType: selectedOption.value, selectedService: selectedOption },
+      this.handleDisplays
+    );
+  };
+
   // TODO:  createVrfElements refactorizar
 
   render() {
-    // const clientsList = this.state.clients.map(client => (
-    //   <option key={client.id} value={client.name}>
-    //     {client.name}
-    //   </option>
-    // ));
-    const serviceList = onsaServices.map(service => (
-      <option key={service.id} value={service.type}>
-        {serviceEnum[service.type]}
-      </option>
-    ));
-    const locationsList = this.state.locations.map(location => (
-      <option key={location.id} value={location.name}>
-        {location.name}
-      </option>
-    ));
+       
+
     const portsList = this.state.portsList.map(port => (
       <option key={port.id} value={port.access_port}>
         {port.access_node + " - " + port.access_port}
       </option>
     ));
     let vrfList = this.createVrfElements();
-    // let customerLocsList = this.createCustLocsList();
-
+   
     return (
       <React.Fragment>
         <div className="row justify-content-center">
@@ -503,7 +490,16 @@ class ServiceCreate extends React.Component {
               <FormRow className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="serviceType">Service type</label>
-                  <FormSelect
+                  <Select
+                    onChange={this.handleServiceTypeOnChange}
+                    options={this.state.servicesOptions}
+                    name="serviceType"
+                    placeholder="IRS, MPLS, VPLS..."
+                    value={this.state.selectedService}
+                    required
+                  />
+
+                  {/* <FormSelect
                     className="custom-select d-block w-100"
                     id="serviceType"
                     name="serviceType"
@@ -513,12 +509,20 @@ class ServiceCreate extends React.Component {
                   >
                     <option value="">Choose...</option>
                     {serviceList}
-                  </FormSelect>
+                  </FormSelect> */}
                 </div>
 
                 <div className="col-md-6 mb-3">
                   <label htmlFor="location">HUB</label>
-                  <FormSelect
+                  <Select
+                    onChange={this.handleLocationOnChange}
+                    options={this.state.locations}
+                    name="location"
+                    placeholder="Choose a HUB.."
+                    value={this.state.selectedLocation}
+                    required
+                  />
+                  {/* <FormSelect
                     className="custom-select d-block w-100"
                     id="location"
                     name="location"
@@ -528,7 +532,7 @@ class ServiceCreate extends React.Component {
                   >
                     <option value="">Choose...</option>
                     {locationsList}
-                  </FormSelect>
+                  </FormSelect> */}
                 </div>
               </FormRow>
 
