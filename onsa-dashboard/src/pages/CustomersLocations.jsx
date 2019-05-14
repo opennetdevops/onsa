@@ -21,16 +21,15 @@ class CustomersLocations extends React.Component {
   componentDidMount() {
     HTTPGet(URLs["clients"]).then(
       jsonResponse => {
-        let options = [...this.state.clientOptions];
-
-        jsonResponse.map(client => {
-          return options.push({ value: client.id, label: client.name });
+        let options = jsonResponse.map(client => {
+          return { value: client.id, label: client.name }
         });
         this.setState({ clientOptions: options });
       }, // onRejected:
       error => {
         this.showAlertBox(false, error.message);
         this.setState({ clientOptions: [] });
+        
       }
     );
 
