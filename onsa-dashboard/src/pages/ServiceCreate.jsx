@@ -108,13 +108,19 @@ class ServiceCreate extends React.Component {
     this.setState(state);
   };
 
-  handleChange = event => {
+  handleInputChange = event => {
     const value = event.target.value;
     const name = event.target.name;
 
-    if (name == "cpeExist") {
-      if (event.target.checked) this.getAccessPorts();
-      this.setState({ [name]: !this.state.cpeExist });
+    if (name === "cpeExist") {
+      if (event.target.checked) {
+        this.getAccessPorts();
+      } else {
+        this.setState({
+          cpeExist: false,
+          successAlert: null
+        });
+      }
     
     } else {
       this.setState({ [name]: value });
@@ -130,11 +136,18 @@ class ServiceCreate extends React.Component {
 
     HTTPGet(url).then(
       jsonResponse => {
-        this.setState({ portsList: jsonResponse });
+        this.setState({ 
+          portsList: jsonResponse,
+          cpeExist: true
+         });
       },
       error => {
+
         this.showAlertBox(false, error.message);
-        this.setState({ portsList: [] });
+        this.setState({ 
+          portsList: [],
+          cpeExist: false
+        });
       }
     );
   };
@@ -328,6 +341,7 @@ class ServiceCreate extends React.Component {
   // TODO:  createVrfElements refactorizar
 
   render() {
+
     const portsList = this.state.portsList.map(port => (
       <option key={port.id} value={port.access_port}>
         {port.access_node + " - " + port.access_port}
@@ -376,7 +390,7 @@ class ServiceCreate extends React.Component {
                     placeholder="Id"
                     name="serviceId"
                     value={this.state.serviceId}
-                    onChange={this.handleChange}
+                    onChange={this.handleInputChange}
                     required
                   />
                 </div>
@@ -403,7 +417,7 @@ class ServiceCreate extends React.Component {
                     id="radio"
                     name="cpeExist"
                     type="checkbox"
-                    onChange={this.handleChange}
+                    onChange={this.handleInputChange}
                     className="custom-control-input"
                     disabled={!this.state.customerLocId}
                     required
@@ -431,6 +445,8 @@ class ServiceCreate extends React.Component {
                     value={this.state.port}
                     onChange={this.handleOnSelect}
                     required
+                    // visible={this.state.cpeExist}
+
                   >
                     <option value="">Choose...</option>
                     {portsList}
@@ -454,7 +470,7 @@ class ServiceCreate extends React.Component {
                     id="bandwidth"
                     name="bandwidth"
                     value={this.state.bandwidth}
-                    onChange={this.handleChange}
+                    onChange={this.handleInputChange}
                     placeholder="100"
                     required
                   />
@@ -475,7 +491,7 @@ class ServiceCreate extends React.Component {
                     id="prefix"
                     name="prefix"
                     value={this.state.prefix}
-                    onChange={this.handleChange}
+                    onChange={this.handleInputChange}
                     placeholder="24"
                     required
                   />
@@ -574,7 +590,7 @@ class ServiceCreate extends React.Component {
                     id="clientNetwork"
                     name="clientNetwork"
                     value={this.state.clientNetwork}
-                    onChange={this.handleChange}
+                    onChange={this.handleInputChange}
                     placeholder="192.168.0.0/24"
                     required
                   />

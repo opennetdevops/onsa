@@ -10,7 +10,8 @@ class Customers extends React.Component {
       client: "",
       cuic: "",
       successAlert: null,
-      displayMessage: ""
+      displayMessage: "",
+      visible: false
     };
   }
 
@@ -27,8 +28,10 @@ class Customers extends React.Component {
 
   showAlertBox = (result, message) => {
     this.setState({
+      visible: true,
       successAlert: result,
-      displayMessage: message
+      displayMessage: message,
+
     });
   };
 
@@ -63,6 +66,7 @@ class Customers extends React.Component {
             <FormAlert
               succesfull={this.state.successAlert}
               displayMessage={this.state.displayMessage}
+              visible={this.state.visible}
             />
           </div>
           <div className="col-md-8 order-md-1">
