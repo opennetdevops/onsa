@@ -25,6 +25,7 @@ gem 'jbuilder', '~> 2.5'
 
 #Use ActiveAdmin
 gem 'activeadmin'
+gem 'activeadmin_addons'
 gem 'devise'
 gem "devise_ldap_authenticatable"
 # Use Redis adapter to run Action Cable in production
