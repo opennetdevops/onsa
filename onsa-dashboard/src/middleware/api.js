@@ -50,17 +50,23 @@ const URLs = {
   clients: process.env.REACT_APP_CORE_URL + "/core/api/clients"
 };
 
-const ClientURLs = (key, client) => {
-  //client is used as clientId or clientName
+const ClientURLs = (key, client, customerLocId) => {
+  //client is used as clientId or clientName.
   const dict = {
-    customerLocation:
+    customerLocations:
       process.env.REACT_APP_CORE_URL +
       "/core/api/clients/" +
       client +
       "/customerlocations",
     clientVRFs:
-    process.env.REACT_APP_CORE_URL +
-    "/core/api/vrfs?client=" + client
+      process.env.REACT_APP_CORE_URL + "/core/api/vrfs?client=" + client,
+    clientAccessPorts:
+      process.env.REACT_APP_CORE_URL +
+      "/core/api/clients/" +
+      client +
+      "/customerlocations/" +
+      customerLocId +
+      "/accessports"
   };
   return dict[key];
 };
