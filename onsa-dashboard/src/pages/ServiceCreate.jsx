@@ -112,35 +112,31 @@ class ServiceCreate extends React.Component {
     const value = event.target.value;
     const name = event.target.name;
 
-    switch (name) {
-      case "cpeExist":
-        this.setState({ [name]: !this.state.cpeExist });
-
-        if (this.state.clientName && this.state.customerLocId) {
-          let url =
-            "http://" +
-            process.env.REACT_APP_SERVER_IP +
-            ":8000/core/api/clients/" +
-            this.state.clientId +
-            "/customerlocations/" +
-            this.state.customerLocId +
-            "/accessports";
-
-          HTTPGet(url).then(
-            jsonResponse => {
-              this.setState({ portsList: jsonResponse });
-            },
-            error => {
-              this.showAlertBox(false, error.message);
-              this.setState({ portsList: [] });
-            }
-          );
-        }
-
-        break;
-      default:
-        this.setState({ [name]: value });
+    if (name == "cpeExist") {
+      if (event.target.checked) this.getAccessPorts();
+      this.setState({ [name]: !this.state.cpeExist });
+    
+    } else {
+      this.setState({ [name]: value });
     }
+  };
+
+  getAccessPorts = () => {
+    let url = ClientURLs(
+      "clientAccessPorts",
+      this.state.clientId,
+      this.state.customerLocId
+    );
+
+    HTTPGet(url).then(
+      jsonResponse => {
+        this.setState({ portsList: jsonResponse });
+      },
+      error => {
+        this.showAlertBox(false, error.message);
+        this.setState({ portsList: [] });
+      }
+    );
   };
 
   handleOnSelect = event => {
@@ -265,9 +261,10 @@ class ServiceCreate extends React.Component {
   };
 
   getClientLocations = clientId => {
-    //fetch customer location and creates options array for Select component
+    //fetch customer location and creates an options array for Select component
 
-    let url = ClientURLs("customerLocation", clientId);
+    let url = ClientURLs("customerLocations", clientId);
+
     HTTPGet(url).then(
       jsonResponse => {
         let options = jsonResponse.map(loc => {
@@ -331,15 +328,13 @@ class ServiceCreate extends React.Component {
   // TODO:  createVrfElements refactorizar
 
   render() {
-       
-
     const portsList = this.state.portsList.map(port => (
       <option key={port.id} value={port.access_port}>
         {port.access_node + " - " + port.access_port}
       </option>
     ));
     let vrfList = this.createVrfElements();
-   
+
     return (
       <React.Fragment>
         <div className="row justify-content-center">

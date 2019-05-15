@@ -1,6 +1,6 @@
 import React from "react";
 import FormAlert from "../components/Form/FormAlert";
-import { URLs, HTTPGet, HTTPPost } from "../middleware/api.js";
+import { URLs, HTTPGet, HTTPPost, ClientURLs } from "../middleware/api.js";
 import Select from "react-select";
 
 class CustomersLocations extends React.Component {
@@ -73,11 +73,7 @@ class CustomersLocations extends React.Component {
       description: this.state.description
     };
 
-    let url =
-      process.env.REACT_APP_CORE_URL +
-      "/core/api/clients/" +
-      this.state.clientId +
-      "/customerlocations";
+    let url = ClientURLs("customerLocations", this.state.clientId);
 
     HTTPPost(url, data).then(
       () => {
