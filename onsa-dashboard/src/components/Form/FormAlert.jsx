@@ -6,7 +6,6 @@ const customAlert = props => {
   //specify props: Succesfull:boolean and displayMessage:string to display.
   //icnludeLabel prop: Overrides default label
 
-
   let alertBox = null;
   // if (props.visible === true) {
     if (props.succesfull) {

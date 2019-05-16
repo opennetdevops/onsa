@@ -110,13 +110,11 @@ class ServiceView(View):
         if form.is_valid():
 
             try:
-                client_name = data.pop('client')
-                client = Client.objects.get(name=client_name)
+                client_id = data.pop('client_id')
+                client = Client.objects.get(pk=client_id)
 
-                location = data.pop('location')
-                print(location)
-                location_id = get_location_id(location)
-                print(location_id)
+                location_id = data.pop('location_id')
+                # location_id = get_location_id(location)
                 router_nodes = get_router_nodes(location_id)
                 
                 if not router_nodes:

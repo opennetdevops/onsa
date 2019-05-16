@@ -25,7 +25,7 @@ class VrfsView(APIView):
 
         json_response = json.loads(response.text)
 
-        json_response = {'count': len(json_response), 'vrfs': json_response}
+        # json_response = {'count': len(json_response), 'vrfs': json_response}
 
         return JsonResponse(json_response, safe=False)
 
