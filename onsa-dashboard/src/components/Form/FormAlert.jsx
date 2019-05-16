@@ -11,14 +11,14 @@ const customAlert = props => {
   // if (props.visible === true) {
     if (props.succesfull) {
       alertBox = (
-        <div className="alert alert-success visibilityAlert fadeOutAlert">
+        <div className="alert alert-success ">
           <strong>{props.msgLabel ? props.msgLabel : "Success! "}</strong>
           {props.displayMessage}
         </div>
       );
     } else if (props.succesfull === false) {
       alertBox = (
-        <div className="alert alert-danger visibilityAlert fadeOutAlert">
+        <div className="alert alert-danger ">
           {/* visibilityAlert fadeOutAlert */}
           <strong>
             {props.msgLabel ? props.msgLabel : "Something went wrong: "}
