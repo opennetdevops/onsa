@@ -9,8 +9,7 @@ import {
   Form,
   FormRow,
   FormTitle,
-  FormInput,
-  FormSelect
+  FormInput
 } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 import Select from "react-select";
@@ -27,6 +26,7 @@ class ServiceCreate extends React.Component {
       locations: [],
       selectedLocation: "",
       selectedVRF: "",
+      selectedPort:"",
       bandwidth: "",
       clientId: "",
       clientName: "",
@@ -39,6 +39,7 @@ class ServiceCreate extends React.Component {
       portsList: [],
       port: "",
       portId: null,
+      portOptions:[],
       prefix: "",
       selectedCustLoc: "",
       serviceType: "",
@@ -144,37 +145,31 @@ class ServiceCreate extends React.Component {
 
     HTTPGet(url).then(
       jsonResponse => {
-        this.setState({
-          portsList: jsonResponse,
+        let options = jsonResponse.map(port => {
+          return { value: port.id, label: port.access_node + " - " + port.access_port };
+        });
+  
+          this.setState({
+          portOptions: options,
           cpeExist: true
         });
       },
       error => {
         this.showAlertBox(false, error.message);
         this.setState({
-          portsList: [],
+          portOptions: [],
           cpeExist: false
         });
       }
     );
   };
 
-  handlePortOnSelect = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-    let id = event.target.options.selectedIndex;
+  handlePortOnChange = selectedOption => {
+    this.setState({
+      selectedPort: selectedOption,
+      portId: selectedOption.value
 
-    if (id === 0) {
-      id = null;
-    }
-
-    switch (name) {
-      case "port":
-        this.setState({ [name]: value, portId: id });
-        break;
-      default:
-        this.setState({ [name]: value });
-    }
+    });
   };
 
   handleClientOnChange = selectedOption => {
@@ -300,11 +295,6 @@ class ServiceCreate extends React.Component {
   };
 
   render() {
-    const portsList = this.state.portsList.map(port => (
-      <option key={port.id} value={port.access_port}>
-        {port.access_node + " - " + port.access_port}
-      </option>
-    ));
 
     return (
       <React.Fragment>
@@ -393,17 +383,25 @@ class ServiceCreate extends React.Component {
                   }
                 >
                   <label htmlFor="port">Port</label>
-                  <FormSelect
+                  <Select
+                    onChange={this.handlePortOnChange}
+                    options={this.state.portOptions}
+                    name="port"
+                    placeholder="Choose a port.."
+                    required
+                    value={this.state.selectedPort}
+                  />
+                  {/* <FormSelect
                     className="custom-select d-block w-100"
                     id="port"
                     name="port"
                     value={this.state.port}
-                    onChange={this.handlePortOnSelect}
+                    onChange={this.handlePortOnChange}
                     required
                   >
                     <option value="">Choose...</option>
                     {portsList}
-                  </FormSelect>
+                  </FormSelect> */}
                 </div>
               </FormRow>
 
