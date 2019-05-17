@@ -59,7 +59,7 @@ const ClientURLs = (key, client, customerLocId) => {
       client +
       "/customerlocations",
     clientVRFs:
-      process.env.REACT_APP_CORE_URL + "/core/api/vrfs?client=" + client,
+      process.env.REACT_APP_CORE_URL + "/core/api/vrfs?client_id=" + client,
     clientAccessPorts:
       process.env.REACT_APP_CORE_URL +
       "/core/api/clients/" +

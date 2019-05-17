@@ -14,11 +14,11 @@ class VrfsView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
     def get(self, request):
-        client = request.GET.get('client')
+        client_id = request.GET.get('client_id')
         url = settings.INVENTORY_URL + "vrfs"
 
-        if client is not None:
-            url += "?client=" + client
+        if client_id is not None:
+            url += "?client=" + client_id
 
         rheaders = {'Content-Type': 'application/json'}	
         response = requests.get(url, auth = None, verify = False, headers = rheaders)
