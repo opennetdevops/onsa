@@ -134,7 +134,7 @@ class ServiceCreate extends React.Component {
     }
   };
 
-  // called when existingCPE is checked.
+  // when existingCPE is checked.
   getAccessPorts = () => {
     let url = ClientURLs(
       "clientAccessPorts",
@@ -175,13 +175,6 @@ class ServiceCreate extends React.Component {
       default:
         this.setState({ [name]: value });
     }
-    switch (value) {
-      case "new":
-        this.setState({ modal: true, vrfName: "" });
-        break;
-      default:
-        break;
-    }
   };
 
   handleClientOnChange = selectedOption => {
@@ -206,8 +199,6 @@ class ServiceCreate extends React.Component {
 
     HTTPGet(url).then(
       jsonResponse => {
-        console.log("locations: ", jsonResponse);
-
         let options = jsonResponse.map(loc => {
           return { value: loc.id, label: loc.address };
         });
@@ -225,13 +216,12 @@ class ServiceCreate extends React.Component {
 
     HTTPGet(url).then(
       jsonResponse => {
-        console.log("VRFS: ", jsonResponse);
         let options = jsonResponse.map(vrf => {
-          return { value: vrf.id, label: vrf.rt };
+          return { value: vrf.id, label: "RT: " + vrf.rt + " - " + vrf.name };
         });
         options.unshift(
-          { value: "New", label: "New" },
-          { value: "Legacy", label: "Legacy" }
+          { value: "null", label: "New" },
+          { value: "9999", label: "Legacy" }
         );
 
         this.setState({ vrfsOptions: options });
@@ -256,10 +246,10 @@ class ServiceCreate extends React.Component {
 
   handleVRFOnChange = selectedOption => {
     this.setState({
-      // vrfName: selectedOption.label,
       selectedVRF: selectedOption
     });
   };
+
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
       { serviceType: selectedOption.value, selectedService: selectedOption },
@@ -294,6 +284,7 @@ class ServiceCreate extends React.Component {
 
       if (onsaVrfServices.includes(this.state.serviceType)) {
         data["client_network"] = this.state.clientNetwork;
+        data["vrf_id"] = this.state.selectedVRF.value;
       }
     }
 
@@ -303,7 +294,6 @@ class ServiceCreate extends React.Component {
         this.resetFormFields();
       },
       error => {
-        console.log("services urls: ", URLs["services"]);
         this.showAlertBox(false, error.message);
       }
     );
@@ -315,7 +305,6 @@ class ServiceCreate extends React.Component {
         {port.access_node + " - " + port.access_port}
       </option>
     ));
-    // let vrfList = this.createVrfElements();
 
     return (
       <React.Fragment>
@@ -334,7 +323,6 @@ class ServiceCreate extends React.Component {
               onSubmit={this.handleSubmit}
             >
               <FormRow className="row">
-                {/* ********** CLIENT SELECT */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="client">Client</label>
                   <Select
@@ -366,7 +354,6 @@ class ServiceCreate extends React.Component {
 
               <FormRow className="row">
                 <div className="col-md-6 mb-3">
-                  {/* *************** CUSTOMER LOCATION SELECT ***/}
                   <label htmlFor="customerLoc">Customer Location</label>
                   <Select
                     onChange={this.handleCustLocationOnChange}
@@ -480,7 +467,8 @@ class ServiceCreate extends React.Component {
                 <div className="col-md-6 mb-3">
                   <label htmlFor="location">HUB</label>
                   <Select
-x                     onChange={this.handleLocationOnChange}
+                    x
+                    onChange={this.handleLocationOnChange}
                     options={this.state.locations}
                     name="location"
                     placeholder="Choose a HUB.."
