@@ -19,7 +19,6 @@ class ServiceActivationView(APIView):
         logging.basicConfig(level=logging.INFO)
 
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        print(data)
 
         if 'cpe_sn' in data.keys():
             if self.is_valid_cpe(data['cpe_sn']):

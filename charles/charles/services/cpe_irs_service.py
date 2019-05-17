@@ -260,12 +260,13 @@ def cpe_parameters(client, service):
 def an_parameters(client, service):
   access_port = get_access_port(service['access_port_id'])
   access_node = get_access_node(service['access_node_id'])
+  an_device_model = get_device_model(access_node['device_model_id'])
 
   parameters = { 'provider_vlan': access_node['provider_vlan'],
                  'an_client_port': access_port['port'],
                  'mgmt_ip': access_node['mgmt_ip'],
-                 'model': access_node['model'],
-                 'vendor': access_node['vendor'] }
+                 'model': an_device_model['model'],
+                 'vendor': an_device_model['brand'] }
 
   return parameters
 
