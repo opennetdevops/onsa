@@ -134,6 +134,8 @@ cd onsa
 sudo pip3 install -r requirements.txt
 cd r-inventory
 bundle install
+cd onsa-dashboard
+npm ci
 
 ```
 
