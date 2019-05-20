@@ -21,27 +21,26 @@ class ServiceCreate extends React.Component {
     super(props);
 
     this.state = {
-      token: "",
-      vrfs: [],
-      locations: [],
-      selectedLocation: "",
-      selectedVRF: "",
-      selectedPort:"",
       bandwidth: "",
       clientId: "",
       clientName: "",
+      clientNetwork:"",
       clientOptions: [],
       cpeExist: false,
       customerLocId: null,
       custLocationsOptions: [],
       displayMessage: "",
-      modal: false,
+      locationsOptions: [],
+      selectedLocation: "",
+      selectedVRF: "",
+      selectedPort:"",
       portsList: [],
       port: "",
       portId: null,
       portOptions:[],
       prefix: "",
       selectedCustLoc: "",
+      servicesOptions: [],
       serviceType: "",
       serviceId: "",
       showVrf: false,
@@ -49,8 +48,7 @@ class ServiceCreate extends React.Component {
       showClientNetwork: false,
       successAlert: null,
       vrfName: "",
-      vrfsOptions: [],
-      servicesOptions: []
+      vrfsOptions: []
     };
   }
 
@@ -82,10 +80,10 @@ class ServiceCreate extends React.Component {
         let options = jsonResponse.map(hub => {
           return { value: hub.id, label: hub.name };
         });
-        this.setState({ locations: options });
+        this.setState({ locationsOptions: options });
       },
       error => {
-        this.setState({ locations: [] });
+        this.setState({ locationsOptions: [] });
         this.showAlertBox(false, error.message);
       }
     );
@@ -109,16 +107,7 @@ class ServiceCreate extends React.Component {
     });
   };
 
-  handleDisplays = () => {
-    let state = {};
-    state = onsaVrfServices.includes(this.state.serviceType)
-      ? { showVrf: true, showPrefix: false, showClientNetwork: true }
-      : { showClientNetwork: false, showVrf: false, showPrefix: true };
-    this.setState(state);
-    state =
-      this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
-    this.setState(state);
-  };
+
 
   handleInputChange = event => {
     const value = event.target.value;
@@ -247,9 +236,21 @@ class ServiceCreate extends React.Component {
 
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
-      { serviceType: selectedOption.value, selectedService: selectedOption },
+      { serviceType: selectedOption.value,
+        selectedService: selectedOption },
       this.handleDisplays
     );
+  };
+
+  handleDisplays = () => {
+    let state = {};
+    state = onsaVrfServices.includes(this.state.serviceType)
+      ? { showVrf: true, showPrefix: false, showClientNetwork: true }
+      : { showVrf: false, showPrefix: true , showClientNetwork: false };
+    this.setState(state);
+    state =
+      this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
+    this.setState(state);
   };
 
   handleSubmit = event => {
@@ -295,6 +296,17 @@ class ServiceCreate extends React.Component {
   };
 
   render() {
+
+    const formIsValid = () => {
+      return this.state.serviceId &&
+      this.state.selectedCustLoc && 
+      this.state.clientId &&
+      this.state.bandwidth 
+      //this.state.prefix
+       ? false 
+       : true
+    }
+    // console.log("form Is valid: ", formIsValid() )
 
     return (
       <React.Fragment>
@@ -372,7 +384,7 @@ class ServiceCreate extends React.Component {
                   </label>
                 </div>
               </div>
-
+              {/* PORT */}
               <FormRow className="row">
                 <div
                   className="col-md-12 mb-3"
@@ -391,20 +403,9 @@ class ServiceCreate extends React.Component {
                     required
                     value={this.state.selectedPort}
                   />
-                  {/* <FormSelect
-                    className="custom-select d-block w-100"
-                    id="port"
-                    name="port"
-                    value={this.state.port}
-                    onChange={this.handlePortOnChange}
-                    required
-                  >
-                    <option value="">Choose...</option>
-                    {portsList}
-                  </FormSelect> */}
                 </div>
               </FormRow>
-
+              {/* PREFIX */}
               <FormRow className="row">
                 <div
                   className={
@@ -448,7 +449,7 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
               </FormRow>
-
+              {/* SERVICE TYPE */}
               <FormRow className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="serviceType">Service type</label>
@@ -465,9 +466,8 @@ class ServiceCreate extends React.Component {
                 <div className="col-md-6 mb-3">
                   <label htmlFor="location">HUB</label>
                   <Select
-                    x
                     onChange={this.handleLocationOnChange}
-                    options={this.state.locations}
+                    options={this.state.locationsOptions}
                     name="location"
                     placeholder="Choose a HUB.."
                     value={this.state.selectedLocation}
@@ -475,7 +475,7 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
               </FormRow>
-
+              {/* VRF */}
               <FormRow className="row">
                 <div
                   className="col-md-6 mb-3"
@@ -523,7 +523,8 @@ class ServiceCreate extends React.Component {
                 <div className="col-md-6 ">
                   <button
                     className="btn btn-primary btn-block btn-lg "
-                    disabled={!this.state.serviceId ? true : false}
+                    disabled= {formIsValid()}
+                    // {!this.state.serviceId ? true : false}
                     type="submit"
                   >
                     Create
