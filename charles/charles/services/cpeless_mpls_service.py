@@ -8,79 +8,136 @@ from charles.constants import *
 DEBUG = True
 
 
-def generate_cpeless_mpls_request(client, service, code=None):
+# def generate_cpeless_mpls_request(client, service, code=None):
 
-		config = {
-								 "client" : client['name'],
-								 "service_type" :  service['service_type'],
-								 "service_id" : service['id'],
-								 "op_type" : "CREATE" }
+# 		config = {
+# 								 "client" : client['name'],
+# 								 "service_type" :  service['service_type'],
+# 								 "service_id" : service['id'],
+# 								 "op_type" : "CREATE" }
 		
-		if code in BB_CODES:
-				parameters = bb_parameters(client, service)
+# 		if code in BB_CODES:
+# 				parameters = bb_parameters(client, service)
 				
-				service_data = { 'logical_unit_id': parameters['logical_unit_id'], 'client_network': service['client_network'] }
+# 				service_data = { 'logical_unit_id': parameters['logical_unit_id'], 'client_network': service['client_network'] }
 
-				config['parameters'] =  {
-																"pop_size" : parameters['pop_size'],       
-																"an_uplink_interface" : parameters['an_uplink_interface'],
-																"an_uplink_ports" :   parameters['an_uplink_ports'],
-																"logical_unit" : parameters['logical_unit_id'],   
-																"provider_vlan" : parameters['provider_vlan'],      
-																"service_vlan" : service['vlan_id'], 
-																"an_client_port" : parameters['an_client_port'],
-																"vrf_exists": parameters['vrf_exists'],
-																"client_cidr": service['client_network'],
-																"vrf_name": parameters['vrf_name'],
-																"vrf_id": parameters['vrf_id'],
-																"loopback":parameters['loopback']
-														}
+# 				config['parameters'] =  {
+# 																"pop_size" : parameters['pop_size'],       
+# 																"an_uplink_interface" : parameters['an_uplink_interface'],
+# 																"an_uplink_ports" :   parameters['an_uplink_ports'],
+# 																"logical_unit" : parameters['logical_unit_id'],   
+# 																"provider_vlan" : parameters['provider_vlan'],      
+# 																"service_vlan" : service['vlan_id'], 
+# 																"an_client_port" : parameters['an_client_port'],
+# 																"vrf_exists": parameters['vrf_exists'],
+# 																"client_cidr": service['client_network'],
+# 																"vrf_name": parameters['vrf_name'],
+# 																"vrf_id": parameters['vrf_id'],
+# 																"loopback":parameters['loopback']
+# 														}
 
-				config['devices'] = [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']},
-														 {"vendor": parameters['access_node']['vendor'],"model": parameters['access_node']['model'],"mgmt_ip": parameters['access_node']['mgmt_ip']}]
-
-
-				if code == "bb_data":
-						service_data['service_state'] = "BB_DATA_ACK"
-
-				elif code == "bb":
-						service_data['service_state'] = "bb_activation_in_progress"
-
-				update_jeangrey_service(service['id'], service_data) 
-
-		elif code in CPE_CODES:
-				parameters = cpe_parameters(client, service)
-
-				config['parameters'] =  {  
-											"service_vlan": service['vlan_id'], 
-											"bandwidth": service['bandwidth'],
-											"client_as_number": service['autonomous_system'],
-											"on_client_port": parameters['client_node']['interface_name'],
-											"on_uplink_port": parameters['client_node']['uplink_port'],
-											"client_cidr": service['client_network']
-										}
-
-				config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
+# 				config['devices'] = [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']},
+# 														 {"vendor": parameters['access_node']['vendor'],"model": parameters['access_node']['model'],"mgmt_ip": parameters['access_node']['mgmt_ip']}]
 
 
-				if code == "cpe_data":
-						service_data = { "service_state": "CPE_DATA_ACK" }
+# 				if code == "bb_data":
+# 						service_data['service_state'] = "BB_DATA_ACK"
 
-				elif code == "cpe":
-						service_data = { "service_state": "cpe_activation_in_progress" }
+# 				elif code == "bb":
+# 						service_data['service_state'] = "bb_activation_in_progress"
 
-				update_jeangrey_service(service['id'], service_data)
+# 				update_jeangrey_service(service['id'], service_data) 
+
+# 		elif code in CPE_CODES:
+# 				parameters = cpe_parameters(client, service)
+
+# 				config['parameters'] =  {  
+# 											"service_vlan": service['vlan_id'], 
+# 											"bandwidth": service['bandwidth'],
+# 											"client_as_number": service['autonomous_system'],
+# 											"on_client_port": parameters['client_node']['interface_name'],
+# 											"on_uplink_port": parameters['client_node']['uplink_port'],
+# 											"client_cidr": service['client_network']
+# 										}
+
+# 				config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
+
+
+# 				if code == "cpe_data":
+# 						service_data = { "service_state": "CPE_DATA_ACK" }
+
+# 				elif code == "cpe":
+# 						service_data = { "service_state": "cpe_activation_in_progress" }
+
+# 				update_jeangrey_service(service['id'], service_data)
 						
-		if code in DATA_CODES:
-				print("DATA_FECTH")
-				return config, service_data['service_state']
-		elif code in ACTIVATION_CODES:
-				print("ACTIVATION")
-				# configure_service(config)
-				return config, service_data['service_state']
-		else:
-				return None, service_state['service_state']
+# 		if code in DATA_CODES:
+# 				print("DATA_FECTH")
+# 				return config, service_data['service_state']
+# 		elif code in ACTIVATION_CODES:
+# 				print("ACTIVATION")
+# 				# configure_service(config)
+# 				return config, service_data['service_state']
+# 		else:
+# 				return None, service_state['service_state']
  
+
+
+
+def bb_data_ack_automated_request(service):
+	pass
+
+
+
+def bb_activated_automated_request(service):
+	pass
+
+
+
+def an_data_ack_automated_request(service):
+	pass
+
+
+
+def an_activated_automated_request(service):
+	if DEBUG: print("an_activated_automated_request")
+	client = get_client(service['client_id'])
+	parameters = an_parameters(client, service)	
+	service_data = {}
+
+	config = {
+		 "client" : client['name'],
+		 "service_type" :  service['service_type'],
+		 "service_id" : service['service_id'],
+		 "op_type" : "CREATE" }
+	
+	if parameters is not None:	
+		config['parameters'] =  {  
+								"service_vlan" : service['vlan_id'], 
+								"an_client_port": parameters['an_client_port']
+									}
+		config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
+
+		configure_service(config)
+		service_data['service_state'] = "an_activation_in_progress"
+
+	else:
+		service_data['service_state'] = "error"
+
+	update_jeangrey_service(service['service_id'], service_data)
+	return service_data['service_state']
+
+
+
+def cpe_data_ack_automated_request(service):
+	pass
+
+
+def service_activated_automated_request(service):
+	pass
+
+
+
 
 def bb_parameters(client, service):
 	location = get_location(service['location_id'])
@@ -147,3 +204,17 @@ def cpe_parameters(client, service):
 							}
 
 	return parameters
+
+def an_parameters(client, service):
+  access_port = get_access_port(service['access_port_id'])
+  access_node = get_access_node(service['access_node_id'])
+  an_device_model = get_device_model(access_node['device_model_id'])
+
+  parameters = { 'provider_vlan': access_node['provider_vlan'],
+                 'an_client_port': access_port['port'],
+                 'mgmt_ip': access_node['mgmt_ip'],
+                 'model': an_device_model['model'],
+                 'vendor': an_device_model['brand'] }
+
+  return parameters
+

@@ -11,74 +11,77 @@ DEBUG = True
 # "service_state" + "_" + deployment_mode + "_request"
 
 def bb_data_ack_automated_request(service):
-	if DEBUG: print("bb_data_ack_automated_request")
-	client = get_client(service['client_id'])
-	parameters = bb_parameters(client, service)
+	# if DEBUG: print("bb_data_ack_automated_request")
+	# client = get_client(service['client_id'])
+	# parameters = bb_parameters(client, service)
 
-	if DEBUG: print(parameters)
+	# if DEBUG: print(parameters)
 
-	#Handle parameters error
-	if parameters is not None:
-		service_data = { 'logical_unit_id': parameters['logical_unit_id'],
-						 'wan_network':  parameters['wan_network'],
-						 'autonomous_system':  parameters['client_as_number'],
-						 'vrf_id': parameters['vrf_id'] }
+	# #Handle parameters error
+	# if parameters is not None:
+	# 	service_data = { 'logical_unit_id': parameters['logical_unit_id'],
+	# 					 'wan_network':  parameters['wan_network'],
+	# 					 'autonomous_system':  parameters['client_as_number'],
+	# 					 'vrf_id': parameters['vrf_id'] }
 
-		service_data['client_network'] = service['client_network']
-		service_data['service_state'] = "bb_data_ack"
-		update_jeangrey_service(service['service_id'], service_data)
+	# 	service_data['client_network'] = service['client_network']
+	# 	service_data['service_state'] = "bb_data_ack"
+	# 	update_jeangrey_service(service['service_id'], service_data)
 
-	else:
-		service_data['service_state'] = "error"
-		update_jeangrey_service(service['service_id'], service_data)
-	return service_data['service_state']
+	# else:
+	# 	service_data['service_state'] = "error"
+	# 	update_jeangrey_service(service['service_id'], service_data)
+	# return service_data['service_state']
+	pass
 
 
 
 def bb_activated_automated_request(service):
-	if DEBUG: print("bb_activated_automated_request")
-	client = get_client(service['client_id'])
-	parameters = bb_parameters(client, service)
+	# if DEBUG: print("bb_activated_automated_request")
+	# client = get_client(service['client_id'])
+	# parameters = bb_parameters(client, service)
 
-	config = {
-			 "client" : client['name'],
-			 "service_type" :  service['service_type'],
-			 "service_id" : service['service_id'],
-			 "op_type" : "CREATE" }
+	# config = {
+	# 		 "client" : client['name'],
+	# 		 "service_type" :  service['service_type'],
+	# 		 "service_id" : service['service_id'],
+	# 		 "op_type" : "CREATE" }
 
-	config['parameters'] =  {
-							"pop_size" : parameters['pop_size'],       
-							"an_uplink_interface" : parameters['an_uplink_interface'],
-							"an_uplink_ports" :   parameters['an_uplink_ports'],
-							"logical_unit" : parameters['logical_unit_id'],   
-							"provider_vlan" : parameters['provider_vlan'],      
-							"service_vlan" : service['vlan_id'], 
-							"client_as_number" : parameters['client_as_number'],
-							"an_client_port" : parameters['an_client_port'],
-							"vrf_exists": parameters['vrf_exists'],
-							"wan_cidr": parameters['wan_network'],
-							"client_cidr": service['client_network'],
-							"vrf_name": parameters['vrf_name'],
-							"vrf_id": parameters['vrf_id'],
-							"loopback":parameters['loopback']
-						}
+	# config['parameters'] =  {
+	# 						"pop_size" : parameters['pop_size'],       
+	# 						"an_uplink_interface" : parameters['an_uplink_interface'],
+	# 						"an_uplink_ports" :   parameters['an_uplink_ports'],
+	# 						"logical_unit" : parameters['logical_unit_id'],   
+	# 						"provider_vlan" : parameters['provider_vlan'],      
+	# 						"service_vlan" : service['vlan_id'], 
+	# 						"client_as_number" : parameters['client_as_number'],
+	# 						"an_client_port" : parameters['an_client_port'],
+	# 						"vrf_exists": parameters['vrf_exists'],
+	# 						"wan_cidr": parameters['wan_network'],
+	# 						"client_cidr": service['client_network'],
+	# 						"vrf_name": parameters['vrf_name'],
+	# 						"vrf_id": parameters['vrf_id'],
+	# 						"loopback":parameters['loopback']
+	# 					}
 
-	config['devices'] = [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']}]
+	# config['devices'] = [{"vendor": parameters['router_node']['vendor'],"model": parameters['router_node']['model'],"mgmt_ip": parameters['router_node']['mgmt_ip']}]
 
-	configure_service(config)
-	service_data = {}
-	service_data['service_state'] = "bb_activation_in_progress"
-	update_jeangrey_service(service['service_id'], service_data)
-	return service_data['service_state']
+	# configure_service(config)
+	# service_data = {}
+	# service_data['service_state'] = "bb_activation_in_progress"
+	# update_jeangrey_service(service['service_id'], service_data)
+	# return service_data['service_state']
+	pass
 
 
 
 def an_data_ack_automated_request(service):
-	if DEBUG: print("an_data_ack_automated_request")
-	service_data = {}
-	service_data['service_state'] = "an_data_ack"
-	update_jeangrey_service(service['service_id'], service_data)
-	return service_data['service_state']
+	# if DEBUG: print("an_data_ack_automated_request")
+	# service_data = {}
+	# service_data['service_state'] = "an_data_ack"
+	# update_jeangrey_service(service['service_id'], service_data)
+	# return service_data['service_state']
+	pass
 
 
 
@@ -113,54 +116,56 @@ def an_activated_automated_request(service):
 
 
 def cpe_data_ack_automated_request(service):
-	if DEBUG: print("cpe_data_ack_automated_request")
-	client = get_client(service['client_id'])
-	parameters = cpe_parameters(client, service)
-	customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
+	# if DEBUG: print("cpe_data_ack_automated_request")
+	# client = get_client(service['client_id'])
+	# parameters = cpe_parameters(client, service)
+	# customer_location = get_customer_location(service['client_id'], service['customer_location_id'])
 
-	if parameters['client_port_id']:
-		service_data = { "client_port_id": parameters['client_port_id'] }
+	# if parameters['client_port_id']:
+	# 	service_data = { "client_port_id": parameters['client_port_id'] }
 
-	service_data['service_state'] = "cpe_data_ack"
-	service_data['wan_network'] = service['wan_network'] 	
+	# service_data['service_state'] = "cpe_data_ack"
+	# service_data['wan_network'] = service['wan_network'] 	
 
-	update_jeangrey_service(service['service_id'], service_data)
-	return service_data['service_state']
+	# update_jeangrey_service(service['service_id'], service_data)
+	# return service_data['service_state']
+	pass
 
 
 def service_activated_automated_request(service):
-	if DEBUG: print("service_activated_automated_request")
-	client = get_client(service['client_id'])
-	parameters = cpe_parameters(client, service)
-	config = {
-		 "client" : client['name'],
-		 "service_type" :  service['service_type'],
-		 "service_id" : service['service_id'],
-		 "op_type" : "CREATE" }
+	# if DEBUG: print("service_activated_automated_request")
+	# client = get_client(service['client_id'])
+	# parameters = cpe_parameters(client, service)
+	# config = {
+	# 	 "client" : client['name'],
+	# 	 "service_type" :  service['service_type'],
+	# 	 "service_id" : service['service_id'],
+	# 	 "op_type" : "CREATE" }
 
 
-	service_data = {}
+	# service_data = {}
 
-	if parameters is not None:
-		config['parameters'] =  {  
-								"service_vlan" : service['vlan_id'], 
-								"bandwidth" : service['bandwidth'],
-								"client_as_number" : service['autonomous_system'],
-								"on_client_port" : parameters['client_node']['interface_name'],
-								"wan_cidr": service['wan_network'],
-								"client_cidr": service['client_network'],
-							 }
+	# if parameters is not None:
+	# 	config['parameters'] =  {  
+	# 							"service_vlan" : service['vlan_id'], 
+	# 							"bandwidth" : service['bandwidth'],
+	# 							"client_as_number" : service['autonomous_system'],
+	# 							"on_client_port" : parameters['client_node']['interface_name'],
+	# 							"wan_cidr": service['wan_network'],
+	# 							"client_cidr": service['client_network'],
+	# 						 }
 
-		config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
+	# 	config['devices'] = [{"vendor": parameters['client_node']['vendor'], "model": parameters['client_node']['model'], "mgmt_ip": parameters['client_node']['mgmt_ip']}]
 
 
-		service_data['service_state'] = "cpe_activation_in_progress"
-		configure_service(config)
-	else:
-		service_data['service_state'] = "error"
+	# 	service_data['service_state'] = "cpe_activation_in_progress"
+	# 	configure_service(config)
+	# else:
+	# 	service_data['service_state'] = "error"
 	
-	update_jeangrey_service(service['service_id'], service_data)
-	return service_data['service_state']
+	# update_jeangrey_service(service['service_id'], service_data)
+	# return service_data['service_state']
+	pass
 
 
 
@@ -247,16 +252,18 @@ def cpe_parameters(client, service):
 	return parameters
 
 def an_parameters(client, service):
-	access_port = get_access_port(service['access_port_id'])
-	access_node = get_access_node(service['access_node_id'])
+  access_port = get_access_port(service['access_port_id'])
+  access_node = get_access_node(service['access_node_id'])
+  an_device_model = get_device_model(access_node['device_model_id'])
 
-	parameters = { 'provider_vlan': access_node['provider_vlan'],
-					 'an_client_port': access_port['port'],
-					 'mgmt_ip': access_node['mgmt_ip'],
-					 'model': access_node['model'],
-					 'vendor': access_node['vendor'] }
+  parameters = { 'provider_vlan': access_node['provider_vlan'],
+                 'an_client_port': access_port['port'],
+                 'mgmt_ip': access_node['mgmt_ip'],
+                 'model': an_device_model['model'],
+                 'vendor': an_device_model['brand'] }
 
-	return parameters
+  return parameters
+
 
 
 def define_vrf(client, service):
