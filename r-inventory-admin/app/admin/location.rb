@@ -5,5 +5,11 @@ ActiveAdmin.register Location do
       params.permit!
     end
   end
+
+  filter :name
+  filter :shortname
+  filter :address
+  filter :pop_sieze
+  filter :region
   
 end

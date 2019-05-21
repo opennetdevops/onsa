@@ -7,7 +7,7 @@ ActiveAdmin.register AccessNode do
 		f.inputs do
 			f.input :location
 			f.input :hostname
-	  		f.input :mgmt_ip, label:"IP Management", :as => :string
+	  	f.input :mgmt_ip, label:"IP Management", :as => :string
 			f.input :device_model, :as => :select, :collection => DeviceModel.all
 			f.input :serial_number
 			f.input :firmware_version
@@ -24,31 +24,29 @@ ActiveAdmin.register AccessNode do
 	end
 
 	index do
-    	selectable_column
-    	column :hostname
-    	column :location, :order => :desc
-    	column(:hub) {|acces_node| acces_node.location.shortname} 
-    	column :mgmt_ip
-    	column :device_model
-    	column :firmware_version
-    	column :config_status
-    	column :installation_date
-    	actions
-  	end
+  	selectable_column
+  	column :hostname
+  	column :location, :order => :desc
+  	column(:hub) {|access_node| access_node.location.shortname} 
+  	column :mgmt_ip
+  	column :device_model
+  	column :firmware_version
+  	column :config_status
+  	column :installation_date
+  	actions
+  end
 
-  	filter :location
-  	filter :hostname
-  	filter :mgmt_ip
-  	filter :firmware_version, :as => :string
-  	filter :device_model
-  	filter :model
-  	filter :serial_number
-  	filter :ot
-  	filter :installation_date
-  	filter :config_status, as: :select, collection: DeviceModel::STATUSES
-  	filter :comment
-  	filter :uplink_ports
-  	filter :uplink
-  	filter :updated_at
+	filter :location
+	filter :hostname
+	filter :mgmt_ip
+	filter :firmware_version, :as => :string
+	filter :device_model
+	filter :serial_number
+	filter :ot
+	filter :installation_date
+	filter :config_status, as: :select, collection: DeviceModel::STATUSES
+	filter :comment
+	filter :uplink_ports
+	filter :updated_at
 
 end
