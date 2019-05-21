@@ -9,9 +9,9 @@ ActiveAdmin.register RouterNode do
 		f.inputs do
 			f.input :location
 			f.input :hostname
-	  		f.input :mgmt_ip, label:"IP Management", :as => :string
-		    f.input :private_wan_ip, label:"Private WAN IP (Virtual CPE)", :as => :string
-		    f.input :loopback, :as => :string
+	  	f.input :mgmt_ip, label:"IP Management", :as => :string
+		  f.input :private_wan_ip, label:"Private WAN IP (Virtual CPE)", :as => :string
+		  f.input :loopback, :as => :string
 			f.input :device_model, :as => :select, :collection => DeviceModel.all
 			f.input :serial_number
 			f.input :firmware_version
