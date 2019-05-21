@@ -1,10 +1,15 @@
 # Python imports
+import logging
 from pprint import pprint
 
 # ONSA imports
-from charles.utils import *
+from charles.utils.utils import *
+from charles.utils.inventory_utils import *
+from charles.utils.ipam_utils import *
 from charles.constants import *
+from charles.models import *
 
+logging.basicConfig(level=logging.DEBUG)
 DEBUG = True
 
 
@@ -114,32 +119,34 @@ def an_data_ack_automated_request(service):
 
 
 def an_activated_automated_request(service):
-	if DEBUG: print("an_activated_automated_request")
-	client = get_client(service['client_id'])
-	parameters = an_parameters(client, service)	
-	service_data = {}
+  if DEBUG: print("an_activated_automated_request")
+  client = get_client(service['client_id'])
+  parameters = an_parameters(client, service) 
+  service_data = {}
 
-	config = {
-		 "client" : client['name'],
-		 "service_type" :  service['service_type'],
-		 "service_id" : service['service_id'],
-		 "op_type" : "CREATE" }
-	
-	if parameters is not None:	
-		config['parameters'] =  {  
-								"service_vlan" : service['vlan_id'], 
-								"an_client_port": parameters['an_client_port']
-									}
-		config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
+  config = {
+     "client" : client['name'],
+     "service_type" :  service['service_type'],
+     "service_id" : service['service_id'],
+     "op_type" : "CREATE" }
+  
+  if parameters is not None:  
+    config['parameters'] =  {  
+                "service_vlan" : service['vlan_id'], 
+                "an_client_port": parameters['an_client_port']
+                  }
+    config['devices'] = [{"vendor": parameters['vendor'], "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
 
-		configure_service(config)
-		service_data['service_state'] = "an_activation_in_progress"
+    service_state = "an_activation_in_progress"
+    configure_service(config) 
 
-	else:
-		service_data['service_state'] = "error"
+  else:
+    service_state = "ERROR"
 
-	update_jeangrey_service(service['service_id'], service_data)
-	return service_data['service_state']
+  service_data['service_state'] = service_state
+  update_jeangrey_service(service['service_id'], service_data)
+  service = update_charles_service(service, service_state)
+  return service
 
 
 
