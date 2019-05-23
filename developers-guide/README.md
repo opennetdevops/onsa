@@ -12,6 +12,8 @@ Para desarrollar se necesitan ciertas librerías que deben estar instaladas.
 * pyMongo &gt;= 3.7.2
 * NodeJS &gt;= 10.10 
 * npm &gt;= 6.4.1
+* Celery >= 4.3r  
+* RabbitMQ
 
 Se recomienda un entorno con al menos:
 * 4 vCPU
@@ -34,6 +36,19 @@ sudo systemctl status mongodb
 mongo --eval 'db.runCommand({ connectionStatus: 1 })'
 ```
 Source and detailed explanation: https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04
+
+## Instalación RabbitMQ
+```bash
+
+sudo apt-get install -y erlang
+sudo apt-get install rabbitmq-server
+
+sudo systemctl enable rabbitmq-server
+sudo systemctl start rabbitmq-server
+sudo systemctl status rabbitmq-server
+```
+
+Note: If necessary open RMQ ports (TCP 5672 & 25672) to desired networks.
 
 ## Inicialización de Ruby (con rbenv)
 ```bash

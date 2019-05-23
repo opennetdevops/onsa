@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
-  ActiveAdmin.routes(self)
   scope 'inventory/api' do
+      post '/authenticate', to: 'authentication#authenticate'
     resources :router_nodes do 
     	resources :logical_units, only:[:index,:create,:destroy]
     end

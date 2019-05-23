@@ -1,5 +1,6 @@
 class AccessNodesController < ApiController
   before_action :set_access_node, only: [:show, :update, :destroy]
+  before_action :authenticate_request
 
   def index
     if params[:location_id]

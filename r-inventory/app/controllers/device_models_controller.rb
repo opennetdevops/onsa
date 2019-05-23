@@ -1,5 +1,7 @@
 class DeviceModelsController < ApiController
   before_action :set_device_model, only: [:show]
+  before_action :authenticate_request
+
   def show
     render json: @device_model
   end
