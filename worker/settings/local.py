@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'worker.apps.WorkerConfig',
-    'background_task',
     'corsheaders'
 ]
 
@@ -175,6 +174,10 @@ CORS_ORIGIN_WHITELIST = (
     '10.120.78.59:3000',
     os.getenv('SERVER_IP')+':3000'
 )
+
+CELERY_BROKER_URL = "amqp://myuser:mypassword@" + \
+    os.getenv('SERVER_IP')+"/myvhost"
+
 
 # ONSA Variables
 JEAN_GREY_URL = "http://127.0.0.1:" + \

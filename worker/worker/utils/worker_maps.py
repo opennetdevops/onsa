@@ -5,3 +5,7 @@ StrategyMap = {
 	'huawei': 'netconf',
 	'cisco': 'netconf'
 }
+
+VendorMap = {
+	'Transition Networks Inc': 'transition'
+}
