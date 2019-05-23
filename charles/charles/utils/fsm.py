@@ -23,41 +23,21 @@ class ServiceTypes(Enum):
 
 
 ##
-## IN_CONS. -> AN_DATA -> AN_ACT_IN_PROG -> AN_ACT -> BB_DATA -> BB_ACT_IN_PROG -> BB_ACT -> CPE_DATA_ACK
+## IN_CONS. -> AN_ACT_IN_PROG -> AN_ACT -> BB_DATA -> BB_ACT_IN_PROG -> BB_ACT -> CPE_DATA_ACK
 ##
 NextStateMap = (    
                     #From IN_CONSTRUNCTION
                     {'src':"in_construction",
                     'dst': "an_activated",
-                    'next_state':"an_data_ack" },
-                    {'src':"in_construction",
-                    'dst': "an_data_ack",
-                    'next_state':"an_data_ack" },
+                    'next_state':"an_activated" },
                     {'src':"in_construction",
                     'dst': "cpe_data_ack",
-                    'next_state':"an_data_ack" },
+                    'next_state':"an_activated" },
                     {'src':"in_construction",
                     'dst': "bb_data_ack",
-                    'next_state':"an_data_ack" },
+                    'next_state':"an_activated" },
                     {'src':"in_construction",
                     'dst': "service_activated",
-                    'next_state':"an_data_ack" },
-
-                    #From an_data_ack
-                    {'src':"an_data_ack",
-                    'dst': "an_activated",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "bb_activated",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "cpe_data_ack",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "service_activated",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "bb_data_ack",
                     'next_state':"an_activated" },
 
                     #From an_activation_in_progress

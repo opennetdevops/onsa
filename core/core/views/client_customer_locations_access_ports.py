@@ -23,7 +23,7 @@ class ClientCustomerLocationAccessPortsView(APIView):
         response = requests.get(url, auth=None, verify=False, headers=rheaders)
         json_response = json.loads(response.text)
 
-        return JsonResponse(json_response, safe=False)
+        return JsonResponse(json_response, safe=False, status=response.status_code)
 
     def post(self, request):
         pass

@@ -5,7 +5,6 @@ from django.views import View
 
 # Python imports
 import json
-from pprint import pprint
 from itertools import chain
 
 # ONSA imports

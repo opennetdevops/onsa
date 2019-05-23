@@ -21,11 +21,11 @@ from core.utils.swagger import swagger_info
 
 # Swagger Schema View setup.
 schema_view = get_schema_view(
-	swagger_info,
-	url="http://10.120.78.60:8000/core",
-	public=True,
-	permission_classes=(permissions.IsAuthenticatedOrReadOnly,),
-	authentication_classes = ([JSONWebTokenLDAPAuthentication, ]),
+    swagger_info,
+    url="http://" + os.getenv('SERVER_IP') + ":8000/core",
+    public=True,
+    permission_classes=(permissions.IsAuthenticatedOrReadOnly,),
+    authentication_classes=([JSONWebTokenLDAPAuthentication, ]),
 )
 # Routes
 
@@ -56,20 +56,19 @@ urlpatterns = [
     path('/api/vrfs',
          require_http_methods(["GET", "PUT", "DELETE"])(vrfs_view)),
 
-	 #Test for Monitoring
+    # Test for Monitoring
 
- # path('/api/monitoring/<str:service_id>/status',
- #     require_http_methods(["GET"])(status_monitoring_view)),
- # path('/api/monitoring/<str:service_id>/traffic',
- #     require_http_methods(["GET"])(traffic_monitoring_view)),
+    # path('/api/monitoring/<str:service_id>/status',
+    #     require_http_methods(["GET"])(status_monitoring_view)),
+    # path('/api/monitoring/<str:service_id>/traffic',
+    #     require_http_methods(["GET"])(traffic_monitoring_view)),
 
 
-     
-     #Swagger & Redoc Routes
-     url('/swagger', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-     url('/redoc', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-	url('/api', schema_view.with_ui('swagger', cache_timeout=0)),
-	url('/api/docs', schema_view.with_ui('swagger', cache_timeout=0)),
-	url('/docs', schema_view.with_ui('swagger', cache_timeout=0)),
-     ]
 
+    # Swagger Routes
+    url('/swagger', schema_view.with_ui('swagger',
+                                        cache_timeout=0), name='schema-swagger-ui'),
+    url('/api', schema_view.with_ui('swagger', cache_timeout=0)),
+    url('/api/docs', schema_view.with_ui('swagger', cache_timeout=0)),
+    url('/docs', schema_view.with_ui('swagger', cache_timeout=0)),
+]

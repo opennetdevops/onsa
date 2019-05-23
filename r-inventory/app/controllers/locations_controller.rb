@@ -4,7 +4,9 @@ class LocationsController < ApiController
 
   def index
     @locations = Location.all
-
+    if params[:name]
+      @locations = Location.where(name:params[:name])
+    end
     render json: @locations
   end
 

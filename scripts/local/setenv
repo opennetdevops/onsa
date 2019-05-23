@@ -29,4 +29,5 @@ export FLASK_HOST=0.0.0.0
 export FLASK_PORT=3001
 export LOCAL_NETWORK="10.120.78"
 export SERVER_IP=$(/sbin/ip -o -4 addr list | grep "10.120" | awk '{print $4}' | cut -d/ -f1)
+export REACT_APP_SERVER_IP=$SERVER_IP
 export REACT_APP_CORE_URL=http://$SERVER_IP:$CORE_PORT

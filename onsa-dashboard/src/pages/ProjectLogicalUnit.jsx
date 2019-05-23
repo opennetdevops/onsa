@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, FormRow, FormTitle, FormInput, FormSelect } from '../components/Form';
+import { Form, FormRow, FormTitle, FormSelect } from '../components/Form';
 import { URLs, HTTPGet, HTTPPost } from '../middleware/api.js'
 import { Alert } from 'reactstrap';
 
