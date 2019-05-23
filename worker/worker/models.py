@@ -69,8 +69,8 @@ class Task(models.Model):
         return self.service.service_id
 
     def _gen_template_path(self):
-        if self.device['vendor'] == 'transition':
-            template_path = "templates/" + self.device['vendor'].lower(
+        if VendorMap[self.device['vendor']] == 'transition':
+            template_path = "templates/" + VendorMap[self.device['vendor']].lower(
             ) + "/" + self.device['model'].lower() + "/" + self.op_type.upper() + "_L2SERVICE.CONF"
         else:
             if self.service.service_type != "vpls":
@@ -123,7 +123,7 @@ class Task(models.Model):
 
         dir = os.path.dirname(os.path.abspath(__file__))
 
-        if self.device['vendor'] == 'transition':
+        if VendorMap[self.device['vendor']] == 'transition':
             template_path = "templates/" + VendorMap[self.device['vendor']].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_L2SERVICE.CONF"
         else:
             if self.service.service_type != "vpls":
