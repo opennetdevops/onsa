@@ -13,12 +13,21 @@ import coloredlogs
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
+def get_inventory_authentication_token():
+    url = "authenticate"
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"email":os.getenv('INVENTORY_USER'), "password":os.getenv('INVENTORY_PASSWORD')}
+    response = requests.post(os.getenv('INVENTORY_URL') + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    logging.debug(response.text)
+    return json.loads(response.text)['auth_token']
+
 def pop_empty_keys(d):
     return {k: v for k, v in d.items() if v is not None}
 
 def get_router_node(router_node_id):
     url = settings.INVENTORY_URL + "router_nodes/" + str(router_node_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
         
     if r.json() and r.status_code == HTTP_200_OK:
@@ -30,7 +39,8 @@ def get_router_node(router_node_id):
 
 def get_router_node_from_location(location_id):
     url = settings.INVENTORY_URL + "locations/" + str(location_id) + "/router_nodes"
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.status_code != HTTP_200_OK:
@@ -43,7 +53,8 @@ def get_router_node_from_location(location_id):
 
 def get_access_node(access_node_id):
     url = settings.INVENTORY_URL + "access_nodes/"+ str(access_node_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()
@@ -53,7 +64,8 @@ def get_access_node(access_node_id):
 
 def get_access_port(access_port_id):
     url = settings.INVENTORY_URL + "access_ports/"+ str(access_port_id)
-    rheaders = {'Content-Type': 'application/json'}
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()
@@ -75,7 +87,8 @@ def get_client(client_id):
 
 def get_client_node(client_node_id):
     url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.json() and r.status_code == HTTP_200_OK:
@@ -87,7 +100,8 @@ def get_client_node(client_node_id):
 
 def get_client_port(client_node_sn, client_port_id):
     url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn) + "/clientports/" + str(client_port_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     # TODO: how to raise exception client_node_sn or client_port_id ?
@@ -100,7 +114,8 @@ def get_client_port(client_node_sn, client_port_id):
 
 def get_device_model(device_model_id):
     url = settings.INVENTORY_URL + "device_models/" + str(device_model_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
         
     if r.json() and r.status_code == HTTP_200_OK:
@@ -112,7 +127,8 @@ def get_device_model(device_model_id):
 
 def get_free_access_port(location_id):
     url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/access_ports?used=false"
-    rheaders = {'Content-Type': 'application/json'}
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     print(r.json())
     if r.json() and r.status_code == HTTP_200_OK:
@@ -125,7 +141,8 @@ def get_free_access_port(location_id):
 
 def get_vrf(vrf_name):
     url = settings.INVENTORY_URL + "vrfs?name="+ vrf_name
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.json() and r.status_code == HTTP_200_OK:
@@ -147,7 +164,8 @@ def get_service(service_id):
 
 def get_location(location_id):
     url = settings.INVENTORY_URL + "locations/" + str(location_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.json() and r.status_code == HTTP_200_OK:

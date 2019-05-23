@@ -28,11 +28,11 @@ authorizations: &AUTHORIZATIONS
 ## Environment
 
 development:
-  host: 10.120.48.138
+  host: 10.120.78.5
   port: 389
   attribute: userPrincipalName
-  base: DC=int,DC=fibercorp,DC=com,DC=ar
-  admin_user: CN=app_operations,OU=OU Aplicaciones,OU=OU Usuarios,OU=OU Hornos,DC=int,DC=fibercorp,DC=com,DC=ar
+  base: DC=lab,DC=fibercorp,DC=com,DC=ar
+  admin_user: CN=app_operations,OU=OU Aplicaciones,OU=OU Usuarios,OU=OU Hornos,DC=lab,DC=fibercorp,DC=com,DC=ar
   admin_password: operations
   ssl: false
   # <<: *AUTHORIZATIONS
@@ -46,4 +46,3 @@ production:
   admin_password: operations
   ssl: false
   # <<: *AUTHORIZATIONS
-
