@@ -11,7 +11,6 @@ django-cors-headers
 coloredlogs
 djangorestframework>=3.8.2
 djangorestframework-jwt>=1.11.0
-django-background-tasks
 netmiko
 junos-eznc>=2.1.7
 pyvmomi>=6.7.0

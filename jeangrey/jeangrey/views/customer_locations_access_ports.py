@@ -19,9 +19,10 @@ class CustomerLocationAccessPortsView(View):
             s = Service.objects.get(client_id=client_id, customer_location_id=customer_location_id) 
             data = s.fields()   
             response = []
+            print(data)
             for s in data:
-                access_port = get_access_port(s['access_port_id'])
-                access_node = get_access_node(s['access_node_id'])
+                access_port = get_access_port(int(s['access_port_id']))
+                access_node = get_access_node(int(s['access_node_id']))
                 response.append({'access_port': access_port['port'], 'access_node': access_node['name']})   
             return JsonResponse(list(response), safe=False) 
 

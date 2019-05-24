@@ -9,182 +9,93 @@ import {
   Form,
   FormRow,
   FormTitle,
-  FormInput,
-  FormSelect
+  FormInput
 } from "../components/Form";
-import { Alert } from "reactstrap";
+import FormAlert from "../components/Form/FormAlert";
+import Select from "react-select";
 
-async function coreLogin(url) {
-  let response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      username: "fc__netauto@lab.fibercorp.com.ar",
-      password: "F1b3rc0rp!"
-    })
-  });
-  let jsonResponse = await response.json();
-  // this.setState({ token: jsonResponse });
-
-  return jsonResponse;
-}
-
-async function getJson(url, token) {
-  let response = await fetch(url, {
-    method: "GET",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
-    }
-  });
-
-  let jsonResponse = await response.json();
-  return jsonResponse;
-}
-
-async function postJson(url, token, data) {
-  let response = await fetch(url, {
-    method: "POST",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token
-    },
-    body: JSON.stringify(data)
-  });
-
-  let jsonResponse = await response.json();
-  console.log(jsonResponse)
-  // response.json();
-
-  return jsonResponse;
-}
+import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
 class ServiceCreate extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      token: "",
-      clients: [],
-      vrfs: [],
-      locations: [],
-      location: "",
-      portsList: [],
-      port: null,
-      portId: null,
-      customerLocations: [],
-      customerLoc: null,
-      customerLocId: null,
-      client: "",
-      clientId: "",
-      serviceType: "",
       bandwidth: "",
-      prefix: "",
-      serviceId: "",
-      vrfName: "",
+      clientId: "",
+      clientName: "",
+      clientNetwork:"",
+      clientOptions: [],
       cpeExist: false,
-      modal: false,
+      customerLocId: null,
+      custLocationsOptions: [],
+      displayMessage: "",
+      locationsOptions: [],
+      selectedLocation: "",
+      selectedVRF: "",
+      selectedPort:"",
+      portsList: [],
+      port: "",
+      portId: null,
+      portOptions:[],
+      prefix: "",
+      selectedCustLoc: "",
+      servicesOptions: [],
+      serviceType: "",
+      serviceId: "",
       showVrf: false,
       showPrefix: false,
       showClientNetwork: false,
-      successAlert: false
+      successAlert: null,
+      vrfName: "",
+      vrfsOptions: []
     };
   }
 
   componentDidMount() {
-    let url = "http://10.120.78.60:8000/core/api/login";
-
-    coreLogin(url).then(jsonResponse => {
-      this.setState({ token: jsonResponse.token });
-
-      url = "http://10.120.78.60:8000/core/api/clients";
-      getJson(url, jsonResponse.token).then(jsonResponse => {
-        this.setState({ clients: jsonResponse });
+    if (this.state.servicesOptions.length === 0) {
+      let options = onsaServices.map(service => {
+        return { value: service.type, label: serviceEnum[service.type] };
       });
+      this.setState({ servicesOptions: options });
+    }
 
-      url = "http://10.120.78.60:8000/core/api/locations";
-      getJson(url, jsonResponse.token).then(jsonResponse => {
-        this.setState({ locations: jsonResponse });
-      });
-    });
+    // Fetch clients
+    HTTPGet(URLs["clients"]).then(
+      jsonResponse => {
+        let options = jsonResponse.map(client => {
+          return { value: client.id, label: client.name };
+        });
+        this.setState({ clientOptions: options });
+      },
+      error => {
+        this.showAlertBox(false, error.message);
+        this.setState({ clientOptions: [] });
+      }
+    );
+
+    // Fetch Locations
+    HTTPGet(URLs["locations"]).then(
+      jsonResponse => {
+        let options = jsonResponse.map(hub => {
+          return { value: hub.id, label: hub.name };
+        });
+        this.setState({ locationsOptions: options });
+      },
+      error => {
+        this.setState({ locationsOptions: [] });
+        this.showAlertBox(false, error.message);
+      }
+    );
 
     this.props.displayNavbar(false);
   }
 
-  handleDisplays = () => {
-    let state = {};
-    state = onsaVrfServices.includes(this.state.serviceType)
-      ? { showVrf: true, showPrefix: false, showClientNetwork: true }
-      : { showClientNetwork: false, showVrf: false, showPrefix: true };
-    this.setState(state);
-    state =
-      this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
-    this.setState(state);
-  };
-
-  handleChange = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-
-    switch (name) {
-      case "cpeExist":
-        this.setState({ [name]: !this.state.cpeExist });
-
-        if (this.state.client && this.state.customerLocId) {
-          let url =
-            "http://10.120.78.60:8000/core/api/clients/" +
-            this.state.clientId +
-            "/customerlocations/" +
-            this.state.customerLocId +
-            "/accessports";
-          getJson(url, this.state.token).then(jsonResponse =>
-            this.setState({ portsList: jsonResponse })
-          );
-        }
-
-        break;
-      default:
-        this.setState({ [name]: value });
-    }
-  };
-
-  handleOnSelect = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-    let id = event.target.options.selectedIndex;
-
-    if (id === 0) {
-      id = null;
-    }
-
-    switch (name) {
-      case "client":
-        this.setState({ [name]: value }, this.handleClient);
-        break;
-      case "customerLoc":
-        this.setState({ [name]: value, customerLocId: id });
-        break;
-      case "port":
-        this.setState({ [name]: value, portId: id });
-        break;
-      case "serviceType":
-        this.setState({ [name]: value }, this.handleDisplays);
-        break;
-      default:
-        this.setState({ [name]: value });
-    }
-
-    switch (value) {
-      case "new":
-        this.setState({ modal: true, vrfName: "" });
-        break;
-      default:
-        break;
-    }
+  showAlertBox = (result, message) => {
+    this.setState({
+      successAlert: result,
+      displayMessage: message
+    });
   };
 
   resetFormFields = () => {
@@ -196,405 +107,432 @@ class ServiceCreate extends React.Component {
     });
   };
 
+
+
+  handleInputChange = event => {
+    const value = event.target.value;
+    const name = event.target.name;
+
+    if (name === "cpeExist") {
+      if (event.target.checked) {
+        this.getAccessPorts();
+      } else {
+        this.setState({ cpeExist: false });
+      }
+    } else {
+      this.setState({ [name]: value });
+    }
+  };
+
+  // when existingCPE is checked.
+  getAccessPorts = () => {
+    let url = ClientURLs(
+      "clientAccessPorts",
+      this.state.clientId,
+      this.state.customerLocId
+    );
+
+    HTTPGet(url).then(
+      jsonResponse => {
+        let options = jsonResponse.map(port => {
+          return { value: port.id, label: port.access_node + " - " + port.access_port };
+        });
+  
+          this.setState({
+          portOptions: options,
+          cpeExist: true
+        });
+      },
+      error => {
+        this.showAlertBox(false, error.message);
+        this.setState({
+          portOptions: [],
+          cpeExist: false
+        });
+      }
+    );
+  };
+
+  handlePortOnChange = selectedOption => {
+    this.setState({
+      selectedPort: selectedOption,
+      portId: selectedOption.value
+
+    });
+  };
+
+  handleClientOnChange = selectedOption => {
+    const clientId = selectedOption.value;
+    const clientName = selectedOption.label;
+
+    this.getClientLocations(clientId);
+    this.getClientVRFs(clientId);
+
+    this.setState({
+      customerLocId: "",
+      selectedCustLoc: "",
+      clientName: clientName,
+      clientId: clientId
+    });
+  };
+
+  getClientLocations = clientId => {
+    //fetch customer location and creates an options array for Select component
+
+    let url = ClientURLs("customerLocations", clientId);
+
+    HTTPGet(url).then(
+      jsonResponse => {
+        let options = jsonResponse.map(loc => {
+          return { value: loc.id, label: loc.address };
+        });
+        this.setState({ custLocationsOptions: options });
+      },
+      error => {
+        this.setState({ custLocationsOptions: [] });
+        this.showAlertBox(false, error.message);
+      }
+    );
+  };
+
+  getClientVRFs = clientId => {
+    let url = ClientURLs("clientVRFs", clientId);
+
+    HTTPGet(url).then(
+      jsonResponse => {
+        let options = jsonResponse.map(vrf => {
+          return { value: vrf.id, label: "RT: " + vrf.rt + " - " + vrf.name };
+        });
+        options.unshift(
+          { value: "null", label: "New" },
+          { value: "9999", label: "Legacy" }
+        );
+
+        this.setState({ vrfsOptions: options });
+      },
+      error => {
+        this.setState({ vrfsOptions: [] });
+        this.showAlertBox(false, error.message);
+      }
+    );
+  };
+
+  handleCustLocationOnChange = selectedOption => {
+    this.setState({
+      customerLocId: selectedOption.value,
+      selectedCustLoc: selectedOption
+    });
+  };
+
+  handleLocationOnChange = selectedOption => {
+    this.setState({ selectedLocation: selectedOption });
+  };
+
+  handleVRFOnChange = selectedOption => {
+    this.setState({
+      selectedVRF: selectedOption
+    });
+  };
+
+  handleServiceTypeOnChange = selectedOption => {
+    this.setState(
+      { serviceType: selectedOption.value,
+        selectedService: selectedOption },
+      this.handleDisplays
+    );
+  };
+
+  handleDisplays = () => {
+    let state = {};
+    state = onsaVrfServices.includes(this.state.serviceType)
+      ? { showVrf: true, showPrefix: false, showClientNetwork: true }
+      : { showVrf: false, showPrefix: true , showClientNetwork: false };
+    this.setState(state);
+    state =
+      this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
+    this.setState(state);
+  };
+
   handleSubmit = event => {
     event.preventDefault();
 
-    let data = {};
+    let data = {
+      client_id: this.state.clientId,
+      location_id: this.state.selectedLocation.value,
+      id: this.state.serviceId,
+      bandwidth: this.state.bandwidth,
+      service_type: this.state.serviceType,
+      customer_location_id: this.state.customerLocId
+    };
 
     if (this.state.portId) {
-      data = {
-        client: this.state.client,
-        location: this.state.location,
-        id: this.state.serviceId,
-        bandwidth: this.state.bandwidth,
-        prefix: this.state.prefix,
-        service_type: this.state.serviceType,
-        customer_location_id: this.state.customerLocId,
-        access_port_id: this.state.portId
-      };
+      // if CPE already exists
+
+      data["prefix"] = this.state.prefix;
+      data["access_port_id"] = this.state.portId;
+
       if (onsaVrfServices.includes(this.state.serviceType)) {
-        data = {
-          client: this.state.client,
-          location: this.state.location,
-          id: this.state.serviceId,
-          bandwidth: this.state.bandwidth,
-          service_type: this.state.serviceType,
-          client_network: this.state.clientNetwork,
-          customer_location_id: this.state.customerLocId,
-          access_port_id: this.state.portId
-        };
+        data["client_network"] = this.state.clientNetwork;
+        data["vrf_id"] = this.state.selectedVRF.value;
       }
     } else {
-      data = {
-        client: this.state.client,
-        location: this.state.location,
-        id: this.state.serviceId,
-        bandwidth: this.state.bandwidth,
-        prefix: this.state.prefix,
-        service_type: this.state.serviceType,
-        customer_location_id: this.state.customerLocId
-      };
+      data["prefix"] = this.state.prefix;
+
       if (onsaVrfServices.includes(this.state.serviceType)) {
-        data = {
-          client: this.state.client,
-          location: this.state.location,
-          id: this.state.serviceId,
-          bandwidth: this.state.bandwidth,
-          service_type: this.state.serviceType,
-          client_network: this.state.clientNetwork,
-          customer_location_id: this.state.customerLocId
-        };
+        data["client_network"] = this.state.clientNetwork;
+        data["vrf_id"] = this.state.selectedVRF.value;
       }
     }
 
-    let url = "http://10.120.78.60:8000/core/api/services";
-
-    postJson(url, this.state.token, data).then(() => {
-      this.setState({ successAlert: true });
-    });
-
-    this.resetFormFields();
-
-    // this.props.history.push('/dashboard');
-  };
-
-  handleToggle = event => {
-    if (event.target.id === "cancel") {
-      this.setState({ vrfName: "" });
-    }
-
-    this.setState({
-      modal: !this.state.modal
-    });
-  };
-
-  handleClient = () => {
-    if (this.state.client !== "") {
-      let url =
-        "http://10.120.78.60:8000/core/api/vrfs?client=" + this.state.client;
-
-      getJson(url, this.state.token).then(jsonResponse => {
-        this.state.client !== "Choose..."
-          ? this.setState({ vrfs: jsonResponse })
-          : this.setState({ vrfs: [] });
-      });
-
-      url = "http://10.120.78.60:8000/core/api/clients?name=" + this.state.client;
-
-      getJson(url, this.state.token)
-        .then(client => {
-          this.state.client !== "Choose..."
-            ? this.setState({ clientId: client.id })
-            : this.setState({ clientId: "" });
-        })
-        .then(() => {
-          url =
-            "http://10.120.78.60:8000/core/api/clients/" +
-            this.state.clientId +
-            "/customerlocations";
-
-          getJson(url, this.state.token).then(jsonResponse => {
-            this.state.client !== "Choose..."
-              ? this.setState({ customerLocations: jsonResponse })
-              : this.setState({ customerLocations: [] });
-          });
-        });
-    } else {
-      this.setState({ clientId: null });
-    }
-  };
-
-  createVrfElements = () => {
-    if (this.state.vrfs.length > 0) {
-      return this.state.vrfs.map(vrf => (
-        <option key={vrf.rt} value={vrf.name}>
-          {vrf.name}
-        </option>
-      ));
-    } else {
-      return [];
-    }
-  };
-
-  createCustLocsList = () => {
-    if (this.state.customerLocations.length > 0) {
-      return this.state.customerLocations.map(loc => (
-        <option key={loc.id} value={loc.address}>
-          {loc.address}
-        </option>
-      ));
-    } else {
-      return [];
-    }
+    HTTPPost(URLs["services"], data).then(
+      () => {
+        this.showAlertBox(true, "Service created succesfully");
+        this.resetFormFields();
+      },
+      error => {
+        this.showAlertBox(false, error.message);
+      }
+    );
   };
 
   render() {
-    const clientsList = this.state.clients.map(client => (
-      <option key={client.id} value={client.name}>
-        {client.name}
-      </option>
-    ));
-    const serviceList = onsaServices.map(service => (
-      <option key={service.id} value={service.type}>
-        {serviceEnum[service.type]}
-      </option>
-    ));
-    const locationsList = this.state.locations.map(location => (
-      <option key={location.id} value={location.name}>
-        {location.name}
-      </option>
-    ));
-    const portsList = this.state.portsList.map(port => (
-      <option key={port.id} value={port.access_port}>
-        {port.access_node + " - " + port.access_port}
-      </option>
-    ));
-    let vrfList = this.createVrfElements();
-    let customerLocsList = this.createCustLocsList();
 
-    let alertBox = null;
-    if (this.state.successAlert) {
-      alertBox = (
-        <Alert bsStyle="sucsess">
-          <strong>Success!</strong> Service created.
-        </Alert>
-      );
+    const formIsValid = () => {
+      return this.state.serviceId &&
+      this.state.selectedCustLoc && 
+      this.state.clientId &&
+      this.state.bandwidth 
+      //this.state.prefix
+       ? false 
+       : true
     }
+    // console.log("form Is valid: ", formIsValid() )
 
     return (
       <React.Fragment>
-        <div>{alertBox}</div>
-        <div className="col-md-6 order-md-1">
-          <FormTitle>New service</FormTitle>
-          <Form
-            className="needs-validation"
-            noValidate
-            onSubmit={this.handleSubmit}
-          >
-            <FormRow className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="client">Client</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="client"
-                  name="client"
-                  value={this.state.client}
-                  defaultValue={this.state.client}
-                  onChange={this.handleOnSelect}
-                  required
-                >
-                  <option value="">Choose...</option>
-                  {clientsList}
-                </FormSelect>
-                <div class="invalid-feedback">
-                  Example invalid feedback text
+        <div className="row justify-content-center">
+          <div className="col-md-8">
+            <FormAlert
+              succesfull={this.state.successAlert}
+              displayMessage={this.state.displayMessage}
+            />
+          </div>
+          <div className="col-md-8 order-md-1">
+            <FormTitle>New service</FormTitle>
+            <Form
+              className="needs-validation"
+              noValidate
+              onSubmit={this.handleSubmit}
+            >
+              <FormRow className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="client">Client</label>
+                  <Select
+                    onChange={this.handleClientOnChange}
+                    options={this.state.clientOptions}
+                    name="client"
+                    placeholder="Choose a client.."
+                  />
+
+                  <div className="invalid-feedback">
+                    Example invalid feedback text
+                  </div>
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="serviceId">Product ID</label>
+                  <FormInput
+                    type="text"
+                    className="form-control"
+                    id="serviceId"
+                    placeholder="Id"
+                    name="serviceId"
+                    value={this.state.serviceId}
+                    onChange={this.handleInputChange}
+                    required
+                  />
+                </div>
+              </FormRow>
+
+              <FormRow className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="customerLoc">Customer Location</label>
+                  <Select
+                    onChange={this.handleCustLocationOnChange}
+                    options={this.state.custLocationsOptions}
+                    name="customerLoc"
+                    placeholder="Choose a customer location.."
+                    value={this.state.selectedCustLoc}
+                    required
+                  />
+                </div>
+              </FormRow>
+
+              <div className="d-block my-3">
+                <div className="custom-control custom-radio">
+                  <input
+                    id="radio"
+                    name="cpeExist"
+                    type="checkbox"
+                    onChange={this.handleInputChange}
+                    className="custom-control-input"
+                    disabled={!this.state.customerLocId}
+                    required
+                  />
+                  <label className="custom-control-label" htmlFor="radio">
+                    Existing CPE
+                  </label>
                 </div>
               </div>
-
-              <div className="col-md-6 mb-3">
-                <label htmlFor="serviceId">ID</label>
-                <FormInput
-                  type="text"
-                  className="form-control"
-                  id="serviceId"
-                  placeholder="Id"
-                  name="serviceId"
-                  value={this.state.serviceId}
-                  onChange={this.handleChange}
-                  required
-                />
-              </div>
-            </FormRow>
-
-            <FormRow className="row">
-              <div className="col-md-12 mb-3">
-                <label htmlFor="customerLoc">Customer Location</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="customerLoc"
-                  name="customerLoc"
-                  value={this.state.customerLoc}
-                  onChange={this.handleOnSelect}
-                  required
+              {/* PORT */}
+              <FormRow className="row">
+                <div
+                  className="col-md-12 mb-3"
+                  style={
+                    this.state.cpeExist && this.state.customerLocId
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {customerLocsList}
-                </FormSelect>
-              </div>
-            </FormRow>
-
-            <div class="d-block my-3">
-              <div className="custom-control custom-radio">
-                <input
-                  id="radio"
-                  name="cpeExist"
-                  type="checkbox"
-                  onChange={this.handleChange}
-                  className="custom-control-input"
-                  disabled={!this.state.customerLocId}
-                  required
-                />
-                <label className="custom-control-label" htmlFor="radio">
-                  Existing CPE
-                </label>
-              </div>
-            </div>
-
-            <FormRow className="row">
-              <div
-                className="col-md-12 mb-3"
-                style={
-                  this.state.cpeExist && this.state.customerLocId
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
-              >
-                <label htmlFor="port">Port</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="port"
-                  name="port"
-                  value={this.state.port}
-                  onChange={this.handleOnSelect}
-                  required
+                  <label htmlFor="port">Port</label>
+                  <Select
+                    onChange={this.handlePortOnChange}
+                    options={this.state.portOptions}
+                    name="port"
+                    placeholder="Choose a port.."
+                    required
+                    value={this.state.selectedPort}
+                  />
+                </div>
+              </FormRow>
+              {/* PREFIX */}
+              <FormRow className="row">
+                <div
+                  className={
+                    this.state.showPrefix ? "col-md-6 mb-3" : "col-md-6 mb-3"
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {portsList}
-                </FormSelect>
-              </div>
-            </FormRow>
+                  <label htmlFor="prefix">
+                    Bandwidth <span className="text-muted"> (In Mbps)</span>
+                  </label>
+                  <FormInput
+                    type="number"
+                    min="0"
+                    className="form-control"
+                    id="bandwidth"
+                    name="bandwidth"
+                    value={this.state.bandwidth}
+                    onChange={this.handleInputChange}
+                    placeholder="100"
+                    required
+                  />
+                </div>
 
-            <FormRow className="row">
-              <div
-                className={
-                  this.state.showPrefix ? "col-md-6 mb-3" : "col-md-6 mb-3"
-                }
-              >
-                <label htmlFor="prefix">
-                  Bandwidth <span className="text-muted"> (In Mbps)</span>
-                </label>
-                <FormInput
-                  type="number"
-                  className="form-control"
-                  id="bandwidth"
-                  name="bandwidth"
-                  value={this.state.bandwidth}
-                  onChange={this.handleChange}
-                  placeholder="100"
-                  required
-                />
-              </div>
-
-              <div
-                className="col-md-6 mb-3"
-                style={
-                  this.state.showPrefix
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
-              >
-                <label htmlFor="prefix">Prefix</label>
-                <FormInput
-                  type="number"
-                  className="form-control"
-                  id="prefix"
-                  name="prefix"
-                  value={this.state.prefix}
-                  onChange={this.handleChange}
-                  placeholder="24"
-                  required
-                />
-              </div>
-            </FormRow>
-
-            <FormRow className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="serviceType">Service type</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="serviceType"
-                  name="serviceType"
-                  value={this.state.serviceType}
-                  onChange={this.handleOnSelect}
-                  required
+                <div
+                  className="col-md-6 mb-3"
+                  style={
+                    this.state.showPrefix
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {serviceList}
-                </FormSelect>
-              </div>
+                  <label htmlFor="prefix">Prefix</label>
+                  <FormInput
+                    type="number"
+                    className="form-control"
+                    id="prefix"
+                    name="prefix"
+                    value={this.state.prefix}
+                    onChange={this.handleInputChange}
+                    placeholder="24"
+                    required
+                  />
+                </div>
+              </FormRow>
+              {/* SERVICE TYPE */}
+              <FormRow className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="serviceType">Service type</label>
+                  <Select
+                    onChange={this.handleServiceTypeOnChange}
+                    options={this.state.servicesOptions}
+                    name="serviceType"
+                    placeholder="IRS, MPLS, VPLS..."
+                    value={this.state.selectedService}
+                    required
+                  />
+                </div>
 
-              <div className="col-md-6 mb-3">
-                <label htmlFor="location">Location</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="location"
-                  name="location"
-                  value={this.state.location}
-                  onChange={this.handleOnSelect}
-                  required
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="location">HUB</label>
+                  <Select
+                    onChange={this.handleLocationOnChange}
+                    options={this.state.locationsOptions}
+                    name="location"
+                    placeholder="Choose a HUB.."
+                    value={this.state.selectedLocation}
+                    required
+                  />
+                </div>
+              </FormRow>
+              {/* VRF */}
+              <FormRow className="row">
+                <div
+                  className="col-md-6 mb-3"
+                  style={
+                    this.state.showVrf
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option value="">Choose...</option>
-                  {locationsList}
-                </FormSelect>
-              </div>
-            </FormRow>
+                  <label htmlFor="vrfName">VRF</label>
+                  <Select
+                    onChange={this.handleVRFOnChange}
+                    options={this.state.vrfsOptions}
+                    name="vrfName"
+                    placeholder="Choose the VRF ..."
+                    value={this.state.selectedVRF}
+                    required
+                  />
+                </div>
 
-            <FormRow className="row">
-              <div
-                className="col-md-6 mb-3"
-                style={
-                  this.state.showVrf
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
-              >
-                <label htmlFor="prefix">VRF</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="vrfName"
-                  name="vrfName"
-                  value={this.state.vrfName}
-                  onChange={this.handleOnSelect}
-                  required
+                <div
+                  className="col-md-6 mb-3"
+                  style={
+                    this.state.showClientNetwork
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
                 >
-                  <option defaultValue value="new">
-                    New
-                  </option>
-                  {vrfList.length ? vrfList : null}
-                </FormSelect>
-              </div>
+                  <label htmlFor="clientNetwork">Client network</label>
+                  <FormInput
+                    type="text"
+                    className="form-control"
+                    id="clientNetwork"
+                    name="clientNetwork"
+                    value={this.state.clientNetwork}
+                    onChange={this.handleInputChange}
+                    placeholder="192.168.0.0/24"
+                    required
+                  />
+                </div>
+              </FormRow>
 
-              <div
-                className="col-md-6 mb-3"
-                style={
-                  this.state.showClientNetwork
-                    ? { display: "inline" }
-                    : { display: "none" }
-                }
-              >
-                <label htmlFor="clientNetwork">Client network</label>
-                <FormInput
-                  type="text"
-                  className="form-control"
-                  id="clientNetwork"
-                  name="clientNetwork"
-                  value={this.state.clientNetwork}
-                  onChange={this.handleChange}
-                  placeholder="192.168.0.0/24"
-                  required
-                />
+              <hr className="mb-4" />
+              <div className="row justify-content-center">
+                <div className="col-md-6 ">
+                  <button
+                    className="btn btn-primary btn-block btn-lg "
+                    disabled= {formIsValid()}
+                    // {!this.state.serviceId ? true : false}
+                    type="submit"
+                  >
+                    Create
+                  </button>
+                </div>
               </div>
-            </FormRow>
-
-            <hr className="mb-4" />
-            <button
-              className="btn btn-primary btn-lg btn-block"
-              disabled={!this.state.serviceId ? true : false}
-              type="submit"
-            >
-              Create
-            </button>
-          </Form>
+            </Form>
+          </div>
         </div>
       </React.Fragment>
     );

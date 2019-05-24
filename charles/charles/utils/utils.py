@@ -9,16 +9,25 @@ import json
 import os
 import logging
 import coloredlogs
+from celery import Celery
+
 
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
 def configure_service(config):
-    url = os.getenv('WORKER_URL') + "services"
-    rheaders = {'Content-Type': 'application/json'}
-    data = config
-    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    # url = os.getenv('WORKER_URL') + "services"
+    # rheaders = {'Content-Type': 'application/json'}
+    # data = config
+    # response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    app = Celery('worker', broker='amqp://myuser:mypassword@10.120.78.58/myvhost')
+    promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)] )
+    print("Sending message to queue")
+    # print(promise.get())
+
+
+
 
 
 def update_jeangrey_service(service_id, data):
@@ -314,5 +323,15 @@ def update_charles_service(service, state):
     charles_service.save()
     return service
 
-
+def get_device_model(device_model_id):
+    url = os.getenv('INVENTORY_URL') + "device_models/" + str(device_model_id)
+    rheaders = { 'Content-Type': 'application/json' }
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+        
+    if r.json() and r.status_code == HTTP_200_OK:
+        return r.json()
+    elif r.status_code == HTTP_404_NOT_FOUND:
+        raise DeviceModelException("Invalid device model.", status_code=r.status_code)
+    else:
+        raise DeviceModelException("Unable to fetch device model.", status_code=r.status_code)
 

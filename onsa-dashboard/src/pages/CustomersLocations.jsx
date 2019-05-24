@@ -1,76 +1,54 @@
 import React from "react";
-import {
-  Form,
-  FormRow,
-  FormTitle,
-  FormInput,
-  FormSelect
-} from "../components/Form";
-import { Alert } from "reactstrap";
-
-async function getJson(url) {
-  let response = await fetch(url, {
-    method: "GET",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + sessionStorage.getItem('token')
-    }
-  });
-
-  let jsonResponse = await response.json();
-  return jsonResponse;
-}
-
-async function postJson(url, data) {
-  let response = await fetch(url, {
-    method: "POST",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + sessionStorage.getItem('token')
-    },
-    body: JSON.stringify(data)
-  });
-
-  let jsonResponse = await response.json();
-  // response.json();
-
-  return jsonResponse;
-}
+import FormAlert from "../components/Form/FormAlert";
+import { URLs, HTTPGet, HTTPPost, ClientURLs } from "../middleware/api.js";
+import Select from "react-select";
 
 class CustomersLocations extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      token: "",
-      clients: [],
-      client: null,
-      clientId: null,
-      address: null,
-      description: null
+      clientName: "",
+      clientId: "",
+      address: "",
+      description: "",
+      successAlert: null,
+      displayMessage: "",
+      clientOptions: []
     };
   }
 
   componentDidMount() {
-
-      let url = process.env.REACT_APP_CORE_URL + "/core/api/clients";
-
-      getJson(url).then(jsonResponse => {
-        this.setState({ clients: jsonResponse });
-      });
+    HTTPGet(URLs["clients"]).then(
+      jsonResponse => {
+        let options = jsonResponse.map(client => {
+          return { value: client.id, label: client.name }
+        });
+        this.setState({ clientOptions: options });
+      }, // onRejected:
+      error => {
+        this.showAlertBox(false, error.message);
+        this.setState({ clientOptions: [] });
+        
+      }
+    );
 
     this.props.displayNavbar(false);
   }
 
   resetFormFields = () => {
     this.setState({
-      client: "",
+      clientName: "",
       clientId: "",
       address: "",
-      description: "",
-      successBox: false
+      description: ""
+    });
+  };
+
+  showAlertBox = (result, message) => {
+    this.setState({
+      successAlert: result,
+      displayMessage: message
     });
   };
 
@@ -80,16 +58,12 @@ class CustomersLocations extends React.Component {
 
     this.setState({ [name]: value });
   };
-
-  handleOnSelect = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-    let id = event.target.options.selectedIndex;
-
-    switch (name) {
-      default:
-        this.setState({ [name]: value, clientId: id });
-    }
+  
+  handleSelectOnChange = selectedOption => {
+    this.setState({
+      clientName: selectedOption.label,
+      clientId: selectedOption.value
+    });
   };
 
   handleSubmit = event => {
@@ -98,37 +72,30 @@ class CustomersLocations extends React.Component {
       address: this.state.address,
       description: this.state.description
     };
-    console.log(this.state.clientId)
-    let url =
-      process.env.REACT_APP_CORE_URL + "/core/api/clients/" +
-      this.state.clientId +
-      "/customerlocations";
-    postJson(url, data).then(() => {
-      this.setState({ successAlert: true });
-    });
 
-    this.resetFormFields();
+    let url = ClientURLs("customerLocations", this.state.clientId);
+
+    HTTPPost(url, data).then(
+      () => {
+        this.showAlertBox(true, "Customer Location Added");
+        this.resetFormFields();
+      },
+      error => {
+        this.showAlertBox(false, error.message);
+      }
+    );
   };
 
   render() {
-    const clientsList = this.state.clients.map(client => (
-      <option key={client.id} value={client.name}>
-        {client.name}
-      </option>
-    ));
-
-    let alertBox = null;
-    if (this.state.successAlert) {
-      alertBox = (
-        <Alert bsStyle="success">
-          <strong>Success!</strong> Customer location added.
-        </Alert>
-      );
-    }
-
     return (
       <React.Fragment>
-        <div>{alertBox}</div>
+        <div className="row justify-content-center">
+        <div className="col-md-8">
+          <FormAlert
+            succesfull={this.state.successAlert}
+            displayMessage={this.state.displayMessage}
+          />
+        </div>
         <div className="col-md-8 order-md-1">
           <h4 className="mb-3">Add customer location</h4>
           <form
@@ -139,18 +106,13 @@ class CustomersLocations extends React.Component {
             <div className="row">
               <div className="col-md-6 mb-3">
                 <label htmlFor="client">Client</label>
-                <FormSelect
-                  className="custom-select d-block w-100"
-                  id="client"
+                <Select
+                  onChange={this.handleSelectOnChange}
+                  options={this.state.clientOptions}
                   name="client"
-                  value={this.state.client}
-                  onChange={this.handleOnSelect}
-                  required
-                >
-                  <option value="">Choose...</option>
-                  {clientsList}
-                </FormSelect>
-                <div class="invalid-feedback">
+                  placeholder="Choose a client.."
+                />
+                <div className="invalid-feedback">
                   Example invalid feedback text
                 </div>
               </div>
@@ -163,8 +125,8 @@ class CustomersLocations extends React.Component {
                   name="address"
                   value={this.state.address}
                   onChange={this.handleChange}
-                  maxLength= "50"
-                  placeholder="Calle Falsa 123"
+                  maxLength="50"
+                  placeholder="Some address 123"
                   required
                 />
               </div>
@@ -180,8 +142,8 @@ class CustomersLocations extends React.Component {
                   name="description"
                   value={this.state.description}
                   onChange={this.handleChange}
-                  maxLength= "50"
-                  placeholder="Description"
+                  maxLength="50"
+                  placeholder="Enter a description"
                   required
                 />
               </div>
@@ -191,13 +153,11 @@ class CustomersLocations extends React.Component {
             <button
               className="btn btn-primary btn-lg btn-block"
               disabled={
-                !(
-                  this.state.client &&
-                  this.state.address &&
-                  this.state.description
-                )
-                  ? true
-                  : false
+                this.state.clientName &&
+                this.state.address &&
+                this.state.description
+                  ? false
+                  : true
               }
               type="submit"
               value="Submit"
@@ -205,6 +165,7 @@ class CustomersLocations extends React.Component {
               Create
             </button>
           </form>
+        </div>
         </div>
       </React.Fragment>
     );
