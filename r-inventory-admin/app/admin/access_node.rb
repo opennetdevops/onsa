@@ -24,17 +24,17 @@ ActiveAdmin.register AccessNode do
 	end
 
 	index do
-  	selectable_column
-  	column :hostname
-  	column :location, :order => :desc
-  	column(:hub) {|access_node| access_node.location.shortname} 
-  	column :mgmt_ip
-  	column :device_model
-  	column :firmware_version
-  	column :config_status
-  	column :installation_date
-  	actions
-  end
+	  	selectable_column
+	  	column :hostname
+	  	column :location, :order => :desc
+	  	column(:hub) {|access_node| access_node.location.shortname} 
+	  	column :mgmt_ip
+	  	column :device_model
+	  	column :firmware_version
+	  	column :config_status
+	  	column :installation_date
+	  	actions
+  	end
 
 	filter :location
 	filter :hostname
