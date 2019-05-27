@@ -5,12 +5,7 @@ import {
   onsaVrfServices,
   serviceEnum
 } from "../site-constants.js";
-import {
-  Form,
-  FormRow,
-  FormTitle,
-  FormInput
-} from "../components/Form";
+import { Form, FormRow, FormTitle, FormInput } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 import Select from "react-select";
 
@@ -24,7 +19,7 @@ class ServiceCreate extends React.Component {
       bandwidth: "",
       clientId: "",
       clientName: "",
-      clientNetwork:"",
+      clientNetwork: "",
       clientOptions: [],
       cpeExist: false,
       customerLocId: null,
@@ -33,11 +28,11 @@ class ServiceCreate extends React.Component {
       locationsOptions: [],
       selectedLocation: "",
       selectedVRF: "",
-      selectedPort:"",
+      selectedPort: "",
       portsList: [],
       port: "",
       portId: null,
-      portOptions:[],
+      portOptions: [],
       prefix: "",
       selectedCustLoc: "",
       servicesOptions: [],
@@ -107,8 +102,6 @@ class ServiceCreate extends React.Component {
     });
   };
 
-
-
   handleInputChange = event => {
     const value = event.target.value;
     const name = event.target.name;
@@ -135,10 +128,13 @@ class ServiceCreate extends React.Component {
     HTTPGet(url).then(
       jsonResponse => {
         let options = jsonResponse.map(port => {
-          return { value: port.id, label: port.access_node + " - " + port.access_port };
+          return {
+            value: port.id,
+            label: port.access_node + " - " + port.access_port
+          };
         });
-  
-          this.setState({
+
+        this.setState({
           portOptions: options,
           cpeExist: true
         });
@@ -157,7 +153,6 @@ class ServiceCreate extends React.Component {
     this.setState({
       selectedPort: selectedOption,
       portId: selectedOption.value
-
     });
   };
 
@@ -236,8 +231,7 @@ class ServiceCreate extends React.Component {
 
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
-      { serviceType: selectedOption.value,
-        selectedService: selectedOption },
+      { serviceType: selectedOption.value, selectedService: selectedOption },
       this.handleDisplays
     );
   };
@@ -246,7 +240,7 @@ class ServiceCreate extends React.Component {
     let state = {};
     state = onsaVrfServices.includes(this.state.serviceType)
       ? { showVrf: true, showPrefix: false, showClientNetwork: true }
-      : { showVrf: false, showPrefix: true , showClientNetwork: false };
+      : { showVrf: false, showPrefix: true, showClientNetwork: false };
     this.setState(state);
     state =
       this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
@@ -268,19 +262,20 @@ class ServiceCreate extends React.Component {
     if (this.state.portId) {
       // if CPE already exists
 
-      data["prefix"] = this.state.prefix;
       data["access_port_id"] = this.state.portId;
 
       if (onsaVrfServices.includes(this.state.serviceType)) {
         data["client_network"] = this.state.clientNetwork;
         data["vrf_id"] = this.state.selectedVRF.value;
+      } else {
+        data["prefix"] = this.state.prefix;
       }
     } else {
-      data["prefix"] = this.state.prefix;
-
       if (onsaVrfServices.includes(this.state.serviceType)) {
         data["client_network"] = this.state.clientNetwork;
         data["vrf_id"] = this.state.selectedVRF.value;
+      } else {
+        data["prefix"] = this.state.prefix;
       }
     }
 
@@ -296,16 +291,15 @@ class ServiceCreate extends React.Component {
   };
 
   render() {
-
     const formIsValid = () => {
       return this.state.serviceId &&
-      this.state.selectedCustLoc && 
-      this.state.clientId &&
-      this.state.bandwidth 
-      //this.state.prefix
-       ? false 
-       : true
-    }
+        this.state.selectedCustLoc &&
+        this.state.clientId &&
+        this.state.bandwidth
+        ? //this.state.prefix
+          false
+        : true;
+    };
     // console.log("form Is valid: ", formIsValid() )
 
     return (
@@ -523,7 +517,7 @@ class ServiceCreate extends React.Component {
                 <div className="col-md-6 ">
                   <button
                     className="btn btn-primary btn-block btn-lg "
-                    disabled= {formIsValid()}
+                    disabled={formIsValid()}
                     // {!this.state.serviceId ? true : false}
                     type="submit"
                   >
