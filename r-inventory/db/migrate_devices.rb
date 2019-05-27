@@ -1,5 +1,5 @@
 require 'csv'
-csv_text = File.read(Rails.root.join('db','network-devices.csv'), encoding: "utf-8")
+csv_text = File.read(Rails.root.join('db','network-devices-2019-05-27.csv'), encoding: "utf-8")
 csv = CSV.parse(csv_text, :headers => true, :encoding => "utf-8",:col_sep =>",")
 csv.each do |row|
 	if row['hostname']  =~ /RAC/i
@@ -17,8 +17,7 @@ csv.each do |row|
 		RouterNode.create!(hostname:hostname,mgmt_ip:mgmt_ip,location_id:location_id,
 			device_model_id:device_model_id,serial_number:serial_number,ot:ot,
 			firmware_version:firmware_version, installation_date:installation_date,config_status:config_status,comments:comments)
-	end
-	if row['hostname']  =~ /SAC/i
+	elsif row['hostname']  =~ /SAC/i
 		puts "Migrando:#{row['hostname']} en el hub:#{row['hub']}"
 		hostname = row['hostname']
 		mgmt_ip = row['ip_management']
@@ -37,8 +36,7 @@ csv.each do |row|
 			remote_ports:remote_ports,uplink_ports:uplink_ports,remote_device_id:remote_device_id,
 			device_model_id:device_model_id,serial_number:serial_number,ot:ot,
 			firmware_version:firmware_version,installation_date:installation_date,config_status:config_status,comments:comments)
-	end
-	if row['hostname']  =~ /SCO/i
+	elsif row['hostname']  =~ /SCO/i
 		puts "Migrando:#{row['hostname']} en el hub:#{row['hub']}"
 		hostname = row['hostname']
 		mgmt_ip = row['ip_management']
@@ -57,5 +55,7 @@ csv.each do |row|
 			remote_ports:remote_ports,uplink_ports:uplink_ports,remote_device_id:remote_device_id,
 			device_model_id:device_model_id,serial_number:serial_number,ot:ot,
 			firmware_version:firmware_version,installation_date:installation_date,config_status:config_status,comments:comments)
+	else
+		puts "No Migrado:#{row['hostname']} en el hub:#{row['hub']}"
 	end
 end

@@ -1,14 +1,6 @@
 [
   {
-    "id": 1,
-    "name": "centro",
-    "address": null,
-    "pop_size": "large",
-    "region": null,
-    "shortname": "CEN"
-  },
-  {
-    "id": 2,
+    "id": 180,
     "name": "LAB",
     "address": "Gral. Hornos 690 - 1SS",
     "pop_size": "large",

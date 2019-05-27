@@ -52,7 +52,7 @@ Id,short_name,name,region,pop_size,Created at,Updated at
 60,MRO,Moreno,AMBA,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:20 UTC
 59,MGR,Monte Grande,AMBA,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:20 UTC
 58,CEN,Centro,AMBA,large,2017-06-29 14:34:18 UTC,2017-06-29 14:34:18 UTC
-57,MER,Mercedes,BUENOS AIRES,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:20 UTC
+57,MCD,Mercedes,BUENOS AIRES,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:20 UTC
 56,MJU,Marcos Juarez,CENTRO,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:20 UTC
 55,MPM,Mar del Plata,SUR,large,2017-06-29 14:34:18 UTC,2017-06-29 14:34:20 UTC
 54,LUJ,Lujan,BUENOS AIRES,,2017-06-29 14:34:18 UTC,2017-06-29 14:34:19 UTC
@@ -120,3 +120,4 @@ Id,short_name,name,region,pop_size,Created at,Updated at
 ,SPC,San Patricio del Chañar,,,
 ,SUA,Suarez,,,
 ,TUE,Venado Tuerto,,,
+,RET2,Retiro 2,,,
