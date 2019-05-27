@@ -6,6 +6,7 @@ import json
 import requests
 import logging
 import coloredlogs
+import os
 
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)

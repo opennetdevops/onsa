@@ -151,6 +151,16 @@ def get_vrf(vrf_name):
     else:
         raise VrfException("Invalid VRF Id.", status_code=r.status_code)
 
+def get_vrfs():
+    url = settings.INVENTORY_URL + "vrfs"
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+    return response.json()
+
 def get_service(service_id):
     url = settings.JEAN_GREY_URL + "services/" + str(service_id)
     rheaders = { 'Content-Type': 'application/json' }
