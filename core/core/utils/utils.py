@@ -9,6 +9,7 @@ import requests
 import ldap
 import logging
 import coloredlogs
+import os
 
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
@@ -215,6 +216,7 @@ def search_user_ldap(l, username):
     
     return r
 
+
 def init_ldap():
     host = "ldap://10.120.78.5"
     dn = "cn=fc__netauto,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fibercorp,dc=com,dc=ar"
@@ -258,5 +260,90 @@ def delete_jeangrey_service(service_id):
 
     if r.json():
         return r.json()
+    else:
+        return None
+
+
+
+
+
+def get_free_logical_units(router_node_id):
+    url = settings.INVENTORY_URL + "router_nodes/" + \
+        str(router_node_id) + "/logicalunits?used=false"
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    
+    response = requests.get(url, auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    # TODO check minimum size = 2
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def get_router_node(location_id):
+    url = settings.INVENTORY_URL + "locations/" + \
+        str(location_id) + "/router_nodes"
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    response = requests.get(url, auth=None, verify=False, headers=rheaders)
+    
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
+    else:
+        return None
+
+def add_logical_unit_to_router_node(router_node_id, logical_unit_id, product_id):
+    url = settings.INVENTORY_URL + "router_nodes/" + \
+        str(router_node_id) + "/logicalunits"
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    
+    data = {"logical_unit_id": logical_unit_id, "product_id": product_id}
+    response = requests.post(url, data=json.dumps(
+        data), auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def get_locations():
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+
+    response = requests.get(settings.INVENTORY_URL + "locations", auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+
+    return json_response
+
+
+def get_cpe(sn):
+    url = settings.INVENTORY_URL + "client_nodes/" + str(sn)
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    response = requests.get(url, auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
+def get_free_vlan_tag(access_node_id, used):
+    url = settings.INVENTORY_URL + "access_nodes/" + \
+        str(access_node_id) + "/vlan_tag?used=" + used
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    
+    response = requests.get(url, auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
     else:
         return None

@@ -16,12 +16,7 @@ class LocationsView(APIView):
     authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
 
     def get(self, request):
-        rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(
-            settings.INVENTORY_URL + "locations", auth=None, verify=False, headers=rheaders)
-        json_response = json.loads(response.text)
-
-        return JsonResponse(json_response, safe=False)
+        return JsonResponse(get_locations(), safe=False)
 
 
 locations_view = LocationsView.as_view()

@@ -33,19 +33,9 @@ class ServiceActivationView(APIView):
         return JsonResponse(r.status_code, safe=False)
 
     def is_valid_cpe(self, sn):
-        cpe = self._get_cpe(sn)
+        cpe = get_cpe(sn)
 
         return True if cpe else False
-
-    def _get_cpe(self, sn):
-        url = settings.INVENTORY_URL + "clientnodes/" + str(sn)
-        rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(url, auth=None, verify=False, headers=rheaders)
-        json_response = json.loads(response.text)
-        if json_response:
-            return json_response
-        else:
-            return None
 
     def update_jeangrey_service(self, service_id, data):
         url = settings.JEAN_GREY_URL + "services/" + str(service_id)
