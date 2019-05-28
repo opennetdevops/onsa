@@ -292,20 +292,6 @@ def get_free_logical_units(router_node_id):
     else:
         return None
 
-def get_router_node(location_id):
-    url = settings.INVENTORY_URL + "locations/" + \
-        str(location_id) + "/router_nodes"
-    
-    token = get_inventory_authentication_token()
-    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
-    response = requests.get(url, auth=None, verify=False, headers=rheaders)
-    
-    json_response = json.loads(response.text)
-    if json_response:
-        return json_response[0]
-    else:
-        return None
-
 def add_logical_unit_to_router_node(router_node_id, logical_unit_id, product_id):
     url = settings.INVENTORY_URL + "router_nodes/" + \
         str(router_node_id) + "/logicalunits"

@@ -67,22 +67,23 @@ class Dashboard extends React.Component {
           service.id +
           "/resources";
 
-       HTTPGet(url).then(jsonResponse => {
-         this.setState(
-           {
-             resources: jsonResponse,
-             resourcesModal: !this.state.resourcesModal,
-             modalService: { id: service.id, type: service.service_type }
-           })
+        HTTPGet(url).then(
+          jsonResponse => {
+            this.setState({
+              resources: jsonResponse,
+              resourcesModal: !this.state.resourcesModal,
+              modalService: { id: service.id, type: service.service_type }
+            });
           },
-           error => {
-            this.showAlertBox(false, error.message);}
-         ); //todo
-       
+          error => {
+            this.showAlertBox(false, error.message);
+          }
+        ); //todo
+
         break;
       case "activate":
         this.setState({
-          activateModal: !this.state.activateModal,
+          activateModal: !this.state.accessNodeActivateModal,
           modalService: { id: service.id, type: service.service_type }
         });
         break;
@@ -214,18 +215,18 @@ class Dashboard extends React.Component {
           />
         </div>
         <div className="row">
-        <table className="table table-hover col-md-12">
-          <thead >
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Service Type</th>
-              <th scope="col">Service State</th>
-            </tr>
-          </thead>
-          <tbody>{tableRows}</tbody>
-        </table>
+          <table className="table table-hover col-md-12">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Service Type</th>
+                <th scope="col">Service State</th>
+              </tr>
+            </thead>
+            <tbody>{tableRows}</tbody>
+          </table>
         </div>
-        
+
         <ResourcesModal
           isOpen={this.state.resourcesModal}
           service={this.state.modalService}

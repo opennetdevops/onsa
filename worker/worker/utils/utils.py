@@ -1,14 +1,13 @@
 import requests
 import json
-import configparser
+import os
 
-config = configparser.ConfigParser()
-config.read('conf/worker.conf')
 
 def update_charles_service(service):
-	rheaders = {'Content-Type': 'application/json'}
-	data = {'service_state' : service.service_state}
-	requests.post(config['urls']['charles'] + '/services/' + service.service_id + "/process",
-				  data=json.dumps(data),
-				  verify=False,
-				  headers=rheaders)
+    url = os.getenv('CHARLES_URL') + 'services/'
+    rheaders = {'Content-Type': 'application/json'}
+    data = {'service_state': service.service_state}
+    requests.post(url + service.service_id + "/process",
+                  data=json.dumps(data),
+                  verify=False,
+                  headers=rheaders)
