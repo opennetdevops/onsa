@@ -379,40 +379,31 @@ class ServiceCreate extends React.Component {
                 </div>
               </div>
               {/* PORT */}
-              <FormRow className="row">
-                <div
-                  className="col-md-12 mb-3"
-                  style={
-                    this.state.cpeExist && this.state.customerLocId
-                      ? { display: "inline" }
-                      : { display: "none" }
-                  }
-                >
-                  <label htmlFor="port">Port</label>
-                  <Select
-                    onChange={this.handlePortOnChange}
-                    options={this.state.portOptions}
-                    name="port"
-                    placeholder="Choose a port.."
-                    required
-                    value={this.state.selectedPort}
-                  />
-                </div>
-              </FormRow>
+              {this.state.cpeExist && this.state.customerLocId && (
+                <FormRow className="row">
+                  <div className="col-md-12 mb-3">
+                    <label htmlFor="port">Port</label>
+                    <Select
+                      onChange={this.handlePortOnChange}
+                      options={this.state.portOptions}
+                      name="port"
+                      placeholder="Choose a port.."
+                      required
+                      value={this.state.selectedPort}
+                    />
+                  </div>
+                </FormRow>
+              )}
               {/* PREFIX */}
               <FormRow className="row">
-                <div
-                  className={
-                    this.state.showPrefix ? "col-md-6 mb-3" : "col-md-6 mb-3"
-                  }
-                >
-                  <label htmlFor="prefix">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="bandwidth">
                     Bandwidth <span className="text-muted"> (In Mbps)</span>
                   </label>
                   <FormInput
                     type="number"
                     min="0"
-                    className="form-control"
+                    className="form-control "
                     id="bandwidth"
                     name="bandwidth"
                     value={this.state.bandwidth}
@@ -422,26 +413,21 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
 
-                <div
-                  className="col-md-6 mb-3"
-                  style={
-                    this.state.showPrefix
-                      ? { display: "inline" }
-                      : { display: "none" }
-                  }
-                >
-                  <label htmlFor="prefix">Prefix</label>
-                  <FormInput
-                    type="number"
-                    className="form-control"
-                    id="prefix"
-                    name="prefix"
-                    value={this.state.prefix}
-                    onChange={this.handleInputChange}
-                    placeholder="24"
-                    required
-                  />
-                </div>
+                {this.state.showPrefix && (
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="prefix">Prefix</label>
+                    <FormInput
+                      type="number"
+                      className="form-control"
+                      id="prefix"
+                      name="prefix"
+                      value={this.state.prefix}
+                      onChange={this.handleInputChange}
+                      placeholder="24"
+                      required
+                    />
+                  </div>
+                )}
               </FormRow>
               {/* SERVICE TYPE */}
               <FormRow className="row">
@@ -471,45 +457,35 @@ class ServiceCreate extends React.Component {
               </FormRow>
               {/* VRF */}
               <FormRow className="row">
-                <div
-                  className="col-md-6 mb-3"
-                  style={
-                    this.state.showVrf
-                      ? { display: "inline" }
-                      : { display: "none" }
-                  }
-                >
-                  <label htmlFor="vrfName">VRF</label>
-                  <Select
-                    onChange={this.handleVRFOnChange}
-                    options={this.state.vrfsOptions}
-                    name="vrfName"
-                    placeholder="Choose the VRF ..."
-                    value={this.state.selectedVRF}
-                    required
-                  />
-                </div>
+                {this.state.showVrf && (
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="vrfName">VRF</label>
+                    <Select
+                      onChange={this.handleVRFOnChange}
+                      options={this.state.vrfsOptions}
+                      name="vrfName"
+                      placeholder="Choose the VRF ..."
+                      value={this.state.selectedVRF}
+                      required
+                    />
+                  </div>
+                )}
 
-                <div
-                  className="col-md-6 mb-3"
-                  style={
-                    this.state.showClientNetwork
-                      ? { display: "inline" }
-                      : { display: "none" }
-                  }
-                >
-                  <label htmlFor="clientNetwork">Client network</label>
-                  <FormInput
-                    type="text"
-                    className="form-control"
-                    id="clientNetwork"
-                    name="clientNetwork"
-                    value={this.state.clientNetwork}
-                    onChange={this.handleInputChange}
-                    placeholder="192.168.0.0/24"
-                    required
-                  />
-                </div>
+                {this.state.showClientNetwork && (
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="clientNetwork">Client network</label>
+                    <FormInput
+                      type="text"
+                      className="form-control"
+                      id="clientNetwork"
+                      name="clientNetwork"
+                      value={this.state.clientNetwork}
+                      onChange={this.handleInputChange}
+                      placeholder="192.168.0.0/24"
+                      required
+                    />
+                  </div>
+                )}
               </FormRow>
 
               <hr className="mb-4" />
