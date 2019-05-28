@@ -20,7 +20,7 @@ from worker.utils.utils import *
 
 class Service(models.Model):
     client_name = models.CharField(max_length=50)
-    service_id = models.CharField(max_length=50)
+    service_id = models.CharField(max_length=50, primary_key=True)
     service_type = models.CharField(max_length=50)
     service_state = models.CharField(max_length=50)
     parameters = JSONField()
@@ -31,8 +31,8 @@ class Service(models.Model):
     def deploy(self):
         tasks = Task.objects.filter(service=self)
 
-        print("Service Id: ", self.service_id)
-        print("Requested Tasks: ", tasks)
+        # print("Service Id: ", self.service_id)
+        # print("Requested Tasks: ", tasks)
 
         completed_tasks = []
         failed_tasks = []
@@ -42,18 +42,21 @@ class Service(models.Model):
         for task in tasks:
             task.run_task()
             task.save()
-            if task.task_state == "ERROR":
+            if task.task_state != "ERROR":
                 completed_tasks.append(task)
-            elif task.task_state != "ERROR":
+            elif task.task_state == "ERROR":
                 task.rollback()
                 task.save()
                 failed_tasks.append(task)
-                self.service_state = task.task_state
                 break
 
         print("Completed Tasks: ", completed_tasks)
         print("Failed Tasks: ", failed_tasks)
         self.save()
+        if len(failed_tasks): 
+            self.service_state = "ERROR"
+        else:
+            self.service_state = "DONE"
 
         # Let charles know about service state
         update_charles_service(self)
@@ -98,7 +101,7 @@ class Task(models.Model):
 
         # Set up parameters
         params = {}
-        params['mgmt_ip'] = self.device['mgmt_ip']
+        params['mgmt_ip'] = self.device['mgmt_ip'].replace('/32', '')
         params['service_id'] = self.service.service_id
         params['service_type'] = self.service.service_type
         params['client_name'] = self.service.client_name
@@ -106,25 +109,27 @@ class Task(models.Model):
         params.update(self.service.parameters)
 
         params = json.loads(render(variables_path, params))
+        print(params)
 
         config_handler = getattr(
             ConfigHandler.ConfigHandler, StrategyMap[VendorMap[self.device['vendor']]])
 
         status = config_handler(template_path, params)
 
-        if (status == ERR0):
+        if (status):
+            print("Config OK")
             self.task_state = status
         else:
-            self.task_state = status
-
-        print(self.task_state)
+            print("Config ERROR")
+            self.task_state = "ERROR"
 
     def rollback(self):
 
         dir = os.path.dirname(os.path.abspath(__file__))
 
         if VendorMap[self.device['vendor']] == 'transition':
-            template_path = "templates/" + VendorMap[self.device['vendor']].lower() + "/" + self.device['model'].lower() + "/" + "DELETE_L2SERVICE.CONF"
+            template_path = "templates/" + VendorMap[self.device['vendor']].lower(
+            ) + "/" + self.device['model'].lower() + "/" + "DELETE_L2SERVICE.CONF"
         else:
             if self.service.service_type != "vpls":
                 template_path = "templates/" + VendorMap[self.device['vendor']].lower() + "/" + self.device['model'].lower(
@@ -142,7 +147,7 @@ class Task(models.Model):
         pprint(variables_path)
 
         params = {}
-        params['mgmt_ip'] = self.device['mgmt_ip']
+        params['mgmt_ip'] = self.device['mgmt_ip'].replace('/32', '')
         params['service_id'] = self.service.service_id
         params['service_type'] = self.service.service_type
         params['client_name'] = self.service.client_name

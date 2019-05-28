@@ -33,12 +33,8 @@ def process_service(request):
         service.save()
     else:
         service = Service.objects.filter(service_id=data['service_id'])
-        # service.update(parameters=data['parameters'])
-        print("my service")
-        print(service.values())
+        service.update(parameters=data['parameters'])
         service = service[0]
-        print("first service")
-        print(service.service_id)
 
     """
     Creates all of the tasks associated with
@@ -49,8 +45,20 @@ def process_service(request):
                     op_type=data['op_type'],
                     device=device)
         task.save()
-    print("service")
-    print(service)
+
     service.deploy()
-    print("running")
+    return
+
+# TODO
+@shared_task
+def re_process_service(request):
+    print("My req: " + request)
+    data = json.loads(request)
+    print("my data")
+    print(data)
+
+    # look for tasks referred to that service id
+    # re-run tasks
+    # update service
+
     return
