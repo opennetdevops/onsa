@@ -11,20 +11,22 @@ import coloredlogs
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
+
 class CustomerLocationAccessPortsView(View):
 
     def get(self, request, client_id, customer_location_id):
-    
+
         try:
-            s = Service.objects.get(client_id=client_id, customer_location_id=customer_location_id) 
-            data = s.fields()   
+            services = Service.objects.filter(
+                client_id=client_id, customer_location_id=customer_location_id)
             response = []
-            print(data)
-            for s in data:
-                access_port = get_access_port(int(s['access_port_id']))
-                access_node = get_access_node(int(s['access_node_id']))
-                response.append({'access_port': access_port['port'], 'access_node': access_node['name']})   
-            return JsonResponse(list(response), safe=False) 
+
+            for service in services:
+                access_port = get_access_port(service.access_port_id)
+                access_node = get_access_node(service.access_node_id)
+                response.append(
+                    {'access_port': access_port['port'], 'access_node': access_node['hostname']})
+            return JsonResponse(list(response), safe=False)
 
         except Service.DoesNotExist as e:
             logging.error(e)
