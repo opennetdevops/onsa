@@ -7,6 +7,7 @@ import requests
 import logging
 import coloredlogs
 import os
+import sys
 
 coloredlogs.install(level='DEBUG')
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
@@ -116,7 +117,7 @@ def get_free_access_port(location_id):
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()[0]
     elif not r.json():
-        raise LocationException("Not available AccessPort", status_code=HTTP_503_SERVICE_UNAVAILABLE)
+        raise LocationException("Not available AccessPort", status_code=ERR_NO_ACCESSPORTS)
     else:
         raise LocationException("Invalid location.", status_code=r.status_code)
 
@@ -188,7 +189,7 @@ def get_free_vlan(access_node_id):
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()[0]
     elif not r.json():
-        raise AccessNodeException("Not available VLANs", status_code=HTTP_503_SERVICE_UNAVAILABLE)
+        raise AccessNodeException("Not available VLANs", status_code=ERR_NO_VLANS)
     else:
         raise AccessNodeException("Invalid access node.", status_code=r.status_code)
 
@@ -215,3 +216,29 @@ def get_vrf(vrf_name):
         return r.json()
     else:
         raise VrfException("Invalid VRF Id.", status_code=r.status_code)
+
+def release_access_port(access_port_id):
+    url = settings.INVENTORY_URL + "access_ports/" + access_port_id
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    data = {"used":False}
+    r = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if r.json() and r.status_code == HTTP_200_OK:
+        return r.json()
+    else:
+        raise AccessPortException("Invalid access port.", status_code=r.status_code)
+
+
+def release_vlan(access_node_id, vlan_id):
+    url = settings.INVENTORY_URL + "access_nodes/" + str(access_node_id) + "/vlans"
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    data = { 'vlan_id': vlan_id }
+    r = requests.delete(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    return r.json()
+
+        
+def release_resources(allocated_resources):
+    for elem in allocated_resources:
+        release_func = getattr(sys.modules[__name__], "release_" + elem)
+        release_func(allocated_resources[elem])
