@@ -29,18 +29,10 @@ ERR_SERVER_INT_ERROR = 500
 ERR_NOT_FOUND = 404
 
 
-# Error codes 
-ERR540 = 540
+# Custom Error codes 
 ERR_NO_PUBLICNETWORKS = 541 # No public networks available
 ERR_NO_WAN_NET = 542 # No WAN networks available
 ERR_NO_MGMT_NET = 543 # No MGMT networks available
-ERR544 = 544 # TBD
-ERR545 = 545 # TBD
-ERR546 = 546 # TBD
-ERR547 = 547 # TBD
-ERR548 = 548 # TBD
-ERR549 = 529 # TBD
-ERR520 = 520
 
 # Inventory Error Codes
 ERR_NO_ACCESSPORTS = 521 # No free access ports left at specific access node

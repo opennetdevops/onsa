@@ -9,10 +9,6 @@ from charles.utils.ipam_utils import *
 import logging
 import coloredlogs
 
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
-
-
 class ServiceTypes(Enum):
     cpeless_irs = cpeless_irs_service
     cpe_mpls = cpe_mpls_service

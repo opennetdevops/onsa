@@ -24,7 +24,7 @@ def configure_service(config):
     # response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     app = Celery('worker', broker='amqp://myuser:mypassword@10.120.78.58/myvhost')
     promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)] )
-    print("Sending message to queue")
+    logging.info("Sending message to queue")
     # print(promise.get())
 
 

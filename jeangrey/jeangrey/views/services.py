@@ -104,10 +104,10 @@ class ServiceView(View):
 
     def post(self, request):
         data = json.loads(request.body.decode(encoding='UTF-8'))
-
         form = ServiceForm(data)
 
         if form.is_valid():
+            allocated_resources = {}
 
             try:
                 client_id = data.pop('client_id')
@@ -117,23 +117,23 @@ class ServiceView(View):
                 router_nodes = get_router_nodes(location_id)
                 
                 if not router_nodes:
-                    raise RouterNodeException("Invalid location: no routers nodes location.", status_code=HTTP_503_SERVICE_UNAVAILABLE)
+                    raise RouterNodeException("Invalid location or no routers nodes available at selected location.", status_code=HTTP_503_SERVICE_UNAVAILABLE)
 
+                #If access_port not selected (previously) for the service
                 if "access_port_id" not in data.keys():
                     access_port = get_free_access_port(location_id)
                     access_port_id = str(access_port['id'])
                     use_access_port(access_port_id)
+                    allocated_resources['access_port'] = access_port_id
                 else:
                     access_port_id = data['access_port_id']
                     access_port = get_access_port(access_port_id)
+                
 
                 access_node_id = str(access_port['access_node_id'])
-
                 vlan = get_free_vlan(access_node_id)
-
-                # todo pasar exception
-
                 use_vlan(access_node_id, vlan['id'])
+                allocated_resources['vlan'] = vlan['id']
 
                 data['location_id'] = location_id
                 data['router_node_id'] = router_nodes[0]['id']
@@ -154,6 +154,13 @@ class ServiceView(View):
                 return JsonResponse(service.fields(), safe=False, status=HTTP_201_CREATED)
 
             except CustomException as e:
+                # TODO REFACTOR LOGGING with %s
+                if 'vlan' in allocated_resources:
+                    logging.info("Releasing vlan")
+                    release_vlan(data['access_node_id'], allocated_resources['vlan'])
+                if 'access_port' in allocated_resources:
+                    logging.info("Releasing access port")
+                    release_access_port(allocated_resources['access_port'])
                 return e.handle()
             except Client.DoesNotExist as e:
                 logging.error(e)
