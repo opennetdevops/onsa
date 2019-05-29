@@ -119,8 +119,6 @@ class Fsm():
             logging.debug(str("proposed next state " + state.name))
             service = state.run(service)
             logging.debug(str("Service after run:" + str(service)))
-            print(service)
-
 
             while service['service_state'] != "error" and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
                 #Execute next step

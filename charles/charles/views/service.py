@@ -40,7 +40,6 @@ class ServiceView(View):
             service = get_service(data['service_id'])
             my_charles_service = Service.objects.filter(service_id=data['service_id']).values()[0]
             my_charles_service.update(service)
-            logging.debug(my_charles_service)
 
             #Run FSM over charles service
             service_state = Fsm.run(my_charles_service)

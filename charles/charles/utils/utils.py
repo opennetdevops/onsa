@@ -10,22 +10,22 @@ import os
 import logging
 import coloredlogs
 from celery import Celery
-
-
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+import kombu
 
 
 
 def configure_service(config):
-    # url = os.getenv('WORKER_URL') + "services"
-    # rheaders = {'Content-Type': 'application/json'}
-    # data = config
-    # response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-    app = Celery('worker', broker='amqp://myuser:mypassword@10.120.78.58/myvhost')
-    promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)] )
+    #TODO User pass and server from local/production
+    
+    a = kombu.Connection('amqp://myuser:mypassword@10.120.78.58/myvhost',connect_timeout=3)
+    a.connect()
+    a.release()
+
+    app = Celery('worker', broker='amqp://myuser:mypassword@10.120.78.58/myvhost', broker_pool_limit=None)
+    promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)], ignore_result=True )
     logging.info("Sending message to queue")
-    # print(promise.get())
+    return True
+
 
 
 
