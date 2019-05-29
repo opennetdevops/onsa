@@ -24,7 +24,9 @@ class ServiceCreate extends React.Component {
       cpeExist: false,
       customerLocId: null,
       custLocationsOptions: [],
-      displayMessage: "",
+      dialogSuccess: false,
+      dialogText: "",
+      dialogShow: false,
       locationsOptions: [],
       selectedLocation: "",
       selectedVRF: "",
@@ -41,7 +43,6 @@ class ServiceCreate extends React.Component {
       showVrf: false,
       showPrefix: false,
       showClientNetwork: false,
-      successAlert: null,
       vrfName: "",
       vrfsOptions: []
     };
@@ -87,9 +88,11 @@ class ServiceCreate extends React.Component {
   }
 
   showAlertBox = (result, message) => {
+    // if there are no arguments, wont show de dialog
     this.setState({
-      successAlert: result,
-      displayMessage: message
+      dialogSuccess: result,
+      dialogText: message,
+      dialogShow: ( message || result) ? true : false
     });
   };
 
@@ -160,8 +163,9 @@ class ServiceCreate extends React.Component {
     const clientId = selectedOption.value;
     const clientName = selectedOption.label;
 
+    this.showAlertBox();
     this.getClientLocations(clientId);
-   // this.getClientVRFs(clientId);
+    this.getClientVRFs(clientId);
 
     this.setState({
       customerLocId: "",
@@ -230,10 +234,6 @@ class ServiceCreate extends React.Component {
   };
 
   handleServiceTypeOnChange = selectedOption => {
-    if (onsaVrfServices.includes(selectedOption.value)) {
-      this.getClientVRFs(this.state.clientId);
-    }
-
     this.setState(
       { serviceType: selectedOption.value, selectedService: selectedOption },
       this.handleDisplays
@@ -285,7 +285,7 @@ class ServiceCreate extends React.Component {
 
     HTTPPost(URLs["services"], data).then(
       () => {
-        this.showAlertBox(true, "Service created succesfully");
+        this.showAlertBox(true, "Service created successfuly");
         this.resetFormFields();
       },
       error => {
@@ -294,7 +294,9 @@ class ServiceCreate extends React.Component {
     );
   };
 
+
   render() {
+
     const formIsValid = () => {
       return this.state.serviceId &&
         this.state.selectedCustLoc &&
@@ -304,15 +306,16 @@ class ServiceCreate extends React.Component {
           false
         : true;
     };
-    // console.log("form Is valid: ", formIsValid() )
+     console.log("app state: ", this.state.showAlert )
 
     return (
       <React.Fragment>
         <div className="row justify-content-center">
           <div className="col-md-8">
             <FormAlert
-              succesfull={this.state.successAlert}
-              displayMessage={this.state.displayMessage}
+              dialogSuccess={this.state.dialogSuccess}
+              dialogText={this.state.dialogText}
+              dialogShow={this.state.dialogShow}
             />
           </div>
           <div className="col-md-8 order-md-1">

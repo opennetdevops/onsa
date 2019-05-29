@@ -8,13 +8,14 @@ class CustomersLocations extends React.Component {
     super(props);
 
     this.state = {
+      address: "",
       clientName: "",
       clientId: "",
-      address: "",
+      clientOptions: [],
       description: "",
-      successAlert: null,
-      displayMessage: "",
-      clientOptions: []
+      dialogSuccess: false,
+      dialogText: "",
+      dialogShow: false
     };
   }
 
@@ -47,8 +48,9 @@ class CustomersLocations extends React.Component {
 
   showAlertBox = (result, message) => {
     this.setState({
-      successAlert: result,
-      displayMessage: message
+      dialogSuccess: result,
+      dialogText: message,
+      dialogShow: ( message || result) ? true : false
     });
   };
 
@@ -60,6 +62,7 @@ class CustomersLocations extends React.Component {
   };
   
   handleSelectOnChange = selectedOption => {
+    this.showAlertBox();
     this.setState({
       clientName: selectedOption.label,
       clientId: selectedOption.value
@@ -92,8 +95,9 @@ class CustomersLocations extends React.Component {
         <div className="row justify-content-center">
         <div className="col-md-8">
           <FormAlert
-            succesfull={this.state.successAlert}
-            displayMessage={this.state.displayMessage}
+            dialogSuccess={this.state.dialogSuccess}
+            dialogText={this.state.dialogText}
+            dialogShow={this.state.dialogShow}
           />
         </div>
         <div className="col-md-8 order-md-1">

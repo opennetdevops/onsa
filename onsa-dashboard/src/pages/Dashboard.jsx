@@ -22,15 +22,15 @@ class Dashboard extends React.Component {
     super(props);
 
     this.state = {
-      services: [],
-      resources: null,
-      resourcesModal: false,
       activateModal: false,
       accessNodeActivateModal: false,
-      terminateModal: false,
-      modalService: { id: null, type: null },
       successAlert: null,
-      displayMessage: ""
+      displayMessage: "",
+      modalService: { id: null, type: null },
+      resources: null,
+      resourcesModal: false,
+      services: [],
+      terminateModal: false
     };
   }
 
@@ -48,8 +48,9 @@ class Dashboard extends React.Component {
 
   showAlertBox = (result, message) => {
     this.setState({
-      successAlert: result,
-      displayMessage: message
+      dialogSuccess: result,
+      dialogText: message,
+      dialogShow: ( message || result) ? true : false
     });
   };
 
@@ -210,8 +211,9 @@ class Dashboard extends React.Component {
         {/*<Sidebar/>*/}
         <div className="row justify-content-center">
           <FormAlert
-            succesfull={this.state.successAlert}
-            displayMessage={this.state.displayMessage}
+           dialogSuccess={this.state.dialogSuccess}
+           dialogText={this.state.dialogText}
+           dialogShow={this.state.dialogShow}
           />
         </div>
         <div className="row">
