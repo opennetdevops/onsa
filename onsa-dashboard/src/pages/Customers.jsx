@@ -9,9 +9,9 @@ class Customers extends React.Component {
     this.state = {
       client: "",
       cuic: "",
-      successAlert: null,
-      displayMessage: "",
-      visible: false
+      dialogSuccess: false,
+      dialogText: "",
+      dialogShow: false
     };
   }
 
@@ -28,10 +28,9 @@ class Customers extends React.Component {
 
   showAlertBox = (result, message) => {
     this.setState({
-      visible: true,
-      successAlert: result,
-      displayMessage: message,
-
+      dialogSuccess: result,
+      dialogText: message,
+      dialogShow: ( message || result) ? true : false
     });
   };
 
@@ -54,19 +53,20 @@ class Customers extends React.Component {
       },
       error => {
         this.showAlertBox(false, error.message);
-      }
+        }
     );
   };
 
   render() {
+
     return (
       <React.Fragment>
         <div className="row justify-content-center">
           <div className="col-md-8">
             <FormAlert
-              succesfull={this.state.successAlert}
-              displayMessage={this.state.displayMessage}
-              visible={this.state.visible}
+              dialogSuccess={this.state.dialogSuccess}
+              dialogText={this.state.dialogText}
+              dialogShow={this.state.dialogShow}
             />
           </div>
           <div className="col-md-8 order-md-1">

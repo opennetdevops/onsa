@@ -1,35 +1,37 @@
 import React from "react";
 
-//Stateless component to show alert messages.
+//Stateless component to display messages within a <div>.
 
-const customAlert = props => {
-  //specify props: Succesfull:boolean and displayMessage:string to display.
-  //icnludeLabel prop: Overrides default label
+const customAlert = ({ dialogShow, dialogSuccess, dialogText, msgLabel}) => {
+  //specify props: dialogSuccess:boolean and dialogText:string to display.
+  //icnludeLabel prop: Overrides default label. dialogShow:boolean toogler
 
-  let alertBox = null;
-  // if (props.visible === true) {
-    if (props.succesfull) {
+  let alertBox = null; 
+
+  if (dialogShow) {
+    if (dialogSuccess) {
       alertBox = (
-        <div className="alert alert-success ">
-          <strong>{props.msgLabel ? props.msgLabel : "Success! "}</strong>
-          {props.displayMessage}
+        <div className="alert alert-success">
+          <strong>{msgLabel ? msgLabel : "Success! "}</strong>
+          {dialogText}
         </div>
       );
-    } else if (props.succesfull === false) {
+
+    } else if (dialogSuccess === false) {
       alertBox = (
-        <div className="alert alert-danger ">
+        <div className="alert alert-danger">
           {/* visibilityAlert fadeOutAlert */}
           <strong>
-            {props.msgLabel ? props.msgLabel : "Something went wrong: "}
+            {msgLabel ? msgLabel : "Something went wrong: "}
           </strong>
-          {props.displayMessage}
+          {dialogText}
         </div>
       );
     }
+  
   // } else {
-  //   alertBox = null;
-  // }
-
+  //    return null;
+  }
 
   return alertBox;
 };

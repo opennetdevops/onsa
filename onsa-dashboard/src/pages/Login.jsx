@@ -33,10 +33,11 @@ class Login extends React.Component {
     super(props);
 
     this.state = {
+      dialogSuccess: false,
+      dialogText: "",
+      dialogShow: false,
       email: "",
-      password: "",
-      successAlert: null,
-      displayMessage: ""
+      password: ""
     };
   }
   componentDidMount() {
@@ -52,8 +53,9 @@ class Login extends React.Component {
 
   showAlertBox = (result, message) => {
     this.setState({
-      successAlert: result,
-      displayMessage: message
+      dialogSuccess: result,
+      dialogText: message,
+      dialogShow: ( message || result) ? true : false
     });
   };
 
@@ -84,8 +86,9 @@ class Login extends React.Component {
       <React.Fragment>
         <div className="row justify-content-center">
           <FormAlert
-            succesfull={this.state.successAlert}
-            displayMessage={this.state.displayMessage}
+            dialogSuccess={this.state.dialogSuccess}
+            dialogText={this.state.dialogText}
+            dialogShow={this.state.dialogShow}
             msgLabel="Unable to login: "
             className="col-md-8"
           />
