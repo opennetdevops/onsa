@@ -17,14 +17,17 @@ import kombu
 def configure_service(config):
     #TODO User pass and server from local/production
     
-    a = kombu.Connection('amqp://myuser:mypassword@10.120.78.58/myvhost',connect_timeout=3)
-    a.connect()
-    a.release()
+    #just triggered to test connection to RMQ, currently there is no support from celery worker
+    try:
+        a = kombu.Connection('amqp://myuser:mypassword@10.120.78.58/myvhost',connect_timeout=3)
+        a.connect()
+        a.release()
 
-    app = Celery('worker', broker='amqp://myuser:mypassword@10.120.78.58/myvhost', broker_pool_limit=None)
-    promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)], ignore_result=True )
-    logging.info("Sending message to queue")
-    return True
+        app = Celery('worker', broker='amqp://myuser:mypassword@10.120.78.58/myvhost', broker_pool_limit=None)
+        promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)], ignore_result=True )
+        logging.info("Sending message to queue")
+    except BaseException:
+        raise MessagingException("Unable to push message to queue")
 
 
 

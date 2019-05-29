@@ -90,6 +90,9 @@ LOGGING = {
         'standard': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
+        'console': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
     },
     'handlers': {
         'default': {
@@ -108,6 +111,10 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'standard',
         },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
     },
     'loggers': {
         '': {
@@ -117,6 +124,12 @@ LOGGING = {
         },
         'django.request': {
             'handlers': ['request_handler'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        # Only for local/development, on production will use NGINX
+        'django.server': {
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False
         },

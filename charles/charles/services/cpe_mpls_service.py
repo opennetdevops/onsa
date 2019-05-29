@@ -13,6 +13,61 @@ from charles.models import *
 # Naming convention for functions inside this class
 # "service_state" + "_" + deployment_mode + "_request"
 
+
+def an_activated_automated_request(service):
+  logging.debug("an_activated_automated_request")
+  client = get_client(service['client_id'])
+  try:
+    parameters = an_parameters(client, service)
+    service_data = {}
+
+    config = {
+      "client": client['name'],
+      "service_type":  service['service_type'],
+      "service_id": service['service_id'],
+      "op_type": "CREATE"}
+
+    config['parameters'] = {
+                "service_vlan": service['vlan_id'],
+                "an_client_port": parameters['an_client_port'],
+                "an_uplink_ports": parameters['an_uplink_ports']
+                  }
+    config['devices'] = [{"vendor": parameters['vendor'],
+        "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
+
+    service_state = "an_activation_in_progress"
+    logging.debug("configuring service")
+    
+    #Send message(job) to Queue so workers can take it
+    configure_service(config) 
+  except BaseException:
+    service_state = "ERROR"
+
+  service_data['service_state'] = service_state
+  update_jeangrey_service(service['service_id'], service_data)
+  service = update_charles_service(service, service_state)
+  return service
+
+def an_parameters(client, service):
+  try:
+    access_port = get_access_port(service['access_port_id'])
+    access_node = get_access_node(service['access_node_id'])
+    an_device_model = get_device_model(access_node['device_model_id'])
+
+    parameters = { 'provider_vlan': access_node['provider_vlan'],
+                  'an_client_port': access_port['port'],
+                  'an_uplink_ports': access_node['uplink_ports'],
+                  'mgmt_ip': access_node['mgmt_ip'],
+                  'model': an_device_model['model'],
+                  'vendor': an_device_model['brand'] }
+
+    return parameters
+  except BaseException:
+    logging.error("Unable to fetch parameters")
+    raise InvalidParametersException("Unable to fetch parameters")
+
+
+
 def bb_data_ack_automated_request(service):
   # if DEBUG: print("bb_data_ack_automated_request")
   # client = get_client(service['client_id'])
@@ -85,51 +140,7 @@ def an_data_ack_automated_request(service):
   pass
 
 
-def an_activated_automated_request(service):
-  logging.debug("an_activated_automated_request")
-  client = get_client(service['client_id'])
-  parameters = an_parameters(client, service)
-  service_data = {}
 
-  config = {
-     "client": client['name'],
-     "service_type":  service['service_type'],
-     "service_id": service['service_id'],
-     "op_type": "CREATE"}
-
-  if parameters is not None:
-    config['parameters'] = {
-                "service_vlan": service['vlan_id'],
-                "an_client_port": parameters['an_client_port'],
-                "an_uplink_ports": parameters['an_uplink_ports']
-                  }
-    config['devices'] = [{"vendor": parameters['vendor'],
-        "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
-
-    service_state = "an_activation_in_progress"
-    try:
-      logging.debug("configuring service")
-      r = configure_service(config) 
-      logging.info(r)
-    except BaseException as e:
-      logging.debug("exception appeared configuring service")
-      logging.error(e)
-      service_state = "ERROR"
-      service_data['service_state'] = service_state
-      update_jeangrey_service(service['service_id'], service_data)
-      service = update_charles_service(service, service_state)
-      logging.debug("Unable to push message to queue")
-      raise MessagingException("Unable to push message to queue")
-
-  else:
-    service_state = "ERROR"
-
-  logging.debug("im not waiting anyone")
-
-  service_data['service_state'] = service_state
-  update_jeangrey_service(service['service_id'], service_data)
-  service = update_charles_service(service, service_state)
-  return service
 
 
 
@@ -271,39 +282,24 @@ def cpe_parameters(client, service):
 
   # return parameters
 
-def an_parameters(client, service):
-  access_port = get_access_port(service['access_port_id'])
-  access_node = get_access_node(service['access_node_id'])
-  an_device_model = get_device_model(access_node['device_model_id'])
-
-  parameters = { 'provider_vlan': access_node['provider_vlan'],
-                 'an_client_port': access_port['port'],
-                 'an_uplink_ports': access_node['uplink_ports'],
-                 'mgmt_ip': access_node['mgmt_ip'],
-                 'model': an_device_model['model'],
-                 'vendor': an_device_model['brand'] }
-
-  return parameters
-
-
-
 def define_vrf(client, service):
-    if service['vrf_id'] is None:
-        vrf_list = get_client_vrfs(client['name'])
+  pass
+    # if service['vrf_id'] is None:
+    #     vrf_list = get_client_vrfs(client['name'])
 
-        vrf_name = "VPLS-" + client['name'] if service['service_type'] in VPLS_SERVICES else "VRF-" + client['name']    
-        vrf_name += "-" + str(len(vrf_list)+1) if vrf_list is not None else "-1"
+    #     vrf_name = "VPLS-" + client['name'] if service['service_type'] in VPLS_SERVICES else "VRF-" + client['name']    
+    #     vrf_name += "-" + str(len(vrf_list)+1) if vrf_list is not None else "-1"
         
-        vrf = get_free_vrf()
-        if vrf is not None:
-            service['vrf_id'] = vrf['rt']
-            use_vrf(service['vrf_id'], vrf_name, client['name'])
-            service['vrf_name'] = vrf_name
-        else:
-            print("ERROR NON VRF AVAILABLE")
-    else:
-      service['vrf_name'] = get_vrf(service['vrf_id'])['name']
+    #     vrf = get_free_vrf()
+    #     if vrf is not None:
+    #         service['vrf_id'] = vrf['rt']
+    #         use_vrf(service['vrf_id'], vrf_name, client['name'])
+    #         service['vrf_name'] = vrf_name
+    #     else:
+    #         print("ERROR NON VRF AVAILABLE")
+    # else:
+    #   service['vrf_name'] = get_vrf(service['vrf_id'])['name']
     
-    service['autonomous_system'] = assign_autonomous_system(service['vrf_id'])
+    # service['autonomous_system'] = assign_autonomous_system(service['vrf_id'])
 
-    return service
+    # return service
