@@ -27,6 +27,7 @@ class ServiceCreate extends React.Component {
       dialogSuccess: false,
       dialogText: "",
       dialogShow: false,
+      gtsId: "",
       locationsOptions: [],
       selectedLocation: "",
       // selectedVRF: "",
@@ -40,7 +41,7 @@ class ServiceCreate extends React.Component {
       serviceType: "",
       serviceId: "",
       // showVrf: false,
-      showPrefix: false,
+      showPrefix: false
       // showClientNetwork: false,
       // vrfName: "",
       // vrfsOptions: []
@@ -91,7 +92,7 @@ class ServiceCreate extends React.Component {
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: ( message || result) ? true : false
+      dialogShow: message || result ? true : false
     });
   };
 
@@ -99,7 +100,7 @@ class ServiceCreate extends React.Component {
     this.setState({
       serviceId: "",
       prexix: "",
-      bandwidth: "",
+      bandwidth: ""
       // clientNetwork: ""
     });
   };
@@ -192,45 +193,45 @@ class ServiceCreate extends React.Component {
       }
     );
   };
-
+  /*
   // getClientVRFs = clientId => {
   //   let url = ClientURLs("clientVRFs", clientId);
-
   //   HTTPGet(url).then(
-  //     jsonResponse => {
-  //       let options = jsonResponse.map(vrf => {
-  //         return { value: vrf.id, label: "RT: " + vrf.rt + " - " + vrf.name };
-  //       });
+    //     jsonResponse => {
+      //       let options = jsonResponse.map(vrf => {
+        //         return { value: vrf.id, label: "RT: " + vrf.rt + " - " + vrf.name };
+        //       });
   //       options.unshift(
   //         { value: "null", label: "New" },
   //         { value: "9999", label: "Legacy" }
   //       );
-
+  
   //       this.setState({ vrfsOptions: options });
   //     },
   //     error => {
-  //       this.setState({ vrfsOptions: [] });
-  //       this.showAlertBox(false, error.message);
-  //     }
-  //   );
-  // };
-
-  handleCustLocationOnChange = selectedOption => {
-    this.setState({
+    //       this.setState({ vrfsOptions: [] });
+    //       this.showAlertBox(false, error.message);
+    //     }
+    //   );
+    // };
+    
+    handleCustLocationOnChange = selectedOption => {
+      this.setState({
       customerLocId: selectedOption.value,
       selectedCustLoc: selectedOption
     });
   };
+  */
 
   handleLocationOnChange = selectedOption => {
     this.setState({ selectedLocation: selectedOption });
   };
 
-  // handleVRFOnChange = selectedOption => {
-  //   this.setState({
-  //     selectedVRF: selectedOption
-  //   });
-  // };
+  /* handleVRFOnChange = selectedOption => {
+    this.setState({
+      selectedVRF: selectedOption
+    });
+  }; */
 
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
@@ -245,8 +246,8 @@ class ServiceCreate extends React.Component {
       ? { showPrefix: false }
       : { showPrefix: true };
     this.setState(state);
-    // showVrf: true, showClientNetwork: true 
-    // showVrf: false, showClientNetwork: false 
+    // showVrf: true, showClientNetwork: true
+    // showVrf: false, showClientNetwork: false
     // state =
     //   this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
     // this.setState(state);
@@ -261,7 +262,8 @@ class ServiceCreate extends React.Component {
       id: this.state.serviceId,
       bandwidth: this.state.bandwidth,
       service_type: this.state.serviceType,
-      customer_location_id: this.state.customerLocId
+      customer_location_id: this.state.customerLocId,
+      gts_id: this.state.gtsId
     };
 
     if (this.state.portId) {
@@ -271,13 +273,13 @@ class ServiceCreate extends React.Component {
     if (!onsaVrfServices.includes(this.state.serviceType)) {
       data["prefix"] = this.state.prefix;
     }
-  
-      // if (onsaVrfServices.includes(this.state.serviceType)) {
-      //   // data["client_network"] = this.state.clientNetwork;
-      //   // data["vrf_id"] = this.state.selectedVRF.value;
-      // } else { 
-      //   data["prefix"] = this.state.prefix;
-      // }
+    /* 
+    // if (onsaVrfServices.includes(this.state.serviceType)) {
+    //   // data["client_network"] = this.state.clientNetwork;
+    //   // data["vrf_id"] = this.state.selectedVRF.value;
+    // } else {
+    //   data["prefix"] = this.state.prefix;
+    // }
     // } else {
     //   if (onsaVrfServices.includes(this.state.serviceType)) {
     //     // data["client_network"] = this.state.clientNetwork;
@@ -285,7 +287,7 @@ class ServiceCreate extends React.Component {
     //   } else {
     //     data["prefix"] = this.state.prefix;
     //   }
-
+ */
     HTTPPost(URLs["services"], data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
@@ -297,9 +299,7 @@ class ServiceCreate extends React.Component {
     );
   };
 
-
   render() {
-
     const formIsValid = () => {
       return this.state.serviceId &&
         this.state.selectedCustLoc &&
@@ -352,12 +352,12 @@ class ServiceCreate extends React.Component {
                     name="serviceId"
                     value={this.state.serviceId}
                     onChange={this.handleInputChange}
-                    required
                   />
                 </div>
               </FormRow>
 
               <FormRow className="row">
+                {/* CUST LOC */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="customerLoc">Customer Location</label>
                   <Select
@@ -366,11 +366,21 @@ class ServiceCreate extends React.Component {
                     name="customerLoc"
                     placeholder="Choose a customer location.."
                     value={this.state.selectedCustLoc}
-                    required
+                  />
+                </div>
+                {/* GTS ID */}
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="gtsId">GTS ID</label>
+                  <FormInput
+                    type="text"
+                    className="form-control"
+                    placeholder="GTS Id"
+                    name="gtsId"
+                    value={this.state.gtsId}
+                    onChange={this.handleInputChange}
                   />
                 </div>
               </FormRow>
-
               <div className="d-block my-3">
                 <div className="custom-control custom-radio">
                   <input
@@ -380,7 +390,6 @@ class ServiceCreate extends React.Component {
                     onChange={this.handleInputChange}
                     className="custom-control-input"
                     disabled={!this.state.customerLocId}
-                    required
                   />
                   <label className="custom-control-label" htmlFor="radio">
                     Existing CPE
@@ -397,13 +406,13 @@ class ServiceCreate extends React.Component {
                       options={this.state.portOptions}
                       name="port"
                       placeholder="Choose a port.."
-                      required
                       value={this.state.selectedPort}
                     />
                   </div>
                 </FormRow>
               )}
               <FormRow className="row">
+                {/* BW */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="bandwidth">
                     Bandwidth <span className="text-muted"> (In Mbps)</span>
@@ -417,7 +426,6 @@ class ServiceCreate extends React.Component {
                     value={this.state.bandwidth}
                     onChange={this.handleInputChange}
                     placeholder="100"
-                    required
                   />
                 </div>
 
@@ -433,7 +441,6 @@ class ServiceCreate extends React.Component {
                       value={this.state.prefix}
                       onChange={this.handleInputChange}
                       placeholder="24"
-                      required
                     />
                   </div>
                 )}
@@ -448,10 +455,9 @@ class ServiceCreate extends React.Component {
                     name="serviceType"
                     placeholder="IRS, MPLS, VPLS..."
                     value={this.state.selectedService}
-                    required
                   />
                 </div>
-
+              {/* HUB */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="location">HUB</label>
                   <Select
@@ -460,43 +466,10 @@ class ServiceCreate extends React.Component {
                     name="location"
                     placeholder="Choose a HUB.."
                     value={this.state.selectedLocation}
-                    required
                   />
                 </div>
               </FormRow>
-              {/* VRF */}
-              {/* <FormRow className="row"> */}
-                {/* {this.state.showVrf && (
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="vrfName">VRF</label>
-                    <Select
-                      onChange={this.handleVRFOnChange}
-                      options={this.state.vrfsOptions}
-                      name="vrfName"
-                      placeholder="Choose the VRF ..."
-                      value={this.state.selectedVRF}
-                      required
-                    />
-                  </div>
-                )} */}
-
-                {/* {this.state.showClientNetwork && (
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="clientNetwork">Client network</label>
-                    <FormInput
-                      type="text"
-                      className="form-control"
-                      id="clientNetwork"
-                      name="clientNetwork"
-                      value={this.state.clientNetwork}
-                      onChange={this.handleInputChange}
-                      placeholder="192.168.0.0/24"
-                      required
-                    />
-                  </div>
-                )} */}
-              {/* </FormRow> */}
-
+              
               <hr className="mb-4" />
               <div className="row justify-content-center">
                 <div className="col-md-6 ">

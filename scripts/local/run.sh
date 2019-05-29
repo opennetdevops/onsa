@@ -21,8 +21,8 @@ rails s -b 0.0.0.0 -p $INVENTORY_PORT &
 # ./app.py &
 
 
-# cd $rootlevel\/onsa-dashboard\/
-# npm start &
+ cd $rootlevel\/onsa-dashboard\/
+ npm start &
 
 cd ..
 cd scripts/local/
