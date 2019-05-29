@@ -11,6 +11,8 @@ import Select from "react-select";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
+//PREVIOUS VERSION INCLUDING VRF & CLIENT_NETWORK
+
 class ServiceCreate extends React.Component {
   constructor(props) {
     super(props);
@@ -19,7 +21,7 @@ class ServiceCreate extends React.Component {
       bandwidth: "",
       clientId: "",
       clientName: "",
-      // clientNetwork: "",
+      clientNetwork: "",
       clientOptions: [],
       cpeExist: false,
       customerLocId: null,
@@ -29,7 +31,7 @@ class ServiceCreate extends React.Component {
       dialogShow: false,
       locationsOptions: [],
       selectedLocation: "",
-      // selectedVRF: "",
+      selectedVRF: "",
       selectedPort: "",
       portsList: [],
       portId: null,
@@ -39,11 +41,11 @@ class ServiceCreate extends React.Component {
       servicesOptions: [],
       serviceType: "",
       serviceId: "",
-      // showVrf: false,
+      showVrf: false,
       showPrefix: false,
-      // showClientNetwork: false,
-      // vrfName: "",
-      // vrfsOptions: []
+      showClientNetwork: false,
+      vrfName: "",
+      vrfsOptions: []
     };
   }
 
@@ -100,7 +102,7 @@ class ServiceCreate extends React.Component {
       serviceId: "",
       prexix: "",
       bandwidth: "",
-      // clientNetwork: ""
+      clientNetwork: ""
     });
   };
 
@@ -164,7 +166,7 @@ class ServiceCreate extends React.Component {
 
     this.showAlertBox();
     this.getClientLocations(clientId);
-    // this.getClientVRFs(clientId);
+    this.getClientVRFs(clientId);
 
     this.setState({
       customerLocId: "",
@@ -193,27 +195,27 @@ class ServiceCreate extends React.Component {
     );
   };
 
-  // getClientVRFs = clientId => {
-  //   let url = ClientURLs("clientVRFs", clientId);
+  getClientVRFs = clientId => {
+    let url = ClientURLs("clientVRFs", clientId);
 
-  //   HTTPGet(url).then(
-  //     jsonResponse => {
-  //       let options = jsonResponse.map(vrf => {
-  //         return { value: vrf.id, label: "RT: " + vrf.rt + " - " + vrf.name };
-  //       });
-  //       options.unshift(
-  //         { value: "null", label: "New" },
-  //         { value: "9999", label: "Legacy" }
-  //       );
+    HTTPGet(url).then(
+      jsonResponse => {
+        let options = jsonResponse.map(vrf => {
+          return { value: vrf.id, label: "RT: " + vrf.rt + " - " + vrf.name };
+        });
+        options.unshift(
+          { value: "null", label: "New" },
+          { value: "9999", label: "Legacy" }
+        );
 
-  //       this.setState({ vrfsOptions: options });
-  //     },
-  //     error => {
-  //       this.setState({ vrfsOptions: [] });
-  //       this.showAlertBox(false, error.message);
-  //     }
-  //   );
-  // };
+        this.setState({ vrfsOptions: options });
+      },
+      error => {
+        this.setState({ vrfsOptions: [] });
+        this.showAlertBox(false, error.message);
+      }
+    );
+  };
 
   handleCustLocationOnChange = selectedOption => {
     this.setState({
@@ -226,11 +228,11 @@ class ServiceCreate extends React.Component {
     this.setState({ selectedLocation: selectedOption });
   };
 
-  // handleVRFOnChange = selectedOption => {
-  //   this.setState({
-  //     selectedVRF: selectedOption
-  //   });
-  // };
+  handleVRFOnChange = selectedOption => {
+    this.setState({
+      selectedVRF: selectedOption
+    });
+  };
 
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
@@ -242,14 +244,12 @@ class ServiceCreate extends React.Component {
   handleDisplays = () => {
     let state = {};
     state = onsaVrfServices.includes(this.state.serviceType)
-      ? { showPrefix: false }
-      : { showPrefix: true };
+      ? { showVrf: true, showPrefix: false, showClientNetwork: true }
+      : { showVrf: false, showPrefix: true, showClientNetwork: false };
     this.setState(state);
-    // showVrf: true, showClientNetwork: true 
-    // showVrf: false, showClientNetwork: false 
-    // state =
-    //   this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
-    // this.setState(state);
+    state =
+      this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
+    this.setState(state);
   };
 
   handleSubmit = event => {
@@ -266,25 +266,23 @@ class ServiceCreate extends React.Component {
 
     if (this.state.portId) {
       // if CPE already exists
+
       data["access_port_id"] = this.state.portId;
+
+      if (onsaVrfServices.includes(this.state.serviceType)) {
+        data["client_network"] = this.state.clientNetwork;
+        data["vrf_id"] = this.state.selectedVRF.value;
+      } else {
+        data["prefix"] = this.state.prefix;
+      }
+    } else {
+      if (onsaVrfServices.includes(this.state.serviceType)) {
+        data["client_network"] = this.state.clientNetwork;
+        data["vrf_id"] = this.state.selectedVRF.value;
+      } else {
+        data["prefix"] = this.state.prefix;
+      }
     }
-    if (!onsaVrfServices.includes(this.state.serviceType)) {
-      data["prefix"] = this.state.prefix;
-    }
-  
-      // if (onsaVrfServices.includes(this.state.serviceType)) {
-      //   // data["client_network"] = this.state.clientNetwork;
-      //   // data["vrf_id"] = this.state.selectedVRF.value;
-      // } else { 
-      //   data["prefix"] = this.state.prefix;
-      // }
-    // } else {
-    //   if (onsaVrfServices.includes(this.state.serviceType)) {
-    //     // data["client_network"] = this.state.clientNetwork;
-    //     // data["vrf_id"] = this.state.selectedVRF.value;
-    //   } else {
-    //     data["prefix"] = this.state.prefix;
-    //   }
 
     HTTPPost(URLs["services"], data).then(
       () => {
@@ -309,6 +307,7 @@ class ServiceCreate extends React.Component {
           false
         : true;
     };
+     console.log("app state: ", this.state.showAlert )
 
     return (
       <React.Fragment>
@@ -403,6 +402,7 @@ class ServiceCreate extends React.Component {
                   </div>
                 </FormRow>
               )}
+              {/* PREFIX */}
               <FormRow className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="bandwidth">
@@ -421,7 +421,6 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
 
-                {/* PREFIX */}
                 {this.state.showPrefix && (
                   <div className="col-md-6 mb-3">
                     <label htmlFor="prefix">Prefix</label>
@@ -465,8 +464,8 @@ class ServiceCreate extends React.Component {
                 </div>
               </FormRow>
               {/* VRF */}
-              {/* <FormRow className="row"> */}
-                {/* {this.state.showVrf && (
+              <FormRow className="row">
+                {this.state.showVrf && (
                   <div className="col-md-6 mb-3">
                     <label htmlFor="vrfName">VRF</label>
                     <Select
@@ -478,9 +477,9 @@ class ServiceCreate extends React.Component {
                       required
                     />
                   </div>
-                )} */}
+                )}
 
-                {/* {this.state.showClientNetwork && (
+                {this.state.showClientNetwork && (
                   <div className="col-md-6 mb-3">
                     <label htmlFor="clientNetwork">Client network</label>
                     <FormInput
@@ -494,8 +493,8 @@ class ServiceCreate extends React.Component {
                       required
                     />
                   </div>
-                )} */}
-              {/* </FormRow> */}
+                )}
+              </FormRow>
 
               <hr className="mb-4" />
               <div className="row justify-content-center">
