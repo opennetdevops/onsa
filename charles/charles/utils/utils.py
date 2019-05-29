@@ -10,6 +10,7 @@ import os
 import logging
 import coloredlogs
 from celery import Celery
+import kombu
 
 
 

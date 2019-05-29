@@ -111,8 +111,9 @@ def an_activated_automated_request(service):
       logging.debug("configuring service")
       r = configure_service(config) 
       logging.info(r)
-    except BaseException:
+    except BaseException as e:
       logging.debug("exception appeared configuring service")
+      logging.error(e)
       service_state = "ERROR"
       service_data['service_state'] = service_state
       update_jeangrey_service(service['service_id'], service_data)
