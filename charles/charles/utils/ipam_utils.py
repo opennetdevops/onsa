@@ -17,7 +17,7 @@ def get_ipam_authentication_token():
     #App User - todo change
     data = {"email":"malvarez@lab.fibercorp.com.ar", "password":"Matias.2015"}
     response = requests.post(os.getenv('IPAM_URL') + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-    logging.debug(response.text)
+    # logging.debug(response.text)
     return json.loads(response.text)['auth_token']
 
 

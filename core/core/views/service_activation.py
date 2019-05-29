@@ -28,6 +28,11 @@ class ServiceActivationView(APIView):
                 response = {"message": "CPE not valid."}
                 return JsonResponse(response, safe=False)
 
+        # For TIP service
+        if 'vlan_id' in data.keys():
+            service_data = {"vlan_id": data['vlan_id']}
+            self.update_jeangrey_service(service_id, service_data)
+
         r = self.push_service_to_orchestrator(
             service_id, data['deployment_mode'], data['target_state'])
         return JsonResponse(r.status_code, safe=False)
