@@ -161,7 +161,7 @@ class ServiceCreate extends React.Component {
     const clientName = selectedOption.label;
 
     this.getClientLocations(clientId);
-    this.getClientVRFs(clientId);
+   // this.getClientVRFs(clientId);
 
     this.setState({
       customerLocId: "",
@@ -230,6 +230,10 @@ class ServiceCreate extends React.Component {
   };
 
   handleServiceTypeOnChange = selectedOption => {
+    if (onsaVrfServices.includes(selectedOption.value)) {
+      this.getClientVRFs(this.state.clientId);
+    }
+
     this.setState(
       { serviceType: selectedOption.value, selectedService: selectedOption },
       this.handleDisplays
