@@ -19,7 +19,6 @@ class ServiceCreate extends React.Component {
       bandwidth: "",
       clientId: "",
       clientName: "",
-      // clientNetwork: "",
       clientOptions: [],
       cpeExist: false,
       customerLocId: null,
@@ -30,7 +29,6 @@ class ServiceCreate extends React.Component {
       gtsId: "",
       locationsOptions: [],
       selectedLocation: "",
-      // selectedVRF: "",
       selectedPort: "",
       portsList: [],
       portId: null,
@@ -40,11 +38,7 @@ class ServiceCreate extends React.Component {
       servicesOptions: [],
       serviceType: "",
       serviceId: "",
-      // showVrf: false,
       showPrefix: false
-      // showClientNetwork: false,
-      // vrfName: "",
-      // vrfsOptions: []
     };
   }
 
@@ -88,7 +82,7 @@ class ServiceCreate extends React.Component {
   }
 
   showAlertBox = (result, message) => {
-    // if there are no arguments, wont show de dialog
+    // if there are no arguments, wont show the dialog
     this.setState({
       dialogSuccess: result,
       dialogText: message,
@@ -101,7 +95,6 @@ class ServiceCreate extends React.Component {
       serviceId: "",
       prexix: "",
       bandwidth: ""
-      // clientNetwork: ""
     });
   };
 
@@ -165,7 +158,6 @@ class ServiceCreate extends React.Component {
 
     this.showAlertBox();
     this.getClientLocations(clientId);
-    // this.getClientVRFs(clientId);
 
     this.setState({
       customerLocId: "",
@@ -193,29 +185,7 @@ class ServiceCreate extends React.Component {
       }
     );
   };
-  /*
-  // getClientVRFs = clientId => {
-  //   let url = ClientURLs("clientVRFs", clientId);
-  //   HTTPGet(url).then(
-    //     jsonResponse => {
-      //       let options = jsonResponse.map(vrf => {
-        //         return { value: vrf.id, label: "RT: " + vrf.rt + " - " + vrf.name };
-        //       });
-  //       options.unshift(
-  //         { value: "null", label: "New" },
-  //         { value: "9999", label: "Legacy" }
-  //       );
   
-  //       this.setState({ vrfsOptions: options });
-  //     },
-  //     error => {
-    //       this.setState({ vrfsOptions: [] });
-    //       this.showAlertBox(false, error.message);
-    //     }
-    //   );
-    // };
-    
-    */
   handleCustLocationOnChange = selectedOption => {
     this.setState({
       customerLocId: selectedOption.value,
@@ -226,12 +196,6 @@ class ServiceCreate extends React.Component {
   handleLocationOnChange = selectedOption => {
     this.setState({ selectedLocation: selectedOption });
   };
-
-  /* handleVRFOnChange = selectedOption => {
-    this.setState({
-      selectedVRF: selectedOption
-    });
-  }; */
 
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
@@ -246,11 +210,6 @@ class ServiceCreate extends React.Component {
       ? { showPrefix: true }
       : { showPrefix: false };
     this.setState(state);
-    // showVrf: true, showClientNetwork: true
-    // showVrf: false, showClientNetwork: false
-    // state =
-    //   this.state.serviceType === "vpls" ? { showClientNetwork: false } : null;
-    // this.setState(state);
   };
 
   handleSubmit = event => {
@@ -273,21 +232,7 @@ class ServiceCreate extends React.Component {
     if (onsaIrsServices.includes(this.state.serviceType)) {
       data["prefix"] = this.state.prefix;
     }
-    /* 
-    // if (onsaVrfServices.includes(this.state.serviceType)) {
-    //   // data["client_network"] = this.state.clientNetwork;
-    //   // data["vrf_id"] = this.state.selectedVRF.value;
-    // } else {
-    //   data["prefix"] = this.state.prefix;
-    // }
-    // } else {
-    //   if (onsaVrfServices.includes(this.state.serviceType)) {
-    //     // data["client_network"] = this.state.clientNetwork;
-    //     // data["vrf_id"] = this.state.selectedVRF.value;
-    //   } else {
-    //     data["prefix"] = this.state.prefix;
-    //   }
- */
+   
     HTTPPost(URLs["services"], data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
