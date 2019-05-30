@@ -1,10 +1,11 @@
-from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service, cpe_irs_service
+from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service, cpe_irs_service, tip_service
 from charles.services import vpls_service
 from charles.models import *
 from enum import Enum
 from charles.utils.utils import *
 from charles.utils.inventory_utils import *
 from charles.utils.ipam_utils import *
+from charles.constants import *
 
 import logging
 import coloredlogs
@@ -120,7 +121,7 @@ class Fsm():
             service = state.run(service)
             logging.debug(str("Service after run:" + str(service)))
 
-            while service['service_state'] != "ERROR" and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
+            while service['service_state'] != SERVICE_ERROR_STATE and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
                 #Execute next step
                 logging.debug(str("from service: "+service['service_state'] +" to: "+ service['target_state']))
                 state.name = next_state(service['service_state'], service['target_state'])

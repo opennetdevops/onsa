@@ -6,9 +6,11 @@ CPE_CODES = ["cpe", "cpe_data"]
 DATA_CODES = ["bb_data", "cpe_data"]
 ACTIVATION_CODES = ["bb", "cpe"]
 
+#
+SERVICE_ERROR_STATE = "ERROR"
 # Services
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
-ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs']
+ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs', 'tip']
 VPLS_SERVICES = ['vpls']
 
 # HTTP Error Codes

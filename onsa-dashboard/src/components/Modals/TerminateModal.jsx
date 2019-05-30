@@ -2,7 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
-import { onsaIrsServices, onsaVrfServices } from "../../site-constants.js";
+import {
+  onsaIrsServices,
+  onsaVrfServices,
+  onsaExternalVlanServices
+} from "../../site-constants.js";
 
 async function putJson(url, data) {
   let response = await fetch(url, {
@@ -24,7 +28,8 @@ class TerminateModal extends React.Component {
     super(props);
 
     this.state = {
-      serialNumber: ""
+      serialNumber: "",
+      vlan_id: ""
     };
   }
 
@@ -46,6 +51,13 @@ class TerminateModal extends React.Component {
     } else if (onsaVrfServices.includes(this.props.service.type)) {
       let data = {
         client_node_sn: this.state.serialNumber,
+        service_state: "service_activated"
+      };
+      putJson(url, data);
+    } else if (onsaExternalVlanServices.includes(this.props.service.type)) {
+      let data = {
+        client_node_sn: this.state.serialNumber,
+        vlan_id: this.state.vlan_id,
         service_state: "service_activated"
       };
       putJson(url, data);
@@ -74,7 +86,7 @@ class TerminateModal extends React.Component {
               onSubmit={this.handleSubmit}
             >
               <div className="row">
-                <div className="col-md-6 mb-3">
+                <div className="col-md-4 mb-3">
                   <label htmlFor="client">Service Id</label>
                   <input
                     type="text"
@@ -84,7 +96,7 @@ class TerminateModal extends React.Component {
                   />
                 </div>
                 <div
-                  className="col-md-6 mb-3"
+                  className="col-md-4 mb-3"
                   style={
                     onsaVrfServices.includes(this.props.service.type)
                       ? { display: "inline" }
@@ -100,6 +112,26 @@ class TerminateModal extends React.Component {
                     value={this.state.serialNumber}
                     onChange={this.handleChange}
                     placeholder="CCCC3333CCCC"
+                    required
+                  />
+                </div>
+                <div
+                  className="col-md-4 mb-3"
+                  style={
+                    onsaExternalVlanServices.includes(this.props.service.type)
+                      ? { display: "inline" }
+                      : { display: "none" }
+                  }
+                >
+                  <label htmlFor="vlanId">Serial Number</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="vlanId"
+                    name="vlanId"
+                    value={this.state.vlanId}
+                    onChange={this.handleChange}
+                    placeholder="<Vlan Id from 1 to 4096>"
                     required
                   />
                 </div>
