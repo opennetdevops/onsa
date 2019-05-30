@@ -215,13 +215,13 @@ class ServiceCreate extends React.Component {
     //   );
     // };
     
-    handleCustLocationOnChange = selectedOption => {
-      this.setState({
+    */
+  handleCustLocationOnChange = selectedOption => {
+    this.setState({
       customerLocId: selectedOption.value,
       selectedCustLoc: selectedOption
     });
   };
-  */
 
   handleLocationOnChange = selectedOption => {
     this.setState({ selectedLocation: selectedOption });
@@ -457,7 +457,7 @@ class ServiceCreate extends React.Component {
                     value={this.state.selectedService}
                   />
                 </div>
-              {/* HUB */}
+                {/* HUB */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="location">HUB</label>
                   <Select
@@ -469,7 +469,7 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
               </FormRow>
-              
+
               <hr className="mb-4" />
               <div className="row justify-content-center">
                 <div className="col-md-6 ">
