@@ -120,7 +120,7 @@ class Fsm():
             service = state.run(service)
             logging.debug(str("Service after run:" + str(service)))
 
-            while service['service_state'] != "error" and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
+            while service['service_state'] != "ERROR" and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
                 #Execute next step
                 logging.debug(str("from service: "+service['service_state'] +" to: "+ service['target_state']))
                 state.name = next_state(service['service_state'], service['target_state'])

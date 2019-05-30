@@ -40,6 +40,11 @@ class CpelessIrs(Service):
     def __str__(self):
         return str(self.id)
 
+class Tip(Service):
+
+    def __str__(self):
+        return str(self.id)
+
 class CpeIrs(Service):
     prefix = models.CharField(max_length=100, null=True)
     wan_network = models.CharField(max_length=100, null=True)

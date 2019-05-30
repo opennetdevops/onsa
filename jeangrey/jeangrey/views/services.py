@@ -4,24 +4,17 @@ from django.views import View
 from jeangrey.models import *
 from jeangrey.utils import *
 from jeangrey.forms import ServiceForm
+from jeangrey.constants import *
 
 import jeangrey.models as models
-
 from rest_framework.views import APIView
 
 #serializer trial:
 from ..utils.swagger_util import ServiceSerializer
 from drf_yasg.utils import no_body, swagger_auto_schema
 
-
-
 import json
 import logging
-import coloredlogs
-
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
-
 
 
 class ServiceView(View):
@@ -131,15 +124,17 @@ class ServiceView(View):
                 
 
                 access_node_id = str(access_port['access_node_id'])
-                vlan = get_free_vlan(access_node_id)
-                use_vlan(access_node_id, vlan['id'])
-                allocated_resources['vlan'] = vlan['id']
+                
+                if data['service_type'] not in SERVICES_WITHOUT_VLAN_AUTO_ALLOCATION: 
+                    vlan = get_free_vlan(access_node_id)
+                    use_vlan(access_node_id, vlan['id'])
+                    allocated_resources['vlan'] = vlan['id']
+                    data['vlan_id'] = vlan['vlan_tag']
 
                 data['location_id'] = location_id
                 data['router_node_id'] = router_nodes[0]['id']
                 data['access_port_id'] = access_port_id
                 data['client_id'] = client.id
-                data['vlan_id'] = vlan['vlan_tag']
                 data['access_node_id'] = access_node_id
                 data['customer_location_id'] = int(
                     data['customer_location_id'])

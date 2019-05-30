@@ -19,7 +19,7 @@ def get_inventory_authentication_token():
     rheaders = {'Content-Type': 'application/json'}
     data = {"email":os.getenv('INVENTORY_USER'), "password":os.getenv('INVENTORY_PASSWORD')}
     response = requests.post(os.getenv('INVENTORY_URL') + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-    logging.debug(response.text)
+    # logging.debug(response.text)
     return json.loads(response.text)['auth_token']
 
 def pop_empty_keys(d):
