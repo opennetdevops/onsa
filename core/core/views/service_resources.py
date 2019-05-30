@@ -59,11 +59,12 @@ class ServiceResourcesView(APIView):
             if service['service_type'] == "vcpe_irs":
                 resources['router_node']['vcpe_logical_unit_id'] = service['vcpe_logical_unit_id']
         elif service['service_state'] in CPE_STATES:
-            client_node = get_client_node(service['client_node_sn'])
+            if 'client_node_sn' in service.keys():
+                client_node = get_client_node(service['client_node_sn'])
 
-            resources["client_node"] = {"model": client_node['model'],
-                                        "wan_port": client_node['uplink_port'],
-                                        "SN": client_node['serial_number']}
+                resources["client_node"] = {"model": client_node['model'],
+                                            "wan_port": client_node['uplink_port'],
+                                            "SN": client_node['serial_number']}
 
             if 'client_port_id' in service.keys():
                 client_port = get_client_port(
