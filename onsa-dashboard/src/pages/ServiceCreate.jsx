@@ -2,7 +2,7 @@ import React from "react";
 
 import {
   onsaServices,
-  onsaVrfServices,
+  onsaIrsServices,
   serviceEnum
 } from "../site-constants.js";
 import { Form, FormRow, FormTitle, FormInput } from "../components/Form";
@@ -242,9 +242,9 @@ class ServiceCreate extends React.Component {
 
   handleDisplays = () => {
     let state = {};
-    state = onsaVrfServices.includes(this.state.serviceType)
-      ? { showPrefix: false }
-      : { showPrefix: true };
+    state = onsaIrsServices.includes(this.state.serviceType)
+      ? { showPrefix: true }
+      : { showPrefix: false };
     this.setState(state);
     // showVrf: true, showClientNetwork: true
     // showVrf: false, showClientNetwork: false
@@ -270,7 +270,7 @@ class ServiceCreate extends React.Component {
       // if CPE already exists
       data["access_port_id"] = this.state.portId;
     }
-    if (!onsaVrfServices.includes(this.state.serviceType)) {
+    if (onsaIrsServices.includes(this.state.serviceType)) {
       data["prefix"] = this.state.prefix;
     }
     /* 
