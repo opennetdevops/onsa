@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { URLs, HTTPPut } from "../../middleware/api.js";
 
 import {
   onsaIrsServices,
@@ -8,59 +9,36 @@ import {
   onsaExternalVlanServices
 } from "../../site-constants.js";
 
-async function putJson(url, data) {
-  let response = await fetch(url, {
-    method: "PUT",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
-
-  let jsonResponse = await response.json();
-
-  return jsonResponse;
-}
-
 class TerminateModal extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       serialNumber: "",
-      vlan_id: ""
+      vlanId: ""
     };
   }
 
   handleChange = event => {
     const value = event.target.value;
     const name = event.target.name;
-
     this.setState({ [name]: value });
   };
 
   handleSubmit = event => {
-    let url =
-      process.env.REACT_APP_CORE_URL +
-      "/core/api/services/" +
-      this.props.service.id;
+    let data = { service_state: "service_activated" };
 
-    if (onsaIrsServices.includes(this.props.service.type)) {
-      putJson(url, { service_state: "service_activated" });
-    } else if (onsaVrfServices.includes(this.props.service.type)) {
-      let data = {
-        client_node_sn: this.state.serialNumber,
-        service_state: "service_activated"
-      };
-      putJson(url, data);
+    if (
+      onsaIrsServices.includes(this.props.service.type) ||
+      onsaVrfServices.includes(this.props.service.type)
+    ) {
+      HTTPPut(URLs["services"] + "/" + this.props.service.id, data);
     } else if (onsaExternalVlanServices.includes(this.props.service.type)) {
       let data = {
-        client_node_sn: this.state.serialNumber,
-        vlan_id: this.state.vlan_id,
+        vlan_id: this.state.vlanId,
         service_state: "service_activated"
       };
-      putJson(url, data);
+      HTTPPut(URLs["services"] + "/" + this.props.service.id, data);
     }
   };
 
@@ -86,7 +64,7 @@ class TerminateModal extends React.Component {
               onSubmit={this.handleSubmit}
             >
               <div className="row">
-                <div className="col-md-4 mb-3">
+                <div className="col-md-6 mb-3">
                   <label htmlFor="client">Service Id</label>
                   <input
                     type="text"
@@ -95,7 +73,7 @@ class TerminateModal extends React.Component {
                     disabled
                   />
                 </div>
-                <div
+                {/* <div
                   className="col-md-4 mb-3"
                   style={
                     onsaVrfServices.includes(this.props.service.type)
@@ -114,16 +92,16 @@ class TerminateModal extends React.Component {
                     placeholder="CCCC3333CCCC"
                     required
                   />
-                </div>
+                </div> */}
                 <div
-                  className="col-md-4 mb-3"
+                  className="col-md-6 mb-3"
                   style={
                     onsaExternalVlanServices.includes(this.props.service.type)
                       ? { display: "inline" }
                       : { display: "none" }
                   }
                 >
-                  <label htmlFor="vlanId">Serial Number</label>
+                  <label htmlFor="clientId">Serial Number</label>
                   <input
                     type="text"
                     className="form-control"
