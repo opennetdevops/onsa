@@ -42,7 +42,7 @@ const Navbar = (props) => {
 						<DropdownItem href="/customerslocations">Add customer location</DropdownItem>
 					</DropdownMenu>
 				</NavDropdown>
-				<NavDropdown bsSuffix={props.history.location.pathname.includes('/projects') ? "active" : ""}>
+				{/* <NavDropdown bsSuffix={props.history.location.pathname.includes('/projects') ? "active" : ""}>
 					<NavLink bsSuffix="dropdown-toggle text-secondary" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><FontAwesomeIcon icon="project-diagram"/> Projects</NavLink>
 					<DropdownMenu>
 						<DropdownItem href="/projects/create">Create project</DropdownItem>
@@ -50,7 +50,7 @@ const Navbar = (props) => {
 						<DropdownItem href="/logicalunits">Add logical units</DropdownItem>
 						<DropdownItem href="/vrfs">Add vrf</DropdownItem>
 					</DropdownMenu>
-				</NavDropdown>
+				</NavDropdown> */}
 			</Nav>
 			</Collapse> 
 			<NavbarBrand bsSuffix="navbar-center text-secondary" href="/dashboard"><img className="xlogo" alt="" src={logo}/></NavbarBrand>
