@@ -132,11 +132,11 @@ def get_location_id(location_name):
     else:
         raise LocationException("Could not resolve request", status_code=r.status_code)
 
-def use_access_port(access_port_id):
+def use_access_port(access_port_id, multiclient_access_port=False):
     url = settings.INVENTORY_URL + "access_ports/" + access_port_id
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
-    data = {"used":True}
+    data = {"used":True, "multiclient_port":multiclient_access_port}
     r = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
 
     if r.json() and r.status_code == HTTP_200_OK:

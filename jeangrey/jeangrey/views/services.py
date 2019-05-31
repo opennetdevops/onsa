@@ -103,20 +103,21 @@ class ServiceView(View):
             allocated_resources = {}
 
             try:
-                client_id = data.pop('client_id')
-                client = Client.objects.get(pk=client_id)
-
-                location_id = data.pop('location_id')
-                router_nodes = get_router_nodes(location_id)
+                client = Client.objects.get(pk=data['client_id'])
+                router_nodes = get_router_nodes(data['location_id'])
                 
                 if not router_nodes:
                     raise RouterNodeException("Invalid location or no routers nodes available at selected location.", status_code=HTTP_503_SERVICE_UNAVAILABLE)
 
                 #If access_port not selected (previously) for the service
                 if "access_port_id" not in data.keys():
-                    access_port = get_free_access_port(location_id)
+                    access_port = get_free_access_port(data['location_id'])
                     access_port_id = str(access_port['id'])
-                    use_access_port(access_port_id)
+                    if "multiclient_port" in data.keys():
+                        multiclient_port = data.pop('multiclient_port')
+                        use_access_port(access_port_id,multiclient_port)
+                    else:
+                        use_access_port(access_port_id)
                     allocated_resources['access_port'] = access_port_id
                 else:
                     access_port_id = data['access_port_id']
@@ -131,10 +132,8 @@ class ServiceView(View):
                     allocated_resources['vlan'] = vlan['id']
                     data['vlan_id'] = vlan['vlan_tag']
 
-                data['location_id'] = location_id
                 data['router_node_id'] = router_nodes[0]['id']
                 data['access_port_id'] = access_port_id
-                data['client_id'] = client.id
                 data['access_node_id'] = access_node_id
                 data['customer_location_id'] = int(
                     data['customer_location_id'])
