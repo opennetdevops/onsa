@@ -9,6 +9,7 @@ import requests
 import os
 from enum import Enum
 from pprint import pprint
+import logging
 
 
 # ONSA imports
@@ -50,10 +51,10 @@ class Service(models.Model):
                 failed_tasks.append(task)
                 break
 
-        print("Completed Tasks: ", completed_tasks)
-        print("Failed Tasks: ", failed_tasks)
+        logging.info("Completed Tasks: ", completed_tasks)
+        logging.info("Failed Tasks: ", failed_tasks)
         self.save()
-        if len(failed_tasks): 
+        if len(failed_tasks):
             self.service_state = "ERROR"
         else:
             self.service_state = "DONE"
@@ -92,12 +93,12 @@ class Task(models.Model):
         # Generates template path
         template_path = self._gen_template_path()
         template_path = os.path.join(dir, template_path)
-        pprint(template_path)
+        logging.info(template_path)
 
         # Generates variables path
         variables_path = "variables/" + self.service.service_type.upper() + ".json"
         variables_path = os.path.join(dir, variables_path)
-        pprint(variables_path)
+        logging.info(variables_path)
 
         # Set up parameters
         params = {}
@@ -109,7 +110,7 @@ class Task(models.Model):
         params.update(self.service.parameters)
 
         params = json.loads(render(variables_path, params))
-        print(params)
+        logging.debug(f'parameters to be used: {params}')
 
         config_handler = getattr(
             ConfigHandler.ConfigHandler, StrategyMap[VendorMap[self.device['vendor']]])
@@ -117,10 +118,10 @@ class Task(models.Model):
         status = config_handler(template_path, params)
 
         if (status):
-            print("Config OK")
+            logging.info("Config OK for service")
             self.task_state = status
         else:
-            print("Config ERROR")
+            logging.info("Config ERROR")
             self.task_state = "ERROR"
 
     def rollback(self):
@@ -143,8 +144,8 @@ class Task(models.Model):
         variables_path = "variables/" + self.service.service_type.upper() + ".json"
         variables_path = os.path.join(dir, variables_path)
 
-        pprint(template_path)
-        pprint(variables_path)
+        logging.info(template_path)
+        logging.info(variables_path)
 
         params = {}
         params['mgmt_ip'] = self.device['mgmt_ip'].replace('/32', '')
@@ -163,4 +164,4 @@ class Task(models.Model):
 
         self.task_state = 'NO_ROLLBACK' if status is not True else 'ROLLBACK'
 
-        print(self.task_state)
+        logging.info(self.task_state)
