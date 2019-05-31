@@ -55,6 +55,8 @@ urlpatterns = [
          require_http_methods(["GET", "POST", "DELETE"])(vlans_view)),
     path('/api/vrfs',
          require_http_methods(["GET", "PUT", "DELETE"])(vrfs_view)),
+    path('/api/multiclient_access_ports',
+         require_http_methods(["GET"])(multiclient_access_ports)),
 
     # Test for Monitoring
 

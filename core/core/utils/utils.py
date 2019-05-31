@@ -11,8 +11,6 @@ import logging
 import coloredlogs
 import os
 
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 def get_inventory_authentication_token():
     url = "authenticate"
@@ -21,6 +19,23 @@ def get_inventory_authentication_token():
     response = requests.post(os.getenv('INVENTORY_URL') + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     # logging.debug(response.text)
     return json.loads(response.text)['auth_token']
+
+def get_multiclient_access_ports():
+    url = settings.INVENTORY_URL + "access_ports?multiclient_port=True"
+
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+    if r.status_code == HTTP_200_OK:
+        return r.json()
+    else:
+        logging.error("no available multiclient ports")
+        raise AccessPortException("No available multiclient ports.", status_code=r.HTTP_404_NOT_FOUND)
+
+
+
+
 
 def pop_empty_keys(d):
     return {k: v for k, v in d.items() if v is not None}
