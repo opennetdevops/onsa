@@ -5,8 +5,10 @@ import {
   onsaIrsServices,
   serviceEnum
 } from "../site-constants.js";
-import { Form, FormRow, FormTitle, FormInput } from "../components/Form";
+import { Form, FormRow, FormTitle, FormInput  } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
+import FormRadio from "../components/Form/FormRadio";
+
 import Select from "react-select";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
@@ -20,19 +22,26 @@ class ServiceCreate extends React.Component {
       clientId: "",
       clientName: "",
       clientOptions: [],
-      cpeExist: false,
+      showPort: false,
       customerLocId: null,
       custLocationsOptions: [],
       dialogSuccess: false,
       dialogText: "",
       dialogShow: false,
       gtsId: "",
+      //isMultiClientPort:false,
       locationsOptions: [],
       selectedLocation: "",
       selectedPort: "",
+      selectedPortMode: null,
       portsList: [],
       portId: null,
       portOptions: [],
+      portModeSelection: [
+        { label: "New", value: "new" },
+        { label: "Existing CPE", value: "existing" },
+        { label: "Existing multiple client", value: "multi" }
+      ],
       prefix: "",
       selectedCustLoc: "",
       servicesOptions: [],
@@ -101,25 +110,44 @@ class ServiceCreate extends React.Component {
   handleInputChange = event => {
     const value = event.target.value;
     const name = event.target.name;
-
-    if (name === "cpeExist") {
-      if (event.target.checked) {
-        this.getAccessPorts();
-      } else {
-        this.setState({ cpeExist: false });
-      }
-    } else {
-      this.setState({ [name]: value });
-    }
+    this.setState({ [name]: value });
+    // pregunto por el name = mycheck  y por el checked 
   };
 
-  // when existingCPE is checked.
-  getAccessPorts = () => {
-    let url = ClientURLs(
-      "clientAccessPorts",
-      this.state.clientId,
-      this.state.customerLocId
-    );
+  handlePortModeChange = event => {
+    const value = event.target.value;
+    let showPort = false;
+    let url = '';
+   
+    if (value === "new") {
+      showPort = false;
+    } else {
+      if (value === "existing") {
+        url = ClientURLs(
+          "clientAccessPorts",
+          this.state.clientId,
+          this.state.customerLocId
+        );
+      } else if (value === "multi") {
+        // TODO DEFINE NEW URL
+        url = ClientURLs(
+          "clientAccessPorts",
+          this.state.clientId,
+          this.state.customerLocId
+        );
+      }
+      this.getAccessPorts(url);
+      showPort = true;
+    }
+
+    this.setState({
+      selectedPortMode: value,
+      showPort: showPort
+    });
+  };
+
+  // when existingCPE or Existing-Multi-client is checked.
+  getAccessPorts = (url) => {
 
     HTTPGet(url).then(
       jsonResponse => {
@@ -131,15 +159,13 @@ class ServiceCreate extends React.Component {
         });
 
         this.setState({
-          portOptions: options,
-          cpeExist: true
+          portOptions: options
         });
       },
       error => {
         this.showAlertBox(false, error.message);
         this.setState({
-          portOptions: [],
-          cpeExist: false
+          portOptions: []
         });
       }
     );
@@ -185,11 +211,12 @@ class ServiceCreate extends React.Component {
       }
     );
   };
-  
+
   handleCustLocationOnChange = selectedOption => {
     this.setState({
       customerLocId: selectedOption.value,
-      selectedCustLoc: selectedOption
+      selectedCustLoc: selectedOption,
+      selectedPortMode: "new"
     });
   };
 
@@ -232,7 +259,7 @@ class ServiceCreate extends React.Component {
     if (onsaIrsServices.includes(this.state.serviceType)) {
       data["prefix"] = this.state.prefix;
     }
-   
+
     HTTPPost(URLs["services"], data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
@@ -301,7 +328,7 @@ class ServiceCreate extends React.Component {
                 </div>
               </FormRow>
 
-              <FormRow className="row">
+              <FormRow className="row ">
                 {/* CUST LOC */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="customerLoc">Customer Location</label>
@@ -326,23 +353,30 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
               </FormRow>
-              <div className="d-block my-3">
-                <div className="custom-control custom-radio">
-                  <input
-                    id="radio"
-                    name="cpeExist"
-                    type="checkbox"
-                    onChange={this.handleInputChange}
-                    className="custom-control-input"
-                    disabled={!this.state.customerLocId}
-                  />
-                  <label className="custom-control-label" htmlFor="radio">
-                    Existing CPE
-                  </label>
+
+              {/* PORT MODE */}
+
+              <FormRow className="row form-row mx-auto my-2 border rounded">
+                <div className="col-auto m-2 ">
+                  {this.state.portModeSelection.map((portMode, index) => {
+                    return (
+                      <FormRadio
+                        id={portMode.value}
+                        groupName="portModeSelection"
+                        onChange={event => this.handlePortModeChange(event)}
+                        value={portMode.value}
+                        selectedOption={this.state.selectedPortMode}
+                        disabled={!this.state.customerLocId}
+                        label={portMode.label}
+                        key={index}
+                      />
+                    );
+                  })}
                 </div>
-              </div>
+              </FormRow>
+
               {/* PORT */}
-              {this.state.cpeExist && this.state.customerLocId && (
+              {this.state.showPort && this.state.customerLocId && (
                 <FormRow className="row">
                   <div className="col-md-12 mb-3">
                     <label htmlFor="port">Port</label>
@@ -414,6 +448,25 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
               </FormRow>
+              {/* MULTIPLE CLIENT PORT */}
+              {!this.state.showPort &&       
+              <FormRow className="row form-row mx-auto pr-4">
+                <div className="col-6 p-0  my-2 border rounded ">
+                  <div className="custom-control custom-switch  m-2">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="customSwitch1"
+                    />
+                    <label
+                      class="custom-control-label"
+                      htmlFor="customSwitch1"
+                    >
+                      Multiple clients port
+                    </label>
+                  </div>
+                </div>
+              </FormRow>}
 
               <hr className="mb-4" />
               <div className="row justify-content-center">

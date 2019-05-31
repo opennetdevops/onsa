@@ -205,8 +205,6 @@ class Dashboard extends React.Component {
 
     return (
       <div className="container-fluid">
-        {/*<div className="row">*/}
-        {/*<Sidebar/>*/}
         <div className="row justify-content-center">
           <FormAlert
            dialogSuccess={this.state.dialogSuccess}
@@ -254,7 +252,6 @@ class Dashboard extends React.Component {
           service={this.state.modalService}
           toggle={this.handleToggle}
         />
-        {/*</div>*/}
       </div>
     );
   }
