@@ -35,8 +35,6 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    //TODO remove log
-    console.log(sessionStorage.getItem("token"));
 
     HTTPGet(URLs["services"]).then(
       jsonResponse => this.setState({ services: jsonResponse }),
