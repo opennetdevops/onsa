@@ -22,7 +22,7 @@ class AccessPortsController < ApiController
       render json: all_ports
     else
       if params[:multiclient_port]
-        @access_ports = AccessPort.where(used:params[:multiclient_port])
+        @access_ports = AccessPort.where(multiclient_port:params[:multiclient_port])
       else
         @access_ports = AccessPort.all
       end
