@@ -33,9 +33,16 @@ async function HTTPPost(url, data) {
   });
 
   if (!response.ok) {
-    throw new Error(
-      "HTTP error - " + response.status + " (" + response.statusText + ")"
-    );
+    if (response.statusText == "Unknown Status Code") {
+      let msg = await response.json();
+      throw new Error(
+        "HTTP error - " + response.status + " (" + msg["msg"] + ")"
+      );
+    } else {
+      throw new Error(
+        "HTTP error - " + response.status + " (" + response.statusText + ")"
+      );
+    }
   }
 
   let jsonResponse = await response.json();
@@ -89,9 +96,8 @@ const ClientURLs = (key, client, customerLocId) => {
       "/customerlocations/" +
       customerLocId +
       "/accessports",
-    multiClientPorts: 
-      process.env.REACT_APP_CORE_URL +
-      "/core/api/multiclient_access_ports"
+    multiClientPorts:
+      process.env.REACT_APP_CORE_URL + "/core/api/multiclient_access_ports"
   };
   return dict[key];
 };
