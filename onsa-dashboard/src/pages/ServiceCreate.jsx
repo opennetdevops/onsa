@@ -5,7 +5,7 @@ import {
   onsaIrsServices,
   serviceEnum
 } from "../site-constants.js";
-import { Form, FormRow, FormTitle, FormInput  } from "../components/Form";
+import { Form, FormRow, FormTitle, FormInput } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 import FormRadio from "../components/Form/FormRadio";
 
@@ -43,13 +43,12 @@ class ServiceCreate extends React.Component {
       prefix: "",
       selectedCustLoc: "",
       selectedService: [],
-      selectedClient:[],
+      selectedClient: [],
       servicesOptions: [],
       serviceId: "",
       showPrefix: false,
       showPort: false,
       showMultiPortSwitch: false
-
     };
   }
 
@@ -104,20 +103,20 @@ class ServiceCreate extends React.Component {
   resetFormFields = () => {
     this.setState({
       bandwidth: "",
-      customerLocId:"",
-      multiPortSwitch:false,
-      gtsId:"",
+      customerLocId: "",
+      multiPortSwitch: false,
+      gtsId: "",
       prefix: "",
       serviceId: "",
-      selectedClient:[],
-      selectedCustLoc:[],
+      selectedClient: [],
+      selectedCustLoc: [],
       selectedLocation: [],
-      selectedPortMode:"",
-      selectedPort:[],
+      selectedPortMode: "",
+      selectedPort: [],
       selectedService: [],
-      showPrefix:false,
-      showMultiPortSwitch:false,
-      showPort:false
+      showPrefix: false,
+      showMultiPortSwitch: false,
+      showPort: false
     });
   };
 
@@ -126,9 +125,10 @@ class ServiceCreate extends React.Component {
     const name = event.target.name;
     this.setState({ [name]: value });
 
-    if (name === "multiPortSwitch") { 
+    if (name === "multiPortSwitch") {
       this.setState({ [name]: event.target.checked });
     }
+  };
 
   handlePortModeChange = event => {
     const value = event.target.value;
@@ -142,7 +142,7 @@ class ServiceCreate extends React.Component {
     if (value === "new") {
       showPort = false;
       // port = null
-      } else {
+    } else {
       if (value === "existing") {
         url = ClientURLs(
           "clientAccessPorts",
@@ -151,12 +151,11 @@ class ServiceCreate extends React.Component {
         );
         mpsw = false;
       } else if (value === "multi") {
-        url = ClientURLs("multiClientPorts")
-        mpsw = true
+        url = ClientURLs("multiClientPorts");
+        mpsw = true;
       }
       this.getAccessPorts(url);
       showPort = true;
-
     }
 
     this.setState({
@@ -165,8 +164,8 @@ class ServiceCreate extends React.Component {
       showMultiPortSwitch: !showPort,
       multiPortSwitch: mpsw,
       // portId: port,
-      selectedPort:[]
-      });
+      selectedPort: []
+    });
   };
 
   // when existingCPE or Existing-Multi-client is checked.
@@ -195,15 +194,15 @@ class ServiceCreate extends React.Component {
 
   handlePortOnChange = selectedOption => {
     this.setState({
-      selectedPort: selectedOption,
+      selectedPort: selectedOption
       // portId: selectedOption.value
     });
   };
 
   handleClientOnChange = selectedOption => {
     const clientId = selectedOption.value;
-   
-this.showAlertBox();
+
+    this.showAlertBox();
     this.getClientLocations(clientId);
 
     this.setState({
@@ -215,7 +214,7 @@ this.showAlertBox();
   };
 
   getClientLocations = clientId => {
-    //fetch customer location 
+    //fetch customer location
     //creates an options array for Select component
 
     let url = ClientURLs("customerLocations", clientId);
@@ -248,10 +247,7 @@ this.showAlertBox();
   };
 
   handleServiceTypeOnChange = selectedOption => {
-    this.setState(
-      { selectedService: selectedOption },
-      this.handleDisplays
-    );
+    this.setState({ selectedService: selectedOption }, this.handleDisplays);
   };
 
   handleDisplays = () => {
@@ -283,7 +279,7 @@ this.showAlertBox();
     if (onsaIrsServices.includes(this.state.selectedService.value)) {
       data["prefix"] = this.state.prefix;
     }
-   
+
     HTTPPost(URLs["services"], data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
@@ -301,8 +297,7 @@ this.showAlertBox();
         this.state.selectedCustLoc &&
         this.state.clientId &&
         this.state.bandwidth
-        ? 
-          false
+        ? false
         : true;
     };
 
@@ -331,7 +326,7 @@ this.showAlertBox();
                     options={this.state.clientOptions}
                     name="client"
                     placeholder="Choose a client.."
-                    value= {this.state.selectedClient}
+                    value={this.state.selectedClient}
                   />
                 </div>
 
@@ -376,8 +371,10 @@ this.showAlertBox();
               </FormRow>
 
               {/* PORT MODE */}
-              <FormRow className="row form-row justify-content-center
-                                  mx-auto my-2 mb-3 border rounded">
+              <FormRow
+                className="row form-row justify-content-center
+                                  mx-auto my-2 mb-3 border rounded"
+              >
                 <div className="col-auto m-2 ">
                   {this.state.portModeSelection.map((portMode, index) => {
                     return (
