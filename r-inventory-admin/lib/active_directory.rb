@@ -5,7 +5,7 @@ module ActiveDirectory
   BASE = "DC=int,DC=fibercorp,DC=com,DC=ar"	
   USERNAME = "app_apiw"
   PASSWORD = "fcQmuSQngeZo6CywpR6v"
-  ADMIN_GROUP = "CN=Grupo App_FIPAM_Operator,OU=OU Grupos,OU=OU Hornos,DC=int,DC=fibercorp,DC=com,DC=ar"
+  ADMIN_GROUP = "CN=Grupo App_Inventory_Operator,OU=OU Grupos,OU=OU Hornos,DC=int,DC=fibercorp,DC=com,DC=ar"
 
   def self.connect
     @ldap = Net::LDAP.new  :host => DOMAIN_CONTROLLER, # your LDAP host name or IP goes here,
