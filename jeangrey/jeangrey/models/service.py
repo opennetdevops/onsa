@@ -11,6 +11,7 @@ class Service(BaseModel):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     id = models.CharField(primary_key=True, max_length=100, unique=True, default=None)
     service_state = models.CharField(max_length=100, null=True)
+    gts_id = models.CharField(max_length=20, null=True)
     service_type = models.CharField(max_length=100, null=True)
     bandwidth = models.CharField(max_length=100, null=True)
     customer_location = models.ForeignKey(CustomerLocation, on_delete=models.CASCADE)
@@ -35,6 +36,11 @@ class Service(BaseModel):
 class CpelessIrs(Service):
     prefix = models.CharField(max_length=100, null=True)
     public_network = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.id)
+
+class Tip(Service):
 
     def __str__(self):
         return str(self.id)

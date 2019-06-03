@@ -39,7 +39,7 @@ class ClientView(APIView):
         response = requests.get(url, auth=None, verify=False, headers=rheaders)
         json_response = json.loads(response.text)
 
-        return JsonResponse(json_response, safe=False)
+        return JsonResponse(json_response, safe=False, status=response.status_code)
 
     # Decorator for SWAGGER, allows to create custom attributes
     @swagger_auto_schema(
@@ -61,7 +61,7 @@ class ClientView(APIView):
             data), auth=None, verify=False, headers=rheaders)
         json_response = json.loads(response.text)
 
-        return JsonResponse(json_response, safe=False)
+        return JsonResponse(json_response, safe=False, status=response.status_code)
 
 
 client_view = ClientView.as_view()

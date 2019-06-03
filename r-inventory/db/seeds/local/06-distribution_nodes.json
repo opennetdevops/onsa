@@ -1,0 +1,18 @@
+[
+  {
+    "hostname": "sac.lab",
+    "mgmt_ip": "10.100.10.2",
+    "location_id": 2,
+    "remote_ports": null,
+    "uplink_ports": null,
+    "device_model_id": 1,
+    "serial_number": null,
+    "firmware_version": null,
+    "ot": null,
+    "comments": null,
+    "config_status": null,
+    "contract_id": 1,
+    "installation_date": null,
+    "remote_device_id": 1
+  }
+]

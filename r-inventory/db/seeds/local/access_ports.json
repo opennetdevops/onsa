@@ -1,8 +1,0 @@
-[
-  {
-    "id": 1,
-    "port": "GigabitEthernet 1/19",
-    "used": false,
-    "access_node_id": 1
-  }
-]

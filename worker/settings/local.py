@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'worker.apps.WorkerConfig',
-    'background_task',
     'corsheaders'
 ]
 
@@ -82,6 +81,60 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'settings.wsgi.application'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+        'console': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+    },
+    'handlers': {
+        'default': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR + '/logs/mylog.log',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+        'request_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR + '/logs/django_request.log',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['default'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'django.request': {
+            'handlers': ['request_handler'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        # Only for local/development, on production will use NGINX
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+    }
+}
 
 
 # Database
@@ -173,8 +226,12 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:9000',
     '10.120.78.58:3000',
     '10.120.78.59:3000',
-    '10.120.78.60:3000'
+    os.getenv('SERVER_IP')+':3000'
 )
+
+CELERY_BROKER_URL = "amqp://myuser:mypassword@" + \
+    os.getenv('SERVER_IP')+"/myvhost"
+
 
 # ONSA Variables
 JEAN_GREY_URL = "http://127.0.0.1:" + \

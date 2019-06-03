@@ -1,5 +1,6 @@
 class RouterNodesController < ApiController
   before_action :set_router_node, only: [:show, :update, :destroy]
+  before_action :authenticate_request
 
   def index
     if params[:location_id]

@@ -12,28 +12,17 @@ import requests
 
 
 class VlansView(APIView):
-    #swagger_schema = None # exclude from swagger schema
+    # swagger_schema = None # exclude from swagger schema
     permission_classes = (IsAuthenticated,)
     authentication_classes = ([JSONWebTokenLDAPAuthentication, ])
 
     def get(self, request, access_node_id):
         used = request.GET.get('used')
-        free_vlan_tag = self._get_free_vlan_tag(access_node_id, used)
+        free_vlan_tag = get_free_vlan_tag(access_node_id, used)
 
         json_response = {"vlan_tag": free_vlan_tag['vlan_tag']}
 
         return JsonResponse(json_response, safe=False)
-
-    def _get_free_vlan_tag(self, access_node_id, used):
-        url = settings.INVENTORY_URL + "accessnodes/" + \
-            str(access_node_id) + "/vlantags?used=" + used
-        rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(url, auth=None, verify=False, headers=rheaders)
-        json_response = json.loads(response.text)
-        if json_response:
-            return json_response[0]
-        else:
-            return None
 
 
 vlans_view = VlansView.as_view()

@@ -9,16 +9,29 @@ import json
 import os
 import logging
 import coloredlogs
+from celery import Celery
+import kombu
 
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
 def configure_service(config):
-    url = os.getenv('WORKER_URL') + "services"
-    rheaders = {'Content-Type': 'application/json'}
-    data = config
-    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    #TODO User pass and server from local/production
+    
+    #just triggered to test connection to RMQ, currently there is no support from celery worker
+    try:
+        a = kombu.Connection('amqp://myuser:mypassword@10.120.78.58/myvhost',connect_timeout=3)
+        a.connect()
+        a.release()
+
+        app = Celery('worker', broker='amqp://myuser:mypassword@10.120.78.58/myvhost', broker_pool_limit=None)
+        promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)], ignore_result=True )
+        logging.info("Sending message to queue")
+    except BaseException:
+        raise MessagingException("Unable to push message to queue")
+
+
+
+
 
 
 def update_jeangrey_service(service_id, data):
@@ -52,6 +65,15 @@ def update_core_service_status(service_id, data):
 
 def get_service(service_id):
     url = os.getenv('JEAN_GREY_URL') + "services/" + str(service_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_200_OK:
+        return response.json()
+    else:
+        raise ServiceException("Invalid Service")
+
+def get_access_port_services(access_port_id):
+    url = os.getenv('JEAN_GREY_URL') + "services?access_port_id=" + str(access_port_id)
     rheaders = {'Content-Type': 'application/json'}
     response = requests.get(url, auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_200_OK:
@@ -313,6 +335,5 @@ def update_charles_service(service, state):
     service['service_state'] = state
     charles_service.save()
     return service
-
 
 

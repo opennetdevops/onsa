@@ -13,4 +13,5 @@ SQL
 
 rootlevel=`eval "cd $PWD;cd ../..;pwd"`
 cd $rootlevel\/r-inventory\/
-rake db:create
+echo "creating rails db"
+rails db:create

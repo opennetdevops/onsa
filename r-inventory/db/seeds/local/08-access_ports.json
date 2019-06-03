@@ -1,0 +1,100 @@
+[
+  {
+    "id": 1,
+    "port": "GigabitEthernet 1/10",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 2,
+    "port": "GigabitEthernet 1/11",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 3,
+    "port": "GigabitEthernet 1/12",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 4,
+    "port": "GigabitEthernet 1/13",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 5,
+    "port": "GigabitEthernet 1/14",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 6,
+    "port": "GigabitEthernet 1/15",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 7,
+    "port": "GigabitEthernet 1/16",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 8,
+    "port": "GigabitEthernet 1/17",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 9,
+    "port": "GigabitEthernet 1/18",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 10,
+    "port": "GigabitEthernet 1/19",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 11,
+    "port": "GigabitEthernet 1/20",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 12,
+    "port": "GigabitEthernet 1/21",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 13,
+    "port": "GigabitEthernet 1/22",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  },
+  {
+    "id": 14,
+    "port": "GigabitEthernet 1/23",
+    "used": false,
+    "access_node_id": 1,
+    "multiclient_port": false
+  }
+]

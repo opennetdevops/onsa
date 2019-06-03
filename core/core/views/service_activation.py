@@ -19,7 +19,6 @@ class ServiceActivationView(APIView):
         logging.basicConfig(level=logging.INFO)
 
         data = json.loads(request.body.decode(encoding='UTF-8'))
-        print(data)
 
         if 'cpe_sn' in data.keys():
             if self.is_valid_cpe(data['cpe_sn']):
@@ -29,24 +28,19 @@ class ServiceActivationView(APIView):
                 response = {"message": "CPE not valid."}
                 return JsonResponse(response, safe=False)
 
+        # For TIP service
+        if 'vlan_id' in data.keys():
+            service_data = {"vlan_id": data['vlan_id']}
+            self.update_jeangrey_service(service_id, service_data)
+
         r = self.push_service_to_orchestrator(
             service_id, data['deployment_mode'], data['target_state'])
         return JsonResponse(r.status_code, safe=False)
 
     def is_valid_cpe(self, sn):
-        cpe = self._get_cpe(sn)
+        cpe = get_cpe(sn)
 
         return True if cpe else False
-
-    def _get_cpe(self, sn):
-        url = settings.INVENTORY_URL + "clientnodes/" + str(sn)
-        rheaders = {'Content-Type': 'application/json'}
-        response = requests.get(url, auth=None, verify=False, headers=rheaders)
-        json_response = json.loads(response.text)
-        if json_response:
-            return json_response
-        else:
-            return None
 
     def update_jeangrey_service(self, service_id, data):
         url = settings.JEAN_GREY_URL + "services/" + str(service_id)

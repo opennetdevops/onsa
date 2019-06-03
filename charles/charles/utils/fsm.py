@@ -1,17 +1,14 @@
-from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service, cpe_irs_service
+from charles.services import cpeless_irs_service, cpe_mpls_service, cpeless_mpls_service, vcpe_irs_service, cpe_irs_service, tip_service
 from charles.services import vpls_service
 from charles.models import *
 from enum import Enum
 from charles.utils.utils import *
 from charles.utils.inventory_utils import *
 from charles.utils.ipam_utils import *
+from charles.constants import *
 
 import logging
 import coloredlogs
-
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
-
 
 class ServiceTypes(Enum):
     cpeless_irs = cpeless_irs_service
@@ -23,41 +20,21 @@ class ServiceTypes(Enum):
 
 
 ##
-## IN_CONS. -> AN_DATA -> AN_ACT_IN_PROG -> AN_ACT -> BB_DATA -> BB_ACT_IN_PROG -> BB_ACT -> CPE_DATA_ACK
+## IN_CONS. -> AN_ACT_IN_PROG -> AN_ACT -> BB_DATA -> BB_ACT_IN_PROG -> BB_ACT -> CPE_DATA_ACK
 ##
 NextStateMap = (    
                     #From IN_CONSTRUNCTION
                     {'src':"in_construction",
                     'dst': "an_activated",
-                    'next_state':"an_data_ack" },
-                    {'src':"in_construction",
-                    'dst': "an_data_ack",
-                    'next_state':"an_data_ack" },
+                    'next_state':"an_activated" },
                     {'src':"in_construction",
                     'dst': "cpe_data_ack",
-                    'next_state':"an_data_ack" },
+                    'next_state':"an_activated" },
                     {'src':"in_construction",
                     'dst': "bb_data_ack",
-                    'next_state':"an_data_ack" },
+                    'next_state':"an_activated" },
                     {'src':"in_construction",
                     'dst': "service_activated",
-                    'next_state':"an_data_ack" },
-
-                    #From an_data_ack
-                    {'src':"an_data_ack",
-                    'dst': "an_activated",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "bb_activated",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "cpe_data_ack",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "service_activated",
-                    'next_state':"an_activated" },
-                    {'src':"an_data_ack",
-                    'dst': "bb_data_ack",
                     'next_state':"an_activated" },
 
                     #From an_activation_in_progress
@@ -143,10 +120,8 @@ class Fsm():
             logging.debug(str("proposed next state " + state.name))
             service = state.run(service)
             logging.debug(str("Service after run:" + str(service)))
-            print(service)
 
-
-            while service['service_state'] != "error" and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
+            while service['service_state'] != SERVICE_ERROR_STATE and keep_processing(service['service_state']) and service['service_state'] != service['target_state']:
                 #Execute next step
                 logging.debug(str("from service: "+service['service_state'] +" to: "+ service['target_state']))
                 state.name = next_state(service['service_state'], service['target_state'])

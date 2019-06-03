@@ -130,16 +130,18 @@ class ConfigHandler:
 		}
 
 		config = render(template_path, params).splitlines()
+		print("config")
+		print(config)
 
 		try:
 			net_connect = ConnectHandler(**my_device)
 			output = net_connect.send_config_set(config)
 			net_connect.disconnect()
-			return ERR0
+			return True
 		except (NetMikoTimeoutException):
-			return ERR532
+			return False
 		except (NetMikoAuthenticationException):
-			return ERR533
+			return False
 
 	def nsx(template_path, params):
 

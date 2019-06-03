@@ -1,5 +1,6 @@
 class VrfsController < ApiController
   before_action :set_vrf, only: [:show, :update, :destroy]
+  before_action :authenticate_request
 
   def index
     if params[:location_id]

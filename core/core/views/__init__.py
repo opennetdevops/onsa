@@ -11,3 +11,4 @@ from core.views.service_activation import service_activation_view
 from core.views.ldap_jwt import *
 from core.views.monitoring import status_monitoring_view
 from core.views.traffic_monitoring import traffic_monitoring_view
+from core.views.multiclient_access_ports import multiclient_access_ports

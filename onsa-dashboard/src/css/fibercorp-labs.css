@@ -1,9 +1,16 @@
 html,
 body {
   height: 100%;
-  padding-top: 50px;
+  padding-top: 40px;
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  /* font-family: 'PT Sans', sans-serif; */
 }
+
+
+/* h1, h2, h3, h4, h5{
+  font-family: 'Open Sans', sans-serif;
+  font-weight: bold;
+} */
 
 main.container {
   margin-right: auto;
@@ -190,4 +197,24 @@ p .navbar-font {
   image-resolution: 72dpi;
   width: 30%;
   height: auto;
+}
+
+@keyframes AlertFadeAnimation {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.fadeOutAlert{
+  animation: AlertFadeAnimation 3s ease-in .4s forwards;
+}
+
+.visibilityAlert{
+  visibility: hidden;
 }

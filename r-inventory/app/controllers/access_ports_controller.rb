@@ -1,6 +1,7 @@
 class AccessPortsController < ApiController
   before_action :set_access_port, only: [:show, :update, :destroy]
   before_action :set_access_node, only: [:create]
+  before_action :authenticate_request
 
   def index
     if params[:location_id]
@@ -11,12 +12,28 @@ class AccessPortsController < ApiController
         if params[:used]
           all_ports += an.access_ports.where(used:params[:used])
         else
-          all_ports += an.access_ports
+          if params[:multiclient_port]
+            all_ports += an.access_ports.where(used:params[:multiclient_port])
+          else
+            all_ports += an.access_ports
+          end
         end
       end
       render json: all_ports
     else
-      @access_ports = AccessPort.all
+      if params[:multiclient_port]
+        @access_ports = []
+        @multiclient_access_ports = AccessPort.where(multiclient_port:params[:multiclient_port])
+        @multiclient_access_ports.each do |ap|
+          an = AccessNode.find(ap.access_node_id)
+          my_ap = ap.attributes
+          my_ap['access_node'] = an.hostname
+          puts my_ap
+          @access_ports << my_ap
+        end
+      else
+        @access_ports = AccessPort.all
+      end
       render json: @access_ports   
     end
   end
@@ -56,6 +73,6 @@ class AccessPortsController < ApiController
     end
 
     def access_port_params
-      params.fetch(:access_port,{}).permit(:port,:used)
+      params.fetch(:access_port,{}).permit(:port,:used,:multiclient_port)
     end
 end

@@ -31,7 +31,8 @@ DEBUG = bool(int(os.getenv('DEBUG', False)))
 
 # ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost']
 #ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',') if os.getenv('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(
+    ',') if os.getenv('ALLOWED_HOSTS') else []
 
 JQUERY_URL = True
 
@@ -52,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -60,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-APPEND_SLASH=False
+APPEND_SLASH = False
 
 ROOT_URLCONF = 'settings.urls'
 
@@ -154,7 +155,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-JWT_AUTH = { 
+JWT_AUTH = {
     # 'JWT_AUTH_HEADER_PREFIX': 'Bearer',
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=2),
     'JWT_ALLOW_REFRESH': True
@@ -170,6 +171,9 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:3000',
     '127.0.0.1:9000'
 )
+
+CELERY_BROKER_URL = "amqp://"+os.getenv('SERVER_IP')
+
 
 # ONSA Variables
 JEAN_GREY_URL = "http://jeangrey:8000/jeangrey/api/"

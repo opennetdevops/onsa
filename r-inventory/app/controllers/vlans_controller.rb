@@ -1,5 +1,6 @@
 class VlansController < ApiController
-  
+  before_action :authenticate_request
+
   def index
     if params[:access_node_id]
       if params[:used]

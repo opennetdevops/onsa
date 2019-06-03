@@ -9,16 +9,41 @@ import requests
 import ldap
 import logging
 import coloredlogs
+import os
 
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
+def get_inventory_authentication_token():
+    url = "authenticate"
+    rheaders = {'Content-Type': 'application/json'}
+    data = {"email":os.getenv('INVENTORY_USER'), "password":os.getenv('INVENTORY_PASSWORD')}
+    response = requests.post(os.getenv('INVENTORY_URL') + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    # logging.debug(response.text)
+    return json.loads(response.text)['auth_token']
+
+def get_multiclient_access_ports():
+    url = settings.INVENTORY_URL + "access_ports?multiclient_port=True"
+
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+    if r.status_code == HTTP_200_OK:
+        return r.json()
+    else:
+        logging.error("no available multiclient ports")
+        raise AccessPortException("No available multiclient ports.", status_code=r.HTTP_404_NOT_FOUND)
+
+
+
+
 
 def pop_empty_keys(d):
     return {k: v for k, v in d.items() if v is not None}
 
 def get_router_node(router_node_id):
     url = settings.INVENTORY_URL + "router_nodes/" + str(router_node_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
         
     if r.json() and r.status_code == HTTP_200_OK:
@@ -30,7 +55,8 @@ def get_router_node(router_node_id):
 
 def get_router_node_from_location(location_id):
     url = settings.INVENTORY_URL + "locations/" + str(location_id) + "/router_nodes"
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.status_code != HTTP_200_OK:
@@ -43,7 +69,8 @@ def get_router_node_from_location(location_id):
 
 def get_access_node(access_node_id):
     url = settings.INVENTORY_URL + "access_nodes/"+ str(access_node_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()
@@ -53,7 +80,8 @@ def get_access_node(access_node_id):
 
 def get_access_port(access_port_id):
     url = settings.INVENTORY_URL + "access_ports/"+ str(access_port_id)
-    rheaders = {'Content-Type': 'application/json'}
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()
@@ -75,7 +103,8 @@ def get_client(client_id):
 
 def get_client_node(client_node_id):
     url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.json() and r.status_code == HTTP_200_OK:
@@ -87,7 +116,8 @@ def get_client_node(client_node_id):
 
 def get_client_port(client_node_sn, client_port_id):
     url = settings.INVENTORY_URL + "clientnodes/" + str(client_node_sn) + "/clientports/" + str(client_port_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     # TODO: how to raise exception client_node_sn or client_port_id ?
@@ -100,7 +130,8 @@ def get_client_port(client_node_sn, client_port_id):
 
 def get_device_model(device_model_id):
     url = settings.INVENTORY_URL + "device_models/" + str(device_model_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
         
     if r.json() and r.status_code == HTTP_200_OK:
@@ -112,7 +143,8 @@ def get_device_model(device_model_id):
 
 def get_free_access_port(location_id):
     url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/access_ports?used=false"
-    rheaders = {'Content-Type': 'application/json'}
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
     print(r.json())
     if r.json() and r.status_code == HTTP_200_OK:
@@ -125,13 +157,24 @@ def get_free_access_port(location_id):
 
 def get_vrf(vrf_name):
     url = settings.INVENTORY_URL + "vrfs?name="+ vrf_name
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()
     else:
         raise VrfException("Invalid VRF Id.", status_code=r.status_code)
+
+def get_vrfs():
+    url = settings.INVENTORY_URL + "vrfs"
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+
+    return response.json()
 
 def get_service(service_id):
     url = settings.JEAN_GREY_URL + "services/" + str(service_id)
@@ -147,7 +190,8 @@ def get_service(service_id):
 
 def get_location(location_id):
     url = settings.INVENTORY_URL + "locations/" + str(location_id)
-    rheaders = { 'Content-Type': 'application/json' }
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
 
     if r.json() and r.status_code == HTTP_200_OK:
@@ -197,6 +241,7 @@ def search_user_ldap(l, username):
     
     return r
 
+
 def init_ldap():
     host = "ldap://10.120.78.5"
     dn = "cn=fc__netauto,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fibercorp,dc=com,dc=ar"
@@ -240,5 +285,76 @@ def delete_jeangrey_service(service_id):
 
     if r.json():
         return r.json()
+    else:
+        return None
+
+
+
+
+
+def get_free_logical_units(router_node_id):
+    url = settings.INVENTORY_URL + "router_nodes/" + \
+        str(router_node_id) + "/logicalunits?used=false"
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    
+    response = requests.get(url, auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    # TODO check minimum size = 2
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def add_logical_unit_to_router_node(router_node_id, logical_unit_id, product_id):
+    url = settings.INVENTORY_URL + "router_nodes/" + \
+        str(router_node_id) + "/logicalunits"
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    
+    data = {"logical_unit_id": logical_unit_id, "product_id": product_id}
+    response = requests.post(url, data=json.dumps(
+        data), auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+def get_locations():
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+
+    response = requests.get(settings.INVENTORY_URL + "locations", auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+
+    return json_response
+
+
+def get_cpe(sn):
+    url = settings.INVENTORY_URL + "client_nodes/" + str(sn)
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    response = requests.get(url, auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response
+    else:
+        return None
+
+
+def get_free_vlan_tag(access_node_id, used):
+    url = settings.INVENTORY_URL + "access_nodes/" + \
+        str(access_node_id) + "/vlan_tag?used=" + used
+    
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    
+    response = requests.get(url, auth=None, verify=False, headers=rheaders)
+    json_response = json.loads(response.text)
+    if json_response:
+        return json_response[0]
     else:
         return None

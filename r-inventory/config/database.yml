@@ -6,3 +6,11 @@ development:
   username: automation
   password: F1b3rc0rp
   host: localhost
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: inventory_production
+  pool: 5
+  username: automation
+  password: F1b3rc0rp
+  host: 10.120.54.67
