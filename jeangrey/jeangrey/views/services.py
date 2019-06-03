@@ -132,11 +132,12 @@ class ServiceView(View):
                 if not router_nodes:
                     raise RouterNodeException("Invalid location or no routers nodes available at selected location.", status_code=HTTP_503_SERVICE_UNAVAILABLE)
 
+                multiclient_port = data.pop('multiclient_port')
+
                 #If access_port not selected (previously) for the service
                 if "access_port_id" not in data.keys():
                     access_port = get_free_access_port(data['location_id'])
                     access_port_id = str(access_port['id'])
-                    multiclient_port = data.pop('multiclient_port')
                     use_access_port(access_port_id,multiclient_port)
                     allocated_resources['access_port'] = access_port_id
                 else:

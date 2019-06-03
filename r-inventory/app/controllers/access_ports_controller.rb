@@ -22,9 +22,9 @@ class AccessPortsController < ApiController
       render json: all_ports
     else
       if params[:multiclient_port]
+        @access_ports = []
         @multiclient_access_ports = AccessPort.where(multiclient_port:params[:multiclient_port])
         @multiclient_access_ports.each do |ap|
-          @access_ports = []
           an = AccessNode.find(ap.access_node_id)
           my_ap = ap.attributes
           my_ap['access_node'] = an.hostname
