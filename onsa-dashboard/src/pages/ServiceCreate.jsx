@@ -126,7 +126,7 @@ class ServiceCreate extends React.Component {
         let options = jsonResponse.map(port => {
           return {
             value: port.id,
-            label: port.access_node + " - " + port.access_port
+            label: port.access_node + " - " + port.port
           };
         });
 
