@@ -5,8 +5,10 @@ import {
   onsaIrsServices,
   serviceEnum
 } from "../site-constants.js";
-import { Form, FormRow, FormTitle, FormInput } from "../components/Form";
+import { Form, FormRow, FormTitle, FormInput  } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
+import FormRadio from "../components/Form/FormRadio";
+
 import Select from "react-select";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
@@ -18,27 +20,36 @@ class ServiceCreate extends React.Component {
     this.state = {
       bandwidth: "",
       clientId: "",
-      clientName: "",
       clientOptions: [],
-      cpeExist: false,
       customerLocId: null,
       custLocationsOptions: [],
       dialogSuccess: false,
       dialogText: "",
       dialogShow: false,
       gtsId: "",
+      multiPortSwitch: false,
       locationsOptions: [],
       selectedLocation: "",
       selectedPort: "",
+      selectedPortMode: null,
       portsList: [],
       portId: null,
       portOptions: [],
+      portModeSelection: [
+        { label: "New", value: "new" },
+        { label: "Existing CPE", value: "existing" },
+        { label: "Existing multiple client", value: "multi" }
+      ],
       prefix: "",
       selectedCustLoc: "",
+      selectedService: [],
+      selectedClient:[],
       servicesOptions: [],
-      serviceType: "",
       serviceId: "",
-      showPrefix: false
+      showPrefix: false,
+      showPort: false,
+      showMultiPortSwitch: false
+
     };
   }
 
@@ -92,35 +103,68 @@ class ServiceCreate extends React.Component {
 
   resetFormFields = () => {
     this.setState({
+      bandwidth: "",
+      customerLocId:"",
+      multiPortSwitch:false,
+      gtsId:"",
+      prefix: "",
       serviceId: "",
-      prexix: "",
-      bandwidth: ""
+      selectedCustLoc:[],
+      selectedService: [],
+      selectedLocation: [],
+      selectedPortMode:"",
+      selectedClient:[],
+      showPrefix:false,
+      showMultiPortSwitch:false
     });
   };
 
   handleInputChange = event => {
     const value = event.target.value;
     const name = event.target.name;
+    this.setState({ [name]: value });
 
-    if (name === "cpeExist") {
-      if (event.target.checked) {
-        this.getAccessPorts();
-      } else {
-        this.setState({ cpeExist: false });
-      }
-    } else {
-      this.setState({ [name]: value });
+    if (name === "multiPortSwitch") { 
+      this.setState({ [name]: event.target.checked });
     }
   };
 
-  // when existingCPE is checked.
-  getAccessPorts = () => {
-    let url = ClientURLs(
-      "clientAccessPorts",
-      this.state.clientId,
-      this.state.customerLocId
-    );
+  handlePortModeChange = event => {
+    const value = event.target.value;
+    let showPort = false;
+    let url = "";
+    let mpsw = false;
 
+    this.showAlertBox();
+
+    if (value === "new") {
+      showPort = false;
+      } else {
+      if (value === "existing") {
+        url = ClientURLs(
+          "clientAccessPorts",
+          this.state.clientId,
+          this.state.customerLocId
+        );
+        mpsw = false;
+      } else if (value === "multi") {
+        url = ClientURLs("multiClientPorts")
+        mpsw = true
+      }
+      this.getAccessPorts(url);
+      showPort = true;
+    }
+
+    this.setState({
+      selectedPortMode: value,
+      showPort: showPort,
+      showMultiPortSwitch: !showPort,
+      multiPortSwitch: mpsw
+      });
+  };
+
+  // when existingCPE or Existing-Multi-client is checked.
+  getAccessPorts = url => {
     HTTPGet(url).then(
       jsonResponse => {
         let options = jsonResponse.map(port => {
@@ -131,15 +175,13 @@ class ServiceCreate extends React.Component {
         });
 
         this.setState({
-          portOptions: options,
-          cpeExist: true
+          portOptions: options
         });
       },
       error => {
         this.showAlertBox(false, error.message);
         this.setState({
-          portOptions: [],
-          cpeExist: false
+          portOptions: []
         });
       }
     );
@@ -154,21 +196,21 @@ class ServiceCreate extends React.Component {
 
   handleClientOnChange = selectedOption => {
     const clientId = selectedOption.value;
-    const clientName = selectedOption.label;
-
-    this.showAlertBox();
+   
+this.showAlertBox();
     this.getClientLocations(clientId);
 
     this.setState({
       customerLocId: "",
       selectedCustLoc: "",
-      clientName: clientName,
-      clientId: clientId
+      clientId: clientId,
+      selectedClient: selectedOption
     });
   };
 
   getClientLocations = clientId => {
-    //fetch customer location and creates an options array for Select component
+    //fetch customer location 
+    //creates an options array for Select component
 
     let url = ClientURLs("customerLocations", clientId);
 
@@ -185,11 +227,13 @@ class ServiceCreate extends React.Component {
       }
     );
   };
-  
+
   handleCustLocationOnChange = selectedOption => {
     this.setState({
       customerLocId: selectedOption.value,
-      selectedCustLoc: selectedOption
+      selectedCustLoc: selectedOption,
+      selectedPortMode: "new",
+      showMultiPortSwitch: true
     });
   };
 
@@ -199,14 +243,14 @@ class ServiceCreate extends React.Component {
 
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
-      { serviceType: selectedOption.value, selectedService: selectedOption },
+      { selectedService: selectedOption },
       this.handleDisplays
     );
   };
 
   handleDisplays = () => {
     let state = {};
-    state = onsaIrsServices.includes(this.state.serviceType)
+    state = onsaIrsServices.includes(this.state.selectedService.value)
       ? { showPrefix: true }
       : { showPrefix: false };
     this.setState(state);
@@ -220,16 +264,17 @@ class ServiceCreate extends React.Component {
       location_id: this.state.selectedLocation.value,
       id: this.state.serviceId,
       bandwidth: this.state.bandwidth,
-      service_type: this.state.serviceType,
+      service_type: this.state.selectedService.value,
       customer_location_id: this.state.customerLocId,
-      gts_id: this.state.gtsId
+      gts_id: this.state.gtsId,
+      multiclient_port: this.state.multiPortSwitch
     };
 
     if (this.state.portId) {
       // if CPE already exists
       data["access_port_id"] = this.state.portId;
     }
-    if (onsaIrsServices.includes(this.state.serviceType)) {
+    if (onsaIrsServices.includes(this.state.selectedService.value)) {
       data["prefix"] = this.state.prefix;
     }
    
@@ -250,7 +295,7 @@ class ServiceCreate extends React.Component {
         this.state.selectedCustLoc &&
         this.state.clientId &&
         this.state.bandwidth
-        ? //this.state.prefix
+        ? 
           false
         : true;
     };
@@ -280,11 +325,8 @@ class ServiceCreate extends React.Component {
                     options={this.state.clientOptions}
                     name="client"
                     placeholder="Choose a client.."
+                    value= {this.state.selectedClient}
                   />
-
-                  <div className="invalid-feedback">
-                    Example invalid feedback text
-                  </div>
                 </div>
 
                 <div className="col-md-6 mb-3">
@@ -301,7 +343,7 @@ class ServiceCreate extends React.Component {
                 </div>
               </FormRow>
 
-              <FormRow className="row">
+              <FormRow className="row ">
                 {/* CUST LOC */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="customerLoc">Customer Location</label>
@@ -309,7 +351,7 @@ class ServiceCreate extends React.Component {
                     onChange={this.handleCustLocationOnChange}
                     options={this.state.custLocationsOptions}
                     name="customerLoc"
-                    placeholder="Choose a customer location.."
+                    placeholder="Choose one.."
                     value={this.state.selectedCustLoc}
                   />
                 </div>
@@ -326,23 +368,30 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
               </FormRow>
-              <div className="d-block my-3">
-                <div className="custom-control custom-radio">
-                  <input
-                    id="radio"
-                    name="cpeExist"
-                    type="checkbox"
-                    onChange={this.handleInputChange}
-                    className="custom-control-input"
-                    disabled={!this.state.customerLocId}
-                  />
-                  <label className="custom-control-label" htmlFor="radio">
-                    Existing CPE
-                  </label>
+
+              {/* PORT MODE */}
+              <FormRow className="row form-row justify-content-center
+                                  mx-auto my-2 mb-3 border rounded">
+                <div className="col-auto m-2 ">
+                  {this.state.portModeSelection.map((portMode, index) => {
+                    return (
+                      <FormRadio
+                        id={portMode.value}
+                        groupName="portModeSelection"
+                        onChange={event => this.handlePortModeChange(event)}
+                        value={portMode.value}
+                        selectedOption={this.state.selectedPortMode}
+                        disabled={!this.state.customerLocId}
+                        label={portMode.label}
+                        key={index}
+                      />
+                    );
+                  })}
                 </div>
-              </div>
+              </FormRow>
+
               {/* PORT */}
-              {this.state.cpeExist && this.state.customerLocId && (
+              {this.state.showPort && this.state.customerLocId && (
                 <FormRow className="row">
                   <div className="col-md-12 mb-3">
                     <label htmlFor="port">Port</label>
@@ -356,7 +405,7 @@ class ServiceCreate extends React.Component {
                   </div>
                 </FormRow>
               )}
-              <FormRow className="row">
+              <FormRow className="row ">
                 {/* BW */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="bandwidth">
@@ -373,7 +422,30 @@ class ServiceCreate extends React.Component {
                     placeholder="100"
                   />
                 </div>
-
+                {/* HUB */}
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="location">HUB</label>
+                  <Select
+                    onChange={this.handleLocationOnChange}
+                    options={this.state.locationsOptions}
+                    name="location"
+                    placeholder="Choose a HUB.."
+                    value={this.state.selectedLocation}
+                  />
+                </div>
+              </FormRow>
+              {/* SERVICE TYPE */}
+              <FormRow className="row ">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="serviceType">Service type</label>
+                  <Select
+                    onChange={this.handleServiceTypeOnChange}
+                    options={this.state.servicesOptions}
+                    name="serviceType"
+                    placeholder="IRS, MPLS, VPLS..."
+                    value={this.state.selectedService}
+                  />
+                </div>
                 {/* PREFIX */}
                 {this.state.showPrefix && (
                   <div className="col-md-6 mb-3">
@@ -390,30 +462,29 @@ class ServiceCreate extends React.Component {
                   </div>
                 )}
               </FormRow>
-              {/* SERVICE TYPE */}
-              <FormRow className="row">
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="serviceType">Service type</label>
-                  <Select
-                    onChange={this.handleServiceTypeOnChange}
-                    options={this.state.servicesOptions}
-                    name="serviceType"
-                    placeholder="IRS, MPLS, VPLS..."
-                    value={this.state.selectedService}
-                  />
-                </div>
-                {/* HUB */}
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="location">HUB</label>
-                  <Select
-                    onChange={this.handleLocationOnChange}
-                    options={this.state.locationsOptions}
-                    name="location"
-                    placeholder="Choose a HUB.."
-                    value={this.state.selectedLocation}
-                  />
-                </div>
-              </FormRow>
+              {/* MULTIPLE CLIENT PORT SWITCH */}
+              {this.state.showMultiPortSwitch && (
+                <FormRow className="row form-row mx-auto pr-4">
+                  <div className="col-6 p-0  my-2 border rounded ">
+                    <div className="custom-control custom-switch  m-2">
+                      <input
+                        type="checkbox"
+                        className="custom-control-input"
+                        name="multiPortSwitch"
+                        onChange={this.handleInputChange}
+                        value={this.state.multiPortSwitch}
+                        id="multiPortSwitch"
+                      />
+                      <label
+                        className="custom-control-label"
+                        htmlFor="multiPortSwitch"
+                      >
+                        Multiple clients port
+                      </label>
+                    </div>
+                  </div>
+                </FormRow>
+              )}
 
               <hr className="mb-4" />
               <div className="row justify-content-center">
@@ -421,7 +492,6 @@ class ServiceCreate extends React.Component {
                   <button
                     className="btn btn-primary btn-block btn-lg "
                     disabled={formIsValid()}
-                    // {!this.state.serviceId ? true : false}
                     type="submit"
                   >
                     Create
