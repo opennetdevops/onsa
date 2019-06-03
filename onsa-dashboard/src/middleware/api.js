@@ -33,7 +33,7 @@ async function HTTPPost(url, data) {
   });
 
   if (!response.ok) {
-    if (response.statusText == "Unknown Status Code") {
+    if (response.statusText === "Unknown Status Code") {
       let msg = await response.json();
       throw new Error(
         "HTTP error - " + response.status + " (" + msg["msg"] + ")"
