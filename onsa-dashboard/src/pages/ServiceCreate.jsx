@@ -123,6 +123,7 @@ class ServiceCreate extends React.Component {
     const value = event.target.value;
     let showPort = false;
     let url = "";
+    let mpsw = false;
 
     this.showAlertBox();
 
@@ -135,8 +136,10 @@ class ServiceCreate extends React.Component {
           this.state.clientId,
           this.state.customerLocId
         );
+        mpsw = false;
       } else if (value === "multi") {
         url = ClientURLs("multiClientPorts")
+        mpsw = true
       }
       this.getAccessPorts(url);
       showPort = true;
@@ -145,8 +148,9 @@ class ServiceCreate extends React.Component {
     this.setState({
       selectedPortMode: value,
       showPort: showPort,
-      showMultiPortSwitch: !showPort
-
+      showMultiPortSwitch: !showPort,
+      multiPortSwitch: mpsw
+      
     });
   };
 
@@ -314,10 +318,6 @@ class ServiceCreate extends React.Component {
                     name="client"
                     placeholder="Choose a client.."
                   />
-
-                  <div className="invalid-feedback">
-                    Example invalid feedback text
-                  </div>
                 </div>
 
                 <div className="col-md-6 mb-3">

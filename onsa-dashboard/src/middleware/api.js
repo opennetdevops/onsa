@@ -91,7 +91,7 @@ const ClientURLs = (key, client, customerLocId) => {
       "/accessports",
     multiClientPorts: 
       process.env.REACT_APP_CORE_URL +
-      "/api/multiclient_access_ports"
+      "/core/api/multiclient_access_ports"
   };
   return dict[key];
 };
