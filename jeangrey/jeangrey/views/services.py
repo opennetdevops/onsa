@@ -165,6 +165,7 @@ class ServiceView(View):
                 service = ServiceClass.objects.create(**data)
                 service.service_state = INITIAL_SERVICE_STATE
                 service.save()
+                logging.debug(f'service created with: {data}')
 
                 return JsonResponse(service.fields(), safe=False, status=HTTP_201_CREATED)
 
