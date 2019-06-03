@@ -17,7 +17,7 @@ ActiveAdmin.register AccessNode do
 			f.input :comments
 			f.input :remote_device
 			f.input :remote_ports
-			f.input :uplink_ports, as: :tags, collection: access_node.device_model.uplink_ports_array
+			f.input :uplink_ports, as: :tags
 			f.input :contract, :as => :select, :collection => Contract.all
 		end
 	  f.actions
