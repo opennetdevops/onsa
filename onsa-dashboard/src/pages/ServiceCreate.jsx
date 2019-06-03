@@ -22,7 +22,6 @@ class ServiceCreate extends React.Component {
       clientId: "",
       clientName: "",
       clientOptions: [],
-      showPort: false,
       customerLocId: null,
       custLocationsOptions: [],
       dialogSuccess: false,
@@ -47,7 +46,9 @@ class ServiceCreate extends React.Component {
       servicesOptions: [],
       serviceType: "",
       serviceId: "",
-      showPrefix: false
+      showPrefix: false,
+      showPort: false
+
     };
   }
 
@@ -159,6 +160,7 @@ class ServiceCreate extends React.Component {
         this.setState({
           portOptions: options
         });
+        this.showAlertBox();
       },
       error => {
         this.showAlertBox(false, error.message);
@@ -192,7 +194,8 @@ class ServiceCreate extends React.Component {
   };
 
   getClientLocations = clientId => {
-    //fetch customer location and creates an options array for Select component
+    //fetch customer location 
+    //creates an options array for Select component
 
     let url = ClientURLs("customerLocations", clientId);
 
@@ -354,7 +357,6 @@ class ServiceCreate extends React.Component {
               </FormRow>
 
               {/* PORT MODE */}
-
               <FormRow className="row form-row justify-content-center mx-auto my-2 border rounded">
                 <div className="col-auto m-2 ">
                   {this.state.portModeSelection.map((portMode, index) => {
@@ -406,7 +408,30 @@ class ServiceCreate extends React.Component {
                     placeholder="100"
                   />
                 </div>
-
+                {/* HUB */}
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="location">HUB</label>
+                  <Select
+                    onChange={this.handleLocationOnChange}
+                    options={this.state.locationsOptions}
+                    name="location"
+                    placeholder="Choose a HUB.."
+                    value={this.state.selectedLocation}
+                  />
+                </div>
+              </FormRow>
+              {/* SERVICE TYPE */}
+              <FormRow className="row">
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="serviceType">Service type</label>
+                  <Select
+                    onChange={this.handleServiceTypeOnChange}
+                    options={this.state.servicesOptions}
+                    name="serviceType"
+                    placeholder="IRS, MPLS, VPLS..."
+                    value={this.state.selectedService}
+                  />
+                </div>
                 {/* PREFIX */}
                 {this.state.showPrefix && (
                   <div className="col-md-6 mb-3">
@@ -423,30 +448,6 @@ class ServiceCreate extends React.Component {
                   </div>
                 )}
               </FormRow>
-              {/* SERVICE TYPE */}
-              <FormRow className="row">
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="serviceType">Service type</label>
-                  <Select
-                    onChange={this.handleServiceTypeOnChange}
-                    options={this.state.servicesOptions}
-                    name="serviceType"
-                    placeholder="IRS, MPLS, VPLS..."
-                    value={this.state.selectedService}
-                  />
-                </div>
-                {/* HUB */}
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="location">HUB</label>
-                  <Select
-                    onChange={this.handleLocationOnChange}
-                    options={this.state.locationsOptions}
-                    name="location"
-                    placeholder="Choose a HUB.."
-                    value={this.state.selectedLocation}
-                  />
-                </div>
-              </FormRow>
               {/* MULTIPLE CLIENT PORT */}
               {!this.state.showPort && (
                 <FormRow className="row form-row mx-auto pr-4">
@@ -459,7 +460,6 @@ class ServiceCreate extends React.Component {
                         onChange={this.handleInputChange}
                         value={this.state.multiPortSwitch}
                         id="multiPortSwitch"
-
                       />
                       <label
                         className="custom-control-label"
