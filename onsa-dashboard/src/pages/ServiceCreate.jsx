@@ -29,7 +29,7 @@ class ServiceCreate extends React.Component {
       dialogText: "",
       dialogShow: false,
       gtsId: "",
-      //isMultiClientPort:false,
+      multiPortSwitch: false,
       locationsOptions: [],
       selectedLocation: "",
       selectedPort: "",
@@ -111,14 +111,17 @@ class ServiceCreate extends React.Component {
     const value = event.target.value;
     const name = event.target.name;
     this.setState({ [name]: value });
-    // pregunto por el name = mycheck  y por el checked 
+
+    if (name === "multiPortSwitch") { 
+      this.setState({ [name]: event.target.checked });
+    }
   };
 
   handlePortModeChange = event => {
     const value = event.target.value;
     let showPort = false;
-    let url = '';
-   
+    let url = "";
+
     if (value === "new") {
       showPort = false;
     } else {
@@ -130,11 +133,7 @@ class ServiceCreate extends React.Component {
         );
       } else if (value === "multi") {
         // TODO DEFINE NEW URL
-        url = ClientURLs(
-          "clientAccessPorts",
-          this.state.clientId,
-          this.state.customerLocId
-        );
+        url = ClientURLs("multiClientPorts")
       }
       this.getAccessPorts(url);
       showPort = true;
@@ -147,8 +146,7 @@ class ServiceCreate extends React.Component {
   };
 
   // when existingCPE or Existing-Multi-client is checked.
-  getAccessPorts = (url) => {
-
+  getAccessPorts = url => {
     HTTPGet(url).then(
       jsonResponse => {
         let options = jsonResponse.map(port => {
@@ -249,7 +247,8 @@ class ServiceCreate extends React.Component {
       bandwidth: this.state.bandwidth,
       service_type: this.state.serviceType,
       customer_location_id: this.state.customerLocId,
-      gts_id: this.state.gtsId
+      gts_id: this.state.gtsId,
+      multiclient_port: this.state.multiPortSwitch
     };
 
     if (this.state.portId) {
@@ -259,7 +258,7 @@ class ServiceCreate extends React.Component {
     if (onsaIrsServices.includes(this.state.serviceType)) {
       data["prefix"] = this.state.prefix;
     }
-
+   
     HTTPPost(URLs["services"], data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
@@ -356,7 +355,7 @@ class ServiceCreate extends React.Component {
 
               {/* PORT MODE */}
 
-              <FormRow className="row form-row mx-auto my-2 border rounded">
+              <FormRow className="row form-row justify-content-center mx-auto my-2 border rounded">
                 <div className="col-auto m-2 ">
                   {this.state.portModeSelection.map((portMode, index) => {
                     return (
@@ -449,24 +448,29 @@ class ServiceCreate extends React.Component {
                 </div>
               </FormRow>
               {/* MULTIPLE CLIENT PORT */}
-              {!this.state.showPort &&       
-              <FormRow className="row form-row mx-auto pr-4">
-                <div className="col-6 p-0  my-2 border rounded ">
-                  <div className="custom-control custom-switch  m-2">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="customSwitch1"
-                    />
-                    <label
-                      class="custom-control-label"
-                      htmlFor="customSwitch1"
-                    >
-                      Multiple clients port
-                    </label>
+              {!this.state.showPort && (
+                <FormRow className="row form-row mx-auto pr-4">
+                  <div className="col-6 p-0  my-2 border rounded ">
+                    <div className="custom-control custom-switch  m-2">
+                      <input
+                        type="checkbox"
+                        className="custom-control-input"
+                        name="multiPortSwitch"
+                        onChange={this.handleInputChange}
+                        value={this.state.multiPortSwitch}
+                        id="multiPortSwitch"
+
+                      />
+                      <label
+                        className="custom-control-label"
+                        htmlFor="multiPortSwitch"
+                      >
+                        Multiple clients port
+                      </label>
+                    </div>
                   </div>
-                </div>
-              </FormRow>}
+                </FormRow>
+              )}
 
               <hr className="mb-4" />
               <div className="row justify-content-center">
