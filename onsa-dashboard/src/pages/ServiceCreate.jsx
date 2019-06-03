@@ -20,7 +20,6 @@ class ServiceCreate extends React.Component {
     this.state = {
       bandwidth: "",
       clientId: "",
-      clientName: "",
       clientOptions: [],
       customerLocId: null,
       custLocationsOptions: [],
@@ -43,8 +42,9 @@ class ServiceCreate extends React.Component {
       ],
       prefix: "",
       selectedCustLoc: "",
+      selectedService: [],
+      selectedClient:[],
       servicesOptions: [],
-      serviceType: "",
       serviceId: "",
       showPrefix: false,
       showPort: false,
@@ -103,9 +103,19 @@ class ServiceCreate extends React.Component {
 
   resetFormFields = () => {
     this.setState({
+      bandwidth: "",
+      customerLocId:"",
+      multiPortSwitch:false,
+      gtsId:"",
+      prefix: "",
       serviceId: "",
-      prexix: "",
-      bandwidth: ""
+      selectedCustLoc:[],
+      selectedService: [],
+      selectedLocation: [],
+      selectedPortMode:"",
+      selectedClient:[],
+      showPrefix:false,
+      showMultiPortSwitch:false
     });
   };
 
@@ -150,8 +160,7 @@ class ServiceCreate extends React.Component {
       showPort: showPort,
       showMultiPortSwitch: !showPort,
       multiPortSwitch: mpsw
-      
-    });
+      });
   };
 
   // when existingCPE or Existing-Multi-client is checked.
@@ -187,16 +196,15 @@ class ServiceCreate extends React.Component {
 
   handleClientOnChange = selectedOption => {
     const clientId = selectedOption.value;
-    const clientName = selectedOption.label;
-
-    this.showAlertBox();
+   
+this.showAlertBox();
     this.getClientLocations(clientId);
 
     this.setState({
       customerLocId: "",
       selectedCustLoc: "",
-      clientName: clientName,
-      clientId: clientId
+      clientId: clientId,
+      selectedClient: selectedOption
     });
   };
 
@@ -235,14 +243,14 @@ class ServiceCreate extends React.Component {
 
   handleServiceTypeOnChange = selectedOption => {
     this.setState(
-      { serviceType: selectedOption.value, selectedService: selectedOption },
+      { selectedService: selectedOption },
       this.handleDisplays
     );
   };
 
   handleDisplays = () => {
     let state = {};
-    state = onsaIrsServices.includes(this.state.serviceType)
+    state = onsaIrsServices.includes(this.state.selectedService.value)
       ? { showPrefix: true }
       : { showPrefix: false };
     this.setState(state);
@@ -256,7 +264,7 @@ class ServiceCreate extends React.Component {
       location_id: this.state.selectedLocation.value,
       id: this.state.serviceId,
       bandwidth: this.state.bandwidth,
-      service_type: this.state.serviceType,
+      service_type: this.state.selectedService.value,
       customer_location_id: this.state.customerLocId,
       gts_id: this.state.gtsId,
       multiclient_port: this.state.multiPortSwitch
@@ -266,7 +274,7 @@ class ServiceCreate extends React.Component {
       // if CPE already exists
       data["access_port_id"] = this.state.portId;
     }
-    if (onsaIrsServices.includes(this.state.serviceType)) {
+    if (onsaIrsServices.includes(this.state.selectedService.value)) {
       data["prefix"] = this.state.prefix;
     }
    
@@ -287,7 +295,7 @@ class ServiceCreate extends React.Component {
         this.state.selectedCustLoc &&
         this.state.clientId &&
         this.state.bandwidth
-        ? //this.state.prefix
+        ? 
           false
         : true;
     };
@@ -317,6 +325,7 @@ class ServiceCreate extends React.Component {
                     options={this.state.clientOptions}
                     name="client"
                     placeholder="Choose a client.."
+                    value= {this.state.selectedClient}
                   />
                 </div>
 
