@@ -13,10 +13,10 @@ from charles.models import *
 def an_activated_automated_request(service):
   logging.debug("an_activated_automated_request")
   client = get_client(service['client_id'])
+  service_data = {}
+
   try:
     parameters = an_parameters(client, service)
-    service_data = {}
-
     config = {
       "client": client['name'],
       "service_type":  service['service_type'],
@@ -26,7 +26,8 @@ def an_activated_automated_request(service):
     config['parameters'] = {
                 "service_vlan": service['vlan_id'],
                 "an_client_port": parameters['an_client_port'],
-                "an_uplink_ports": parameters['an_uplink_ports']
+                "an_uplink_ports": parameters['an_uplink_ports'],
+                "access_port_services":parameters['access_port_services']
                   }
     config['devices'] = [{"vendor": parameters['vendor'],
         "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
@@ -49,18 +50,29 @@ def an_parameters(client, service):
     access_port = get_access_port(service['access_port_id'])
     access_node = get_access_node(service['access_node_id'])
     an_device_model = get_device_model(access_node['device_model_id'])
+    access_port_services = get_access_port_services(service['access_port_id'])
+
+    services = ""
+    for my_service in access_port_services:
+      if my_service['id'] is not service['service_id']:
+        services+= str(my_service['id']) + "-"
+    services += str(service['service_id'])
 
     parameters = { 'provider_vlan': access_node['provider_vlan'],
                   'an_client_port': access_port['port'],
                   'an_uplink_ports': access_node['uplink_ports'],
                   'mgmt_ip': access_node['mgmt_ip'],
                   'model': an_device_model['model'],
-                  'vendor': an_device_model['brand'] }
+                  'vendor': an_device_model['brand'],
+                  'access_port_services': services }
+
+    logging.debug(f'parameters: {parameters}')
 
     return parameters
   except BaseException:
     logging.error("Unable to fetch parameters")
     raise InvalidParametersException("Unable to fetch parameters")
+
 
 # def generate_vpls_request(client, service, code):
 
