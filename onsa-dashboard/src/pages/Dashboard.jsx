@@ -121,6 +121,9 @@ class Dashboard extends React.Component {
             <Badge color="primary">{service.id}</Badge>
           </td>
           <td>
+            <Badge color="secondary">{service.gts_id}</Badge>
+          </td>
+          <td>
             <Badge color="success">{serviceEnum[service.service_type]}</Badge>
           </td>
           <td>
@@ -216,7 +219,8 @@ class Dashboard extends React.Component {
           <table className="table table-hover col-md-12">
             <thead>
               <tr>
-                <th scope="col">ID</th>
+                <th scope="col">Product ID</th>
+                <th scope="col">GTS </th>
                 <th scope="col">Service Type</th>
                 <th scope="col">Service State</th>
               </tr>

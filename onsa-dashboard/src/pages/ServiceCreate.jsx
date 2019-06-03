@@ -109,13 +109,15 @@ class ServiceCreate extends React.Component {
       gtsId:"",
       prefix: "",
       serviceId: "",
+      selectedClient:[],
       selectedCustLoc:[],
-      selectedService: [],
       selectedLocation: [],
       selectedPortMode:"",
-      selectedClient:[],
+      selectedPort:[],
+      selectedService: [],
       showPrefix:false,
-      showMultiPortSwitch:false
+      showMultiPortSwitch:false,
+      showPort:false
     });
   };
 
@@ -134,11 +136,13 @@ class ServiceCreate extends React.Component {
     let showPort = false;
     let url = "";
     let mpsw = false;
+    // let port = "";
 
     this.showAlertBox();
 
     if (value === "new") {
       showPort = false;
+      // port = null
       } else {
       if (value === "existing") {
         url = ClientURLs(
@@ -153,13 +157,16 @@ class ServiceCreate extends React.Component {
       }
       this.getAccessPorts(url);
       showPort = true;
+
     }
 
     this.setState({
       selectedPortMode: value,
       showPort: showPort,
       showMultiPortSwitch: !showPort,
-      multiPortSwitch: mpsw
+      multiPortSwitch: mpsw,
+      // portId: port,
+      selectedPort:[]
       });
   };
 
@@ -190,7 +197,7 @@ class ServiceCreate extends React.Component {
   handlePortOnChange = selectedOption => {
     this.setState({
       selectedPort: selectedOption,
-      portId: selectedOption.value
+      // portId: selectedOption.value
     });
   };
 
@@ -270,9 +277,9 @@ this.showAlertBox();
       multiclient_port: this.state.multiPortSwitch
     };
 
-    if (this.state.portId) {
+    if (this.state.selectedPort.value) {
       // if CPE already exists
-      data["access_port_id"] = this.state.portId;
+      data["access_port_id"] = this.state.selectedPort.value;
     }
     if (onsaIrsServices.includes(this.state.selectedService.value)) {
       data["prefix"] = this.state.prefix;

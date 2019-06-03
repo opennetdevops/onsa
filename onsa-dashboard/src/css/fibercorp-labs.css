@@ -2,9 +2,15 @@ html,
 body {
   height: 100%;
   padding-top: 40px;
-  /* font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; */
-  font-family: 'PT Sans', sans-serif;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  /* font-family: 'PT Sans', sans-serif; */
 }
+
+
+/* h1, h2, h3, h4, h5{
+  font-family: 'Open Sans', sans-serif;
+  font-weight: bold;
+} */
 
 main.container {
   margin-right: auto;
@@ -211,9 +217,4 @@ p .navbar-font {
 
 .visibilityAlert{
   visibility: hidden;
-}
-
-h1, h2, h3, h4, h5{
-  font-family: 'Open Sans', sans-serif;
-  font-weight: bold;
 }
