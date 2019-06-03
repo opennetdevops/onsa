@@ -4,7 +4,6 @@ import signInIcon from "../images/onsa-logo.png";
 import { Form, FormInput } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 
-
 async function coreLogin(url, username, password) {
   let response = await fetch(url, {
     method: "POST",
@@ -17,7 +16,7 @@ async function coreLogin(url, username, password) {
     })
   });
   if (!response.ok) {
-    if (response.status === 400){
+    if (response.status === 400) {
       throw new Error("Invalid credentials");
     }
     throw new Error(
@@ -37,7 +36,9 @@ class Login extends React.Component {
       dialogText: "",
       dialogShow: false,
       email: "",
-      password: ""
+      password: "",
+      successAlert: null,
+      displayMessage: ""
     };
   }
   componentDidMount() {
@@ -55,7 +56,7 @@ class Login extends React.Component {
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: ( message || result) ? true : false
+      dialogShow: message || result ? true : false
     });
   };
 

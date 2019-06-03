@@ -56,6 +56,18 @@ csv.each do |row|
 			device_model_id:device_model_id,serial_number:serial_number,ot:ot,
 			firmware_version:firmware_version,installation_date:installation_date,config_status:config_status,comments:comments)
 	else
-		puts "No Migrado:#{row['hostname']} en el hub:#{row['hub']}"
+		puts "Migrando:#{row['hostname']} en el hub:#{row['hub']}"
+		hostname = row['hostname']
+		mgmt_ip = row['ip_management']
+		location_id = Location.where(shortname:row['hub']).first.id
+		device_model_id = DeviceModel.where(model:row['model']).first.id
+		serial_number = row['serial_number']
+		firmware_version = row['firmware_version']
+		ot = row['ot']
+		installation_date = row['installation_date']
+		config_status = row['config_status']
+		comments = row['comments']
+		BackboneNode.create!(hostname:hostname,mgmt_ip:mgmt_ip,location_id:location_id,device_model_id:device_model_id,
+			serial_number:serial_number, ot:ot, intallation_date:installation_date,config_status:config_status,comments:comments)
 	end
 end

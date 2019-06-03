@@ -129,7 +129,6 @@ class ServiceCreate extends React.Component {
     if (name === "multiPortSwitch") { 
       this.setState({ [name]: event.target.checked });
     }
-  };
 
   handlePortModeChange = event => {
     const value = event.target.value;

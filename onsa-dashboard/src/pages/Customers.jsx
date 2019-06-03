@@ -30,7 +30,7 @@ class Customers extends React.Component {
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: ( message || result) ? true : false
+      dialogShow: message || result ? true : false
     });
   };
 
@@ -53,12 +53,11 @@ class Customers extends React.Component {
       },
       error => {
         this.showAlertBox(false, error.message);
-        }
+      }
     );
   };
 
   render() {
-
     return (
       <React.Fragment>
         <div className="row justify-content-center">

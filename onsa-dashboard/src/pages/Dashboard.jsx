@@ -35,7 +35,6 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-
     HTTPGet(URLs["services"]).then(
       jsonResponse => this.setState({ services: jsonResponse }),
       error => this.showAlertBox(false, error.message)
@@ -48,7 +47,7 @@ class Dashboard extends React.Component {
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: ( message || result) ? true : false
+      dialogShow: message || result ? true : false
     });
   };
 
@@ -210,9 +209,9 @@ class Dashboard extends React.Component {
       <div className="container-fluid">
         <div className="row justify-content-center">
           <FormAlert
-           dialogSuccess={this.state.dialogSuccess}
-           dialogText={this.state.dialogText}
-           dialogShow={this.state.dialogShow}
+            dialogSuccess={this.state.dialogSuccess}
+            dialogText={this.state.dialogText}
+            dialogShow={this.state.dialogShow}
           />
         </div>
         <div className="row">

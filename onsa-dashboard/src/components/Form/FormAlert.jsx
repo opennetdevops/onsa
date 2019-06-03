@@ -2,11 +2,11 @@ import React from "react";
 
 //Stateless component to display messages within a <div>.
 
-const customAlert = ({ dialogShow, dialogSuccess, dialogText, msgLabel}) => {
+const customAlert = ({ dialogShow, dialogSuccess, dialogText, msgLabel }) => {
   //specify props: dialogSuccess:boolean and dialogText:string to display.
   //icnludeLabel prop: Overrides default label. dialogShow:boolean toogler
 
-  let alertBox = null; 
+  let alertBox = null;
 
   if (dialogShow) {
     if (dialogSuccess) {
@@ -16,21 +16,18 @@ const customAlert = ({ dialogShow, dialogSuccess, dialogText, msgLabel}) => {
           {dialogText}
         </div>
       );
-
     } else if (dialogSuccess === false) {
       alertBox = (
         <div className="alert alert-danger">
           {/* visibilityAlert fadeOutAlert */}
-          <strong>
-            {msgLabel ? msgLabel : "Something went wrong: "}
-          </strong>
+          <strong>{msgLabel ? msgLabel : "Something went wrong: "}</strong>
           {dialogText}
         </div>
       );
     }
-  
-  // } else {
-  //    return null;
+
+    // } else {
+    //    return null;
   }
 
   return alertBox;

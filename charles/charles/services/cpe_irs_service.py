@@ -73,6 +73,7 @@ def an_parameters(client, service):
     logging.error("Unable to fetch parameters")
     raise InvalidParametersException("Unable to fetch parameters")
 
+  # service_data = {}
 
 
 def bb_data_ack_automated_request(service):
