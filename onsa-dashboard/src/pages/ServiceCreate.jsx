@@ -47,7 +47,8 @@ class ServiceCreate extends React.Component {
       serviceType: "",
       serviceId: "",
       showPrefix: false,
-      showPort: false
+      showPort: false,
+      showMultiPortSwitch: false
 
     };
   }
@@ -123,9 +124,11 @@ class ServiceCreate extends React.Component {
     let showPort = false;
     let url = "";
 
+    this.showAlertBox();
+
     if (value === "new") {
       showPort = false;
-    } else {
+      } else {
       if (value === "existing") {
         url = ClientURLs(
           "clientAccessPorts",
@@ -133,7 +136,6 @@ class ServiceCreate extends React.Component {
           this.state.customerLocId
         );
       } else if (value === "multi") {
-        // TODO DEFINE NEW URL
         url = ClientURLs("multiClientPorts")
       }
       this.getAccessPorts(url);
@@ -142,7 +144,9 @@ class ServiceCreate extends React.Component {
 
     this.setState({
       selectedPortMode: value,
-      showPort: showPort
+      showPort: showPort,
+      showMultiPortSwitch: !showPort
+
     });
   };
 
@@ -160,7 +164,6 @@ class ServiceCreate extends React.Component {
         this.setState({
           portOptions: options
         });
-        this.showAlertBox();
       },
       error => {
         this.showAlertBox(false, error.message);
@@ -217,7 +220,8 @@ class ServiceCreate extends React.Component {
     this.setState({
       customerLocId: selectedOption.value,
       selectedCustLoc: selectedOption,
-      selectedPortMode: "new"
+      selectedPortMode: "new",
+      showMultiPortSwitch: true
     });
   };
 
@@ -338,7 +342,7 @@ class ServiceCreate extends React.Component {
                     onChange={this.handleCustLocationOnChange}
                     options={this.state.custLocationsOptions}
                     name="customerLoc"
-                    placeholder="Choose a customer location.."
+                    placeholder="Choose one.."
                     value={this.state.selectedCustLoc}
                   />
                 </div>
@@ -357,7 +361,8 @@ class ServiceCreate extends React.Component {
               </FormRow>
 
               {/* PORT MODE */}
-              <FormRow className="row form-row justify-content-center mx-auto my-2 border rounded">
+              <FormRow className="row form-row justify-content-center
+                                  mx-auto my-2 mb-3 border rounded">
                 <div className="col-auto m-2 ">
                   {this.state.portModeSelection.map((portMode, index) => {
                     return (
@@ -391,7 +396,7 @@ class ServiceCreate extends React.Component {
                   </div>
                 </FormRow>
               )}
-              <FormRow className="row">
+              <FormRow className="row ">
                 {/* BW */}
                 <div className="col-md-6 mb-3">
                   <label htmlFor="bandwidth">
@@ -421,7 +426,7 @@ class ServiceCreate extends React.Component {
                 </div>
               </FormRow>
               {/* SERVICE TYPE */}
-              <FormRow className="row">
+              <FormRow className="row ">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="serviceType">Service type</label>
                   <Select
@@ -448,8 +453,8 @@ class ServiceCreate extends React.Component {
                   </div>
                 )}
               </FormRow>
-              {/* MULTIPLE CLIENT PORT */}
-              {!this.state.showPort && (
+              {/* MULTIPLE CLIENT PORT SWITCH */}
+              {this.state.showMultiPortSwitch && (
                 <FormRow className="row form-row mx-auto pr-4">
                   <div className="col-6 p-0  my-2 border rounded ">
                     <div className="custom-control custom-switch  m-2">
@@ -478,7 +483,6 @@ class ServiceCreate extends React.Component {
                   <button
                     className="btn btn-primary btn-block btn-lg "
                     disabled={formIsValid()}
-                    // {!this.state.serviceId ? true : false}
                     type="submit"
                   >
                     Create
