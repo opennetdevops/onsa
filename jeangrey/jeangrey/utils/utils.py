@@ -9,8 +9,6 @@ import coloredlogs
 import os
 import sys
 
-coloredlogs.install(level='DEBUG')
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 def get_inventory_authentication_token():
     url = "authenticate"

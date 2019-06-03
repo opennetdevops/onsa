@@ -25,7 +25,7 @@ class CustomerLocationAccessPortsView(View):
                 access_port = get_access_port(service.access_port_id)
                 access_node = get_access_node(service.access_node_id)
                 response.append(
-                    {'access_port': access_port['port'], 'access_node': access_node['hostname']})
+                    {'id':service.access_port_id,'port': access_port['port'], 'access_node': access_node['hostname']})
             return JsonResponse(list(response), safe=False)
 
         except Service.DoesNotExist as e:

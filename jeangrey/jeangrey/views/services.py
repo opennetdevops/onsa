@@ -29,6 +29,7 @@ class ServiceView(View):
         state = request.GET.get('state', '')
         service_type = request.GET.get('type', None)
         vrf_id = request.GET.get('vrf_id', None)
+        access_port_id = request.GET.get('access_port_id', None)
 
         try:
             if vrf_id is not None:
@@ -62,9 +63,30 @@ class ServiceView(View):
                         VcpeIrs.objects.filter(service_state=state).values())
                     vpls_services = list(Vpls.objects.filter(
                         service_state=state).values())
+                    tip_services = list(Tip.objects.filter(
+                        service_state=state).values())
 
                     services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                        + vpls_services + vcpe_irs_services + cpe_irs_services
+                        + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services
+
+                elif access_port_id is not None:
+                    cpeless_irs_services = list(
+                        CpelessIrs.objects.filter(access_port_id=access_port_id).values())
+                    cpe_irs_services = list(
+                        CpeIrs.objects.filter(access_port_id=access_port_id).values())
+                    cpeless_mpls_services = list(
+                        CpelessMpls.objects.filter(access_port_id=access_port_id).values())
+                    cpe_mpls_services = list(
+                        CpeMpls.objects.filter(access_port_id=access_port_id).values())
+                    vcpe_irs_services = list(
+                        VcpeIrs.objects.filter(access_port_id=access_port_id).values())
+                    vpls_services = list(Vpls.objects.filter(
+                        access_port_id=access_port_id).values())
+                    tip_services = list(Tip.objects.filter(
+                        access_port_id=access_port_id).values())
+
+                    services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
+                        + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services
 
                 else:
                     cpeless_irs_services = list(
@@ -75,9 +97,10 @@ class ServiceView(View):
                     cpe_mpls_services = list(CpeMpls.objects.all().values())
                     vcpe_irs_services = list(VcpeIrs.objects.all().values())
                     vpls_services = list(Vpls.objects.all().values())
+                    tip_services = list(Tip.objects.all().values())
 
                     services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                        + vpls_services + vcpe_irs_services + cpe_irs_services
+                        + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services
 
                 return JsonResponse(services, safe=False)
 
@@ -113,11 +136,8 @@ class ServiceView(View):
                 if "access_port_id" not in data.keys():
                     access_port = get_free_access_port(data['location_id'])
                     access_port_id = str(access_port['id'])
-                    if "multiclient_port" in data.keys():
-                        multiclient_port = data.pop('multiclient_port')
-                        use_access_port(access_port_id,multiclient_port)
-                    else:
-                        use_access_port(access_port_id)
+                    multiclient_port = data.pop('multiclient_port')
+                    use_access_port(access_port_id,multiclient_port)
                     allocated_resources['access_port'] = access_port_id
                 else:
                     access_port_id = data['access_port_id']

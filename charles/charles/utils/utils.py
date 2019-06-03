@@ -72,6 +72,15 @@ def get_service(service_id):
     else:
         raise ServiceException("Invalid Service")
 
+def get_access_port_services(access_port_id):
+    url = os.getenv('JEAN_GREY_URL') + "services?access_port_id=" + str(access_port_id)
+    rheaders = {'Content-Type': 'application/json'}
+    response = requests.get(url, auth = None, verify = False, headers = rheaders)
+    if response.status_code == HTTP_200_OK:
+        return response.json()
+    else:
+        raise ServiceException("Invalid Service")
+
 def get_services():
     url = os.getenv('JEAN_GREY_URL') + "services"
     rheaders = {'Content-Type': 'application/json'}

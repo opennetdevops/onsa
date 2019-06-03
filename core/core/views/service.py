@@ -19,6 +19,8 @@ class ServiceView(APIView):
 
         state = request.GET.get('state', None)
         service_type = request.GET.get('type', None)
+        access_port_id = request.GET.get('access_port_id', None)
+
 
         if service_id is not None:
             url = settings.JEAN_GREY_URL + "services/"+ str(service_id)
@@ -28,6 +30,8 @@ class ServiceView(APIView):
                 url += "?state=" + state
             elif service_type is not None:
                 url += "?type=" + service_type
+            elif access_port_id is not None:
+                url += "?access_port_id=" + access_port_id
 
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.get(url, auth = None, verify = False, headers = rheaders)
@@ -43,8 +47,6 @@ class ServiceView(APIView):
         url = settings.JEAN_GREY_URL + "services"
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-        
-        # json_response = json.loads(response.text)
 
         return JsonResponse(response.json(), safe=False, status=response.status_code)     
 
@@ -56,6 +58,7 @@ class ServiceView(APIView):
         json_response = json.loads(response.text)
 
         return JsonResponse(json_response, safe=False)
+        
     def delete(self, request, service_id):
         delete_jeangrey_service(service_id)
         delete_charles_service(service_id)
