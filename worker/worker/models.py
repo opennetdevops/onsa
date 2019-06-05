@@ -17,7 +17,7 @@ from worker.lib import ConfigHandler
 from worker.lib.common.render import render
 from worker.utils.worker_maps import *
 from worker.utils.utils import *
-
+from worker.constants import *
 
 class Service(models.Model):
     client_name = models.CharField(max_length=50)
@@ -30,7 +30,7 @@ class Service(models.Model):
         return self.service_id
 
     def deploy(self):
-        tasks = Task.objects.filter(service=self)
+        tasks = Task.objects.filter(service=self, task_state=INITIAL_TASK_STATE)
 
         # print("Service Id: ", self.service_id)
         # print("Requested Tasks: ", tasks)
@@ -51,8 +51,6 @@ class Service(models.Model):
                 failed_tasks.append(task)
                 break
 
-        logging.info("Completed Tasks: ", completed_tasks)
-        logging.info("Failed Tasks: ", failed_tasks)
         self.save()
         if len(failed_tasks):
             self.service_state = "ERROR"

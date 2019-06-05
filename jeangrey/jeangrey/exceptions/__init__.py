@@ -5,3 +5,4 @@ from jeangrey.exceptions.AccessPortException import AccessPortException
 from jeangrey.exceptions.AccessNodeException import AccessNodeException
 from jeangrey.exceptions.VlanException import VlanException
 from jeangrey.exceptions.VrfException import VrfException
+from jeangrey.exceptions.ServiceException import ServiceException

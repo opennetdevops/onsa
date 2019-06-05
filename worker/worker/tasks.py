@@ -1,6 +1,7 @@
 from celery import shared_task
 from django.http import HttpResponse, JsonResponse
 from worker.models import Service, Task
+from worker.constants import *
 
 import json
 
@@ -43,7 +44,8 @@ def process_service(request):
     for device in data['devices']:
         task = Task(service=service,
                     op_type=data['op_type'],
-                    device=device)
+                    device=device,
+                    task_state=INITIAL_TASK_STATE)
         task.save()
 
     service.deploy()

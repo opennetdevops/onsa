@@ -1,6 +1,7 @@
 import React from "react";
 import { URLs, HTTPPost } from "../middleware/api.js";
 import FormAlert from "../components/Form/FormAlert";
+import * as yup from "yup";
 
 class Customers extends React.Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class Customers extends React.Component {
     this.state = {
       client: "",
       cuic: "",
+      dialogLabel: "",
       dialogSuccess: false,
       dialogText: "",
       dialogShow: false
@@ -26,11 +28,12 @@ class Customers extends React.Component {
     });
   };
 
-  showAlertBox = (result, message) => {
+  showAlertBox = (result, message, label) => {
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: message || result ? true : false
+      dialogShow: message || result ? true : false,
+      dialogLabel: label
     });
   };
 
@@ -46,16 +49,61 @@ class Customers extends React.Component {
 
     const data = { name: this.state.client, cuic: this.state.cuic };
 
-    HTTPPost(URLs["clients"], data).then(
-      () => {
-        this.showAlertBox(true, "Customer created.");
-        this.resetFormFields();
-      },
-      error => {
-        this.showAlertBox(false, error.message);
+    this.getValidationSchema().validate(data).then(
+      () => {//isValid = true
+        this.submitRequest(URLs["clients"],data)
+       }, //isValid = false
+      err => {
+        this.showAlertBox(false, err.message, "Validation Error: ");
       }
     );
   };
+
+  submitRequest = (url, data) => {
+    HTTPPost(url, data).then(
+        () => {
+          this.showAlertBox(true, "Customer created.");
+          this.resetFormFields();
+        },
+        error => {
+          this.showAlertBox(false, error.message);
+        }
+      );
+  }
+
+  getValidationSchema() {
+    const clientMin = 3;
+    const clientMax = 100;
+    const clientErr =
+      "Client Name must be between " +
+      clientMin +
+      " and " +
+      clientMax +
+      " characters long.";
+    const cuicLength = 11;
+    const cuicErr =
+      "CUIC must be " +
+      cuicLength +
+      " numeric characters long, without spaces or any special characters.";
+
+      yup.setLocale({string:{trim: "Check for leading and trailling spaces."}})
+
+    let schema = yup.object({
+      name: yup
+        .string()
+        .strict(true)
+        .trim()
+        .min(clientMin, clientErr)
+        .max(clientMax, clientErr)
+        .required(),
+      cuic: yup
+        .string()
+        .length(cuicLength, cuicErr)
+        .matches(/^[0-9]*$/, cuicErr)
+        .required()
+    });
+    return schema;
+  }
 
   render() {
     return (
@@ -66,15 +114,12 @@ class Customers extends React.Component {
               dialogSuccess={this.state.dialogSuccess}
               dialogText={this.state.dialogText}
               dialogShow={this.state.dialogShow}
+              msgLabel={this.state.dialogLabel}
             />
           </div>
           <div className="col-md-8 order-md-1">
             <h4 className="mb-3">Create New Customer</h4>
-            <form
-              className="needs-validation"
-              noValidate
-              onSubmit={this.handleSubmit}
-            >
+            <form onSubmit={this.handleSubmit}>
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="name">Customer</label>
@@ -83,11 +128,10 @@ class Customers extends React.Component {
                     className="form-control"
                     id="client"
                     name="client"
-                    maxLength="50"
+                    maxLength="100"
                     value={this.state.client}
                     onChange={this.handleChange}
                     placeholder="Name"
-                    required
                   />
                 </div>
                 <div className="col-md-6 mb-3">
@@ -96,12 +140,11 @@ class Customers extends React.Component {
                     type="text"
                     className="form-control"
                     id="cuic"
-                    maxLength="20"
+                    maxLength="11"
                     name="cuic"
                     value={this.state.cuic}
                     onChange={this.handleChange}
                     placeholder="Id"
-                    required
                   />
                 </div>
               </div>
@@ -110,7 +153,8 @@ class Customers extends React.Component {
               <button
                 className="btn btn-primary btn-lg btn-block"
                 disabled={
-                  !(this.state.client && this.state.cuic) ? true : false
+                  false
+                  // !(this.state.client && this.state.cuic) ? true : false
                 }
                 type="submit"
                 value="Submit"

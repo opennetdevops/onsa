@@ -13,6 +13,13 @@ VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs', 'tip']
 VPLS_SERVICES = ['vpls']
 
+INITIAL_SERVICE_STATE = "in_construction"
+DELETED_SERVICE_STATE = "deleted"
+TOBEDELETED_SERVICE_STATE = "to_be_deleted"
+DELETEINPROGRESS_SERVICE_STATE = "delete_in_progress"
+DELETEERROR_SERVICE_STATE = "ERROR IN DELETION"
+ERROR_SERVICE_STATE = "ERROR"
+
 # HTTP Error Codes
 ERR_BAD_REQUEST = 400
 ERR_SERVER_INT_ERROR = 500
@@ -76,5 +83,6 @@ ERR_NOFREE_PORTGROUP = 576
 #Service related error codes
 ERR_INVALID_SERVICE = 590
 ERR_COULDNT_REPROCESS = 591
+ERR_COULDNT_DELETESERVICE = 592
 
 

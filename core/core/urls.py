@@ -33,7 +33,7 @@ urlpatterns = [
     path('/api/login', obtain_ldap_jwt_token),
     path('/api/services', require_http_methods(["GET", "POST"])(service_view)),
     path('/api/services/<str:service_id>',
-         require_http_methods(["GET", "PUT"])(service_view)),
+         require_http_methods(["GET", "PUT","DELETE"])(service_view)),
     path('/api/services/<str:service_id>/activation',
          require_http_methods(["POST"])(service_activation_view)),
     path('/api/services/<str:service_id>/resources',

@@ -17,6 +17,7 @@ class ServiceTypes(Enum):
     vcpe_irs = vcpe_irs_service
     cpe_irs = cpe_irs_service
     vpls = vpls_service
+    tip = tip_service
 
 
 ##
@@ -101,7 +102,15 @@ NextStateMap = (
                     #From cpe_data_ack
                     {'src':"cpe_data_ack",
                     'dst': "service_activated",
-                    'next_state':"service_activated" }
+                    'next_state':"service_activated" },
+
+                    {'src':TOBEDELETED_SERVICE_STATE,
+                    'dst': DELETED_SERVICE_STATE,
+                    'next_state':DELETED_SERVICE_STATE },
+
+                    {'src':DELETEINPROGRESS_SERVICE_STATE,
+                    'dst': DELETED_SERVICE_STATE,
+                    'next_state':DELETED_SERVICE_STATE }
                 )
 
 def next_state(source_state,target_state):

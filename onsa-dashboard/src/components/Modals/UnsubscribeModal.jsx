@@ -1,47 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-
-async function deleteJson(url) {
-  let response = await fetch(url, {
-    method: "DELETE",
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-
-  let jsonResponse = await response.json();
-
-  return jsonResponse;
-}
+import { URLs, HTTPDelete } from "../../middleware/api.js";
 
 class UnsubscribeModal extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      serviceId: ""
-    };
-  }
-
-  handleChange = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-
-    this.setState({ [name]: value });
-  };
-
-  handleSubmit = event => {
-    let url =
-      process.env.REACT_APP_CORE_URL +
-      "/core/api/services/" +
-      this.props.service.id;
-    deleteJson(url);
+  handleSubmit = () => {
+    HTTPDelete(URLs["services"] + "/" + this.props.service.id)
+      .then(response => response.json())
+      .then(myJson => console.log(myJson));
   };
 
   handleToggle = () => {
-    this.props.toggle("unsubsModal", "false");
+    this.props.toggle("unsubscribeModal", "true");
   };
 
   render() {
@@ -61,11 +31,19 @@ class UnsubscribeModal extends React.Component {
               noValidate
               onSubmit={this.handleSubmit}
             >
-              {/*                      <div className="col-md-6 mb-3">
-                        <label htmlFor="client">Service Id</label>
-                        <input type="text" className="form-control" placeholder={this.props.serviceId} disabled/>
-                      </div>*/}
-              <p>Are you sure you want to teardown this service?</p>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="client">Service Id</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder={this.props.service.id}
+                  disabled
+                />
+              </div>
+              {/* <p>
+                Are you sure you want to teardown this service
+                {this.props.service.id}?
+              </p> */}
               <ModalFooter>
                 <Button
                   className="btn"

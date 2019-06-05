@@ -25,9 +25,6 @@ const customAlert = ({ dialogShow, dialogSuccess, dialogText, msgLabel }) => {
         </div>
       );
     }
-
-    // } else {
-    //    return null;
   }
 
   return alertBox;

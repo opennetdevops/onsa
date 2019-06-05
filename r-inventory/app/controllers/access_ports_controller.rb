@@ -32,7 +32,11 @@ class AccessPortsController < ApiController
           @access_ports << my_ap
         end
       else
-        @access_ports = AccessPort.all
+        if params[:used]
+          @access_ports = AccessPort.where(used:params[:used])
+        else
+          @access_ports = AccessPort.all
+        end
       end
       render json: @access_ports   
     end

@@ -272,21 +272,15 @@ def delete_charles_service(service_id):
     url = settings.CHARLES_URL + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     r = requests.delete(url, auth = None, verify = False, headers = rheaders)
-
-    if r.json():
-        return r.json()
-    else:
-        return None
+    logging.debug(f'status code: {r.status_code}')
+    return r.status_code
 
 def delete_jeangrey_service(service_id):
     url = settings.JEAN_GREY_URL + "services/"  + str(service_id)
     rheaders = {'Content-Type': 'application/json'}
     r = requests.delete(url, auth = None, verify = False, headers = rheaders)
-
-    if r.json():
-        return r.json()
-    else:
-        return None
+    logging.debug(f'status code: {r.status_code}')
+    return r.status_code
 
 
 

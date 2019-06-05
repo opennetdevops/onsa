@@ -28,8 +28,20 @@ const serviceStatesEnum = {
   cpe_activation_in_progress: "CONFIGURING CPE NODE",
   bb_data_ack: "WAITING FOR BACKBONE CONFIGURATION",
   service_activated: "SERVICE ACTIVATED",
-  ERROR: "SERVICE ERROR"
+  delete_in_progress: "DELETE IN PROGRESS",
+  deleted: "DELETED",
+  ERROR: "SERVICE ERROR",
+  "ERROR IN DELETION": "ERROR WHILE DELETING CONFIG"
 };
+
+const notDeletableStates = [
+  "deleted",
+  "an_activation_in_progress",
+  "bb_activation_in_progress",
+  "cpe_activation_in_progress",
+  "delete_in_progress",
+  "ERROR"
+];
 
 const onsaVrfServices = ["cpe_mpls", "cpeless_mpls", "vpls"];
 
@@ -43,5 +55,6 @@ export {
   onsaIrsServices,
   serviceEnum,
   serviceStatesEnum,
-  onsaExternalVlanServices
+  onsaExternalVlanServices,
+  notDeletableStates
 };

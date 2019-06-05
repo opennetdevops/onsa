@@ -47,7 +47,6 @@ class ServiceView(APIView):
         url = settings.JEAN_GREY_URL + "services"
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-
         return JsonResponse(response.json(), safe=False, status=response.status_code)     
 
     def put(self, request, service_id):
@@ -56,14 +55,21 @@ class ServiceView(APIView):
         rheaders = { 'Content-Type': 'application/json' }
         response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
         json_response = json.loads(response.text)
-
         return JsonResponse(json_response, safe=False)
         
     def delete(self, request, service_id):
-        delete_jeangrey_service(service_id)
-        delete_charles_service(service_id)
-        data = {"Message" : "Service deleted successfully"}
+        service = get_service(service_id)
+        
+        if service['service_state'] == INITIAL_SERVICE_STATE:
+            status = delete_jeangrey_service(service_id)
+        else:
+            status = delete_charles_service(service_id)
 
-        return JsonResponse(data)
+        if status == HTTP_204_NO_CONTENT:
+            data = {"msg" : "Service deleted successfully"}
+        else:
+            data = {"msg" : "Unable to delete service"}
+            status = ERR_SERVICE_UNABLETODELETE
+        return JsonResponse(data, safe=False, status=status)
     
 service_view = ServiceView.as_view()
