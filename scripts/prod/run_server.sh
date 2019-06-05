@@ -12,7 +12,8 @@ for project in "${projects[@]}"
 do
     echo "starting $project"
     port=$(echo "$project" | tr '[:lower:]' '[:upper:]')_PORT
-    $rootlevel\/$project\/gunicorn -D -b 0.0.0.0:${!port} -w $WORKERS settings.wsgi
+    cd $rootlevel\/$project\/
+    gunicorn -D -b 0.0.0.0:${!port} -w $WORKERS settings.wsgi
 done
 
 cd $rootlevel\/onsa-dashboard\/
