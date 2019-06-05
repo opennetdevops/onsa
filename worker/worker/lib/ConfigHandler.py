@@ -26,147 +26,148 @@ from worker.constants import *
 
 
 def get_edge_id_by_name(name, **kwargs):
-	rheaders = {'Accept': 'application/json'}
+    rheaders = {'Accept': 'application/json'}
 
-	r = requests.get(kwargs['manager'] + "/api/4.0/edges", auth=(USER, PASS), verify=False, headers=rheaders)
-	r.raise_for_status()
+    r = requests.get(kwargs['manager'] + "/api/4.0/edges",
+                     auth=(USER, PASS), verify=False, headers=rheaders)
+    r.raise_for_status()
 
-	r_dict = json.loads(r.text)	
-	allEdges = r_dict['edgePage']['data']
+    r_dict = json.loads(r.text)
+    allEdges = r_dict['edgePage']['data']
 
-	for edge in allEdges:
-		if edge['name'] == name:
-			return edge['id']
+    for edge in allEdges:
+        if edge['name'] == name:
+            return edge['id']
 
-	return ""
+    return ""
 
 
 class ConfigHandler:
 
-	def pyez(template_path, parameters):
+    def pyez(template_path, parameters):
 
-		pprint(render(template_path, parameters))
+        pprint(render(template_path, parameters))
 
-		logging.basicConfig(level=logging.INFO)
-		dev = Device(host=parameters['mgmt_ip'], user="lab", password="lab123", port=443)
-		dev.bind(cu=Config)
+        logging.basicConfig(level=logging.INFO)
+        dev = Device(host=parameters['mgmt_ip'],
+                     user="lab", password="lab123", port=443)
+        dev.bind(cu=Config)
 
-		try:
-			logging.info("Openning NETCONF connection to device")
-			dev.open()
-		except (ConnectError) as err:
-			logging.error("Cannot connect to device:%s", err)
-			return ERR532
-		except (ConnectAuthError) as err:
-			logging.error('Cannot connect to device: %s', err)
-			return ERR533
+        try:
+            logging.info("Openning NETCONF connection to device")
+            dev.open()
+        except (ConnectError) as err:
+            logging.error("Cannot connect to device:%s", err)
+            return ERR532
+        except (ConnectAuthError) as err:
+            logging.error('Cannot connect to device: %s', err)
+            return ERR533
 
+        logging.info("Locking the configuration")
+        try:
+            dev.cu.lock()
+        except LockError:
+            logging.error("Error: Unable to lock configuration")
+            dev.close()
+            return ERR531
+        try:
+            dev.cu.load(template_path=template_path, merge=True,
+                        template_vars=parameters, format="set")
+            dev.cu.pdiff()
+        except ValueError as err:
+            logging.error("Error: %s", err.message)
+            return ERR531
+        except ConfigLoadError as err:
+            logging.error("Unable to load configuration changes: %s", err)
 
-		logging.info("Locking the configuration")
-		try:
-			dev.cu.lock()
-		except LockError:
-			logging.error("Error: Unable to lock configuration")
-			dev.close()
-			return ERR531
-		try:
-			dev.cu.load(template_path=template_path, merge=True, template_vars=parameters, format="set")
-			dev.cu.pdiff()
-		except ValueError as err:
-			logging.error("Error: %s", err.message)
-			return ERR531
-		except ConfigLoadError as err:
-			logging.error("Unable to load configuration changes: %s", err)
+            logging.info("Unlocking the configuration")
+            try:
+                dev.cu.unlock()
+            except UnlockError:
+                logging.error("Error: Unable to unlock configuration")
+                return ERR531
 
-			logging.info("Unlocking the configuration")
-			try:
-				dev.cu.unlock()
-			except UnlockError:
-				logging.error("Error: Unable to unlock configuration")
-				return ERR531
+            dev.close()
+            return ERR531
 
-			dev.close()
-			return ERR531
+        logging.info("Committing the configuration")
+        try:
+            dev.timeout = 120
+            commit_result = dev.cu.commit()
+            # Show that the commit worked True means it worked, false means it failed
+            logging.debug("Commit result: %s", commit_result)
+        except (CommitError, RpcTimeoutError) as e:
+            logging.error("Error: Unable to commit configuration")
+            logging.error(e)
+            dev.cu.unlock()
+            dev.close()
+            return ERR531
 
+        logging.info("Unlocking the configuration")
+        try:
+            dev.cu.unlock()
+        except UnlockError:
+            logging.error("Error: Unable to unlock configuration")
+            return ERR531
 
-		logging.info("Committing the configuration")
-		try:
-			dev.timeout=120
-			commit_result = dev.cu.commit()
-			# Show that the commit worked True means it worked, false means it failed
-			logging.debug( "Commit result: %s",commit_result)
-		except (CommitError, RpcTimeoutError) as e:
-			logging.error( "Error: Unable to commit configuration")
-			print(e)
-			dev.cu.unlock()
-			dev.close()
-			return ERR531
+        try:
+            logging.info("Closing NETCONF session")
+            dev.close()
+        except ConnectClosedError as err:
+            logging.info("Error: Unable to close connection. %s", err)
+            return ERR531
 
-		logging.info( "Unlocking the configuration")
-		try:
-			 dev.cu.unlock()
-		except UnlockError:
-			 logging.error( "Error: Unable to unlock configuration")
-			 return ERR531
+        return ERR0
 
-		try:
-			logging.info("Closing NETCONF session")
-			dev.close()
-		except ConnectClosedError as err:
-			logging.info("Error: Unable to close connection. %s", err)
-			return ERR531
+    def ssh(template_path, params):
 
-		return ERR0
+        my_device = {
+            'host': params['mgmt_ip'],
+            'username': os.getenv('AUTOMATION_USER'),
+            'password': os.getenv('AUTOMATION_PASSWORD'),
+            'device_type': 'cisco_ios',
+            'global_delay_factor': 1
+        }
 
+        config = render(template_path, params).splitlines()
+        logging.debug("config")
+        logging.debug(config)
 
-	def ssh(template_path, params):
+        try:
+            net_connect = ConnectHandler(**my_device)
+            output = net_connect.send_config_set(config)
+            net_connect.disconnect()
+            return True
+        except (NetMikoTimeoutException):
+            return False
+        except (NetMikoAuthenticationException):
+            return False
 
-		my_device = {
-		'host': params['mgmt_ip'],
-		'username': "lab",
-		'password': "lab123",
-		'device_type': 'cisco_ios',
-		'global_delay_factor': 1
-		}
+    def nsx(template_path, params):
 
-		config = render(template_path, params).splitlines()
-		print("config")
-		print(config)
+        MANAGER = 'https://' + params['mgmt_ip']
+        params['trigger'] = False
+        data = render(template_path, params)
 
-		try:
-			net_connect = ConnectHandler(**my_device)
-			output = net_connect.send_config_set(config)
-			net_connect.disconnect()
-			return True
-		except (NetMikoTimeoutException):
-			return False
-		except (NetMikoAuthenticationException):
-			return False
+        try:
+            rheaders = {'Content-Type': 'application/xml'}
+            r = requests.post(MANAGER + "/api/4.0/edges", data=data,
+                              auth=(USER, PASS), verify=False, headers=rheaders)
+            r.raise_for_status()
 
-	def nsx(template_path, params):
+            sleep(45)
 
-		MANAGER = 'https://' + params['mgmt_ip'] 
-		params['trigger'] = False
-		data = render(template_path, params)
+            edge_id = get_edge_id_by_name(params['edge_name'], manager=MANAGER)
 
-		try:
-			rheaders = {'Content-Type': 'application/xml'}
-			r = requests.post(MANAGER + "/api/4.0/edges", data=data, auth=(USER, PASS), verify=False, headers=rheaders)
-			r.raise_for_status()
+            params['trigger'] = True
+            data = render(template_path, params)
 
-			sleep(45)
+            rheaders = {'Content-Type': 'application/json'}
+            r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" %
+                             edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
+            r.raise_for_status()
 
-			edge_id = get_edge_id_by_name(params['edge_name'], manager=MANAGER)
+            return ERR0
 
-			params['trigger'] = True
-			data = render(template_path, params)
-
-			rheaders = {'Content-Type': 'application/json'}
-			r = requests.put(MANAGER + "/api/4.0/edges/%s/routing/config/static" % edge_id, data=data, auth=(USER, PASS), verify=False, headers=rheaders)
-			r.raise_for_status()
-
-			return ERR0
-
-		except (HTTPError) as err:
-			return ERR531
-
+        except (HTTPError) as err:
+            return ERR531

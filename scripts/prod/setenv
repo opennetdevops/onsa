@@ -1,3 +1,4 @@
+#PRODUCTION
 export ENV=production
 export DJANGO_SETTINGS_MODULE=settings.production
 export DEBUG=1
@@ -32,3 +33,9 @@ export INVENTORY_PASSWORD="operations"
 
 export AUTOMATION_USER="fc___netauto"
 export AUTOMATION_PASSWORD="TBzhv6yR"
+
+export CORE_LDAP_ADDRESS="ldap://int.fibercorp.com.ar"
+export CORE_LDAP_DN="cn=app_operations,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fibercorp,dc=com,dc=ar"
+export CORE_LDAP_USER="app_operations"
+export CORE_LDAP_PASSWORD="operations"
+export CORE_LDAP_BASE_LOOKUP="dc=lab,dc=fibercorp,dc=com,dc=ar"

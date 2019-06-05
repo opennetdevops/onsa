@@ -233,7 +233,7 @@ def authenticate_ldap(username, password):
 
 def search_user_ldap(l, username):
     # Authenticate user
-    base = "dc=lab,dc=fibercorp,dc=com,dc=ar"
+    base = os.getenv('CORE_LDAP_BASE_LOOKUP')
     scope = ldap.SCOPE_SUBTREE
     filter = "(userPrincipalName=" + username + ")"
     attrs = ["userPrincipalName"]
@@ -243,9 +243,9 @@ def search_user_ldap(l, username):
 
 
 def init_ldap():
-    host = "ldap://10.120.78.5"
-    dn = "cn=fc__netauto,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fibercorp,dc=com,dc=ar"
-    passw = 'F1b3rc0rp!'
+    host = os.getenv('CORE_LDAP_ADDRESS')
+    dn = os.getenv('CORE_LDAP_DN')
+    passw = os.getenv('CORE_LDAP_PASSWORD')
 
     # Init LDAP Object
     l = ldap.initialize(host)
