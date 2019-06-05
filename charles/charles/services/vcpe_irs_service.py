@@ -13,6 +13,44 @@ logging.basicConfig(level=logging.DEBUG)
 DEBUG = True
 
 
+
+def deleted_automated_request(service):
+  logging.debug("deleted_automated_request")
+  client = get_client(service['client_id'])
+  service_data = {}
+
+  try:
+    parameters = an_parameters(client, service)
+    config = {
+      "client": client['name'],
+      "service_type":  service['service_type'],
+      "service_id": service['service_id'],
+      "op_type": "DELETE"}
+
+    config['parameters'] = {
+                "service_vlan": service['vlan_id'],
+                "an_client_port": parameters['an_client_port'],
+                "an_uplink_ports": parameters['an_uplink_ports'],
+                "access_port_services":parameters['access_port_services']
+                  }
+    config['devices'] = [{"vendor": parameters['vendor'],
+        "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
+
+    service_state = DELETEINPROGRESS_SERVICE_STATE
+    logging.debug("deleting service")
+    
+    #Send message(job) to Queue so workers can take it
+    configure_service(config) 
+  except BaseException:
+    service_state = DELETEERROR_SERVICE_STATE
+
+  service_data['service_state'] = service_state
+  update_jeangrey_service(service['service_id'], service_data)
+  service = update_charles_service(service, service_state)
+  return service
+
+
+
 def an_activated_automated_request(service):
   logging.debug("an_activated_automated_request")
   client = get_client(service['client_id'])

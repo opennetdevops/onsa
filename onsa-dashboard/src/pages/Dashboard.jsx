@@ -4,7 +4,8 @@ import {
   serviceEnum,
   serviceStatesEnum,
   onsaIrsServices,
-  onsaVrfServices
+  onsaVrfServices,
+  notDeletableStates
 } from "../site-constants.js";
 import {
   ResourcesModal,
@@ -24,6 +25,7 @@ class Dashboard extends React.Component {
     this.state = {
       activateModal: false,
       accessNodeActivateModal: false,
+      unsubscribeModal: false,
       successAlert: null,
       displayMessage: "",
       modalService: { id: null, type: null },
@@ -99,7 +101,7 @@ class Dashboard extends React.Component {
         break;
       case "unsubscribe":
         this.setState({
-          unsubsModal: !this.state.unsubsModal,
+          unsubscribeModal: !this.state.unsubscribeModal,
           modalService: { id: service.id, type: service.service_type }
         });
         break;
@@ -142,8 +144,7 @@ class Dashboard extends React.Component {
               View details
             </Button>
           </td>
-          {service.service_state === "in_construction" &&
-          onsaVrfServices.includes(service.service_type) ? (
+          {service.service_state === "in_construction" ? (
             <td>
               <Button
                 className="btn btn-primary btn-sm btn-block"
@@ -157,24 +158,8 @@ class Dashboard extends React.Component {
               </Button>
             </td>
           ) : null}
-          {service.service_state === "in_construction" &&
-          onsaIrsServices.includes(service.service_type) ? (
-            <td>
-              <Button
-                className="btn btn-primary btn-sm btn-block"
-                color="success"
-                name="activate"
-                onClick={this.handleOnClick}
-                type="button"
-                value={JSON.stringify(service)}
-              >
-                Activate
-              </Button>
-            </td>
-          ) : null}
-          {(service.service_state === "an_activated" &&
-            onsaVrfServices.includes(service.service_type)) ||
-          (service.service_state === "cpe_data_ack" &&
+          {service.service_state === "an_activated" &&
+          (onsaVrfServices.includes(service.service_type) ||
             onsaIrsServices.includes(service.service_type)) ? (
             <td>
               <Button
@@ -189,18 +174,20 @@ class Dashboard extends React.Component {
               </Button>
             </td>
           ) : null}
-          <td>
-            <Button
-              className="btn btn-primary btn-sm btn-block"
-              color="danger"
-              name="unsubscribe"
-              onClick={this.handleOnClick}
-              type="button"
-              value={service.id}
-            >
-              Unsubscribe
-            </Button>
-          </td>
+          {notDeletableStates.indexOf(service.service_state) === -1 ? (
+            <td>
+              <Button
+                className="btn btn-primary btn-sm btn-block"
+                color="danger"
+                name="unsubscribe"
+                onClick={this.handleOnClick}
+                type="button"
+                value={JSON.stringify(service)}
+              >
+                Unsubscribe
+              </Button>
+            </td>
+          ) : null}
         </tr>
       );
     });
@@ -251,7 +238,7 @@ class Dashboard extends React.Component {
           toggle={this.handleToggle}
         />
         <UnsubscribeModal
-          isOpen={this.state.unsubsModal}
+          isOpen={this.state.unsubscribeModal}
           service={this.state.modalService}
           toggle={this.handleToggle}
         />

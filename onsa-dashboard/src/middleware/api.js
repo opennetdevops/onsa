@@ -20,6 +20,28 @@ async function HTTPGet(url) {
   return jsonResponse;
 }
 
+async function HTTPDelete(url) {
+  let response = await fetch(url, {
+    method: "DELETE",
+    mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + sessionStorage.getItem("token")
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      "HTTP error - " + response.status + " (" + response.statusText + ")"
+    );
+  }
+
+  let jsonResponse = await response.json();
+
+  return jsonResponse;
+}
+
 async function HTTPPost(url, data) {
   let response = await fetch(url, {
     method: "POST",
@@ -102,4 +124,4 @@ const ClientURLs = (key, client, customerLocId) => {
   return dict[key];
 };
 
-export { URLs, ClientURLs, HTTPGet, HTTPPost, HTTPPut };
+export { URLs, ClientURLs, HTTPGet, HTTPPost, HTTPPut, HTTPDelete };

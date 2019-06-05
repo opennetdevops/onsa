@@ -162,12 +162,16 @@ class ServiceView(View):
                 ServiceClass = getattr(
                     models, ServiceTypes[data['service_type']])
 
-                service = ServiceClass.objects.create(**data)
-                service.service_state = INITIAL_SERVICE_STATE
-                service.save()
-                logging.debug(f'service created with: {data}')
+                if Service.objects.filter(id=data['id']).count():
+                    logging.debug("more than one object with same ID")
+                    raise ServiceException("Product ID Already exists",status_code=ERR_SERVICE_ALREADYEXISTS)
+                else:
+                    service = ServiceClass.objects.create(**data)
+                    service.service_state = INITIAL_SERVICE_STATE
+                    service.save()
+                    logging.debug(f'service created with: {data}')
+                    return JsonResponse(service.fields(), safe=False, status=HTTP_201_CREATED)
 
-                return JsonResponse(service.fields(), safe=False, status=HTTP_201_CREATED)
 
             except CustomException as e:
                 # TODO REFACTOR LOGGING with %s

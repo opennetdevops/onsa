@@ -5,19 +5,36 @@ import { URLs, HTTPPost } from "../../middleware/api.js";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 class AccessNodeModal extends React.Component {
-  // handleChange = (event) => {
+  constructor(props) {
+    super(props);
 
-  //   const value = event.target.value;
-  //   const name = event.target.name
+    this.state = {
+      vlanId: ""
+    };
+  }
 
-  //   console.log(value)
+  handleChange = event => {
+    const value = event.target.value;
+    const name = event.target.name;
 
-  //   this.setState({[name]: value})
-  // }
+    this.setState({ [name]: value });
+  };
 
   handleSubmit = event => {
-    const data = { deployment_mode: "automated", target_state: "an_activated" };
 
+    let data = {};
+    if (this.props.service.type === "tip") {
+      data = {
+        deployment_mode: "automated",
+        target_state: "an_activated",
+        vlan_id: this.state.vlanId
+      };
+    } else {
+      data = {
+        deployment_mode: "automated",
+        target_state: "an_activated"
+      };
+    }
     HTTPPost(
       URLs["services"] + "/" + this.props.service.id + "/activation",
       data
@@ -48,7 +65,7 @@ class AccessNodeModal extends React.Component {
               onSubmit={this.handleSubmit}
             >
               <div className="row">
-                <div className="col-md-12 mb-3">
+                <div className="col-md-6 mb-3">
                   <label htmlFor="client">Service Id</label>
                   <input
                     type="text"
@@ -57,6 +74,22 @@ class AccessNodeModal extends React.Component {
                     disabled
                   />
                 </div>
+
+                {this.props.service.type === "tip" ? (
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="clientId">Vlan ID</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="vlanId"
+                      name="vlanId"
+                      value={this.state.vlanId}
+                      onChange={this.handleChange}
+                      placeholder="1 - 4094"
+                      required
+                    />
+                  </div>
+                ) : null}
               </div>
               <ModalFooter>
                 <Button

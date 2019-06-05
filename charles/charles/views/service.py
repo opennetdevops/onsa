@@ -75,14 +75,51 @@ class ServiceView(View):
 
         return JsonResponse(response, safe=False)
 
-    def delete(self, request, service_id):
-        svc = Service.objects.filter(service_id=service_id)
-        svc.delete()
-        data = {"Message": "Service deleted successfully"}
-        return JsonResponse(data, status=HTTP_204_NO_CONTENT)
-
     def _existing_service(self, service_id):
         return Service.objects.filter(service_id=service_id).count() is not 0
+
+    def delete(self, request, service_id):
+        logging.debug(f'processing DELETE of service id: {service_id}')
+        my_service = Service.objects.filter(service_id=service_id).values()[0]
+        my_service_obj = Service.objects.get(service_id=service_id)
+        service = get_service(service_id)
+
+        if service['service_state'] != INITIAL_SERVICE_STATE:
+
+            if service['service_state'] == DELETEINPROGRESS_SERVICE_STATE:
+                logging.debug(f'already marked for deletion')
+                response = {"msg": "Service already marked for deletion"}
+            else:
+
+                data = {'service_state': TOBEDELETED_SERVICE_STATE}
+                update_jeangrey_service(my_service['service_id'], data)
+                my_service_obj.service_state = TOBEDELETED_SERVICE_STATE
+                my_service_obj.target_state = DELETED_SERVICE_STATE
+                my_service_obj.save()
+
+                my_service = Service.objects.filter(
+                    service_id=service_id).values()[0]
+                my_service.update(service)
+                my_service['service_state'] = TOBEDELETED_SERVICE_STATE
+
+                try:
+                    service_state = Fsm.run(my_service)
+                except BaseException as e:
+                    service_state = DELETEERROR_SERVICE_STATE
+                    data = {'service_state': service_state}
+                    update_jeangrey_service(my_service['service_id'], data)
+                    my_service_obj.service_state = service_state
+                    my_service_obj.save()
+                    response = {"msg": "Error deleting service"}
+                    return JsonResponse(response, status=ERR_COULDNT_DELETESERVICE)
+
+                response = {"msg": "Service marked for deletion"}
+        else:
+            my_service.delete()
+            response = {"msg": "Service deleted successfully"}
+        
+        return JsonResponse(response, status=HTTP_204_NO_CONTENT)
+
 
 
 class ProcessView(View):
@@ -136,7 +173,7 @@ class ProcessView(View):
 
                 print("second: ", service_state)
                 print(my_service)
-            response = {"message": "Service stated updated"}
+            response = {"message": "Service state updated"}
 
         else:
             service_state = "ERROR"
