@@ -21,6 +21,9 @@ gunicorn -D -b unix:/home/onsa/onsa/core/myproject.sock -w $WORKERS settings.wsg
 cd $rootlevel\/onsa-dashboard\/
 serve -s build &
 
+cd $rootlevel\/worker\/
+celery -A worker worker --loglevel=info &
+
 cd ..
 cd scripts/local/
 
