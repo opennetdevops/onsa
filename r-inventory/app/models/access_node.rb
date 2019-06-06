@@ -1,6 +1,7 @@
 class AccessNode < ApplicationRecord
 	has_many :access_ports
-  	has_and_belongs_to_many :vlans
+	has_many :wires
+	has_many :vlans, through: :wires
 	belongs_to :location
 	belongs_to :device_model
 	belongs_to :contract,  optional:true

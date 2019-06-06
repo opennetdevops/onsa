@@ -41,7 +41,7 @@ class CustomerLocationsView(APIView):
             data), auth=None, verify=False, headers=rheaders)
         json_response = json.loads(response.text)
 
-        return JsonResponse(json_response, safe=False)
+        return JsonResponse(json_response, safe=False, status=response.status_code)
 
 
 customer_locations_view = CustomerLocationsView.as_view()

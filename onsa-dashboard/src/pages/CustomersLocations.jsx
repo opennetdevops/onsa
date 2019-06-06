@@ -2,6 +2,7 @@ import React from "react";
 import FormAlert from "../components/Form/FormAlert";
 import { URLs, HTTPGet, HTTPPost, ClientURLs } from "../middleware/api.js";
 import Select from "react-select";
+import * as yup from "yup";
 
 class CustomersLocations extends React.Component {
   constructor(props) {
@@ -9,13 +10,13 @@ class CustomersLocations extends React.Component {
 
     this.state = {
       address: "",
-      clientName: "",
-      clientId: "",
       clientOptions: [],
       description: "",
+      dialogLabel: "",
       dialogSuccess: false,
       dialogText: "",
-      dialogShow: false
+      dialogShow: false,
+      selectedClient:[]
     };
   }
 
@@ -38,18 +39,18 @@ class CustomersLocations extends React.Component {
 
   resetFormFields = () => {
     this.setState({
-      clientName: "",
-      clientId: "",
       address: "",
-      description: ""
+      description: "",
+      selectedClient:[]
     });
   };
 
-  showAlertBox = (result, message) => {
+  showAlertBox = (result, message, label) => {
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: message || result ? true : false
+      dialogShow: message || result ? true : false,
+      dialogLabel: label
     });
   };
 
@@ -63,20 +64,32 @@ class CustomersLocations extends React.Component {
   handleSelectOnChange = selectedOption => {
     this.showAlertBox();
     this.setState({
-      clientName: selectedOption.label,
-      clientId: selectedOption.value
+      
+      selectedClient:selectedOption
     });
   };
 
   handleSubmit = event => {
     event.preventDefault();
-    const data = {
+    let data = {
       address: this.state.address,
       description: this.state.description
     };
+    let dataToValidate = {...data, client: this.state.selectedClient.value }
 
-    let url = ClientURLs("customerLocations", this.state.clientId);
+    this.getValidationSchema().validate(dataToValidate)
+      .then(
+        () => { //isValid = true
+          let url = ClientURLs("customerLocations", this.state.selectedClient.value);
+          this.submitRequest(url, data);
+        }, //isValid = false
+        err => {
+          this.showAlertBox(false, err.message, "Validation Error: ");
+        }
+      );
+  };
 
+  submitRequest = (url, data) => {
     HTTPPost(url, data).then(
       () => {
         this.showAlertBox(true, "Customer Location Added");
@@ -88,6 +101,46 @@ class CustomersLocations extends React.Component {
     );
   };
 
+  getValidationSchema() {
+    const min = 3;
+    const max = 50;
+    const addressErr =
+      "The Address must be between " +
+      min +
+      " and " +
+      max +
+      " characters long.";
+    const cuicLength = 11;
+    const descErr =
+      "The Description must be less than " +
+      cuicLength +
+      " characters long.";
+
+    yup.setLocale({
+      string: { trim: "Check for leading and trailling spaces." }
+    });
+
+    let schema = yup.object({
+      client: yup
+      .string()
+      .label("Client")
+      .required(),
+      address: yup
+        .string()
+        .strict(true)
+        .trim()
+        .min(min, addressErr)
+        .max(max, addressErr)
+        .required(),
+      description: yup
+        .string()
+        .strict(true)
+        .trim()
+        .max(max, descErr)
+    });
+    return schema;
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -97,15 +150,12 @@ class CustomersLocations extends React.Component {
               dialogSuccess={this.state.dialogSuccess}
               dialogText={this.state.dialogText}
               dialogShow={this.state.dialogShow}
+              msgLabel={this.state.dialogLabel}
             />
           </div>
           <div className="col-md-8 order-md-1">
             <h4 className="mb-3">Add customer location</h4>
-            <form
-              className="needs-validation"
-              noValidate
-              onSubmit={this.handleSubmit}
-            >
+            <form onSubmit={this.handleSubmit}>
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="client">Client</label>
@@ -114,13 +164,11 @@ class CustomersLocations extends React.Component {
                     options={this.state.clientOptions}
                     name="client"
                     placeholder="Choose a client.."
-                  />
-                  <div className="invalid-feedback">
-                    Example invalid feedback text
-                  </div>
+                    value= {this.state.selectedClient}
+                    />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label htmlFor="clientId">Address</label>
+                  <label htmlFor="address">Address</label>
                   <input
                     type="text"
                     className="form-control"
@@ -130,7 +178,6 @@ class CustomersLocations extends React.Component {
                     onChange={this.handleChange}
                     maxLength="50"
                     placeholder="Some address 123"
-                    required
                   />
                 </div>
               </div>
@@ -147,7 +194,6 @@ class CustomersLocations extends React.Component {
                     onChange={this.handleChange}
                     maxLength="50"
                     placeholder="Enter a description"
-                    required
                   />
                 </div>
               </div>
@@ -155,13 +201,6 @@ class CustomersLocations extends React.Component {
 
               <button
                 className="btn btn-primary btn-lg btn-block"
-                disabled={
-                  this.state.clientName &&
-                  this.state.address &&
-                  this.state.description
-                    ? false
-                    : true
-                }
                 type="submit"
                 value="Submit"
               >

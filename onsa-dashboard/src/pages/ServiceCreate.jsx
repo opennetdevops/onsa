@@ -5,11 +5,12 @@ import {
   onsaIrsServices,
   serviceEnum
 } from "../site-constants.js";
-import { Form, FormRow, FormTitle, FormInput } from "../components/Form";
+import { Form, FormRow, FormInput } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 import FormRadio from "../components/Form/FormRadio";
 
 import Select from "react-select";
+import * as yup from "yup";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
@@ -23,6 +24,7 @@ class ServiceCreate extends React.Component {
       clientOptions: [],
       customerLocId: null,
       custLocationsOptions: [],
+      dialogLabel: "",
       dialogSuccess: false,
       dialogText: "",
       dialogShow: false,
@@ -91,12 +93,13 @@ class ServiceCreate extends React.Component {
     this.props.displayNavbar(false);
   }
 
-  showAlertBox = (result, message) => {
+  showAlertBox = (result, message, label) => {
     // if there are no arguments, wont show the dialog
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: message || result ? true : false
+      dialogShow: message || result ? true : false,
+      dialogLabel: label
     });
   };
 
@@ -135,13 +138,11 @@ class ServiceCreate extends React.Component {
     let showPort = false;
     let url = "";
     let mpsw = false;
-    // let port = "";
 
     this.showAlertBox();
 
     if (value === "new") {
       showPort = false;
-      // port = null
     } else {
       if (value === "existing") {
         url = ClientURLs(
@@ -163,7 +164,6 @@ class ServiceCreate extends React.Component {
       showPort: showPort,
       showMultiPortSwitch: !showPort,
       multiPortSwitch: mpsw,
-      // portId: port,
       selectedPort: []
     });
   };
@@ -195,7 +195,6 @@ class ServiceCreate extends React.Component {
   handlePortOnChange = selectedOption => {
     this.setState({
       selectedPort: selectedOption
-      // portId: selectedOption.value
     });
   };
 
@@ -259,8 +258,34 @@ class ServiceCreate extends React.Component {
   };
 
   handleSubmit = event => {
-    event.preventDefault();
 
+    event.preventDefault();
+    let data = this.getSubmitData();
+
+    let dataToValidate = {
+      ...data,
+      client: this.state.selectedClient.value,
+      custLoc: this.state.selectedCustLoc.value,
+      servType: this.state.selectedService.value,
+      hub: this.state.selectedLocation.value,
+    };
+    this.getValidationSchema().validate(dataToValidate, {
+        context:  { showPort: this.state.showPort,
+                    showPrefix: this.state.showPrefix }
+        }
+      )
+      .then(
+        () => {
+          //isValid = true
+          this.submitRequest(URLs["services"], data);
+        }, //isValid = false
+        err => {
+          this.showAlertBox(false, err.message, "Validation Error: ");
+        }
+      );
+  };
+
+  getSubmitData() {
     let data = {
       client_id: this.state.clientId,
       location_id: this.state.selectedLocation.value,
@@ -279,8 +304,11 @@ class ServiceCreate extends React.Component {
     if (onsaIrsServices.includes(this.state.selectedService.value)) {
       data["prefix"] = this.state.prefix;
     }
+    return data;
+  }
 
-    HTTPPost(URLs["services"], data).then(
+  submitRequest = (url, data) => {
+    HTTPPost(url, data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
         this.resetFormFields();
@@ -291,16 +319,74 @@ class ServiceCreate extends React.Component {
     );
   };
 
-  render() {
-    const formIsValid = () => {
-      return this.state.serviceId &&
-        this.state.selectedCustLoc &&
-        this.state.clientId &&
-        this.state.bandwidth
-        ? false
-        : true;
-    };
+  getValidationSchema() {
+    const minId = 6;
+    const maxId = 20;
+    const minBw = 1;
+    const maxBw = 100;
+    const minPrefix = 24;
+    const maxPrefix = 32;
+    const idErr =
+      "The IDs field must be between " +
+      minId +
+      " and " +
+      maxId +
+      " characters long.";
+    const bwErr =
+      "The Bandwidth must be an integer number between " + minBw + " and " + maxBw + ".";
+    const prefixErr =
+      "The Prefix must be an integer number between " + minPrefix + " and " + maxPrefix + ".";
 
+    yup.setLocale({
+      string: { trim: "Check for leading and trailling spaces." }
+    });
+
+    let selectSchema = yup.string().required();
+    let idSchema = yup
+        .string()
+        .strict(true)
+        .trim()
+        .min(minId, idErr)
+        .max(maxId, idErr)
+        .required()
+
+      let schema = yup.object({
+        client: selectSchema.label("Client"),
+        custLoc: selectSchema.label("Customer Location"),
+        servType: selectSchema.label("Service Type"),
+        hub: selectSchema.label("Hub"),
+        id: idSchema,
+        gts_id: idSchema,
+        bandwidth: yup
+          .number()
+          .typeError(bwErr)
+          .min(minBw, bwErr)
+          .max(maxBw, bwErr)
+          .integer(bwErr)
+          .positive(bwErr)
+          .required(bwErr),
+        prefix: yup
+          .number()
+          .typeError(prefixErr)
+          .min(minPrefix, prefixErr)
+          .moreThan(minPrefix, prefixErr)
+          .max(maxPrefix, prefixErr)
+          .integer(prefixErr)
+          .positive(prefixErr)
+          .when("$showPrefix", (showPrefix, schema) =>
+            showPrefix ? schema.required(prefixErr) : schema.notRequired()
+          ),
+        access_port_id: selectSchema
+          .label("Port")
+          .when("$showPort", (showPort, schema) =>
+          showPort ? schema.required() : schema.notRequired()
+          )
+      });
+    return schema;
+  }
+
+  render() {
+  
     return (
       <React.Fragment>
         <div className="row justify-content-center">
@@ -309,13 +395,13 @@ class ServiceCreate extends React.Component {
               dialogSuccess={this.state.dialogSuccess}
               dialogText={this.state.dialogText}
               dialogShow={this.state.dialogShow}
+              msgLabel={this.state.dialogLabel}
             />
           </div>
           <div className="col-md-8 order-md-1">
-            <FormTitle>New service</FormTitle>
-            <Form
-              className="needs-validation"
-              noValidate
+            <h4>New service</h4>
+            <Form 
+              className="form"
               onSubmit={this.handleSubmit}
             >
               <FormRow className="row">
@@ -416,7 +502,7 @@ class ServiceCreate extends React.Component {
                   </label>
                   <FormInput
                     type="number"
-                    min="0"
+                    min="1"
                     className="form-control "
                     id="bandwidth"
                     name="bandwidth"
@@ -455,6 +541,8 @@ class ServiceCreate extends React.Component {
                     <label htmlFor="prefix">Prefix</label>
                     <FormInput
                       type="number"
+                      min="24"
+                      max="32"
                       className="form-control"
                       id="prefix"
                       name="prefix"
@@ -494,7 +582,6 @@ class ServiceCreate extends React.Component {
                 <div className="col-md-6 ">
                   <button
                     className="btn btn-primary btn-block btn-lg "
-                    disabled={formIsValid()}
                     type="submit"
                   >
                     Create
