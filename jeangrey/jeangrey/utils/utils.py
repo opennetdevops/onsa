@@ -232,8 +232,6 @@ def release_vlan(access_node_id, vlan_id):
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    return r.json()
-
         
 def release_resources(allocated_resources):
     for elem in allocated_resources:
