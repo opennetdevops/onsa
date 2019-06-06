@@ -17,7 +17,7 @@ export CHARLES_PORT=8004
 export JEAN_GREY_URL="http://127.0.0.1:$JEANGREY_PORT/jeangrey/api/"
 export CHARLES_URL="http://127.0.0.1:$CHARLES_PORT/charles/api/"
 export CORE_URL="http://127.0.0.1:$CORE_PORT/core/api/"
-export INVENTORY_URL="http://inventory.int.fibercorp.com.ar:$INVENTORY_PORT/inventory/api/"
+export INVENTORY_URL="http://10.120.54.56:$INVENTORY_PORT/inventory/api/"
 export WORKER_URL="http://127.0.0.1:$WORKER_PORT/worker/api/"
 export IPAM_URL="http://10.120.78.90"
 
@@ -34,7 +34,7 @@ export INVENTORY_PASSWORD="operations"
 export AUTOMATION_USER="fc___netauto"
 export AUTOMATION_PASSWORD="TBzhv6yR"
 
-export CORE_LDAP_ADDRESS="ldap://int.fibercorp.com.ar"
+export CORE_LDAP_ADDRESS="ldap://10.120.48.138"
 export CORE_LDAP_DN="CN=app_operations,OU=OU Aplicaciones,OU=OU Usuarios,OU=OU Hornos,DC=int,DC=fibercorp,DC=com,DC=ar"
 export CORE_LDAP_USER="app_operations"
 export CORE_LDAP_PASSWORD="operations"

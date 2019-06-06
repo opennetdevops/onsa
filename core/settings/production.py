@@ -230,8 +230,9 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     'localhost:3000',
     '127.0.0.1:9000',
-    '10.120.78.58:3000',
-    os.getenv('SERVER_IP')+':3000'
+    os.getenv('SERVER_IP')+':5000',
+    os.getenv('SERVER_IP')+':3000',
+    'onsa.int.fibercorp.com.ar:5000'
 )
 
 
