@@ -228,11 +228,10 @@ def release_access_port(access_port_id):
 
 
 def release_vlan(access_node_id, vlan_id):
-    url = settings.INVENTORY_URL + "access_nodes/" + str(access_node_id) + "/vlans"
+    url = settings.INVENTORY_URL + "access_nodes/" + str(access_node_id) + "/vlans/" + str(vlan_id)
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
-    data = { 'vlan_id': vlan_id }
-    r = requests.delete(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    r = requests.delete(url, auth = None, verify = False, headers = rheaders)
     return r.json()
 
         

@@ -208,6 +208,11 @@ class ServiceView(View):
     def delete(self, request, service_id):
         try:
             svc = Service.objects.get(id=service_id)
+            logging.info(f'Releasing vlan: {svc.vlan_id} from access node: {svc.access_node_id}')
+            release_vlan(svc.access_node_id, svc.vlan_id)
+            logging.info(f'Releasing access port: {svc.access_port_id}')
+            release_access_port(svc.access_port_id)
+            
             svc.delete()
             return HttpResponse(status=HTTP_204_NO_CONTENT)
 

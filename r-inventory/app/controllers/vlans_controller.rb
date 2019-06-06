@@ -37,11 +37,12 @@ class VlansController < ApiController
   end
 
   def destroy
-    @vlan = Vlan.find(params[:id])
     if params[:access_node_id]
       access_node = AccessNode.find(params[:access_node_id])
+      @vlan = Vlan.find_by(vlan_tag:params[:id])
       access_node.vlans.delete(@vlan)
     else
+      @vlan = Vlan.find(params[:id])
       @vlan.destroy  
     end
   end
