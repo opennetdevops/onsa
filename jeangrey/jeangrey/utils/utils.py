@@ -111,7 +111,7 @@ def get_free_access_port(location_id):
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
-    print(r.json())
+    
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()[0]
     elif not r.json():
@@ -183,7 +183,7 @@ def get_free_vlan(access_node_id):
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
-    logging.debug(r.json())
+    #logging.debug(r.json())
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()[0]
     elif not r.json():
