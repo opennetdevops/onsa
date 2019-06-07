@@ -2,7 +2,6 @@
 source setenv
 
 WORKERS=2
-
 rootlevel=`eval "cd $PWD;cd ../..;pwd"`
 
 declare -a projects=("charles" "jeangrey" "worker")
