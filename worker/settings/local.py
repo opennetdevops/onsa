@@ -229,9 +229,7 @@ CORS_ORIGIN_WHITELIST = (
     os.getenv('SERVER_IP')+':3000'
 )
 
-CELERY_BROKER_URL = "amqp://myuser:mypassword@" + \
-    os.getenv('SERVER_IP')+"/myvhost"
-
+CELERY_BROKER_URL = "amqp://"+ os.getenv('RABBITMQ_USER') + ":"+os.getenv('RABBITMQ_PASSWORD')+"@"+os.getenv('RABBITMQ_HOST')+os.getenv('RABBITMQ_VHOST')
 
 # ONSA Variables
 JEAN_GREY_URL = "http://127.0.0.1:" + \

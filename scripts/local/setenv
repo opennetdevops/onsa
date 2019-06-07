@@ -41,3 +41,9 @@ export CORE_LDAP_DN="cn=fc__netauto,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fi
 export CORE_LDAP_USER="fc__netauto"
 export CORE_LDAP_PASSWORD="F1b3rc0rp!"
 export CORE_LDAP_BASE_LOOKUP="dc=lab,dc=fibercorp,dc=com,dc=ar"
+
+export RABBITMQ_HOST="127.0.0.1"
+export RABBITMQ_PORT=""
+export RABBITMQ_USER="myuser"
+export RABBITMQ_PASSWORD="mypassword"
+export RABBITMQ_VHOST="/myvhost"

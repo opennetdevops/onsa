@@ -21,6 +21,11 @@ export INVENTORY_URL="http://10.120.54.56:$INVENTORY_PORT/inventory/api/"
 export WORKER_URL="http://127.0.0.1:$WORKER_PORT/worker/api/"
 export IPAM_URL="http://10.120.78.90"
 
+export RABBITMQ_HOST="127.0.0.1"
+export RABBITMQ_PORT=""
+export RABBITMQ_USER="myuser"
+export RABBITMQ_PASSWORD="mypassword"
+export RABBITMQ_VHOST="/myvhost"
 
 export LOCAL_NETWORK="10.120.54"
 export SERVER_IP=$(/sbin/ip -o -4 addr list | grep "10.120" | awk '{print $4}' | cut -d/ -f1)
