@@ -20,13 +20,16 @@ def configure_service(config):
     #just triggered to test connection to RMQ, currently there is no support from celery worker
     try:
         a = kombu.Connection("amqp://"+ os.getenv('RABBITMQ_USER') + ":"+os.getenv('RABBITMQ_PASSWORD')+"@"+os.getenv('RABBITMQ_HOST')+os.getenv('RABBITMQ_VHOST'),connect_timeout=3)
+        logging.debug("connection object created")
         a.connect()
+        logging.debug("connection attempted")
         a.release() 
 
         app = Celery('worker', broker="amqp://"+os.getenv('RABBITMQ_USER')+":"+os.getenv('RABBITMQ_PASSWORD')+"@"+os.getenv('RABBITMQ_HOST')+os.getenv('RABBITMQ_VHOST'), broker_pool_limit=None)
         promise = app.send_task('worker.tasks.process_service', args=[json.dumps(config)], ignore_result=True )
         logging.info("Sending message to queue")
-    except BaseException:
+    except BaseException as e:
+        logging.error(f'error in connection to queue: {e}')
         raise MessagingException("Unable to push message to queue")
 
 
