@@ -42,6 +42,8 @@ Source and detailed explanation: https://www.digitalocean.com/community/tutorial
 
 sudo apt-get install -y erlang
 sudo apt-get install rabbitmq-server
+sudo rabbitmq-plugins enable rabbitmq_management
+sudo chown -R rabbitmq:rabbitmq /var/lib/rabbitmq/
 
 sudo systemctl enable rabbitmq-server
 sudo systemctl start rabbitmq-server
@@ -152,6 +154,25 @@ bundle install
 cd onsa-dashboard
 npm ci
 
+```
+
+## Inicialización de RabbitMQ
+
+```bash
+sudo rabbitmqctl add_user myuser mypassword
+sudo rabbitmqctl add_vhost myvhost
+sudo rabbitmqctl set_user_tags myuser mytag
+sudo rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*"
+
+sudo rabbitmqctl add_user mqadmin mqadminpassword
+sudo rabbitmqctl set_user_tags mqadmin administrator
+sudo rabbitmqctl set_permissions -p / mqadmin ".*" ".*" ".*"
+```
+
+## Inicialización de Celery
+```bash
+source setenv
+celery -A worker worker --loglevel=info
 ```
 
 ## Inicialización de Django
