@@ -8,9 +8,11 @@ import {
 import { Form, FormRow, FormInput } from "../components/Form";
 import FormAlert from "../components/Form/FormAlert";
 import FormRadio from "../components/Form/FormRadio";
+import  ClientSelect  from "../components/Clients/ClientSelect";
 
 import Select from "react-select";
 import * as yup from "yup";
+
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
@@ -405,18 +407,18 @@ class ServiceCreate extends React.Component {
               onSubmit={this.handleSubmit}
             >
               <FormRow className="row">
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="client">Client</label>
-                  <Select
+                <div className="col-lg-6 mb-3">
+                  <label htmlFor="client">Client Name</label>
+                  <ClientSelect
+                    clientOptions={this.state.clientOptions}
                     onChange={this.handleClientOnChange}
-                    options={this.state.clientOptions}
+                    value= {this.state.selectedClient}
                     name="client"
-                    placeholder="Choose a client.."
-                    value={this.state.selectedClient}
-                  />
+                    searchByMT="3"
+                    />
                 </div>
 
-                <div className="col-md-6 mb-3">
+                <div className="col-lg-6 mb-3">
                   <label htmlFor="serviceId">Product ID</label>
                   <FormInput
                     type="text"
@@ -432,7 +434,7 @@ class ServiceCreate extends React.Component {
 
               <FormRow className="row ">
                 {/* CUST LOC */}
-                <div className="col-md-6 mb-3">
+                <div className="col-lg-6 mb-3">
                   <label htmlFor="customerLoc">Customer Location</label>
                   <Select
                     onChange={this.handleCustLocationOnChange}
@@ -443,7 +445,7 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
                 {/* GTS ID */}
-                <div className="col-md-6 mb-3">
+                <div className="col-lg-6 mb-3">
                   <label htmlFor="gtsId">GTS ID</label>
                   <FormInput
                     type="text"
@@ -496,7 +498,7 @@ class ServiceCreate extends React.Component {
               )}
               <FormRow className="row ">
                 {/* BW */}
-                <div className="col-md-6 mb-3">
+                <div className="col-lg-6 mb-3">
                   <label htmlFor="bandwidth">
                     Bandwidth <span className="text-muted"> (In Mbps)</span>
                   </label>
@@ -512,7 +514,7 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
                 {/* HUB */}
-                <div className="col-md-6 mb-3">
+                <div className="col-lg-6 mb-3">
                   <label htmlFor="location">HUB</label>
                   <Select
                     onChange={this.handleLocationOnChange}
@@ -525,7 +527,7 @@ class ServiceCreate extends React.Component {
               </FormRow>
               {/* SERVICE TYPE */}
               <FormRow className="row ">
-                <div className="col-md-6 mb-3">
+                <div className="col-lg-6 mb-3">
                   <label htmlFor="serviceType">Service type</label>
                   <Select
                     onChange={this.handleServiceTypeOnChange}
@@ -537,7 +539,7 @@ class ServiceCreate extends React.Component {
                 </div>
                 {/* PREFIX */}
                 {this.state.showPrefix && (
-                  <div className="col-md-6 mb-3">
+                  <div className="col-lg-6 mb-3">
                     <label htmlFor="prefix">Prefix</label>
                     <FormInput
                       type="number"
@@ -556,7 +558,7 @@ class ServiceCreate extends React.Component {
               {/* MULTIPLE CLIENT PORT SWITCH */}
               {this.state.showMultiPortSwitch && (
                 <FormRow className="row form-row mx-auto pr-4">
-                  <div className="col-6 p-0  my-2 border rounded ">
+                  <div className="col-lg-6 p-0  my-2 border rounded ">
                     <div className="custom-control custom-switch  m-2">
                       <input
                         type="checkbox"
@@ -579,7 +581,7 @@ class ServiceCreate extends React.Component {
 
               <hr className="mb-4" />
               <div className="row justify-content-center">
-                <div className="col-md-6 ">
+                <div className="col-lg-6 ">
                   <button
                     className="btn btn-primary btn-block btn-lg "
                     type="submit"

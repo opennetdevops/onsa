@@ -1,8 +1,8 @@
 import React from "react";
 import FormAlert from "../components/Form/FormAlert";
 import { URLs, HTTPGet, HTTPPost, ClientURLs } from "../middleware/api.js";
-import Select from "react-select";
 import * as yup from "yup";
+import  ClientSelect  from "../components/Clients/ClientSelect";
 
 class CustomersLocations extends React.Component {
   constructor(props) {
@@ -157,17 +157,17 @@ class CustomersLocations extends React.Component {
             <h4 className="mb-3">Add customer location</h4>
             <form onSubmit={this.handleSubmit}>
               <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label htmlFor="client">Client</label>
-                  <Select
+                <div className="col-lg-6 mb-3">
+                  <label htmlFor="client">Client Name</label>
+                    <ClientSelect
+                    clientOptions={this.state.clientOptions}
                     onChange={this.handleSelectOnChange}
-                    options={this.state.clientOptions}
-                    name="client"
-                    placeholder="Choose a client.."
                     value= {this.state.selectedClient}
+                    name="client"
+                    searchByMT="3"
                     />
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-lg-6 mb-3">
                   <label htmlFor="address">Address</label>
                   <input
                     type="text"
