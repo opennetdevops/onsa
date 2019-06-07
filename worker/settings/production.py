@@ -27,8 +27,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = bool(int(os.getenv('DEBUG', False)))
-
+#DEBUG = bool(int(os.getenv('DEBUG', False)))
+DEBUG = False
 # ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0', 'localhost']
 #ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(
@@ -229,8 +229,8 @@ CORS_ORIGIN_WHITELIST = (
     os.getenv('SERVER_IP')+':3000'
 )
 
-CELERY_BROKER_URL = "amqp://myuser:mypassword@" + \
-    os.getenv('SERVER_IP')+"/myvhost"
+CELERY_BROKER_URL = "amqp://"+ os.getenv('RABBITMQ_USER') + ":"+os.getenv('RABBITMQ_PASSWORD')+"@"+os.getenv('RABBITMQ_HOST')+os.getenv('RABBITMQ_VHOST')
+
 
 
 # ONSA Variables
