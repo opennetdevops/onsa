@@ -198,7 +198,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 
-
 # Fixtures
 FIXTURE_DIRS = (
     BASE_DIR + '/core/fixtures/',
@@ -234,7 +233,8 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:9000',
     os.getenv('SERVER_IP')+':5000',
     os.getenv('SERVER_IP')+':3000',
-    'onsa.int.fibercorp.com.ar:5000'
+    'onsa.int.fibercorp.com.ar:5000',
+    'onsa.int.fibercorp.com.ar'
 )
 
 
