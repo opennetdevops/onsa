@@ -28,7 +28,6 @@ class AccessPortsController < ApiController
           an = AccessNode.find(ap.access_node_id)
           my_ap = ap.attributes
           my_ap['access_node'] = an.hostname
-          puts my_ap
           @access_ports << my_ap
         end
       else
