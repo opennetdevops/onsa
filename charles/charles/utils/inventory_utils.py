@@ -1,6 +1,8 @@
 from charles.constants import *
 from charles.exceptions import *
 from charles.models import Service
+from django.conf import settings
+
 
 import requests
 import json
@@ -209,16 +211,15 @@ def remove_logicalunit_from_router_node(router_node_id,logical_unit_id):
 
 
 def release_access_port(access_port_id):
-    url= os.getenv('INVENTORY_URL') + "access_ports/" + str(access_port_id)
+    url = settings.INVENTORY_URL + "access_ports/" + str(access_port_id)
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     data = {"used":False}
-    response = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-    json_response = json.loads(response.text)
-    if json_response and response.status_code == HTTP_200_OK:
-        return json_response
+    r = requests.put(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    if r.json() and r.status_code == HTTP_200_OK:
+        return r.json()
     else:
-        raise AccessPortException("Invalid AccessPort")
+        raise AccessPortException("Invalid access port.", status_code=r.status_code)
 
 
 def use_access_port(access_port_id):
@@ -679,4 +680,12 @@ def get_device_model(device_model_id):
         raise DeviceModelException("Invalid device model.", status_code=r.status_code)
     else:
         raise DeviceModelException("Unable to fetch device model.", status_code=r.status_code)
+
+
+
+def release_vlan(access_node_id, vlan_id):
+    url = settings.INVENTORY_URL + "access_nodes/" + str(access_node_id) + "/vlans/" + str(vlan_id)
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    r = requests.delete(url, auth = None, verify = False, headers = rheaders)
 

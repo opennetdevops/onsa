@@ -55,6 +55,7 @@ class JSONWebTokenLDAPAuthentication(JSONWebTokenAuthentication):
 
         return user
 
+
 class JSONWebTokenLDAPSerializer(JSONWebTokenSerializer):
     def validate(self, attrs):
         credentials = {

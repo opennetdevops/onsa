@@ -33,8 +33,8 @@ export REACT_APP_CORE_URL=http://$SERVER_IP:$CORE_PORT
 export INVENTORY_USER="app_operations@lab.fibercorp.com.ar"
 export INVENTORY_PASSWORD="operations"
 
-export AUTOMATION_USER="lab"
-export AUTOMATION_PASSWORD="lab123"
+export AUTOMATION_USER="fc___netauto"
+export AUTOMATION_PASSWORD="TBzhv6yR"
 
 export CORE_LDAP_ADDRESS="ldap://10.120.78.5"
 export CORE_LDAP_DN="cn=fc__netauto,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fibercorp,dc=com,dc=ar"

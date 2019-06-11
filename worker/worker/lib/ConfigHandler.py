@@ -50,7 +50,7 @@ class ConfigHandler:
 
         logging.basicConfig(level=logging.INFO)
         dev = Device(host=parameters['mgmt_ip'],
-                     user="lab", password="lab123", port=443)
+                     user=os.getenv('AUTOMATION_USER'), password=os.getenv('AUTOMATION_PASSWORD'), port=443)
         dev.bind(cu=Config)
 
         try:

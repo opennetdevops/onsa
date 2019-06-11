@@ -37,8 +37,12 @@ def deleted_automated_request(service):
         "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
 
     service_state = DELETEINPROGRESS_SERVICE_STATE
+
+    logging.debug("releasing service resources")
+    release_access_port(service['access_port_id'])
+    release_vlan(service['access_node_id'], service['vlan_id'])
     logging.debug("deleting service")
-    
+        
     #Send message(job) to Queue so workers can take it
     configure_service(config) 
   except BaseException:
