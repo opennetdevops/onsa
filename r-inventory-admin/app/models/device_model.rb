@@ -7,7 +7,11 @@ class DeviceModel < ApplicationRecord
 	end
 
 	def uplink_ports_array
-		self.uplink_ports.split(',')
+		if self.uplink_ports
+			self.uplink_ports.split(',')
+		else
+			[]
+		end
 	end
 
 end
