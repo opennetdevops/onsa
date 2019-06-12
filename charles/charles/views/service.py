@@ -3,11 +3,13 @@ from django.http import JsonResponse
 from django.views import View
 from charles.models import Service
 from charles.utils import *
+from charles.constants import *
 from pprint import pprint
 
 import requests
 import json
 import logging
+
 
 class ServiceView(View):
 
@@ -46,7 +48,7 @@ class ServiceView(View):
         except BaseException as e:
             return e.handle()
 
-        msg = {"message": "Service requested."}
+        msg = {MSG_HEADER: MSG_SERVICE_REQUESTED}
         return JsonResponse(msg, status=HTTP_201_CREATED)
 
     def put(self, request, service_id):
@@ -71,7 +73,7 @@ class ServiceView(View):
         # # if service[0].service_state == "ERROR":
         # #     rollback_service(str(service_id))
 
-        response = {"message": "Service state updated"}
+        response = {MSG_HEADER: MSG_SERVICE_UPDATE_OK}
 
         return JsonResponse(response, safe=False)
 
@@ -88,7 +90,7 @@ class ServiceView(View):
 
             if service['service_state'] == DELETEINPROGRESS_SERVICE_STATE:
                 logging.debug(f'already marked for deletion')
-                response = {"msg": "Service already marked for deletion"}
+                response = {MSG_HEADER: MSG_SERVICE_ALREADYDELETED}
             else:
 
                 data = {'service_state': TOBEDELETED_SERVICE_STATE}
@@ -110,16 +112,15 @@ class ServiceView(View):
                     update_jeangrey_service(my_service['service_id'], data)
                     my_service_obj.service_state = service_state
                     my_service_obj.save()
-                    response = {"msg": "Error deleting service"}
+                    response = {MSG_HEADER: MSG_SERVICE_DELETE_ERROR}
                     return JsonResponse(response, status=ERR_COULDNT_DELETESERVICE)
 
-                response = {"msg": "Service marked for deletion"}
+                response = {MSG_HEADER: MSG_SERVICE_DELETEMARK}
         else:
             my_service.delete()
-            response = {"msg": "Service deleted successfully"}
-        
-        return JsonResponse(response, status=HTTP_204_NO_CONTENT)
+            response = {MSG_HEADER: MSG_SERVICE_DELETE_OK}
 
+        return JsonResponse(response, status=HTTP_204_NO_CONTENT)
 
 
 class ProcessView(View):
@@ -128,59 +129,63 @@ class ProcessView(View):
         data = json.loads(request.body.decode(encoding='UTF-8'))
         logging.debug(str("processing service id:" + service_id +
                           " with code: " + data['service_state']))
-        my_service = Service.objects.filter(service_id=service_id).values()[0]
-        my_service_obj = Service.objects.get(service_id=service_id)
-        service = get_service(service_id)
-        my_service.update(service)
-        logging.debug("Updated service: ")
-        logging.debug(my_service)
-
-        if data['service_state'] != "ERROR":
-
-            service_state = next_state(
-                my_service['service_state'], my_service['target_state'])
-
-            logging.debug(
-                str("Going to update JG service to: " + service_state))
-            data = {'service_state': service_state}
-            update_jeangrey_service(my_service['service_id'], data)
-            logging.debug("JG updated, updating charles...")
-
-            my_service_obj.service_state = service_state
-            my_service_obj.save()
-            logging.debug("Charles updated")
-
+        try:
             my_service = Service.objects.filter(
                 service_id=service_id).values()[0]
+            my_service_obj = Service.objects.get(service_id=service_id)
+            service = get_service(service_id)
             my_service.update(service)
-            my_service['service_state'] = service_state
+            logging.debug(MSG_SERVICE_UPDATE_OK)
+            logging.debug(my_service)
 
-            if service_state != my_service['target_state']:
+            if ERROR_SERVICE_STATE not in data['service_state']:
+
+                service_state = next_state(
+                    my_service['service_state'], my_service['target_state'])
+
                 logging.debug(
-                    "current state different than target_state, running FSM with service:")
-                logging.debug(str(my_service))
+                    str("Going to update JG service to: " + service_state))
+                data = {'service_state': service_state}
+                update_jeangrey_service(my_service['service_id'], data)
+                logging.debug("JG updated, updating charles...")
 
-                try:
-                    service_state = Fsm.run(my_service)
+                my_service_obj.service_state = service_state
+                my_service_obj.save()
+                logging.debug("Charles updated")
 
-                except BaseException as e:
-                    service_state = "ERROR"
-                    data = {'service_state': service_state}
-                    update_jeangrey_service(my_service['service_id'], data)
-                    my_service_obj.service_state = service_state
-                    my_service_obj.save()
-                    return e.handle()
+                my_service = Service.objects.filter(
+                    service_id=service_id).values()[0]
+                my_service.update(service)
+                my_service['service_state'] = service_state
 
-                print("second: ", service_state)
-                print(my_service)
-            response = {"message": "Service state updated"}
+                if service_state != my_service['target_state']:
+                    logging.debug(
+                        "current state different than target_state, running FSM with service:")
+                    logging.debug(str(my_service))
 
-        else:
-            service_state = "ERROR"
-            response = {"message": "Service update failed"}
+                    try:
+                        service_state = Fsm.run(my_service)
+                    except BaseException as e:
+                        logging.error(e)
+                        service_state = ERROR_SERVICE_STATE
+                        data = {'service_state': service_state}
+                        update_jeangrey_service(my_service['service_id'], data)
+                        my_service_obj.service_state = service_state
+                        my_service_obj.save()
+                        return e.handle()
 
-        data = {'service_state': service_state}
-        update_jeangrey_service(my_service['service_id'], data)
-        my_service_obj.service_state = service_state
-        my_service_obj.save()
-        return JsonResponse(response, safe=False)
+                response = {MSG_HEADER: MSG_SERVICE_UPDATE_OK}
+
+            else:
+                service_state = data['service_state']
+                response = {MSG_HEADER: MSG_SERVICE_UPDATE_ERROR}
+
+            data = {'service_state': service_state}
+            update_jeangrey_service(my_service['service_id'], data)
+            my_service_obj.service_state = service_state
+            my_service_obj.save()
+            return JsonResponse(response, safe=False)
+        except Service.DoesNotExist as e:
+            logging.error(e)
+        except BaseException as e:
+            logging.error(e)

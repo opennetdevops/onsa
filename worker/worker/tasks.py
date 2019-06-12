@@ -8,10 +8,10 @@ import json
 
 @shared_task
 def process_service(request):
-    print("My req: " + request)
+    logging.debug("My req: " + request)
     data = json.loads(request)
-    print("my data")
-    print(data)
+    logging.debug("my data")
+    logging.debug(data)
 
     """
     Create service based on:
@@ -54,10 +54,10 @@ def process_service(request):
 # TODO
 @shared_task
 def re_process_service(request):
-    print("My req: " + request)
+    logging.debug("My req: " + request)
     data = json.loads(request)
-    print("my data")
-    print(data)
+    logging.debug("my data")
+    logging.debug(data)
 
     # look for tasks referred to that service id
     # re-run tasks

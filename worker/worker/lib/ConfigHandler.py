@@ -23,6 +23,7 @@ from jnpr.junos.exception import CommitError, RpcTimeoutError, ConnectError, Con
 from worker.lib.nsx.nsx_rest import *
 from worker.lib.common.render import render
 from worker.constants import *
+from worker.exceptions import *
 
 
 def get_edge_id_by_name(name, **kwargs):
@@ -137,11 +138,10 @@ class ConfigHandler:
             net_connect = ConnectHandler(**my_device)
             output = net_connect.send_config_set(config)
             net_connect.disconnect()
-            return True
         except (NetMikoTimeoutException):
-            return False
+            raise TimeoutException
         except (NetMikoAuthenticationException):
-            return False
+            raise AuthException
 
     def nsx(template_path, params):
 

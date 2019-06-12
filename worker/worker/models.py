@@ -18,6 +18,8 @@ from worker.lib.common.render import render
 from worker.utils.worker_maps import *
 from worker.utils.utils import *
 from worker.constants import *
+from worker.exceptions import *
+
 
 class Service(models.Model):
     client_name = models.CharField(max_length=50)
@@ -30,7 +32,8 @@ class Service(models.Model):
         return self.service_id
 
     def deploy(self):
-        tasks = Task.objects.filter(service=self, task_state=INITIAL_TASK_STATE)
+        tasks = Task.objects.filter(
+            service=self, task_state=INITIAL_TASK_STATE)
 
         # print("Service Id: ", self.service_id)
         # print("Requested Tasks: ", tasks)
@@ -38,25 +41,32 @@ class Service(models.Model):
         completed_tasks = []
         failed_tasks = []
 
-        self.service_state = "ERROR"
+        self.service_state = CONFIG_GENERAL_ERROR
 
         for task in tasks:
             task.run_task()
             task.save()
-            if task.task_state != "ERROR":
+            if CONFIG_GENERAL_ERROR not in task.task_state:
                 completed_tasks.append(task)
-            elif task.task_state == "ERROR":
+            elif task.task_state in ROLLBACK_STATES:
                 task.rollback()
                 task.save()
                 failed_tasks.append(task)
+                # TODO DO FOR completed tasks rollback
+                # for t in completed_tasks:
+                #     t.rollback()
+                #     t.save()
                 break
+            else:
+                self.service_state = task.task_state
+                #do not rollback, since this failed task is not "rollbackeable"
+
+        if len(failed_tasks):
+            self.service_state = CONFIG_GENERAL_ERROR
+        elif len(completed_tasks) == len(tasks):
+            self.service_state = CONFIG_OK
 
         self.save()
-        if len(failed_tasks):
-            self.service_state = "ERROR"
-        else:
-            self.service_state = "DONE"
-
         # Let charles know about service state
         update_charles_service(self)
 
@@ -113,14 +123,16 @@ class Task(models.Model):
         config_handler = getattr(
             ConfigHandler.ConfigHandler, StrategyMap[VendorMap[self.device['vendor']]])
 
-        status = config_handler(template_path, params)
-
-        if (status):
+        try:
+            config_handler(template_path, params)
             logging.info("Config OK for service")
-            self.task_state = status
-        else:
-            logging.info("Config ERROR")
-            self.task_state = "ERROR"
+            self.task_state = CONFIG_OK
+        except CustomException as e:
+            self.task_state = e.process()
+        except BaseException as e:
+            logging.error(e)
+            self.task_state = CONFIG_GENERAL_ERROR
+        logging.debug(f'Config task state: {self.task_state}')
 
     def rollback(self):
 
@@ -157,9 +169,10 @@ class Task(models.Model):
 
         config_handler = getattr(
             ConfigHandler.ConfigHandler, StrategyMap[VendorMap[self.device['vendor']]])
-
-        status = config_handler(template_path, params)
-
-        self.task_state = 'NO_ROLLBACK' if status is not True else 'ROLLBACK'
-
-        logging.info(self.task_state)
+        try:
+            config_handler(template_path, params)
+            self.task_state = CONFIG_ROLLBACK_OK
+        except BaseException as e:
+            logging.error(e)
+            self.task_state = CONFIG_ROLLBACK_ERROR
+        logging.debug(f'Rollback state: {self.task_state}')

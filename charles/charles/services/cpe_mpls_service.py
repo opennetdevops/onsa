@@ -12,8 +12,6 @@ from charles.models import *
 
 # Naming convention for functions inside this class
 # "service_state" + "_" + deployment_mode + "_request"
-
-
 def deleted_automated_request(service):
   logging.debug("deleted_automated_request")
   client = get_client(service['client_id'])
@@ -38,12 +36,8 @@ def deleted_automated_request(service):
 
     service_state = DELETEINPROGRESS_SERVICE_STATE
     
-    logging.debug(f'releasing service resources, accessport')
-    logging.debug(service['access_port_id'])
+    logging.debug(f'releasing service resources')
     release_access_port(service['access_port_id'])
-    logging.debug(f'releasing service resources, vlanId')
-    logging.debug(service['vlan_id'])
-    logging.debug(service['access_node_id'])
     release_vlan(service['access_node_id'], service['vlan_id'])
     logging.debug("deleting service")
     
