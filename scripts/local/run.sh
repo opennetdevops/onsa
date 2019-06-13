@@ -24,6 +24,7 @@ rails s -b 0.0.0.0 -p $INVENTORY_PORT &
 
 cd $rootlevel\/onsa-dashboard\/
 npm start &
+#serve -s build 
 
 cd ..
 cd scripts/local/

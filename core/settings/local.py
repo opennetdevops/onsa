@@ -233,7 +233,9 @@ CORS_ORIGIN_WHITELIST = (
     '10.120.78.58:3000',
     'http://10.120.78.58:3000',
     '10.120.78.59:3000',
-    os.getenv('SERVER_IP')+':3000'
+    os.getenv('SERVER_IP')+':3000',
+    os.getenv('SERVER_IP')+':5000'
+
 )
 
 

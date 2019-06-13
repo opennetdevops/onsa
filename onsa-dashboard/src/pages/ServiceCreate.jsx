@@ -320,6 +320,7 @@ class ServiceCreate extends React.Component {
       () => {
         this.showAlertBox(true, "Service created successfuly");
         this.resetFormFields();
+        
       },
       error => {
         this.showAlertBox(false, error.message);

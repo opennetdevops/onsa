@@ -32,15 +32,15 @@ async function HTTPDelete(url) {
   });
 
   if (!response.ok) {
-    throw new Error(
-      "HTTP error - " + response.status + " (" + response.statusText + ")"
-    );
-  }
-
+      throw new Error(
+        "HTTP error - " + response.status + " (" + response.statusText + ")"
+      );
+    }
   let jsonResponse = await response.json();
 
-  return jsonResponse;
+ return jsonResponse;
 }
+
 
 async function HTTPPost(url, data) {
   let response = await fetch(url, {

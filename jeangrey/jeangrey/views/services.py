@@ -214,7 +214,7 @@ class ServiceView(View):
             release_access_port(svc.access_port_id)
             
             svc.delete()
-            return HttpResponse(status=HTTP_204_NO_CONTENT)
+            return HttpResponse(status=HTTP_200_OK)
 
         except Service.DoesNotExist as msg:
             logging.error(msg)

@@ -4,14 +4,30 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { URLs, HTTPDelete } from "../../middleware/api.js";
 
 class UnsubscribeModal extends React.Component {
-  handleSubmit = () => {
-    HTTPDelete(URLs["services"] + "/" + this.props.service.id)
-      .then(response => response.json())
-      .then(myJson => console.log(myJson));
+  constructor(props) {
+    super(props);
+
+    this.state = { confirmed: false };
+  }
+
+  handleUnsubscribe = () => {
+    let serviceId = this.props.service.id;
+    this.props.toggle("unsubscribeModal", "true", "unsubscribe");
+
+    HTTPDelete(URLs["services"] + "/" + serviceId).then(
+      () => {
+        this.props.alert(true, "The service with product ID " + serviceId + ", has been removed.");
+      },
+      error => this.props.alert(false, error.message)
+    );
   };
 
   handleToggle = () => {
     this.props.toggle("unsubscribeModal", "true");
+  };
+
+  handleInputChange = event => {
+    this.setState({ confirmed : event.target.checked });
   };
 
   render() {
@@ -31,26 +47,41 @@ class UnsubscribeModal extends React.Component {
               noValidate
               onSubmit={this.handleSubmit}
             >
-              <div className="col-md-6 mb-3">
-                <label htmlFor="client">Service Id</label>
+              <div className="col-md-6 mb-1">
+                <label htmlFor="client">Product Id</label>
+
                 <input
                   type="text"
+                  id="client"
                   className="form-control"
                   placeholder={this.props.service.id}
                   disabled
                 />
               </div>
-              {/* <p>
-                Are you sure you want to teardown this service
-                {this.props.service.id}?
-              </p> */}
+              <div className="col-md-8 mb-1 mt-2">
+                <div className="custom-control custom-checkbox">
+                  <input
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="confirmCheck"
+                    onChange={this.handleInputChange}
+                    value={this.state.confirmed}
+                  />
+                  <label
+                    className="custom-control-label muted"
+                    htmlFor="confirmCheck"
+                  >
+                    Check this to confirm the action.
+                  </label>
+                </div>
+              </div>
+
               <ModalFooter>
                 <Button
-                  className="btn"
-                  type="submit"
-                  value="Submit"
-                  color="danger"
-                  onClick={this.handleToggle}
+                  className="btn btn-primary"
+                  onClick={this.handleUnsubscribe}
+                  disabled={!this.state.confirmed}
+                  color="primary"
                 >
                   Continue
                 </Button>

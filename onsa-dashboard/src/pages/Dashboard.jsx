@@ -32,17 +32,23 @@ class Dashboard extends React.Component {
       resources: null,
       resourcesModal: false,
       services: [],
+      serviceChanged: null,
       terminateModal: false
     };
   }
 
   componentDidMount() {
+    this.getServices();
+    this.props.displayNavbar(false);
+
+  }
+
+  getServices() {
     HTTPGet(URLs["services"]).then(
       jsonResponse => this.setState({ services: jsonResponse }),
       error => this.showAlertBox(false, error.message)
     );
 
-    this.props.displayNavbar(false);
   }
 
   showAlertBox = (result, message) => {
@@ -78,7 +84,7 @@ class Dashboard extends React.Component {
           error => {
             this.showAlertBox(false, error.message);
           }
-        ); //todo
+        ); 
 
         break;
       case "activate":
@@ -110,9 +116,39 @@ class Dashboard extends React.Component {
     }
   };
 
-  handleToggle = (name, value) => {
-    this.setState({ [name]: !value });
-  };
+  handleToggle = (name, value, serviceChanged) => {
+    let state = {
+      [name]: !value,
+      serviceChanged: serviceChanged
+    }
+    
+    if (serviceChanged) {
+      state["services"] = this.updateServices(serviceChanged)
+    }
+    
+    this.setState(state);
+};
+
+   updateServices ( action ) {
+    let updatedServices = null
+    
+    if (action === "unsubscribe") {
+      updatedServices = [...this.state.services]
+      let selectedIndex = updatedServices.findIndex((x) => x.id === this.state.modalService.id ) 
+      updatedServices.splice(selectedIndex,1)
+    }
+    //// get new state from previous state
+    // if (action === "modify") {
+    //   updatedServices = [...this.state.services]
+    //   let selectedIndex = updatedServices.findIndex((x) => x.id === this.state.modalService.id ) 
+    //   let selectedService = [...updatedServices[selectedIndex]]
+    //   selectedService.service_state = "new_state" 
+    //   updatedServices[selectedIndex] = selectedService
+    // }
+
+    return updatedServices
+   } 
+
 
   render() {
     const tableRows = this.state.services.map(service => {
@@ -153,6 +189,7 @@ class Dashboard extends React.Component {
                 onClick={this.handleOnClick}
                 type="button"
                 value={JSON.stringify(service)}
+                
               >
                 Configure SCO
               </Button>
@@ -241,6 +278,7 @@ class Dashboard extends React.Component {
           isOpen={this.state.unsubscribeModal}
           service={this.state.modalService}
           toggle={this.handleToggle}
+          alert={this.showAlertBox}
         />
       </div>
     );
