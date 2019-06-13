@@ -1,6 +1,6 @@
 import React from "react";
 import FormAlert from "../components/Form/FormAlert";
-import { URLs, HTTPGet, HTTPPost, ClientURLs } from "../middleware/api.js";
+import { HTTPPost, ClientURLs } from "../middleware/api.js";
 import * as yup from "yup";
 import  ClientSelect  from "../components/Clients/ClientSelect";
 
@@ -16,24 +16,11 @@ class CustomersLocations extends React.Component {
       dialogSuccess: false,
       dialogText: "",
       dialogShow: false,
-      selectedClient:[]
+      selectedClient: []
     };
   }
 
   componentDidMount() {
-    HTTPGet(URLs["clients"]).then(
-      jsonResponse => {
-        let options = jsonResponse.map(client => {
-          return { value: client.id, label: client.name };
-        });
-        this.setState({ clientOptions: options });
-      }, // onRejected:
-      error => {
-        this.showAlertBox(false, error.message);
-        this.setState({ clientOptions: [] });
-      }
-    );
-
     this.props.displayNavbar(false);
   }
 
@@ -41,7 +28,7 @@ class CustomersLocations extends React.Component {
     this.setState({
       address: "",
       description: "",
-      selectedClient:[]
+      selectedClient: []
     });
   };
 
@@ -64,8 +51,7 @@ class CustomersLocations extends React.Component {
   handleSelectOnChange = selectedOption => {
     this.showAlertBox();
     this.setState({
-      
-      selectedClient:selectedOption
+      selectedClient: selectedOption
     });
   };
 
@@ -75,12 +61,17 @@ class CustomersLocations extends React.Component {
       address: this.state.address,
       description: this.state.description
     };
-    let dataToValidate = {...data, client: this.state.selectedClient.value }
+    let dataToValidate = { ...data, client: this.state.selectedClient.value };
 
-    this.getValidationSchema().validate(dataToValidate)
+    this.getValidationSchema()
+      .validate(dataToValidate)
       .then(
-        () => { //isValid = true
-          let url = ClientURLs("customerLocations", this.state.selectedClient.value);
+        () => {
+          //isValid = true
+          let url = ClientURLs(
+            "customerLocations",
+            this.state.selectedClient.value
+          );
           this.submitRequest(url, data);
         }, //isValid = false
         err => {
@@ -112,9 +103,7 @@ class CustomersLocations extends React.Component {
       " characters long.";
     const cuicLength = 11;
     const descErr =
-      "The Description must be less than " +
-      cuicLength +
-      " characters long.";
+      "The Description must be less than " + cuicLength + " characters long.";
 
     yup.setLocale({
       string: { trim: "Check for leading and trailling spaces." }
@@ -122,9 +111,9 @@ class CustomersLocations extends React.Component {
 
     let schema = yup.object({
       client: yup
-      .string()
-      .label("Client")
-      .required(),
+        .string()
+        .label("Client")
+        .required(),
       address: yup
         .string()
         .strict(true)
@@ -159,13 +148,13 @@ class CustomersLocations extends React.Component {
               <div className="row">
                 <div className="col-lg-6 mb-3">
                   <label htmlFor="client">Client Name</label>
-                    <ClientSelect
-                    clientOptions={this.state.clientOptions}
+                  <ClientSelect
                     onChange={this.handleSelectOnChange}
-                    value= {this.state.selectedClient}
+                    value={this.state.selectedClient}
                     name="client"
                     searchByMT="3"
-                    />
+                    errorMsg={this.showAlertBox}
+                  />
                 </div>
                 <div className="col-lg-6 mb-3">
                   <label htmlFor="address">Address</label>

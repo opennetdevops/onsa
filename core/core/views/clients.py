@@ -29,11 +29,15 @@ class ClientView(APIView):
     def get(self, request, client_id=None):
         url = settings.JEAN_GREY_URL + "clients"
         name = request.GET.get('name', None)
+        search = request.GET.get('search', None)
+
 
         if client_id is not None:
             url += "/" + str(client_id)
         elif name is not None:
             url += "?name=" + name
+        elif search is not None:
+            url += "?search=" + search    
 
         rheaders = {'Content-Type': 'application/json'}
         response = requests.get(url, auth=None, verify=False, headers=rheaders)

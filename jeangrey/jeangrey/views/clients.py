@@ -25,13 +25,20 @@ class ClientView(View):
         try:
             if client_id is None:
                 name = request.GET.get('name', None)
-                if name is None:
+                search = request.GET.get('search', None)
+
+                if name is None and search is None:
                     s = Client.objects.all().values()
-                    return JsonResponse(list(s), safe=False)
-                else:
+                    return JsonResponse(list(s), safe=False) # /clients
+                    
+                elif name is not None:
                     s = Client.objects.get(name=name)
                     json_response = s.fields()
-                    return JsonResponse(json_response, safe=False)
+                    return JsonResponse(json_response, safe=False) # /clients?name=
+                
+                elif search is not None:
+                    s = Client.objects.filter(name__icontains=search).values()
+                    return JsonResponse(list(s), safe=False) # /clients?search=
             else:
                 s = Client.objects.get(pk=client_id)
                 json_response = s.fields()

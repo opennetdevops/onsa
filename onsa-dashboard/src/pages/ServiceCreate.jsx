@@ -23,7 +23,6 @@ class ServiceCreate extends React.Component {
     this.state = {
       bandwidth: "",
       clientId: "",
-      clientOptions: [],
       customerLocId: null,
       custLocationsOptions: [],
       dialogLabel: "",
@@ -65,18 +64,18 @@ class ServiceCreate extends React.Component {
     }
 
     // Fetch clients
-    HTTPGet(URLs["clients"]).then(
-      jsonResponse => {
-        let options = jsonResponse.map(client => {
-          return { value: client.id, label: client.name };
-        });
-        this.setState({ clientOptions: options });
-      },
-      error => {
-        this.showAlertBox(false, error.message);
-        this.setState({ clientOptions: [] });
-      }
-    );
+    // HTTPGet(URLs["clients"]).then(
+    //   jsonResponse => {
+    //     let options = jsonResponse.map(client => {
+    //       return { value: client.id, label: client.name };
+    //     });
+    //     this.setState({ clientOptions: options });
+    //   },
+    //   error => {
+    //     this.showAlertBox(false, error.message);
+    //     this.setState({ clientOptions: [] });
+    //   }
+    // );
 
     // Fetch Locations
     HTTPGet(URLs["locations"]).then(
@@ -201,17 +200,24 @@ class ServiceCreate extends React.Component {
   };
 
   handleClientOnChange = selectedOption => {
-    const clientId = selectedOption.value;
+    
+    let clientId = "";
 
-    this.showAlertBox();
-    this.getClientLocations(clientId);
+    if (selectedOption) {
+
+      clientId = selectedOption.value
+      this.showAlertBox();
+      this.getClientLocations(clientId);
+  } 
 
     this.setState({
       customerLocId: "",
       selectedCustLoc: "",
       clientId: clientId,
-      selectedClient: selectedOption
+      selectedClient: selectedOption,
+      custLocationsOptions: []
     });
+  
   };
 
   getClientLocations = clientId => {
@@ -410,11 +416,11 @@ class ServiceCreate extends React.Component {
                 <div className="col-lg-6 mb-3">
                   <label htmlFor="client">Client Name</label>
                   <ClientSelect
-                    clientOptions={this.state.clientOptions}
                     onChange={this.handleClientOnChange}
                     value= {this.state.selectedClient}
                     name="client"
                     searchByMT="3"
+                    errorMsg={this.showAlertBox}
                     />
                 </div>
 
