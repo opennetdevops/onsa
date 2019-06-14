@@ -1,1 +1,0 @@
-from inventory.constants.constants import *

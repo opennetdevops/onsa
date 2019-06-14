@@ -1,9 +1,0 @@
-[
-{"pk":"1", "model": "inventory.clientnodeport", "fields": {"interface_name":"GigabitEthernet 1/1", "client_node" : "CCCC3333CCCC", "used" : "False", "service_id" : ""}},
-{"pk":"2", "model": "inventory.clientnodeport", "fields": {"interface_name":"GigabitEthernet 1/2", "client_node" : "CCCC3333CCCC", "used" : "False", "service_id" : ""}},
-{"pk":"3", "model": "inventory.clientnodeport", "fields": {"interface_name":"GigabitEthernet 1/3", "client_node" : "CCCC3333CCCC", "used" : "False", "service_id" : ""}},
-{"pk":"4", "model": "inventory.clientnodeport", "fields": {"interface_name":"GigabitEthernet 1/4", "client_node" : "CCCC3333CCCC", "used" : "False", "service_id" : ""}},
-{"pk":"5", "model": "inventory.clientnodeport", "fields": {"interface_name":"GigabitEthernet 1/5", "client_node" : "CCCC3333CCCC", "used" : "False", "service_id" : ""}},
-{"pk":"6", "model": "inventory.clientnodeport", "fields": {"interface_name":"GigabitEthernet 1/6", "client_node" : "CCCC3333CCCC", "used" : "False", "service_id" : ""}},
-{"pk":"7", "model": "inventory.clientnodeport", "fields": {"interface_name":"GigabitEthernet 1/7", "client_node" : "CCCC3333CCCC", "used" : "False", "service_id" : ""}}
-]
