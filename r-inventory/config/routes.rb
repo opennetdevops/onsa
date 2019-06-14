@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :admin_users, skip: :all
   scope 'inventory/api' do
       post '/authenticate', to: 'authentication#authenticate'
     resources :router_nodes do 
