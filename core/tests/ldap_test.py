@@ -1,6 +1,8 @@
 import sys
 import ldap
 import os
+import logging
+
 
 host = os.getenv('CORE_LDAP_ADDRESS')
 dn = os.getenv('CORE_LDAP_DN')
@@ -18,10 +20,9 @@ attrs = ["sAMAccountName"]
 
 r = l.search_s(base, scope, filter, attrs)
 
-# print(r[0][1]['sAMAccountName'][0].decode("utf-8"))
 
-print(r[0][0])
+logging.debug(r[0][0])
 try:
-    print(l.simple_bind_s(r[0][0], 'asdasdasd'))
+    logging.debug(l.simple_bind_s(r[0][0], 'asdasdasd'))
 except ldap.INVALID_CREDENTIALS:
-    print("Error")
+    logging.error("Error")

@@ -1,6 +1,5 @@
 # Python imports
 import logging
-from pprint import pprint
 
 # ONSA imports
 from charles.utils.utils import *

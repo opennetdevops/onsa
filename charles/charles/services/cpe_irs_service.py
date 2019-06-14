@@ -1,6 +1,5 @@
 # Python imports
 import logging
-from pprint import pprint
 
 # ONSA imports
 from charles.utils.utils import *
@@ -38,7 +37,7 @@ def deleted_automated_request(service):
     release_access_port(service['access_port_id'])
     release_vlan(service['access_node_id'], service['vlan_id'])
     logging.debug("deleting service")
-        
+
     #Send message(job) to Queue so workers can take it
     configure_service(config) 
   except BaseException:

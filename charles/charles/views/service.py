@@ -4,7 +4,6 @@ from django.views import View
 from charles.models import Service
 from charles.utils import *
 from charles.constants import *
-from pprint import pprint
 
 import requests
 import json

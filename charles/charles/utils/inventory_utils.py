@@ -68,8 +68,7 @@ def create_client_node(data):
     url = os.getenv('INVENTORY_URL') + "client_nodes"
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
-    print("esto le mando")
-    print(data)
+    logging.debug(data)
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     if response.status_code == HTTP_201_CREATED:
         return response.json()

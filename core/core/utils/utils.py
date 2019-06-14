@@ -146,7 +146,7 @@ def get_free_access_port(location_id):
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
     r = requests.get(url, auth = None, verify = False, headers = rheaders)
-    print(r.json())
+    logging.debug(r.json())
     if r.json() and r.status_code == HTTP_200_OK:
         return r.json()[0]
     elif not r.json():
@@ -341,7 +341,7 @@ def get_cpe(sn):
 
 def get_free_vlan_tag(access_node_id, used):
     url = settings.INVENTORY_URL + "access_nodes/" + \
-        str(access_node_id) + "/vlan_tag?used=" + used
+        str(access_node_id) + "/vlan_tag?used=" + str(used)
     
     token = get_inventory_authentication_token()
     rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}

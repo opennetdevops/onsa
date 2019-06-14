@@ -3,8 +3,7 @@ import unittest
 
 from charles.models import Service
 from charles.utils import *
-# from time import sleep
-
+import logging
 
 def create_mock_service(service_type, service_id, data):
     data['service_type'] = service_type
@@ -157,7 +156,7 @@ class TestCpeIrsAutomatedServiceMethods(unittest.TestCase):
             update_charles_service_state(self.service_id, "COMPLETED")
         except BaseException as e:
             service = get_service(self.service_id)
-            print(service['service_state'])
+            logging.error(service['service_state'])
 
         service = get_service(self.service_id)
         self.assertEqual(service['service_state'], "bb_activation_in_progress")

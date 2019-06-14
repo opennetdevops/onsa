@@ -3,6 +3,8 @@ import unittest
 
 from charles.models import Service
 from charles.utils import *
+import logging
+
 # from time import sleep
 
 
@@ -151,7 +153,7 @@ class TestFailCpeIrsAutomatedServiceMethods(unittest.TestCase):
 
     def test_002_fail_not_enough_vlans(self):
 
-        print(get_free_vlan(self.access_node["id"]))
+        logging.info(get_free_vlan(self.access_node["id"]))
 
         push_service_to_orchestrator(
             self.service_id, "automated", "service_activated")
