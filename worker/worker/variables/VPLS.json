@@ -19,7 +19,7 @@
      
       {# Access Node variables #}
       "an_client_port": "{{ an_client_port }}",
-      "an_port_description": "{{ an_client_port }}",
+      "an_port_description": "{{ an_port_description }}",
       "an_uplink_ports": "{{ an_uplink_ports }}",
 
       {# Optical Node variables #}

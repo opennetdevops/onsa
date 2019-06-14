@@ -54,7 +54,7 @@
       
       {# Access Node variables #}
       "an_client_port": "{{ an_client_port }}",
-      "an_port_description" : "One description",
+      "an_port_description" : "{{ an_port_description }}",
       {# Optical Node variables #}
       "on_client_port": "{{ on_client_port }}",
       "on_port_description" : "Another description"
