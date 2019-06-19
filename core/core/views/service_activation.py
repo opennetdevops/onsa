@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from core.utils import *
+from core.constants import *
 from core.views.ldap_jwt import *
 
 import json
@@ -35,10 +36,18 @@ class ServiceActivationView(APIView):
         else:
             logging.debug(f'not a tip')
 
+        try:
+            self.push_service_to_orchestrator(
+                service_id, data['deployment_mode'], data['target_state'])
+            service = get_service(service_id)
+            return JsonResponse(service, safe=False)
 
-        r = self.push_service_to_orchestrator(
-            service_id, data['deployment_mode'], data['target_state'])
-        return JsonResponse(r.status_code, safe=False)
+        except ServiceException as e:
+            e.handle()
+        except BaseException as e:
+            logging.error(e)
+            msg = {MSG_HEADER: MSG_SERVICE_UPDATE_ERROR}
+            return JsonResponse(msg, safe=False, status_code=HTTP_503_SERVICE_UNAVAILABLE)
 
     def is_valid_cpe(self, sn):
         cpe = get_cpe(sn)
@@ -63,7 +72,10 @@ class ServiceActivationView(APIView):
         data = {"service_id": service_id,
                 "deployment_mode": deployment_mode, "target_state": target_state}
         r = requests.post(url, data=json.dumps(data), headers=rheaders)
-        return r
+        if r.status_code == HTTP_201_CREATED:
+            return r.json()
+        else:
+            raise ServiceException("Unable to create service")
 
 
 service_activation_view = ServiceActivationView.as_view()

@@ -16,7 +16,6 @@ class AuthenticateUser
 
   def user
     user = AdminUser.find_by_email(email)
-
     if user.nil?
       user = AdminUser.new(email:email)
       if user.valid_ldap_authentication?(password)

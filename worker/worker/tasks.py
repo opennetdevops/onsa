@@ -2,7 +2,7 @@ from celery import shared_task
 from django.http import HttpResponse, JsonResponse
 from worker.models import Service, Task
 from worker.constants import *
-
+import logging
 import json
 
 
