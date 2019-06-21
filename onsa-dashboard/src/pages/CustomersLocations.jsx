@@ -1,8 +1,8 @@
 import React from "react";
 import FormAlert from "../components/Form/FormAlert";
 import { HTTPPost, ClientURLs } from "../middleware/api.js";
-import * as yup from "yup";
-import  ClientSelect  from "../components/Clients/ClientSelect";
+import ClientSelect from "../components/Clients/ClientSelect";
+import { validationSchema } from "../components/Validators/CustomerLocations";
 
 class CustomersLocations extends React.Component {
   constructor(props) {
@@ -63,7 +63,7 @@ class CustomersLocations extends React.Component {
     };
     let dataToValidate = { ...data, client: this.state.selectedClient.value };
 
-    this.getValidationSchema()
+    validationSchema()
       .validate(dataToValidate)
       .then(
         () => {
@@ -92,44 +92,6 @@ class CustomersLocations extends React.Component {
     );
   };
 
-  getValidationSchema() {
-    const min = 3;
-    const max = 50;
-    const addressErr =
-      "The Address must be between " +
-      min +
-      " and " +
-      max +
-      " characters long.";
-    const cuicLength = 11;
-    const descErr =
-      "The Description must be less than " + cuicLength + " characters long.";
-
-    yup.setLocale({
-      string: { trim: "Check for leading and trailling spaces." }
-    });
-
-    let schema = yup.object({
-      client: yup
-        .string()
-        .label("Client")
-        .required(),
-      address: yup
-        .string()
-        .strict(true)
-        .trim()
-        .min(min, addressErr)
-        .max(max, addressErr)
-        .required(),
-      description: yup
-        .string()
-        .strict(true)
-        .trim()
-        .max(max, descErr)
-    });
-    return schema;
-  }
-
   render() {
     return (
       <React.Fragment>
@@ -153,7 +115,6 @@ class CustomersLocations extends React.Component {
                     value={this.state.selectedClient}
                     name="client"
                     searchByMT="3"
-                    errorMsg={this.showAlertBox}
                   />
                 </div>
                 <div className="col-lg-6 mb-3">
@@ -181,20 +142,25 @@ class CustomersLocations extends React.Component {
                     name="description"
                     value={this.state.description}
                     onChange={this.handleChange}
-                    maxLength="50"
+                    maxLength="80"
                     placeholder="Enter a description"
                   />
                 </div>
               </div>
               <hr className="mb-4" />
 
-              <button
-                className="btn btn-primary btn-lg btn-block"
-                type="submit"
-                value="Submit"
-              >
-                Create
-              </button>
+
+              <div className="row justify-content-center">
+                <div className="col-sm-6 ">
+                  <button
+                    className="btn btn-primary btn-lg btn-block"
+                    type="submit"
+                    value="Submit"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
         </div>

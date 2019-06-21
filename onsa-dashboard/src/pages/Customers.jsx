@@ -1,7 +1,8 @@
 import React from "react";
 import { URLs, HTTPPost } from "../middleware/api.js";
 import FormAlert from "../components/Form/FormAlert";
-import * as yup from "yup";
+// import * as yup from "yup";
+import { validationSchema } from "../components/Validators/Customers";
 
 class Customers extends React.Component {
   constructor(props) {
@@ -49,61 +50,30 @@ class Customers extends React.Component {
 
     const data = { name: this.state.client, cuic: this.state.cuic };
 
-    this.getValidationSchema().validate(data).then(
-      () => {//isValid = true
-        this.submitRequest(URLs["clients"],data)
-       }, //isValid = false
-      err => {
-        this.showAlertBox(false, err.message, "Validation Error: ");
-      }
-    );
+    validationSchema()
+      .validate(data)
+      .then(
+        () => {
+          //isValid = true
+          this.submitRequest(URLs["clients"], data);
+        }, //isValid = false
+        err => {
+          this.showAlertBox(false, err.message, "Validation Error: ");
+        }
+      );
   };
 
   submitRequest = (url, data) => {
     HTTPPost(url, data).then(
-        () => {
-          this.showAlertBox(true, "Customer created.");
-          this.resetFormFields();
-        },
-        error => {
-          this.showAlertBox(false, error.message);
-        }
-      );
-  }
-
-  getValidationSchema() {
-    const clientMin = 3;
-    const clientMax = 100;
-    const clientErr =
-      "Client Name must be between " +
-      clientMin +
-      " and " +
-      clientMax +
-      " characters long.";
-    const cuicLength = 11;
-    const cuicErr =
-      "CUIC must be " +
-      cuicLength +
-      " numeric characters long, without spaces or any special characters.";
-
-      yup.setLocale({string:{trim: "Check for leading and trailling spaces."}})
-
-    let schema = yup.object({
-      name: yup
-        .string()
-        .strict(true)
-        .trim()
-        .min(clientMin, clientErr)
-        .max(clientMax, clientErr)
-        .required(),
-      cuic: yup
-        .string()
-        .length(cuicLength, cuicErr)
-        .matches(/^[0-9]*$/, cuicErr)
-        .required()
-    });
-    return schema;
-  }
+      () => {
+        this.showAlertBox(true, "Customer created.");
+        this.resetFormFields();
+      },
+      error => {
+        this.showAlertBox(false, error.message);
+      }
+    );
+  };
 
   render() {
     return (
@@ -150,17 +120,21 @@ class Customers extends React.Component {
               </div>
               <hr className="mb-4" />
 
-              <button
-                className="btn btn-primary btn-lg btn-block"
-                disabled={
-                  false
-                  // !(this.state.client && this.state.cuic) ? true : false
-                }
-                type="submit"
-                value="Submit"
-              >
-                Create
-              </button>
+              <div className="row justify-content-center">
+                <div className="col-sm-6 ">
+                  <button
+                    className="btn btn-primary btn-lg btn-block"
+                    disabled={
+                      false
+                      // !(this.state.client && this.state.cuic) ? true : false
+                    }
+                    type="submit"
+                    value="Submit"
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
         </div>

@@ -11,8 +11,7 @@ import FormRadio from "../components/Form/FormRadio";
 import  ClientSelect  from "../components/Clients/ClientSelect";
 
 import Select from "react-select";
-import * as yup from "yup";
-
+import { validationSchema} from "../components/Validators/ServiceCreate";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
 
@@ -43,7 +42,7 @@ class ServiceCreate extends React.Component {
         { label: "Existing CPE", value: "existing" },
         { label: "Existing multiple client", value: "multi" }
       ],
-      prefix: "",
+      prefix: "29",
       selectedCustLoc: "",
       selectedService: [],
       selectedClient: [],
@@ -62,20 +61,6 @@ class ServiceCreate extends React.Component {
       });
       this.setState({ servicesOptions: options });
     }
-
-    // Fetch clients
-    // HTTPGet(URLs["clients"]).then(
-    //   jsonResponse => {
-    //     let options = jsonResponse.map(client => {
-    //       return { value: client.id, label: client.name };
-    //     });
-    //     this.setState({ clientOptions: options });
-    //   },
-    //   error => {
-    //     this.showAlertBox(false, error.message);
-    //     this.setState({ clientOptions: [] });
-    //   }
-    // );
 
     // Fetch Locations
     HTTPGet(URLs["locations"]).then(
@@ -110,7 +95,7 @@ class ServiceCreate extends React.Component {
       customerLocId: "",
       multiPortSwitch: false,
       gtsId: "",
-      prefix: "",
+      prefix: "29",
       serviceId: "",
       selectedClient: [],
       selectedCustLoc: [],
@@ -277,7 +262,7 @@ class ServiceCreate extends React.Component {
       servType: this.state.selectedService.value,
       hub: this.state.selectedLocation.value,
     };
-    this.getValidationSchema().validate(dataToValidate, {
+    validationSchema().validate(dataToValidate, {
         context:  { showPort: this.state.showPort,
                     showPrefix: this.state.showPrefix }
         }
@@ -328,72 +313,6 @@ class ServiceCreate extends React.Component {
     );
   };
 
-  getValidationSchema() {
-    const minId = 6;
-    const maxId = 20;
-    const minBw = 1;
-    const maxBw = 100;
-    const minPrefix = 24;
-    const maxPrefix = 32;
-    const idErr =
-      "The IDs field must be between " +
-      minId +
-      " and " +
-      maxId +
-      " characters long.";
-    const bwErr =
-      "The Bandwidth must be an integer number between " + minBw + " and " + maxBw + ".";
-    const prefixErr =
-      "The Prefix must be an integer number between " + minPrefix + " and " + maxPrefix + ".";
-
-    yup.setLocale({
-      string: { trim: "Check for leading and trailling spaces." }
-    });
-
-    let selectSchema = yup.string().required();
-    let idSchema = yup
-        .string()
-        .strict(true)
-        .trim()
-        .min(minId, idErr)
-        .max(maxId, idErr)
-        .required()
-
-      let schema = yup.object({
-        client: selectSchema.label("Client"),
-        custLoc: selectSchema.label("Customer Location"),
-        servType: selectSchema.label("Service Type"),
-        hub: selectSchema.label("Hub"),
-        id: idSchema,
-        gts_id: idSchema,
-        bandwidth: yup
-          .number()
-          .typeError(bwErr)
-          .min(minBw, bwErr)
-          .max(maxBw, bwErr)
-          .integer(bwErr)
-          .positive(bwErr)
-          .required(bwErr),
-        prefix: yup
-          .number()
-          .typeError(prefixErr)
-          .min(minPrefix, prefixErr)
-          .moreThan(minPrefix, prefixErr)
-          .max(maxPrefix, prefixErr)
-          .integer(prefixErr)
-          .positive(prefixErr)
-          .when("$showPrefix", (showPrefix, schema) =>
-            showPrefix ? schema.required(prefixErr) : schema.notRequired()
-          ),
-        access_port_id: selectSchema
-          .label("Port")
-          .when("$showPort", (showPort, schema) =>
-          showPort ? schema.required() : schema.notRequired()
-          )
-      });
-    return schema;
-  }
-
   render() {
   
     return (
@@ -409,23 +328,37 @@ class ServiceCreate extends React.Component {
           </div>
           <div className="col-md-8 order-md-1">
             <h4>New service</h4>
-            <Form 
-              className="form"
-              onSubmit={this.handleSubmit}
-            >
+            <Form className="form" onSubmit={this.handleSubmit}>
               <FormRow className="row">
-                <div className="col-lg-6 mb-3">
+                {/* client name */}
+                <div className="col-lg-6 order-lg-1 mb-3">
                   <label htmlFor="client">Client Name</label>
                   <ClientSelect
                     onChange={this.handleClientOnChange}
-                    value= {this.state.selectedClient}
+                    value={this.state.selectedClient}
                     name="client"
                     searchByMT="3"
                     errorMsg={this.showAlertBox}
-                    />
+                  />
                 </div>
 
-                <div className="col-lg-6 mb-3">
+                {/* </FormRow> */}
+
+                {/* <FormRow className="row "> */}
+                {/* CUST LOC */}
+                <div className="col-lg-6 order-lg-3 mb-3">
+                  <label htmlFor="customerLoc">Customer Location</label>
+                  <Select
+                    onChange={this.handleCustLocationOnChange}
+                    options={this.state.custLocationsOptions}
+                    name="customerLoc"
+                    placeholder="Choose one.."
+                    value={this.state.selectedCustLoc}
+                  />
+                </div>
+
+                {/* product id  */}
+                <div className="col-lg-6 order-lg-2 mb-3">
                   <label htmlFor="serviceId">Product ID</label>
                   <FormInput
                     type="text"
@@ -437,22 +370,9 @@ class ServiceCreate extends React.Component {
                     onChange={this.handleInputChange}
                   />
                 </div>
-              </FormRow>
 
-              <FormRow className="row ">
-                {/* CUST LOC */}
-                <div className="col-lg-6 mb-3">
-                  <label htmlFor="customerLoc">Customer Location</label>
-                  <Select
-                    onChange={this.handleCustLocationOnChange}
-                    options={this.state.custLocationsOptions}
-                    name="customerLoc"
-                    placeholder="Choose one.."
-                    value={this.state.selectedCustLoc}
-                  />
-                </div>
                 {/* GTS ID */}
-                <div className="col-lg-6 mb-3">
+                <div className="col-lg-6 order-lg-4 mb-3">
                   <label htmlFor="gtsId">GTS ID</label>
                   <FormInput
                     type="text"
@@ -517,7 +437,7 @@ class ServiceCreate extends React.Component {
                     name="bandwidth"
                     value={this.state.bandwidth}
                     onChange={this.handleInputChange}
-                    placeholder="100"
+                    placeholder="1024"
                   />
                 </div>
                 {/* HUB */}
@@ -587,8 +507,9 @@ class ServiceCreate extends React.Component {
               )}
 
               <hr className="mb-4" />
+              {/* SUBMIT BUTTON */}
               <div className="row justify-content-center">
-                <div className="col-lg-6 ">
+                <div className="col-sm-6 ">
                   <button
                     className="btn btn-primary btn-block btn-lg "
                     type="submit"
