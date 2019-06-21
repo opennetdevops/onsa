@@ -32,8 +32,8 @@ development:
   port: 389
   attribute: userPrincipalName
   base: DC=lab,DC=fibercorp,DC=com,DC=ar
-  admin_user: CN=aliguori,OU=OU Usuarios,OU=OU Hornos,DC=lab,DC=fibercorp,DC=com,DC=ar
-  admin_password: Desarma21!
+  admin_user: CN=app_operations,OU=OU Aplicaciones,OU=OU Usuarios,OU=OU Hornos,DC=lab,DC=fibercorp,DC=com,DC=ar
+  admin_password: operations
   ssl: false
   # <<: *AUTHORIZATIONS
 
