@@ -44,7 +44,6 @@ class ServiceResourcesView(APIView):
             "access_node": {"model": an_device_model['model'],
                             "name": access_node['hostname'],
                             "access_port": access_port['port']},
-            "vlan_id": service['vlan_id'],
         }
 
         if service['service_type'] in VRF_SERVICES:
@@ -53,6 +52,9 @@ class ServiceResourcesView(APIView):
         elif service['service_type'] in IRS_SERVICES:
             if 'public_network' in service.keys():
                 resources['public_network'] = service['public_network']
+
+        if service['service_type'] not in NO_VLAN_SERVICES:
+            resources['vlan_id'] = service['vlan_id']
 
         if service['service_state'] in BB_STATES:
             resources['router_node']['logical_unit_id'] = service['logical_unit_id']

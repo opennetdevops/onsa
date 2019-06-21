@@ -1,6 +1,7 @@
 VRF_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls']
 IRS_SERVICES = ['cpeless_irs', 'cpe_irs', 'vcpe_irs']
-ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls',
+NO_VLAN_SERVICES = ['tip']
+ALL_SERVICES = ['cpeless_mpls', 'cpe_mpls', 'vpls', 'tip',
                 'projects', 'cpeless_irs', 'vcpe_irs', 'cpe_irs']
 VPLS_SERVICES = ['vpls']
 PROJECT_SERVICES = ['projects']
