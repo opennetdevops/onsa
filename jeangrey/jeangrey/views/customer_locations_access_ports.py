@@ -18,7 +18,7 @@ class CustomerLocationAccessPortsView(View):
 
         try:
             services = Service.objects.filter(
-                client_id=client_id, customer_location_id=customer_location_id)
+                client_id=client_id, customer_location_id=customer_location_id).distinct('access_port_id')
             response = []
 
             for service in services:
