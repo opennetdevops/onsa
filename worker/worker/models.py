@@ -59,7 +59,7 @@ class Service(models.Model):
                 break
             else:
                 self.service_state = task.task_state
-                #do not rollback, since this failed task is not "rollbackeable"
+                # do not rollback, since this failed task is not "rollbackeable"
 
         if len(failed_tasks):
             self.service_state = CONFIG_GENERAL_ERROR
@@ -108,17 +108,24 @@ class Task(models.Model):
         variables_path = os.path.join(dir, variables_path)
         logging.info(variables_path)
 
-        # Set up parameters
-        params = {}
-        params['mgmt_ip'] = self.device['mgmt_ip'].replace('/32', '')
-        params['service_id'] = self.service.service_id
-        params['service_type'] = self.service.service_type
-        params['client_name'] = self.service.client_name
-        params['an_port_description'] = "ACTIVO_ID_" + str(params['an_port_description'])
-        params.update(self.service.parameters)
+        try:
+            # Set up parameters
+            params = {}
+            params['mgmt_ip'] = self.device['mgmt_ip'].replace('/32', '')
+            params['service_id'] = self.service.service_id
+            params['service_type'] = self.service.service_type
+            params['client_name'] = self.service.client_name
+            params.update(self.service.parameters)
+            params['an_port_description'] = "ACTIVO_ID_" + \
+                str(self.service.parameters['access_port_services'])
+            logging.info(f'params: {params}')
 
-        params = json.loads(render(variables_path, params))
-        logging.debug(f'parameters to be used: {params}')
+            params = json.loads(render(variables_path, params))
+            logging.info(f'parameters to be used: {params}')
+        except BaseException as e:
+            logging.error(e)
+            print(e)
+            return
 
         config_handler = getattr(
             ConfigHandler.ConfigHandler, StrategyMap[VendorMap[self.device['vendor']]])
