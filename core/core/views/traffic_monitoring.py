@@ -24,7 +24,7 @@ from rest_framework.decorators import api_view
 class TrafficMonitoring(APIView):
     """ This class is created for documentation purpouses only.
     """
-    swagger_schema = None
+    # swagger_schema = None
 
     permission_classes = (IsAuthenticated,)
     authentication_classes = ([JSONWebTokenLDAPAuthentication, ])

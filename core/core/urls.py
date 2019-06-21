@@ -60,10 +60,10 @@ urlpatterns = [
 
     # Test for Monitoring
 
-    # path('/api/monitoring/<str:service_id>/status',
-    #     require_http_methods(["GET"])(status_monitoring_view)),
-    # path('/api/monitoring/<str:service_id>/traffic',
-    #     require_http_methods(["GET"])(traffic_monitoring_view)),
+    path('/api/monitoring/<str:service_id>/status',
+        require_http_methods(["GET"])(status_monitoring_view)),
+    path('/api/monitoring/<str:service_id>/traffic',
+        require_http_methods(["GET"])(traffic_monitoring_view)),
 
 
 
