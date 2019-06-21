@@ -96,9 +96,20 @@ async function HTTPPut(url, data) {
 const URLs = {
   services: process.env.REACT_APP_CORE_URL + "/core/api/services",
   projects: process.env.REACT_APP_CORE_URL + "/core/api/projects",
-  //client is used as clientId or clientName
   locations: process.env.REACT_APP_CORE_URL + "/core/api/locations",
   clients: process.env.REACT_APP_CORE_URL + "/core/api/clients"
+};
+
+const ServiceURLs = (key, serviceID) => {
+  const dict = {
+    service: process.env.REACT_APP_CORE_URL + "/core/api/services/" + serviceID,
+    resources:
+      process.env.REACT_APP_CORE_URL +
+      "/core/api/services/" +
+      serviceID +
+      "/resources"
+  };
+  return dict[key];
 };
 
 const ClientURLs = (key, client, customerLocId) => {
@@ -124,4 +135,12 @@ const ClientURLs = (key, client, customerLocId) => {
   return dict[key];
 };
 
-export { URLs, ClientURLs, HTTPGet, HTTPPost, HTTPPut, HTTPDelete };
+export {
+  URLs,
+  ClientURLs,
+  HTTPGet,
+  HTTPPost,
+  HTTPPut,
+  HTTPDelete,
+  ServiceURLs
+};

@@ -5,7 +5,8 @@ import {
   serviceStatesEnum,
   onsaIrsServices,
   onsaVrfServices,
-  notDeletableStates
+  notDeletableStates,
+  retryableStates
 } from "../site-constants.js";
 import {
   ResourcesModal,
@@ -16,7 +17,8 @@ import {
 } from "../components/Modals";
 
 import FormAlert from "../components/Form/FormAlert";
-import { URLs, HTTPGet } from "../middleware/api.js";
+import { URLs, HTTPGet, ServiceURLs } from "../middleware/api.js";
+import RetryModal from "../components/Modals/RetryModal.jsx";
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -25,22 +27,22 @@ class Dashboard extends React.Component {
     this.state = {
       activateModal: false,
       accessNodeActivateModal: false,
-      unsubscribeModal: false,
-      successAlert: null,
       displayMessage: "",
       modalService: { id: null, type: null },
       resources: null,
       resourcesModal: false,
+      retryModal: false,
       services: [],
       serviceChanged: null,
-      terminateModal: false
+      successAlert: null,
+      terminateModal: false,
+      unsubscribeModal: false
     };
   }
 
   componentDidMount() {
     this.getServices();
     this.props.displayNavbar(false);
-
   }
 
   getServices() {
@@ -48,8 +50,19 @@ class Dashboard extends React.Component {
       jsonResponse => this.setState({ services: jsonResponse }),
       error => this.showAlertBox(false, error.message)
     );
-
   }
+
+  getOneService = serviceID =>
+    new Promise((resolve, reject) => {
+      HTTPGet(ServiceURLs("service", serviceID)).then(
+        jsonResponse => {
+          resolve(jsonResponse);
+        },
+        error => {
+          reject(error);
+        }
+      );
+    });
 
   showAlertBox = (result, message) => {
     this.setState({
@@ -65,50 +78,51 @@ class Dashboard extends React.Component {
 
     let service = JSON.parse(value);
 
+    this.setState({
+      modalService: { id: service.id, type: service.service_type }
+    });
+
     switch (name) {
       case "resources":
-        let url =
-          process.env.REACT_APP_CORE_URL +
-          "/core/api/services/" +
-          service.id +
-          "/resources";
+        let url = ServiceURLs("resources", service.id);
 
         HTTPGet(url).then(
           jsonResponse => {
             this.setState({
               resources: jsonResponse,
-              resourcesModal: !this.state.resourcesModal,
-              modalService: { id: service.id, type: service.service_type }
+              resourcesModal: !this.state.resourcesModal
             });
           },
           error => {
             this.showAlertBox(false, error.message);
           }
-        ); 
+        );
 
         break;
       case "activate":
         this.setState({
-          activateModal: !this.state.accessNodeActivateModal,
-          modalService: { id: service.id, type: service.service_type }
+          activateModal: !this.state.accessNodeActivateModal
         });
         break;
       case "anActivate":
         this.setState({
-          accessNodeActivateModal: !this.state.accessNodeActivateModal,
-          modalService: { id: service.id, type: service.service_type }
+          accessNodeActivateModal: !this.state.accessNodeActivateModal
         });
+        break;
+      case "retry":
+        this.setState({
+          // retryModal: !this.state.retryModal
+          accessNodeActivateModal: !this.state.accessNodeActivateModal
+});
         break;
       case "terminate":
         this.setState({
-          terminateModal: !this.state.terminateModal,
-          modalService: { id: service.id, type: service.service_type }
+          terminateModal: !this.state.terminateModal
         });
         break;
       case "unsubscribe":
         this.setState({
-          unsubscribeModal: !this.state.unsubscribeModal,
-          modalService: { id: service.id, type: service.service_type }
+          unsubscribeModal: !this.state.unsubscribeModal
         });
         break;
       default:
@@ -120,35 +134,36 @@ class Dashboard extends React.Component {
     let state = {
       [name]: !value,
       serviceChanged: serviceChanged
-    }
-    
+    };
+
     if (serviceChanged) {
-      state["services"] = this.updateServices(serviceChanged)
+      this.updateOneService(this.state.modalService.id);
     }
-    
+
     this.setState(state);
-};
+  };
 
-   updateServices ( action ) {
-    let updatedServices = null
-    
-    if (action === "unsubscribe") {
-      updatedServices = [...this.state.services]
-      let selectedIndex = updatedServices.findIndex((x) => x.id === this.state.modalService.id ) 
-      updatedServices.splice(selectedIndex,1)
-    }
-    //// get new state from previous state
-    // if (action === "modify") {
-    //   updatedServices = [...this.state.services]
-    //   let selectedIndex = updatedServices.findIndex((x) => x.id === this.state.modalService.id ) 
-    //   let selectedService = [...updatedServices[selectedIndex]]
-    //   selectedService.service_state = "new_state" 
-    //   updatedServices[selectedIndex] = selectedService
-    // }
+  updateOneService = serviceId => {
+    let updatedServices = [];
 
-    return updatedServices
-   } 
+    this.getOneService(serviceId).then(
+      updatedService => {
+        updatedServices = [...this.state.services];
+        let selectedIndex = updatedServices.findIndex(
+          x => x.id === serviceId
+        );
+        if ("msg" in updatedService) { // if key "msg" exists then the service was deleted.
 
+          updatedServices.splice(selectedIndex, 1);
+        } else {
+
+          updatedServices[selectedIndex] = updatedService;
+        }
+        this.setState({ services: updatedServices });
+      },
+      error => this.showAlertBox(false, error.message)
+    );
+  };
 
   render() {
     const tableRows = this.state.services.map(service => {
@@ -189,7 +204,6 @@ class Dashboard extends React.Component {
                 onClick={this.handleOnClick}
                 type="button"
                 value={JSON.stringify(service)}
-                
               >
                 Configure SCO
               </Button>
@@ -222,6 +236,20 @@ class Dashboard extends React.Component {
                 value={JSON.stringify(service)}
               >
                 Unsubscribe
+              </Button>
+            </td>
+          ) : null}
+          {retryableStates.indexOf(service.service_state) !== -1 ? (
+            <td>
+              <Button
+                className="btn btn-primary btn-sm btn-block"
+                color="success"
+                name="retry"
+                onClick={this.handleOnClick}
+                type="button"
+                value={JSON.stringify(service)}
+              >
+                Retry
               </Button>
             </td>
           ) : null}
@@ -268,6 +296,13 @@ class Dashboard extends React.Component {
           isOpen={this.state.accessNodeActivateModal}
           service={this.state.modalService}
           toggle={this.handleToggle}
+          alert={this.showAlertBox}
+        />
+        <RetryModal
+          isOpen={this.state.retryModal}
+          service={this.state.modalService}
+          toggle={this.handleToggle}
+          alert={this.showAlertBox}
         />
         <TerminateModal
           isOpen={this.state.terminateModal}

@@ -43,6 +43,10 @@ const notDeletableStates = [
   "ERROR"
 ];
 
+const retryableStates = [
+  "ERROR", "ERROR IN DELETION"
+]
+
 const onsaVrfServices = ["cpe_mpls", "cpeless_mpls", "vpls"];
 
 const onsaIrsServices = ["cpe_irs", "cpeless_irs", "vcpe_irs"];
@@ -56,5 +60,6 @@ export {
   serviceEnum,
   serviceStatesEnum,
   onsaExternalVlanServices,
-  notDeletableStates
+  notDeletableStates,
+  retryableStates
 };

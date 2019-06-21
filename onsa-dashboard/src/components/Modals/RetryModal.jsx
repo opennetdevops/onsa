@@ -1,33 +1,34 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { URLs, HTTPDelete } from "../../middleware/api.js";
+import { URLs, HTTPPut } from "../../middleware/api.js";
 
-class UnsubscribeModal extends React.Component {
+class RetryModal extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = { confirmed: false };
   }
 
-  handleUnsubscribe = () => {
+  handleRetry = () => {
     let serviceId = this.props.service.id;
 
-    HTTPDelete(URLs["services"] + "/" + serviceId).then(
+    //URL DE PRUEBA!!
+    HTTPPut(URLs["services"] + "/" + serviceId).then(
       () => {
-        // this.props.toggle("unsubscribeModal", "true", "unsubscribe");
-        this.props.toggle("unsubscribeModal", "true", "retry");
-        this.props.alert(true, "The service with product ID " + serviceId + " has been removed.");
+        this.props.toggle("retryModal", "true", "retry");
+        this.props.alert(true, "The service with product ID " + serviceId + ", has been \"updated\".");
       },
       error => {
-        this.props.alert(false, error.message)
-        this.props.toggle("unsubscribeModal", "true");
+        // this.props.alert(false, error.message)
+        // this.props.toggle("retryModal", "true");
+        this.props.toggle("retryModal", "true", "retry"); // INVERTIR CON LINEA ANTERIOR CUANDO LA URL SEA CORRECTA
       }
     );
   };
 
   handleToggle = () => {
-    this.props.toggle("unsubscribeModal", "true");
+    this.props.toggle("retryModal", "true");
   };
 
   handleInputChange = event => {
@@ -43,22 +44,18 @@ class UnsubscribeModal extends React.Component {
         toggle={this.handleToggle}
         className={className}
       >
-        <ModalHeader toggle={this.handleToggle}>Unsubscribe</ModalHeader>
+        <ModalHeader toggle={this.handleToggle}>Retry</ModalHeader>
         <ModalBody>
           <div className="col-md-12 order-md-1">
-            <form >
+            <form
+              className="needs-validation"
+              noValidate
+              onSubmit={this.handleSubmit}
+            >
               <div className="col-md-6 mb-1">
-                <label htmlFor="client">Product Id</label>
-
-                <input
-                  type="text"
-                  id="client"
-                  className="form-control"
-                  placeholder={this.props.service.id}
-                  disabled
-                />
+                
               </div>
-              <div className="col-md-8 mb-1 mt-2">
+              <div className="col-md-8 mb-1 mt-5 mb-5">
                 <div className="custom-control custom-checkbox">
                   <input
                     type="checkbox"
@@ -79,7 +76,7 @@ class UnsubscribeModal extends React.Component {
               <ModalFooter>
                 <Button
                   className="btn btn-primary"
-                  onClick={this.handleUnsubscribe}
+                  onClick={this.handleRetry}
                   disabled={!this.state.confirmed}
                   color="primary"
                 >
@@ -97,14 +94,15 @@ class UnsubscribeModal extends React.Component {
   }
 }
 
-UnsubscribeModal.propTypes = {
+RetryModal.propTypes = {
   className: PropTypes.string,
   bsClassName: PropTypes.string,
   alert: PropTypes.func
+
 };
 
-UnsubscribeModal.defaultProps = {
+RetryModal.defaultProps = {
   className: ""
 };
 
-export default UnsubscribeModal;
+export default RetryModal;

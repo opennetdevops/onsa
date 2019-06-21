@@ -20,9 +20,10 @@ class AccessNodeModal extends React.Component {
     this.setState({ [name]: value });
   };
 
-  handleSubmit = event => {
-
+  handleSubmit = () => {
     let data = {};
+    const serviceId = this.props.service.id
+
     if (this.props.service.type === "tip") {
       data = {
         deployment_mode: "automated",
@@ -35,12 +36,21 @@ class AccessNodeModal extends React.Component {
         target_state: "an_activated"
       };
     }
-    HTTPPost(
-      URLs["services"] + "/" + this.props.service.id + "/activation",
-      data
-    )
-      .then(response => response.json())
-      .then(myJson => console.log(myJson));
+    HTTPPost(URLs["services"] + "/" + serviceId + "/activation", data)
+    .then( () => {
+        this.props.alert(
+          true,
+          "The service with product ID " + serviceId + " has been updated."
+        );
+        console.log("data param: ", data , "serviceId: ", serviceId )
+        this.props.toggle("accessNodeActivateModal", "true", "configSCO");
+      },
+
+      error => {
+        this.props.alert(false, error.message);
+        this.props.toggle("accessNodeActivateModal", "true");
+      }
+    );
   };
 
   handleToggle = () => {
@@ -59,11 +69,7 @@ class AccessNodeModal extends React.Component {
         <ModalHeader toggle={this.handleToggle}>Activate SCO</ModalHeader>
         <ModalBody>
           <div className="col-md-12 order-md-1">
-            <form
-              className="needs-validation"
-              noValidate
-              onSubmit={this.handleSubmit}
-            >
+            <form >
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="client">Service Id</label>
@@ -94,10 +100,10 @@ class AccessNodeModal extends React.Component {
               <ModalFooter>
                 <Button
                   className="btn"
-                  type="submit"
-                  value="Submit"
+                  // type="submit"
+                  // value="Submit"
                   color="primary"
-                  onClick={this.handleToggle}
+                  onClick={this.handleSubmit}
                 >
                   Activate
                 </Button>
@@ -115,7 +121,8 @@ class AccessNodeModal extends React.Component {
 
 AccessNodeModal.propTypes = {
   className: PropTypes.string,
-  bsClassName: PropTypes.string
+  bsClassName: PropTypes.string,
+  alert: PropTypes.func
 };
 
 AccessNodeModal.defaultProps = {
