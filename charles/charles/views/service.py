@@ -32,6 +32,8 @@ class ServiceView(View):
             else:
                 charles_service = Service.objects.get(
                     service_id=data['service_id'])
+                logging.debug(
+                    f'charles service state: {charles_service.service_state} , last state: {charles_service.last_state}')
                 charles_service.reprocess(
                     target_state=data['target_state'], deployment_mode=data['deployment_mode'])
 
@@ -40,6 +42,11 @@ class ServiceView(View):
             my_charles_service = Service.objects.filter(
                 service_id=data['service_id']).values()[0]
             my_charles_service.update(service)
+            logging.debug(f'Process service: {my_charles_service}')
+
+            # To retry any service from error state let's begin from scratch
+            if ERROR_SERVICE_STATE in my_charles_service['service_state']:
+                my_charles_service['service_state'] = INITIAL_SERVICE_STATE
 
             # Run FSM over charles service
             service_state = Fsm.run(my_charles_service)
@@ -183,6 +190,8 @@ class ProcessView(View):
             update_jeangrey_service(my_service['service_id'], data)
             my_service_obj.service_state = service_state
             my_service_obj.save()
+            logging.debug(data)
+            logging.debug(response)
             return JsonResponse(response, safe=False)
         except Service.DoesNotExist as e:
             logging.error(e)

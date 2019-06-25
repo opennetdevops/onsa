@@ -8,6 +8,9 @@ from time import sleep
 from jinja2 import Template
 from pprint import pprint
 
+from django.conf import settings
+
+
 # Netmiko imports
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException, NetMikoAuthenticationException
@@ -127,21 +130,25 @@ class ConfigHandler:
             'username': os.getenv('AUTOMATION_USER'),
             'password': os.getenv('AUTOMATION_PASSWORD'),
             'device_type': 'cisco_ios',
-            'global_delay_factor': 1
+            'global_delay_factor': 1,
+            'timeout': TIMEOUT_TIME
         }
 
         config = render(template_path, params).splitlines()
-        logging.debug("config")
-        logging.debug(config)
+        logging.info("config")
+        logging.info(config)
 
         try:
             net_connect = ConnectHandler(**my_device)
             output = net_connect.send_config_set(config)
             net_connect.disconnect()
-        except (NetMikoTimeoutException):
-            raise TimeoutException
-        except (NetMikoAuthenticationException):
-            raise AuthException
+            return CONFIG_OK
+        except (NetMikoTimeoutException) as e:
+            logging.error(e)
+            return CONFIG_TIMEOUT_ERROR
+        except (NetMikoAuthenticationException) as e:
+            logging.error(e)
+            return CONFIG_AUTH_ERROR
 
     def nsx(template_path, params):
 

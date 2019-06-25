@@ -65,13 +65,11 @@ class ServiceView(APIView):
         else:
             status = delete_charles_service(service_id)
 
-        # if status == HTTP_204_NO_CONTENT:
-        if status == HTTP_200_OK:
-
+        if status == HTTP_204_NO_CONTENT:
             data = {"msg" : "Service deleted successfully"}
         else:
             data = {"msg" : "Unable to delete service"}
             status = ERR_SERVICE_UNABLETODELETE
-        return JsonResponse(data, safe=False, status=status)
+        return JsonResponse(data, safe=False, status=HTTP_200_OK)
     
 service_view = ServiceView.as_view()

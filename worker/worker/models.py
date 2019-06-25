@@ -1,6 +1,7 @@
 # Django imports
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.conf import settings
 
 # Python imports
 import json
@@ -46,7 +47,7 @@ class Service(models.Model):
         for task in tasks:
             task.run_task()
             task.save()
-            if CONFIG_GENERAL_ERROR not in task.task_state:
+            if  task.task_state not in ERROR_STATES:
                 completed_tasks.append(task)
             elif task.task_state in ROLLBACK_STATES:
                 task.rollback()
@@ -129,17 +130,16 @@ class Task(models.Model):
 
         config_handler = getattr(
             ConfigHandler.ConfigHandler, StrategyMap[VendorMap[self.device['vendor']]])
+        logging.info("strategy: " +
+                     StrategyMap[VendorMap[self.device['vendor']]])
 
         try:
-            config_handler(template_path, params)
-            logging.info("Config OK for service")
-            self.task_state = CONFIG_OK
-        except CustomException as e:
-            self.task_state = e.process()
+            status = config_handler(template_path, params)
+            self.task_state = status
         except BaseException as e:
             logging.error(e)
             self.task_state = CONFIG_GENERAL_ERROR
-        logging.debug(f'Config task state: {self.task_state}')
+        logging.info(f'Config task state: {self.task_state}')
 
     def rollback(self):
 

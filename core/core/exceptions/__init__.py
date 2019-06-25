@@ -6,3 +6,4 @@ from core.exceptions.AccessNodeException import AccessNodeException
 from core.exceptions.VlanException import VlanException
 from core.exceptions.VrfException import VrfException
 from core.exceptions.DeviceModelException import DeviceModelException
+from core.exceptions.ServiceException import ServiceException

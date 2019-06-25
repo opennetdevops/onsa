@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from core.utils import *
 from core.constants import *
 from core.views.ldap_jwt import *
+from core.exceptions import *
 
 import json
 import requests

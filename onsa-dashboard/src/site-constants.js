@@ -31,7 +31,10 @@ const serviceStatesEnum = {
   delete_in_progress: "DELETE IN PROGRESS",
   deleted: "DELETED",
   ERROR: "SERVICE ERROR",
-  "ERROR IN DELETION": "ERROR WHILE DELETING CONFIG"
+  "ERROR IN DELETION": "ERROR WHILE DELETING CONFIG",
+  AUTH_ERROR: "AUTHENTICATION ERROR",
+  TIMEOUT_ERROR: "TIMEOUT ERROR",
+  ROLLBACK_ERROR: "ROLLBACK ERROR"
 };
 
 const notDeletableStates = [
@@ -44,8 +47,12 @@ const notDeletableStates = [
 ];
 
 const retryableStates = [
-  "ERROR", "ERROR IN DELETION"
-]
+  "ERROR",
+  "ERROR IN DELETION",
+  "AUTH_ERROR",
+  "TIMEOUT_ERROR",
+  "ROLLBACK_ERROR"
+];
 
 const onsaVrfServices = ["cpe_mpls", "cpeless_mpls", "vpls"];
 
