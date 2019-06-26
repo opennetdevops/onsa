@@ -36,6 +36,9 @@ export INVENTORY_PASSWORD="operations"
 export AUTOMATION_USER="fc___netauto"
 export AUTOMATION_PASSWORD="TBzhv6yR"
 
+export IPAM_USER="aliguori@lab.fibercorp.com.ar"
+export IPAM_PASSWORD="Desarma21!"
+
 export CORE_LDAP_ADDRESS="ldap://10.120.78.5"
 export CORE_LDAP_DN="cn=fc__netauto,ou=OU Aplicaciones,ou=OU Hornos,dc=lab,dc=fibercorp,dc=com,dc=ar"
 export CORE_LDAP_USER="fc__netauto"

@@ -14,10 +14,8 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 def get_ipam_authentication_token():
     url = "/api/authenticate"
     rheaders = {'Content-Type': 'application/json'}
-    #App User - todo change
-    data = {"email":os.getenv('INVENTORY_USER'), "password":os.getenv('INVENTORY_PASSWORD')}
+    data = {"email":os.getenv('IPAM_USER'), "password":os.getenv('IPAM_PASSWORD')}
     response = requests.post(os.getenv('IPAM_URL') + url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
-    # logging.debug(response.text)
     return json.loads(response.text)['auth_token']
 
 
@@ -81,8 +79,8 @@ def get_subnets_by_description(description):
     else:
         raise IPAMException("Not subnets in provided description")
 
-def release_ip(client_name,product_id):
-    description = client_name + "-" + str(product_id)
+def release_ip(client_name,service_id):
+    description = client_name + "-" + str(service_id)
     subnet = get_subnets_by_description(description)[0]
     subnet_id = subnet['id']
     token = get_ipam_authentication_token()
@@ -95,15 +93,42 @@ def release_ip(client_name,product_id):
         raise IPAMException("Unable to release IP")
 
 
-def destroy_subnet(client_name,product_id):
-    description = client_name + "-" + str(product_id)
+def destroy_subnet(client_name,service_id):
+    description = client_name + "-" + str(service_id)
     subnet_to_destroy = get_subnets_by_description(description)[0]
-    subnet_id = subnet['id']
+    subnet_id = subnet_to_destroy['id']
     token = get_ipam_authentication_token()
     url = os.getenv('IPAM_URL') + "/api/networks/" + str(subnet_id)
     rheaders = {'Authorization': 'Bearer ' + token}
     response = requests.delete(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_200_OK:
+    if response.status_code == HTTP_204_NO_CONTENT:
         return None
     else:
         raise IPAMException("Unable to destroy subnet")
+
+def assign_network(client_name,service_id,network_type,mask):
+    description = client_name + "-" + str(service_id)
+    token = get_ipam_authentication_token()
+    url = os.getenv('IPAM_URL') + "/api/networks/assign_subnet"
+    rheaders = {'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token}
+    data = {"description":description,"owner":str(network_type),"ip_version":4,"mask":mask}
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+    if "network" in json_response:
+        return json_response["network"]
+    else:
+        raise IPAMException("No available IP/Subnet")
+
+def assign_ip(client_name, service_id, network_type):
+    url = os.getenv('IPAM_URL') + "/api/networks/assign_ip"
+    token = get_ipam_authentication_token()
+    rheaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
+    data = { "description" : client_name + "-" + service_id, "owner" : str(network_type), "ip_version" : 4 } 
+    response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
+    json_response = json.loads(response.text)
+
+    if "network" in json_response:
+        return json_response["network"]
+    else:
+        raise IPAMException("No available IP on network")

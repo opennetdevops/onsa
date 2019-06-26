@@ -33,14 +33,17 @@ def deleted_automated_request(service):
 
     service_state = DELETEINPROGRESS_SERVICE_STATE
 
-    logging.debug("releasing service resources")
+    logging.debug(f'releasing service resources for service {service}')
+    if service['public_network']:
+      destroy_subnet(client['name'], service['service_id'])
     release_access_port(service['access_port_id'])
     release_vlan(service['access_node_id'], service['vlan_id'])
     logging.debug("deleting service")
 
     #Send message(job) to Queue so workers can take it
     configure_service(config) 
-  except BaseException:
+  except BaseException as e:
+    logging.error(e)
     service_state = DELETEERROR_SERVICE_STATE
 
   service_data['service_state'] = service_state
@@ -62,6 +65,8 @@ def an_activated_automated_request(service):
       "service_id": service['service_id'],
       "op_type": "CREATE"}
 
+    backbone_parameters = bb_parameters(client, service)
+
     config['parameters'] = {
                 "service_vlan": service['vlan_id'],
                 "an_client_port": parameters['an_client_port'],
@@ -78,8 +83,10 @@ def an_activated_automated_request(service):
     configure_service(config) 
   except BaseException:
     service_state = "ERROR"
+    destroy_subnet(client['name'], service['service_id'])
 
   service_data['service_state'] = service_state
+  service_data['public_network'] = backbone_parameters['public_network']
   update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
@@ -113,6 +120,66 @@ def an_parameters(client, service):
     raise InvalidParametersException("Unable to fetch parameters")
 
   # service_data = {}
+
+
+
+def bb_parameters(client, service):
+  try:
+    location = get_location(service['location_id'])
+    logging.debug(f'location: {location}')
+
+    router_node = get_router_node(service['router_node_id'])
+    logging.debug(f'router_node: {router_node}')
+
+    rn_device_model = get_device_model(router_node['device_model_id'])
+    
+    logging.debug(f'looking network with prefix {service["prefix"]} for service ID {service["service_id"]} client {client["name"]}')
+    network = assign_network(client['name'], service['service_id'],IPAM_PUBLIC_NETWORK,service['prefix'])
+    logging.debug(f'network: {network}')
+
+    parameters = {
+                'pop_size': location['pop_size'],
+                'public_network' : network
+                }
+
+    parameters['router_node'] = { 'vendor': rn_device_model['brand'],
+                                  'model': rn_device_model['model'],
+                                  'mgmt_ip': router_node['mgmt_ip']
+                                }
+
+    logging.debug(f'parameters: {parameters}')
+    return parameters
+  except BaseException:
+    logging.error("Unable to fetch parameters")
+    raise InvalidParametersException("Unable to fetch parameters")
+
+
+    # """
+    # Fetch  logical units
+    # """
+    # if service['logical_unit_id'] is None:
+    #   free_logical_units = get_free_logical_units(router_node['id'])
+    #   if free_logical_units is None:
+    #       logging.warning('No available logical units')
+    #       parameters['status'] = ERR_NO_LOGICALUNITS
+    #       return parameters
+    #   else:
+    #       logical_unit_id = free_logical_units[0]['id']
+    #       client_network = get_client_network(client['name'], service['id'], service['prefix'])
+    #       if client_network:
+    #           add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
+    #       else:
+    #           logging.warning('No public networks available')
+    #           parameters['status'] = ERR_NO_PUBLICNETWORKS
+    #           return parameters
+
+    #   wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
+
+    # else:
+    #   logical_unit_id = service['logical_unit_id']
+    #   client_network = service['public_network']
+    #   wan_network = service['wan_network']
+
 
 
 def bb_data_ack_automated_request(service):
@@ -244,60 +311,6 @@ def service_activated_automated_request(service):
   # service = update_charles_service(service, service_state)  
   # return service
   pass
-
-def bb_parameters(client, service):
-  pass
-    # location = get_location(service['location_id'])
-    # router_node = get_router_node(service['router_node_id'])
-    # access_port = get_access_port(service['access_port_id'])
-    # access_node = get_access_node(service['access_node_id'])
-
-    # """
-    # Fetch  logical units
-    # """
-    # if service['logical_unit_id'] is None:
-    #   free_logical_units = get_free_logical_units(router_node['id'])
-    #   if free_logical_units is None:
-    #       logging.warning('No available logical units')
-    #       parameters['status'] = ERR_NO_LOGICALUNITS
-    #       return parameters
-    #   else:
-    #       logical_unit_id = free_logical_units[0]['id']
-    #       client_network = get_client_network(client['name'], service['id'], service['prefix'])
-    #       if client_network:
-    #           add_logical_unit_to_router_node(router_node['id'], logical_unit_id, service['id'])
-    #       else:
-    #           logging.warning('No public networks available')
-    #           parameters['status'] = ERR_NO_PUBLICNETWORKS
-    #           return parameters
-
-    #   wan_network = get_wan_mpls_network(location['name'], client['name'], service['id'])
-
-    # else:
-    #   logical_unit_id = service['logical_unit_id']
-    #   client_network = service['public_network']
-    #   wan_network = service['wan_network']
-
-    # parameters = {
-    #              'pop_size': location['pop_size'],
-    #              'an_uplink_interface' : access_node['uplink_interface'],
-    #              'an_uplink_ports' :   access_node['uplink_ports'],
-    #              'logical_unit_id': logical_unit_id,   
-    #              'provider_vlan' : access_node['provider_vlan'],      
-    #              'an_client_port' : access_port['port'],
-    #              'client_network' : client_network,
-    #              'wan_network' : wan_network
-    #              }
-
-    # parameters['router_node'] = { 'vendor': router_node['vendor'],
-    #                               'model': router_node['model'],
-    #                               'mgmt_ip': router_node['mgmt_ip']
-    #                             }
-
-    # parameters['status'] = HTTP_200_OK
-
-    # return parameters
-
 
 
 def cpe_parameters(client, service):

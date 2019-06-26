@@ -48,7 +48,6 @@ const notDeletableStates = [
 
 const retryableStates = [
   "ERROR",
-  "ERROR IN DELETION",
   "AUTH_ERROR",
   "TIMEOUT_ERROR",
   "ROLLBACK_ERROR"

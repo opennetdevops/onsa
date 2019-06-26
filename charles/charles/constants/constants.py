@@ -1,5 +1,10 @@
 ### Inventory constants
 
+#IPAM NETWORKS
+IPAM_PUBLIC_NETWORK = "Bloque Asignacion IRS ONSA"
+IPAM_MGMT_LOOPBACKCPE = "Bloque para asignación de MGMT lo0 de CPE's"
+IPAM_MGMT_WAN = "Bloque para asignación de WAN CPEs /31"
+
 # Finite State Machine Codes
 BB_CODES = ["bb", "bb_data"]
 CPE_CODES = ["cpe", "cpe_data"]
