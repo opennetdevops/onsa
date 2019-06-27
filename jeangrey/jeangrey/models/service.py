@@ -9,7 +9,6 @@ import json
 import logging
 
 
-
 class Service(BaseModel):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
     id = models.CharField(primary_key=True, max_length=100,
@@ -37,9 +36,10 @@ class Service(BaseModel):
     def __str__(self):
         return "SERVICE_ID: " + str(self.id)
 
-    def delete(self,*args, **kwargs):
+    def delete(self, *args, **kwargs):
         logging.debug(f'deleting service {self.id}')
         super(Service, self).delete(*args, **kwargs)
+
 
 class CpelessIrs(Service):
     prefix = models.CharField(max_length=100, null=True)
@@ -82,6 +82,7 @@ class CpeMpls(Service):
     vrf_id = models.CharField(max_length=100, null=True, blank=True)
     wan_network = models.CharField(max_length=100, null=True)
     client_network = models.CharField(max_length=100, null=True)
+    loopback = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return str(self.id)

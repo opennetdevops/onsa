@@ -36,6 +36,8 @@ def deleted_automated_request(service):
     logging.debug(f'releasing service resources for service {service}')
     if service['public_network']:
       destroy_subnet(client['name'], service['service_id'])
+    if service['wan_network']:
+      destroy_subnet(client['name'], service['service_id'])
     release_access_port(service['access_port_id'])
     release_vlan(service['access_node_id'], service['vlan_id'])
     logging.debug("deleting service")
@@ -87,6 +89,7 @@ def an_activated_automated_request(service):
 
   service_data['service_state'] = service_state
   service_data['public_network'] = backbone_parameters['public_network']
+  service_data['wan_network'] = backbone_parameters['wan_network']
   update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
@@ -134,12 +137,15 @@ def bb_parameters(client, service):
     rn_device_model = get_device_model(router_node['device_model_id'])
     
     logging.debug(f'looking network with prefix {service["prefix"]} for service ID {service["service_id"]} client {client["name"]}')
-    network = assign_network(client['name'], service['service_id'],IPAM_PUBLIC_NETWORK,service['prefix'])
-    logging.debug(f'network: {network}')
+    public_network = assign_network(client['name'], service['service_id'],IPAM_PUBLIC_NETWORK,service['prefix'])
+    logging.debug(f'network: {public_network}')
+    wan_network = assign_network(client['name'], service['service_id'],IPAM_MGMT_WAN,IPAM_MGMT_WANPREFIX)
+    logging.debug(f'network: {wan_network}')
 
     parameters = {
                 'pop_size': location['pop_size'],
-                'public_network' : network
+                'public_network' : public_network,
+                'wan_network' : wan_network
                 }
 
     parameters['router_node'] = { 'vendor': rn_device_model['brand'],

@@ -87,7 +87,7 @@ def release_ip(client_name,service_id):
     url = os.getenv('IPAM_URL') + "/api/networks/" + str(subnet_id) + "/release"
     rheaders = {'Authorization': 'Bearer ' + token}
     response = requests.post(url, auth = None, verify = False, headers = rheaders)
-    if response.status_code == HTTP_200_OK:
+    if response.status_code == HTTP_204_NO_CONTENT:
         return None
     else:
         raise IPAMException("Unable to release IP")

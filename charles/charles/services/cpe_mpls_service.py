@@ -36,6 +36,10 @@ def deleted_automated_request(service):
     service_state = DELETEINPROGRESS_SERVICE_STATE
     
     logging.debug(f'releasing service resources')
+    if service['loopback']:
+      release_ip(client['name'],service['service_id'])
+    if service['wan_network']:
+      destroy_subnet(client['name'], service['service_id'])
     release_access_port(service['access_port_id'])
     release_vlan(service['access_node_id'], service['vlan_id'])
     logging.debug("deleting service")
@@ -67,6 +71,8 @@ def an_activated_automated_request(service):
       "service_id": service['service_id'],
       "op_type": "CREATE"}
 
+    backbone_parameters = bb_parameters(client, service)
+
     config['parameters'] = {
                 "service_vlan": service['vlan_id'],
                 "an_client_port": parameters['an_client_port'],
@@ -81,10 +87,15 @@ def an_activated_automated_request(service):
     
     #Send message(job) to Queue so workers can take it
     configure_service(config) 
-  except BaseException:
+  except BaseException as e:
+    logging.error(e)
+    release_ip(client['name'],service['service_id'])
     service_state = "ERROR"
 
+
   service_data['service_state'] = service_state
+  service_data['loopback'] = backbone_parameters['loopback']
+  service_data['wan_network'] = backbone_parameters['wan_network']
   update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
@@ -116,6 +127,44 @@ def an_parameters(client, service):
   except BaseException:
     logging.error("Unable to fetch parameters")
     raise InvalidParametersException("Unable to fetch parameters")
+
+
+
+def bb_parameters(client, service):
+  try:
+    location = get_location(service['location_id'])
+    logging.debug(f'location: {location}')
+
+    router_node = get_router_node(service['router_node_id'])
+    logging.debug(f'router_node: {router_node}')
+
+    rn_device_model = get_device_model(router_node['device_model_id'])
+    
+    logging.debug(f'looking for Lo mgmt IP')
+    loopback = assign_ip(client['name'], service['service_id'],IPAM_MGMT_LOOPBACKCPE)
+    logging.debug(f'Loopback IP: {loopback}')
+    wan_network = assign_network(client['name'], service['service_id'],IPAM_MGMT_WAN,IPAM_MGMT_WANPREFIX)
+    logging.debug(f'network: {wan_network}')
+
+    parameters = {
+                'pop_size': location['pop_size'],
+                'loopback' : loopback,
+                'wan_network' : wan_network
+                }
+
+    parameters['router_node'] = { 'vendor': rn_device_model['brand'],
+                                  'model': rn_device_model['model'],
+                                  'mgmt_ip': router_node['mgmt_ip']
+                                }
+
+    logging.debug(f'parameters: {parameters}')
+    return parameters
+  except BaseException:
+    logging.error("Unable to fetch parameters")
+    raise InvalidParametersException("Unable to fetch parameters")
+
+
+
 
 
 
@@ -249,8 +298,8 @@ def service_activated_automated_request(service):
 
 
 
-def bb_parameters(client, service):
-  pass
+# def bb_parameters(client, service):
+#   pass
   # location = get_location(service['location_id'])
   # router_node = get_router_node(service['router_node_id'])
   # access_port = get_access_port(service['access_port_id'])

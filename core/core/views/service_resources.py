@@ -46,9 +46,14 @@ class ServiceResourcesView(APIView):
                             "access_port": access_port['port']},
         }
 
+        if 'wan_network' in service.keys():
+            resources['wan_network'] = service['wan_network']
+
         if service['service_type'] in VRF_SERVICES:
             if 'client_network' in service.keys():
                 resources['client_network'] = service['client_network']
+            if 'loopback' in service.keys():
+                resources['loopback'] = service['loopback']
         elif service['service_type'] in IRS_SERVICES:
             if 'public_network' in service.keys():
                 resources['public_network'] = service['public_network']

@@ -9,7 +9,6 @@ from charles.constants import *
 from charles.models import *
 
 
-
 def deleted_automated_request(service):
   logging.debug("deleted_automated_request")
   client = get_client(service['client_id'])
@@ -33,18 +32,24 @@ def deleted_automated_request(service):
         "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
 
     service_state = DELETEINPROGRESS_SERVICE_STATE
+
+    logging.debug(f'releasing service resources for service {service}')
+    if service['public_network']:
+      destroy_subnet(client['name'], service['service_id'])
+    release_access_port(service['access_port_id'])
+    release_vlan(service['access_node_id'], service['vlan_id'])
     logging.debug("deleting service")
-    
+
     #Send message(job) to Queue so workers can take it
     configure_service(config) 
-  except BaseException:
+  except BaseException as e:
+    logging.error(e)
     service_state = DELETEERROR_SERVICE_STATE
 
   service_data['service_state'] = service_state
   update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
-
 
 
 def an_activated_automated_request(service):
@@ -60,6 +65,8 @@ def an_activated_automated_request(service):
       "service_id": service['service_id'],
       "op_type": "CREATE"}
 
+    backbone_parameters = bb_parameters(client, service)
+
     config['parameters'] = {
                 "service_vlan": service['vlan_id'],
                 "an_client_port": parameters['an_client_port'],
@@ -70,18 +77,16 @@ def an_activated_automated_request(service):
         "model": parameters['model'], "mgmt_ip": parameters['mgmt_ip']}]
 
     service_state = "an_activation_in_progress"
-
-    logging.debug("releasing service resources")
-    release_access_port(service['access_port_id'])
-    release_vlan(service['access_node_id'], service['vlan_id'])
-    logging.debug("deleting service")
-        
+    logging.debug("configuring service")
+    
     #Send message(job) to Queue so workers can take it
     configure_service(config) 
   except BaseException:
     service_state = "ERROR"
+    destroy_subnet(client['name'], service['service_id'])
 
   service_data['service_state'] = service_state
+  service_data['public_network'] = backbone_parameters['public_network']
   update_jeangrey_service(service['service_id'], service_data)
   service = update_charles_service(service, service_state)
   return service
@@ -114,6 +119,39 @@ def an_parameters(client, service):
     logging.error("Unable to fetch parameters")
     raise InvalidParametersException("Unable to fetch parameters")
 
+  # service_data = {}
+
+
+
+def bb_parameters(client, service):
+  try:
+    location = get_location(service['location_id'])
+    logging.debug(f'location: {location}')
+
+    router_node = get_router_node(service['router_node_id'])
+    logging.debug(f'router_node: {router_node}')
+
+    rn_device_model = get_device_model(router_node['device_model_id'])
+    
+    logging.debug(f'looking network with prefix {service["prefix"]} for service ID {service["service_id"]} client {client["name"]}')
+    network = assign_network(client['name'], service['service_id'],IPAM_PUBLIC_NETWORK,service['prefix'])
+    logging.debug(f'network: {network}')
+
+    parameters = {
+                'pop_size': location['pop_size'],
+                'public_network' : network
+                }
+
+    parameters['router_node'] = { 'vendor': rn_device_model['brand'],
+                                  'model': rn_device_model['model'],
+                                  'mgmt_ip': router_node['mgmt_ip']
+                                }
+
+    logging.debug(f'parameters: {parameters}')
+    return parameters
+  except BaseException:
+    logging.error("Unable to fetch parameters")
+    raise InvalidParametersException("Unable to fetch parameters")
 
 ## OLD -- DEPRECATED --  
 # def generate_cpeless_irs_request(client, service, code=None):
@@ -207,8 +245,7 @@ def service_activated_automated_request(service):
 
 
 
-def bb_parameters(client, service):
-	pass
+#def bb_parameters(client, service):
 	# location = get_location(service['location_id'])
 	# router_node = get_router_node(service['router_node_id'])
 	# access_port = get_access_port(service['access_port_id'])
