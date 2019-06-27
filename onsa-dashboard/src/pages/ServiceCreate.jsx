@@ -14,6 +14,8 @@ import Select from "react-select";
 import { validationSchema} from "../components/Validators/ServiceCreate";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
+import CustomerLocationModal from '../components/Container/CustomerLocationModal';
+
 
 class ServiceCreate extends React.Component {
   constructor(props) {
@@ -24,6 +26,7 @@ class ServiceCreate extends React.Component {
       clientId: "",
       customerLocId: null,
       custLocationsOptions: [],
+      customerLocModal: false,
       dialogLabel: "",
       dialogSuccess: false,
       dialogText: "",
@@ -185,15 +188,13 @@ class ServiceCreate extends React.Component {
   };
 
   handleClientOnChange = selectedOption => {
-    
     let clientId = "";
 
     if (selectedOption) {
-
-      clientId = selectedOption.value
+      clientId = selectedOption.value;
       this.showAlertBox();
       this.getClientLocations(clientId);
-  } 
+    }
 
     this.setState({
       customerLocId: "",
@@ -202,7 +203,6 @@ class ServiceCreate extends React.Component {
       selectedClient: selectedOption,
       custLocationsOptions: []
     });
-  
   };
 
   getClientLocations = clientId => {
@@ -251,7 +251,6 @@ class ServiceCreate extends React.Component {
   };
 
   handleSubmit = event => {
-
     event.preventDefault();
     let data = this.getSubmitData();
 
@@ -260,13 +259,15 @@ class ServiceCreate extends React.Component {
       client: this.state.selectedClient.value,
       custLoc: this.state.selectedCustLoc.value,
       servType: this.state.selectedService.value,
-      hub: this.state.selectedLocation.value,
+      hub: this.state.selectedLocation.value
     };
-    validationSchema().validate(dataToValidate, {
-        context:  { showPort: this.state.showPort,
-                    showPrefix: this.state.showPrefix }
+    validationSchema()
+      .validate(dataToValidate, {
+        context: {
+          showPort: this.state.showPort,
+          showPrefix: this.state.showPrefix
         }
-      )
+      })
       .then(
         () => {
           //isValid = true
@@ -305,7 +306,6 @@ class ServiceCreate extends React.Component {
       () => {
         this.showAlertBox(true, "Service created successfuly");
         this.resetFormFields();
-        
       },
       error => {
         this.showAlertBox(false, error.message);
@@ -313,8 +313,18 @@ class ServiceCreate extends React.Component {
     );
   };
 
+  handleToggle = (name, value) => {
+    this.setState({
+      [name]: !value
+    });
+  };
+
+  handleAddCustomerLocation = event => {
+    event.preventDefault();
+    this.setState({ customerLocModal: true });
+  };
+
   render() {
-  
     return (
       <React.Fragment>
         <div className="row justify-content-center">
@@ -342,12 +352,19 @@ class ServiceCreate extends React.Component {
                   />
                 </div>
 
-                {/* </FormRow> */}
-
-                {/* <FormRow className="row "> */}
                 {/* CUST LOC */}
                 <div className="col-lg-6 order-lg-3 mb-3">
                   <label htmlFor="customerLoc">Customer Location</label>
+                  <sup>
+                    <a
+                      href="/"
+                      onClick={this.handleAddCustomerLocation}
+                      className="badge badge-info ml-2 p-1 font-italic "
+                      tabIndex="-1"
+                    >
+                      Add
+                    </a>
+                  </sup>
                   <Select
                     onChange={this.handleCustLocationOnChange}
                     options={this.state.custLocationsOptions}
@@ -521,6 +538,14 @@ class ServiceCreate extends React.Component {
             </Form>
           </div>
         </div>
+        <CustomerLocationModal
+          isOpen={this.state.customerLocModal}
+          toggle={this.handleToggle}
+          alert={this.showAlertBox}
+          client={this.state.selectedClient}
+          getLocations={this.getClientLocations}
+          setLocation={this.handleCustLocationOnChange}
+        />
       </React.Fragment>
     );
   }

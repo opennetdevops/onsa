@@ -21,7 +21,15 @@ class CustomersLocations extends React.Component {
   }
 
   componentDidMount() {
-    this.props.displayNavbar(false);
+    if (!this.props.onModal) {
+      this.props.displayNavbar(false);
+    } else {
+      this.setState({ selectedClient: this.props.selectedClient });
+    }
+  }
+
+  componentDidUpdate(){
+   
   }
 
   resetFormFields = () => {
@@ -82,21 +90,41 @@ class CustomersLocations extends React.Component {
 
   submitRequest = (url, data) => {
     HTTPPost(url, data).then(
-      () => {
+      (response) => {
         this.showAlertBox(true, "Customer Location Added");
+        if (this.props.onModal){
+          this.submitOnModal(response);
+          this.props.modalToggler()
+          this.props.alert(true, "Customer Location Added")
+        }
         this.resetFormFields();
       },
       error => {
+        if (this.props.onModal){
+          this.props.modalToggler()
+          this.props.alert(false, error.message);
+
+      }
         this.showAlertBox(false, error.message);
       }
     );
   };
 
+  submitOnModal = (response) => {
+    const locationCreated = {value: response.id, label:response.address}
+
+    this.props.getLocations(this.state.selectedClient.value)
+    
+    this.props.setLocation(locationCreated)
+  }
+
   render() {
+
+    const colSize = this.props.onModal ? "col-12" : "col-md-8"
     return (
       <React.Fragment>
         <div className="row justify-content-center">
-          <div className="col-md-8">
+          <div className={colSize}>
             <FormAlert
               dialogSuccess={this.state.dialogSuccess}
               dialogText={this.state.dialogText}
@@ -104,8 +132,8 @@ class CustomersLocations extends React.Component {
               msgLabel={this.state.dialogLabel}
             />
           </div>
-          <div className="col-md-8 order-md-1">
-            <h4 className="mb-3">Add customer location</h4>
+          <div className={colSize}>
+            {!this.props.onModal ? <h4 className="mb-3">Add customer location</h4> : null }
             <form onSubmit={this.handleSubmit}>
               <div className="row">
                 <div className="col-lg-6 mb-3">
@@ -115,6 +143,8 @@ class CustomersLocations extends React.Component {
                     value={this.state.selectedClient}
                     name="client"
                     searchByMT="3"
+                    placeHolder= {this.props.onModal ? "Selected client.. " : null}
+                    isDisabled={this.props.onModal}
                   />
                 </div>
                 <div className="col-lg-6 mb-3">
@@ -148,7 +178,6 @@ class CustomersLocations extends React.Component {
                 </div>
               </div>
               <hr className="mb-4" />
-
 
               <div className="row justify-content-center">
                 <div className="col-sm-6 ">

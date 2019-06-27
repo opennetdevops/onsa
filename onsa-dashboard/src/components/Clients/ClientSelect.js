@@ -26,17 +26,19 @@ import { URLs, HTTPGet } from "../../middleware/api";
      }); 
 
    render() {
-     
+     const placeHolder = this.props.placeHolder
+       ? this.props.placeHolder
+       : "Search by " + this.props.searchByMT + " or more letters";
+
      return (
        <AsyncSelect
          loadOptions={this.clientList}
          isClearable
          onChange={this.props.onChange}
          value={this.props.value}
-         placeholder={
-           "Search by " + this.props.searchByMT + " or more letters"
-         }
+         placeholder={placeHolder}
          name={this.props.name}
+         isDisabled={this.props.isDisabled}
        />
      );
    }
