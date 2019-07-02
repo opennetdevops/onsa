@@ -19,7 +19,7 @@ export CHARLES_URL="http://127.0.0.1:$CHARLES_PORT/charles/api/"
 export CORE_URL="http://127.0.0.1:$CORE_PORT/core/api/"
 export INVENTORY_URL="http://10.120.54.56:$INVENTORY_PORT/inventory/api/"
 export WORKER_URL="http://127.0.0.1:$WORKER_PORT/worker/api/"
-export IPAM_URL="http://10.120.78.90"
+export IPAM_URL="http://10.120.56.186"
 
 export RABBITMQ_HOST="127.0.0.1"
 export RABBITMQ_PORT=""
