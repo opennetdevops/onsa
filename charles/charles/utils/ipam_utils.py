@@ -112,9 +112,11 @@ def assign_network(client_name,service_id,network_type,mask):
     url = os.getenv('IPAM_URL') + "/api/networks/assign_subnet"
     rheaders = {'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token}
+    logging.debug(f'token: {token}')
     data = {"description":description,"owner":str(network_type),"ip_version":4,"mask":mask}
     response = requests.post(url, data = json.dumps(data), auth = None, verify = False, headers = rheaders)
     json_response = json.loads(response.text)
+    logging.debug(f'response: {json_response}')
     if "network" in json_response:
         return json_response["network"]
     else:
