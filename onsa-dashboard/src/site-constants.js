@@ -53,6 +53,20 @@ const retryableStates = [
   "ROLLBACK_ERROR"
 ];
 
+const resultantStates = [
+  "an_activated",
+  "bb_activated",
+  "cpe_data_ack",
+  "bb_data_ack",
+  "service_activated",
+  "deleted",
+  "ERROR",
+  "ERROR IN DELETION",
+  "AUTH_ERROR",
+  "TIMEOUT_ERROR",
+  "ROLLBACK_ERROR"
+];
+
 const onsaVrfServices = ["cpe_mpls", "cpeless_mpls", "vpls"];
 
 const onsaIrsServices = ["cpe_irs", "cpeless_irs", "vcpe_irs"];
@@ -67,5 +81,6 @@ export {
   serviceStatesEnum,
   onsaExternalVlanServices,
   notDeletableStates,
-  retryableStates
+  retryableStates,
+  resultantStates
 };

@@ -385,6 +385,7 @@ class ServiceCreate extends React.Component {
                     name="serviceId"
                     value={this.state.serviceId}
                     onChange={this.handleInputChange}
+                    maxLength="20"
                   />
                 </div>
 

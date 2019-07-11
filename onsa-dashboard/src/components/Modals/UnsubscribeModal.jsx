@@ -9,19 +9,38 @@ class UnsubscribeModal extends React.Component {
 
     this.state = { confirmed: false };
   }
+  
+  componentDidUpdate(prevProps) {
+    if (prevProps.isOpen !== this.props.isOpen) {
+      this.setState({ confirmed: false });
+    }
+  }
 
   handleUnsubscribe = () => {
     let serviceId = this.props.service.id;
+    let prevState = this.props.service.prevServState
+    let operationStatus =  null
+
+    this.props.toggle("unsubscribeModal", "true", serviceId)
 
     HTTPDelete(URLs["services"] + "/" + serviceId).then(
-      () => {
-        // this.props.toggle("unsubscribeModal", "true", "unsubscribe");
-        this.props.toggle("unsubscribeModal", "true", "retry");
-        this.props.alert(true, "The service with product ID " + serviceId + " has been removed.");
+      (response) => {
+
+        if (prevState === "in_construction") {
+          operationStatus = "unsubscribeCompleted";
+        } else {
+          operationStatus = "unsubscribeInProgress";
+          this.props.alert(
+            "info",
+            "The service with product ID " +
+              serviceId +
+              " is being updated..."
+          );
+        }
+        this.props.serviceHasChanged(serviceId, operationStatus);
       },
       error => {
-        this.props.alert(false, error.message)
-        this.props.toggle("unsubscribeModal", "true");
+        this.props.onUpdateError(error.message, serviceId)
       }
     );
   };

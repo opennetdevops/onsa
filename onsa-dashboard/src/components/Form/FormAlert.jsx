@@ -9,7 +9,15 @@ const customAlert = ({ dialogShow, dialogSuccess, dialogText, msgLabel }) => {
   let alertBox = null;
 
   if (dialogShow) {
-    if (dialogSuccess) {
+    if (dialogSuccess === "info") {
+      alertBox = (
+        <div className="alert alert-info">
+          <strong>{msgLabel ? msgLabel : "Attention: "}</strong>
+          {dialogText}
+        </div>
+      );
+    }
+    else if (dialogSuccess) {
       alertBox = (
         <div className="alert alert-success">
           <strong>{msgLabel ? msgLabel : "Success! "}</strong>
@@ -19,12 +27,11 @@ const customAlert = ({ dialogShow, dialogSuccess, dialogText, msgLabel }) => {
     } else if (dialogSuccess === false) {
       alertBox = (
         <div className="alert alert-danger">
-          {/* visibilityAlert fadeOutAlert */}
           <strong>{msgLabel ? msgLabel : "Something went wrong: "}</strong>
           {dialogText}
         </div>
       );
-    }
+    } 
   }
 
   return alertBox;

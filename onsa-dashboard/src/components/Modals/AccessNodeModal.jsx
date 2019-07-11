@@ -3,15 +3,29 @@ import PropTypes from "prop-types";
 import { URLs, HTTPPost } from "../../middleware/api.js";
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { validationSchema } from "../../components/Validators/ConfigureSCO" ;
 
-class AccessNodeModal extends React.Component {
+
+
+class AccessNodeModal extends React.Component { 
   constructor(props) {
     super(props);
+     // create a ref to store the button DOM element
+     this.inputVlan = React.createRef();
 
     this.state = {
       vlanId: ""
     };
+  }  
+  
+  componentDidUpdate(prevProps) {
+    if (prevProps.isOpen !== this.props.isOpen) {
+      this.setState({ vlanId: "" });
+      if (this.props.service.type === "tip") {
+      this.inputVlan.current.focus();}
+    }
   }
+
 
   handleChange = event => {
     const value = event.target.value;
@@ -22,36 +36,60 @@ class AccessNodeModal extends React.Component {
 
   handleSubmit = () => {
     let data = {};
-    const serviceId = this.props.service.id
+
+    const serviceId = this.props.service.id;
+    let vlanInput = null
 
     if (this.props.service.type === "tip") {
+      vlanInput = this.state.vlanId
       data = {
         deployment_mode: "automated",
         target_state: "an_activated",
-        vlan_id: this.state.vlanId
+        vlan_id: vlanInput
       };
+   
     } else {
       data = {
         deployment_mode: "automated",
         target_state: "an_activated"
       };
     }
-    HTTPPost(URLs["services"] + "/" + serviceId + "/activation", data)
-    .then( () => {
-        this.props.alert(
-          true,
-          "The service with product ID " + serviceId + " has been updated."
+
+    let validateData  = { vlanId: vlanInput }
+    
+    validationSchema()
+      .validate( validateData )
+        .then(
+          () => {
+            this.props.toggle("accessNodeActivateModal", "true", serviceId)
+            this.submitRequest( serviceId, data);
+          }, 
+          err => {
+            this.props.alert(false, err.message, "Validation Error: ");
+            this.props.toggle("accessNodeActivateModal", "true");
+          }
         );
-        console.log("data param: ", data , "serviceId: ", serviceId )
-        this.props.toggle("accessNodeActivateModal", "true", "configSCO");
+  };
+
+  submitRequest = ( serviceId, data ) => {
+    
+    HTTPPost(URLs["services"] + "/" + serviceId + "/activation", data).then(
+      response => {
+        this.props.alert(
+          "info",
+          "The service with product ID " + serviceId + " is being updated..."
+        );
+        console.log("[Sended Data]: ", data, "serviceId: ", serviceId);
+        console.log("[Post Response] : ", response);
+
+        this.props.serviceHasChanged(serviceId,"configSCO");
       },
 
       error => {
-        this.props.alert(false, error.message);
-        this.props.toggle("accessNodeActivateModal", "true");
+        this.props.onUpdateError(error.message, serviceId);
       }
     );
-  };
+  }
 
   handleToggle = () => {
     this.props.toggle("accessNodeActivateModal", "true");
@@ -85,31 +123,30 @@ class AccessNodeModal extends React.Component {
                   <div className="col-md-6 mb-3">
                     <label htmlFor="clientId">Vlan ID</label>
                     <input
-                      type="text"
+                      type="number"
                       className="form-control"
                       id="vlanId"
                       name="vlanId"
                       value={this.state.vlanId}
                       onChange={this.handleChange}
                       placeholder="1 - 4094"
-                      required
+                      ref={this.inputVlan} 
                     />
                   </div>
                 ) : null}
               </div>
               <ModalFooter>
                 <Button
-                  className="btn"
-                  // type="submit"
-                  // value="Submit"
                   color="primary"
                   onClick={this.handleSubmit}
                 >
                   Activate
                 </Button>
+         
                 <Button color="secondary" onClick={this.handleToggle}>
                   Close
                 </Button>
+                
               </ModalFooter>
             </form>
           </div>

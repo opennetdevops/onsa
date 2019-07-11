@@ -9,18 +9,27 @@ class RetryModal extends React.Component {
 
     this.state = { confirmed: false };
   }
-
+  componentDidUpdate(prevProps) {
+    if (prevProps.isOpen !== this.props.isOpen) {
+      this.setState({ confirmed: false });
+    }
+  }
+  
+  // *** WARNING *** 
+  // THIS MODAL IS NOT BEING USED, check Dashboard to see which one is been called.
   handleRetry = () => {
     let serviceId = this.props.service.id;
+
+    this.props.toggle("retryModal", "true", serviceId);
 
     //URL DE PRUEBA!!
     HTTPPut(URLs["services"] + "/" + serviceId).then(
       () => {
-        this.props.toggle("retryModal", "true", "retry");
         this.props.alert(true, "The service with product ID " + serviceId + ", has been \"updated\".");
+        this.props.serviceHasChanged(serviceId, "retry");
       },
       error => {
-        // this.props.alert(false, error.message)
+        // this.props.onUpdateError(error.message, serviceId)
         // this.props.toggle("retryModal", "true");
         this.props.toggle("retryModal", "true", "retry"); // INVERTIR CON LINEA ANTERIOR CUANDO LA URL SEA CORRECTA
       }

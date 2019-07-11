@@ -3,9 +3,8 @@ import { Button, Badge } from "reactstrap";
 import {
   serviceEnum,
   serviceStatesEnum,
-  onsaIrsServices,
-  onsaVrfServices,
   notDeletableStates,
+  resultantStates,
   retryableStates
 } from "../site-constants.js";
 import {
@@ -19,6 +18,7 @@ import {
 import FormAlert from "../components/Form/FormAlert";
 import { URLs, HTTPGet, ServiceURLs } from "../middleware/api.js";
 import RetryModal from "../components/Modals/RetryModal.jsx";
+import Spinner from "../components/UI/Spinner/Spinner"
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -28,15 +28,18 @@ class Dashboard extends React.Component {
       activateModal: false,
       accessNodeActivateModal: false,
       displayMessage: "",
+      dialogLabel: "",
       modalService: { id: null, type: null },
       resources: null,
       resourcesModal: false,
+
       retryModal: false,
       services: [],
       serviceChanged: null,
       successAlert: null,
       terminateModal: false,
-      unsubscribeModal: false
+      unsubscribeModal: false,
+      updatingServices: [] // [{id: serviceId, retryCounter:0}]
     };
   }
 
@@ -64,12 +67,19 @@ class Dashboard extends React.Component {
       );
     });
 
-  showAlertBox = (result, message) => {
+  showAlertBox = (result, message, label) => {
     this.setState({
       dialogSuccess: result,
       dialogText: message,
-      dialogShow: message || result ? true : false
+      dialogShow: message || result ? true : false,
+      dialogLabel: label
     });
+  };
+
+  handleErrorOnUpdating = (message, serviceId) => {
+    this.showAlertBox(false, message);
+
+    this.updateUpdatingServices(serviceId, true);
   };
 
   handleOnClick = event => {
@@ -79,7 +89,11 @@ class Dashboard extends React.Component {
     let service = JSON.parse(value);
 
     this.setState({
-      modalService: { id: service.id, type: service.service_type }
+      modalService: {
+        id: service.id,
+        type: service.service_type,
+        prevServState: service.service_state
+      }
     });
 
     switch (name) {
@@ -113,7 +127,7 @@ class Dashboard extends React.Component {
         this.setState({
           // retryModal: !this.state.retryModal
           accessNodeActivateModal: !this.state.accessNodeActivateModal
-});
+        });
         break;
       case "terminate":
         this.setState({
@@ -130,34 +144,70 @@ class Dashboard extends React.Component {
     }
   };
 
-  handleToggle = (name, value, serviceChanged) => {
-    let state = {
-      [name]: !value,
-      serviceChanged: serviceChanged
-    };
-
-    if (serviceChanged) {
-      this.updateOneService(this.state.modalService.id);
+  handleToggle = (name, value, serviceId) => {
+    this.setState({ [name]: !value });
+    if (serviceId) {
+      this.updateUpdatingServices(serviceId);
     }
-
-    this.setState(state);
   };
 
-  updateOneService = serviceId => {
+  getMsgLabel = (processResult) => {
+    let actionMsg = ""
+            
+    switch (processResult) {
+      case "configSCO" :
+          actionMsg = "updated"
+      break;
+      case "unsubscribeCompleted" :
+          actionMsg = "removed"
+      break;
+      case "unsubscribeInProgress" :
+          actionMsg = "unsubscribed"
+      break;
+      case "terminateServ" :
+          actionMsg = "successfully configured"
+      break;
+      default: 
+        actionMsg = "updated"
+      break;
+    }
+    return actionMsg
+  }
+
+  updateOneService = (serviceId, processResult) => {
     let updatedServices = [];
+    // console.log("1 - Ready to update id:", serviceId, "processResult: ",processResult);
 
     this.getOneService(serviceId).then(
-      updatedService => {
+      responseService => {
         updatedServices = [...this.state.services];
-        let selectedIndex = updatedServices.findIndex(
-          x => x.id === serviceId
-        );
-        if ("msg" in updatedService) { // if key "msg" exists then the service was deleted.
+        let selectedIndex = updatedServices.findIndex(x => x.id === serviceId);
 
+        if (processResult === "unsubscribeCompleted") {
           updatedServices.splice(selectedIndex, 1);
+          this.showAlertBox(true, "The service with product ID " + serviceId + " has been removed.");
         } else {
+          updatedServices[selectedIndex] = responseService;
 
-          updatedServices[selectedIndex] = updatedService;
+          // console.log( "2 - Is ", responseService.id, "state: ", responseService.service_state,
+          //   " in a definitive state?: ", resultantStates.includes(responseService.service_state));
+
+          if (resultantStates.includes(responseService.service_state)) { 
+            // **checks if it is a definitive state.*
+            this.updateUpdatingServices(serviceId, true);
+            // console.log( "State - list - finished: ",this.state.updatingServices);
+           
+            let actionMsg = this.getMsgLabel(processResult)
+            
+            this.showAlertBox( true, "The service with product ID " + serviceId + " has been " + actionMsg + ".");
+
+          } else {
+            this.updateUpdatingServices(serviceId);
+
+            // console.log( "State - list - inProgress: ", this.state.updatingServices);
+
+            this.refreshAfterUpdate(serviceId);
+          }
         }
         this.setState({ services: updatedServices });
       },
@@ -165,8 +215,84 @@ class Dashboard extends React.Component {
     );
   };
 
+  getActualUpdatingService = serviceId => {
+    let newList = [...this.state.updatingServices];
+    let indx = this.state.updatingServices.findIndex(
+      serviceItem => serviceId === serviceItem.id
+    );
+    let updatingService = {
+      service: { ...newList[indx] }, //{ id: serviceId, retryCounter:0},
+      indexOnList: indx
+    };
+
+    return updatingService;
+  };
+
+  refreshAfterUpdate = serviceId => {
+    //checks retry counter of the selected service, if its not timeout,
+    //lops for another update.
+
+    let updatingService = this.getActualUpdatingService(serviceId);
+
+    if (updatingService.service.retryCounter <= 5) {
+      setTimeout(() => {
+        // its mandatory to get the updated list of updatingServices because of the async timer
+        let newList = [...this.state.updatingServices];
+        let updatingItem = this.getActualUpdatingService(serviceId);
+
+        this.updateOneService(serviceId, "refreshingAfterUpdate");
+
+        updatingItem.service.retryCounter += 1;
+
+        newList[updatingItem.indexOnList] = updatingItem.service;
+
+        // console.log("3 - Refreshing service: ", updatingItem.service.id , "attempt # ", updatingItem.retryCounter );
+
+        this.setState({
+          retryCounter: 0,
+          updatingServices: newList
+        });
+      }, 5000);
+    } else {
+      this.showAlertBox(
+        false, "Server timed out after ", updatingService.service.retryCounter,
+        " attempts. Please try again later.");
+
+      // console.log("** TIME OUT on retry attempts ** ", updatingService.id, "attempt # ",
+      //   updatingService.service.retryCounter);
+
+      this.updateUpdatingServices(serviceId, true);
+    }
+  };
+
+  updateUpdatingServices = (serviceId, finished = false) => {
+    //updates updatingServicesLists
+    let newList = [...this.state.updatingServices];
+    let alreadyExists = newList.some(
+      serviceItem => serviceId === serviceItem.id
+    );
+
+    // console.log("already exists?:", alreadyExists);
+    if (!alreadyExists && !finished) {
+
+      let newItem = { id: serviceId, retryCounter: 0 };
+      newList.push(newItem);
+    }
+    if (alreadyExists && finished) {
+      let indx = newList.findIndex(serviceItem => serviceId === serviceItem.id);
+      newList.splice(indx, 1);
+    }
+    this.setState({ updatingServices: newList });
+  };
+
   render() {
+    let isUpdating = false;
+
     const tableRows = this.state.services.map(service => {
+      isUpdating = this.state.updatingServices.some(
+        serviceItem => service.id === serviceItem.id
+      );
+
       return (
         <tr className="table-borderless" key={service.id}>
           <td>
@@ -183,6 +309,8 @@ class Dashboard extends React.Component {
               {serviceStatesEnum[service.service_state]}
             </Badge>
           </td>
+          <td>{isUpdating ? <Spinner /> : null}</td>
+
           <td>
             <Button
               className="btn btn-primary btn-sm btn-block"
@@ -204,14 +332,14 @@ class Dashboard extends React.Component {
                 onClick={this.handleOnClick}
                 type="button"
                 value={JSON.stringify(service)}
+                disabled={isUpdating}
               >
                 Configure SCO
               </Button>
             </td>
           ) : null}
-          {service.service_state === "an_activated" &&
-          (onsaVrfServices.includes(service.service_type) ||
-            onsaIrsServices.includes(service.service_type)) ? (
+
+          {service.service_state === "an_activated" ? (
             <td>
               <Button
                 className="btn btn-primary btn-sm btn-block"
@@ -220,6 +348,8 @@ class Dashboard extends React.Component {
                 onClick={this.handleOnClick}
                 type="button"
                 value={JSON.stringify(service)}
+                disabled={isUpdating}
+
               >
                 Terminate
               </Button>
@@ -227,16 +357,18 @@ class Dashboard extends React.Component {
           ) : null}
           {notDeletableStates.indexOf(service.service_state) === -1 ? (
             <td>
-              <Button
-                className="btn btn-primary btn-sm btn-block"
+              <button
+                className="btn btn-danger btn-sm btn-block"
                 color="danger"
                 name="unsubscribe"
                 onClick={this.handleOnClick}
                 type="button"
                 value={JSON.stringify(service)}
+                disabled={isUpdating}
+
               >
                 Unsubscribe
-              </Button>
+              </button>
             </td>
           ) : null}
           {retryableStates.indexOf(service.service_state) !== -1 ? (
@@ -248,6 +380,8 @@ class Dashboard extends React.Component {
                 onClick={this.handleOnClick}
                 type="button"
                 value={JSON.stringify(service)}
+                disabled={isUpdating}
+
               >
                 Retry
               </Button>
@@ -264,6 +398,7 @@ class Dashboard extends React.Component {
             dialogSuccess={this.state.dialogSuccess}
             dialogText={this.state.dialogText}
             dialogShow={this.state.dialogShow}
+            msgLabel={this.state.dialogLabel}
           />
         </div>
         <div className="row">
@@ -297,23 +432,32 @@ class Dashboard extends React.Component {
           service={this.state.modalService}
           toggle={this.handleToggle}
           alert={this.showAlertBox}
+          serviceHasChanged={this.updateOneService}
+          onUpdateError={this.handleErrorOnUpdating}
         />
         <RetryModal
           isOpen={this.state.retryModal}
           service={this.state.modalService}
           toggle={this.handleToggle}
           alert={this.showAlertBox}
+          serviceHasChanged={this.updateOneService}
+          onUpdateError={this.handleErrorOnUpdating}
         />
         <TerminateModal
           isOpen={this.state.terminateModal}
           service={this.state.modalService}
           toggle={this.handleToggle}
+          alert={this.showAlertBox}
+          serviceHasChanged={this.updateOneService}
+          onUpdateError={this.handleErrorOnUpdating}
         />
         <UnsubscribeModal
           isOpen={this.state.unsubscribeModal}
           service={this.state.modalService}
           toggle={this.handleToggle}
           alert={this.showAlertBox}
+          serviceHasChanged={this.updateOneService}
+          onUpdateError={this.handleErrorOnUpdating}
         />
       </div>
     );

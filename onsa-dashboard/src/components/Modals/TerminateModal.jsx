@@ -3,47 +3,38 @@ import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { URLs, HTTPPut } from "../../middleware/api.js";
 
-import {
-  onsaIrsServices,
-  onsaVrfServices,
-  onsaExternalVlanServices
-} from "../../site-constants.js";
-
 class TerminateModal extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      serialNumber: "",
-      vlanId: ""
-    };
-  }
-
   handleChange = event => {
     const value = event.target.value;
     const name = event.target.name;
     this.setState({ [name]: value });
   };
 
-  handleSubmit = event => {
-    let data = { service_state: "service_activated" };
+ 
+  handleSubmit = () => {
 
-    if (
-      onsaIrsServices.includes(this.props.service.type) ||
-      onsaVrfServices.includes(this.props.service.type)
-    ) {
-      HTTPPut(URLs["services"] + "/" + this.props.service.id, data);
-    } else if (onsaExternalVlanServices.includes(this.props.service.type)) {
-      let data = {
-        vlan_id: this.state.vlanId,
-        service_state: "service_activated"
-      };
-      HTTPPut(URLs["services"] + "/" + this.props.service.id, data);
-    }
+    let data = { service_state: "service_activated" };
+    const serviceId = this.props.service.id;
+
+    this.props.toggle("terminateModal", "true", serviceId)
+
+    HTTPPut(URLs["services"] + "/" + serviceId, data).then(
+      () => {
+        // this.props.alert(
+        //   true,
+        //   "The service with product ID " + serviceId + " has been successfully configured."
+        // );
+        this.props.serviceHasChanged(serviceId, "terminateServ");
+      },
+      error => {
+        this.props.onUpdateError(error.message, serviceId);
+      }
+    )
+   
   };
 
   handleToggle = () => {
-    this.props.toggle("terminateModal", "false");
+    this.props.toggle("terminateModal", "true" );
   };
 
   render() {
@@ -58,11 +49,7 @@ class TerminateModal extends React.Component {
         <ModalHeader toggle={this.handleToggle}>Terminate service</ModalHeader>
         <ModalBody>
           <div className="col-md-12 order-md-1">
-            <form
-              className="needs-validation"
-              noValidate
-              onSubmit={this.handleSubmit}
-            >
+            <form >
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="client">Service Id</label>
@@ -73,54 +60,13 @@ class TerminateModal extends React.Component {
                     disabled
                   />
                 </div>
-                {/* <div
-                  className="col-md-4 mb-3"
-                  style={
-                    onsaVrfServices.includes(this.props.service.type)
-                      ? { display: "inline" }
-                      : { display: "none" }
-                  }
-                >
-                  <label htmlFor="clientId">Serial Number</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="serialNumber"
-                    name="serialNumber"
-                    value={this.state.serialNumber}
-                    onChange={this.handleChange}
-                    placeholder="CCCC3333CCCC"
-                    required
-                  />
-                </div> */}
-                <div
-                  className="col-md-6 mb-3"
-                  style={
-                    onsaExternalVlanServices.includes(this.props.service.type)
-                      ? { display: "inline" }
-                      : { display: "none" }
-                  }
-                >
-                  <label htmlFor="clientId">Serial Number</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="vlanId"
-                    name="vlanId"
-                    value={this.state.vlanId}
-                    onChange={this.handleChange}
-                    placeholder="<Vlan Id from 1 to 4096>"
-                    required
-                  />
-                </div>
+                
               </div>
               <ModalFooter>
                 <Button
                   className="btn"
-                  type="submit"
-                  value="Submit"
                   color="primary"
-                  onClick={this.handleToggle}
+                  onClick={this.handleSubmit}
                 >
                   Continue
                 </Button>
@@ -138,7 +84,9 @@ class TerminateModal extends React.Component {
 
 TerminateModal.propTypes = {
   className: PropTypes.string,
-  bsClassName: PropTypes.string
+  bsClassName: PropTypes.string,
+  alert: PropTypes.func
+
 };
 
 TerminateModal.defaultProps = {
