@@ -287,8 +287,17 @@ class Dashboard extends React.Component {
   };
 
   render() {
+    let serviceIsUpdating = false;
+    
+    const servicesData = this.state.services.map( service => {
+      serviceIsUpdating = this.state.updatingServices.some(
+        serviceItem => service.id === serviceItem.id
+      )
+      let newServ = {...service, isUpdating:serviceIsUpdating } 
+      return newServ
+    } )
+    
     let isUpdating = false;
-
     const tableRows = this.state.services.map(service => {
       isUpdating = this.state.updatingServices.some(
         serviceItem => service.id === serviceItem.id
@@ -402,8 +411,13 @@ class Dashboard extends React.Component {
             msgLabel={this.state.dialogLabel}
           />
         </div>
-        <div className="row">
-          <table className="table table-hover col-md-12">
+        <div className="row justify-content-center" style={{marginTop: "5vh"}}>
+          
+          <ServicesTable 
+          services= {servicesData}
+          />
+          
+          {/* <table className="table table-hover col-md-12">
             <thead>
               <tr>
                 <th scope="col">Product ID</th>
@@ -413,7 +427,7 @@ class Dashboard extends React.Component {
               </tr>
             </thead>
             <tbody>{tableRows}</tbody>
-          </table>
+          </table> */}
         </div>
 
         <ResourcesModal

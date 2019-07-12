@@ -1,4 +1,6 @@
-import React, { Component, forwardRef } from 'react';
+import React, { Component } from 'react';
+import { forwardRef } from 'react';
+
 
 import Spinner from "../UI/Spinner/Spinner";
 import { notDeletableStates, retryableStates } from "../../site-constants"
@@ -28,30 +30,33 @@ import SettingsPower from "@material-ui/icons/SettingsPowerRounded"
 
  
 const tableIcons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+    Add: () => <AddBox />,
+  Check: () => <Check />,
+  Clear: () => <Clear />,
+  Delete: () => <DeleteOutline />,
+  DetailPanel: () => <ChevronRight />,
+  Edit: () => <Edit />,
+  Export: () => <SaveAlt />,
+  Filter: () => <FilterList />,
+  FirstPage: () => <FirstPage />,
+  LastPage: () => <LastPage />,
+  NextPage: () => <ChevronRight />,
+  PreviousPage: () => <ChevronLeft />,
+  ResetSearch: () => <Clear />,
+  Search: () => <Search />,
+  SortArrow: () => <ArrowUpward />,
+  ThirdStateCheck: () => <Remove />,
+  ViewColumn: () => <ViewColumn />
   };
 
 class ServicesTable extends Component { 
+    tableRef = React.createRef();
 
     render() {
         return ( 
           <MaterialTable
+            tableRef={this.tableRef}
+
             icons={tableIcons}
             columns={[
               { title: "Product ID", field: "id" },
@@ -113,12 +118,12 @@ class ServicesTable extends Component {
                  )
                }),
                //refresh all
-               {
-                 icon: () => <Refresh/>,
-                 tooltip: 'Refresh Data',
-                 isFreeAction: true,
-                 onClick: this.handleRefresh
-               }
+            //    {
+            //      icon: () => <Refresh/>,
+            //      tooltip: 'Refresh Data',
+            //      isFreeAction: true,
+            //     //  onClick: this.tableRef.current && this.tableRef.current.onQueryChange()
+            //    }
              ]}
              options={{
                actionsColumnIndex: -1,
