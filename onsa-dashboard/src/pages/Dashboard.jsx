@@ -83,23 +83,22 @@ class Dashboard extends React.Component {
     this.updateUpdatingServices(serviceId, true);
   };
 
-  handleOnClick = event => {
-    const value = event.target.value;
-    const name = event.target.name;
+  // handleOnClick = event => {
+  //   const value = event.target.value;
+  //   const name = event.target.name;
 
-    let service = JSON.parse(value);
+    handleActionClick = (action, serviceId, serviceType) => {
 
     this.setState({
       modalService: {
-        id: service.id,
-        type: service.service_type,
-        prevServState: service.service_state
+        id: serviceId,
+        type: serviceType,
       }
     });
 
-    switch (name) {
+    switch (action) {
       case "resources":
-        let url = ServiceURLs("resources", service.id);
+        let url = ServiceURLs("resources", serviceId);
 
         HTTPGet(url).then(
           jsonResponse => {
@@ -415,6 +414,7 @@ class Dashboard extends React.Component {
           
           <ServicesTable 
           services= {servicesData}
+          onClickedAction={this.handleActionClick}
           />
           
           {/* <table className="table table-hover col-md-12">
