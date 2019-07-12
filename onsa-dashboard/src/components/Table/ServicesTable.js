@@ -51,6 +51,14 @@ const tableIcons = {
 class ServicesTable extends Component { 
     // tableRef = React.createRef();
 
+    // componentDidMount() {
+    //     console.log("[Table DidMount:] ", this.props)
+    // }
+
+    // componentDidUpdate() {
+    //     console.log("[Table DidUpdate:] ", this.props)
+    // }
+
     render() {
         return (
           <MaterialTable
@@ -89,7 +97,11 @@ class ServicesTable extends Component {
                 icon: () => <Settings />,
                 tooltip: "Configure SCO",
                 onClick: (event, rowData) =>
-                this.props.onClickedAction("anActivate", rowData.id, rowData.service_type ),
+                  this.props.onClickedAction(
+                    "anActivate",
+                    rowData.id,
+                    rowData.service_type
+                  ),
                 //   alert("Configure SCO for service Id:  " + rowData.id),
                 disabled:
                   rowdata.service_state !== "in_construction" ||
@@ -100,7 +112,12 @@ class ServicesTable extends Component {
                 icon: () => <RemoveCircle />,
                 tooltip: "Unsubscribe service",
                 onClick: (event, rowData) =>
-                this.props.onClickedAction("unsubscribe", rowData.id, rowData.service_type ),
+                  this.props.onClickedAction(
+                    "unsubscribe",
+                    rowData.id,
+                    rowData.service_type,
+                    rowData.service_state
+                  ),
 
                 disabled:
                   notDeletableStates.includes(rowdata.service_state) ||
@@ -111,7 +128,11 @@ class ServicesTable extends Component {
                 icon: () => <SettingsPower />,
                 tooltip: "Terminate",
                 onClick: (event, rowData) =>
-                this.props.onClickedAction("terminate", rowData.id, rowData.service_type ),
+                  this.props.onClickedAction(
+                    "terminate",
+                    rowData.id,
+                    rowData.service_type
+                  ),
 
                 disabled:
                   rowdata.service_state !== "an_activated" ||
@@ -122,8 +143,12 @@ class ServicesTable extends Component {
                 icon: () => <Loop />,
                 tooltip: "Retry!",
                 onClick: (event, rowData) =>
-                this.props.onClickedAction("retry", rowData.id, rowData.service_type ),
-                  
+                  this.props.onClickedAction(
+                    "retry",
+                    rowData.id,
+                    rowData.service_type
+                  ),
+
                 disabled:
                   !retryableStates.includes(rowdata.service_state) ||
                   rowdata.isUpdating

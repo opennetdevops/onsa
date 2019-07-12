@@ -87,12 +87,13 @@ class Dashboard extends React.Component {
   //   const value = event.target.value;
   //   const name = event.target.name;
 
-    handleActionClick = (action, serviceId, serviceType) => {
+    handleActionClick = (action, serviceId, serviceType, prevServState) => {
 
     this.setState({
       modalService: {
         id: serviceId,
         type: serviceType,
+        prevServState: prevServState
       }
     });
 
@@ -255,7 +256,7 @@ class Dashboard extends React.Component {
       }, 5000);
     } else {
       this.showAlertBox(
-        false, "Server timed out after ", updatingService.service.retryCounter,
+        false, "Server timed out after " + updatingService.service.retryCounter +
         " attempts. Please try again later.");
 
       // console.log("** TIME OUT on retry attempts ** ", updatingService.id, "attempt # ",
