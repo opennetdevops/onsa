@@ -16,9 +16,10 @@ import {
 } from "../components/Modals";
 
 import FormAlert from "../components/Form/FormAlert";
-import { URLs, HTTPGet, ServiceURLs } from "../middleware/api.js";
-import RetryModal from "../components/Modals/RetryModal.jsx";
+import { URLs, HTTPGet, ServiceURLs } from "../middleware/api";
+import RetryModal from "../components/Modals/RetryModal";
 import Spinner from "../components/UI/Spinner/Spinner"
+import ServicesTable from "../components/Table/ServicesTable"
 
 class Dashboard extends React.Component {
   constructor(props) {
