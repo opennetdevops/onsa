@@ -14,7 +14,7 @@ import Select from "react-select";
 import { validationSchema} from "../components/Validators/ServiceCreate";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
-import CustomerLocationModal from '../components/Container/CustomerLocationModal';
+import CustomerLocationModal from '../components/Modals/CustomerLocationModal';
 
 
 class ServiceCreate extends React.Component {
@@ -305,7 +305,7 @@ class ServiceCreate extends React.Component {
     HTTPPost(url, data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
-        this.resetFormFields();
+        // this.resetFormFields();
       },
       error => {
         this.showAlertBox(false, error.message);
