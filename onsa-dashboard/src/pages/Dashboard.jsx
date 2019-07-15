@@ -51,12 +51,12 @@ class Dashboard extends React.Component {
   }
 
   getServices() {
-    setTimeout(() => 
+    // setTimeout(() => 
     HTTPGet(URLs["services"]).then(
       jsonResponse => this.setState({ services: jsonResponse, loadingServices: false }),
       error => this.showAlertBox(false, error.message)
     )
-    , 5000 )
+    // , 5000 )
   } 
 
   getOneService = serviceID =>

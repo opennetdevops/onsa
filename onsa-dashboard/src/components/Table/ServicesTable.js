@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 
 
 import Spinner from "../UI/Spinner/Spinner";
-import { notDeletableStates, retryableStates } from "../../site-constants"
+import {
+  notDeletableStates,
+  retryableStates,
+  serviceStatesEnum,
+  serviceEnum
+} from "../../site-constants";
 
 import MaterialTable from "material-table";
 //import Table - Icons:
@@ -56,10 +61,17 @@ class ServicesTable extends Component {
     // }
 
     componentDidUpdate() {
-        console.log("[Table DidUpdate:] ")
+        // console.log("[Table DidUpdate:] ")
     }
 
     render() {
+      //
+        const servicesMappedNames = this.props.services.map(serv => {
+        let newServ= {...serv}
+        newServ.service_type = serviceEnum[serv.service_type]
+        newServ.service_state = serviceStatesEnum[serv.service_state]
+        return newServ
+      })
         return (
           <MaterialTable
             // tableRef={this.tableRef}
@@ -67,7 +79,7 @@ class ServicesTable extends Component {
             columns={[
               { title: "Product ID", field: "id" },
               { title: "GTS", field: "gts_id" },
-              { title: "Service Type", field: "service_type" },
+              { title: "Service Type", field: "service_type"  },
               { title: "State", field: "service_state" },
               {
                 field: "isUpdating",
@@ -76,7 +88,7 @@ class ServicesTable extends Component {
                   rowdata.isUpdating ? <Spinner /> : null
               }
             ]}
-            data={this.props.services}
+            data={servicesMappedNames}
             detailPanel={[
               {
                 tooltip: " View Resources",
