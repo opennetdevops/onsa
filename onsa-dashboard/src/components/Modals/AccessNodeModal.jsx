@@ -8,13 +8,15 @@ import { validationSchema } from "../../components/Validators/ConfigureSCO" ;
 
 
 class AccessNodeModal extends React.Component { 
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
      // create a ref to store the button DOM element
      this.inputVlan = React.createRef();
 
     this.state = {
-      vlanId: ""
+      vlanId: "",
+      focusAfterClose: false
+
     };
   }  
   
@@ -103,6 +105,8 @@ class AccessNodeModal extends React.Component {
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
         className={className}
+        autoFocus={true}
+        returnFocusAfterClose={this.state.focusAfterClose}
       >
         <ModalHeader toggle={this.handleToggle}>Activate SCO</ModalHeader>
         <ModalBody>

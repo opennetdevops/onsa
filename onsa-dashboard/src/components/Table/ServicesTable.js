@@ -5,7 +5,7 @@ import Spinner from "../UI/Spinner/Spinner";
 import { notDeletableStates, retryableStates } from "../../site-constants"
 
 import MaterialTable from "material-table";
-
+//import Table - Icons:
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
@@ -97,6 +97,7 @@ class ServicesTable extends Component {
                 icon: () => <Settings />,
                 tooltip: "Configure SCO",
                 onClick: (event, rowData) =>
+                  
                   this.props.onClickedAction(
                     "anActivate",
                     rowData.id,
