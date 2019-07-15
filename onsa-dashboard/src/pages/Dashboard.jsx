@@ -31,6 +31,7 @@ class Dashboard extends React.Component {
       displayMessage: "",
       dialogLabel: "",
       modalService: { id: null, type: null },
+      loadingServices: true,
       resources: null,
       resourcesModal: false,
 
@@ -50,11 +51,13 @@ class Dashboard extends React.Component {
   }
 
   getServices() {
+    setTimeout(() => 
     HTTPGet(URLs["services"]).then(
-      jsonResponse => this.setState({ services: jsonResponse }),
+      jsonResponse => this.setState({ services: jsonResponse, loadingServices: false }),
       error => this.showAlertBox(false, error.message)
-    );
-  }
+    )
+    , 5000 )
+  } 
 
   getOneService = serviceID =>
     new Promise((resolve, reject) => {
@@ -416,6 +419,7 @@ class Dashboard extends React.Component {
           <ServicesTable 
           services= {servicesData}
           onClickedAction={this.handleActionClick}
+          isLoadingServices={this.state.loadingServices}
           />
           
           {/* <table className="table table-hover col-md-12">

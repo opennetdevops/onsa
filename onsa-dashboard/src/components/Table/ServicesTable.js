@@ -55,9 +55,9 @@ class ServicesTable extends Component {
     //     console.log("[Table DidMount:] ", this.props)
     // }
 
-    // componentDidUpdate() {
-    //     console.log("[Table DidUpdate:] ", this.props)
-    // }
+    componentDidUpdate() {
+        console.log("[Table DidUpdate:] ")
+    }
 
     render() {
         return (
@@ -91,6 +91,7 @@ class ServicesTable extends Component {
               }
             ]}
             title="Services"
+            isLoading={this.props.isLoadingServices}
             actions={[
               // config SCO
               rowdata => ({
@@ -167,6 +168,9 @@ class ServicesTable extends Component {
               search: true,
               filtering: false
             }}
+            // components={{
+            //   OverlayLoading: props => <Spinner />
+            // }}
           />
         );
  
