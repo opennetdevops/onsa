@@ -45,6 +45,8 @@ class TerminateModal extends React.Component {
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
         className={className}
+        returnFocusAfterClose={false}
+        
       >
         <ModalHeader toggle={this.handleToggle}>Terminate service</ModalHeader>
         <ModalBody>

@@ -52,6 +52,8 @@ class RetryModal extends React.Component {
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
         className={className}
+        returnFocusAfterClose={false}
+
       >
         <ModalHeader toggle={this.handleToggle}>Retry</ModalHeader>
         <ModalBody>
