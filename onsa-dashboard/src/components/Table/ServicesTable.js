@@ -9,7 +9,10 @@ import {
   serviceEnum
 } from "../../site-constants";
 
-import MaterialTable from "material-table";
+
+import MaterialTable from 'material-table';
+
+// import MTableFilterRow from "./ServicesTableComponents/FilterRow"
 //import Table - Icons:
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -32,6 +35,7 @@ import Loop from '@material-ui/icons/Loop';
 import Settings from "@material-ui/icons/Settings"
 import SettingsPower from "@material-ui/icons/SettingsPowerRounded"
 
+import { camelCase, lowerFirst, lowerCase, startCase } from 'lodash';
  
 const tableIcons = {
     Add: () => <AddBox />,
@@ -68,8 +72,10 @@ class ServicesTable extends Component {
       //
         const servicesMappedNames = this.props.services.map(serv => {
         let newServ= {...serv}
-        newServ.service_type = serviceEnum[serv.service_type]
-        newServ.service_state = serviceStatesEnum[serv.service_state]
+        newServ.service_type =  serviceEnum[serv.service_type]
+//newServ.service_type = .camelCase(serviceEnum[serv.service_type])
+
+        newServ.service_state = startCase(lowerCase(serviceStatesEnum[serv.service_state]))
         return newServ
       })
         return (
@@ -79,11 +85,12 @@ class ServicesTable extends Component {
             columns={[
               { title: "Product ID", field: "id" },
               { title: "GTS", field: "gts_id" },
-              { title: "Service Type", field: "service_type"  },
-              { title: "State", field: "service_state" },
+              { title: "Service Type", field: "service_type"}, //, lookup: serviceEnum
+              { title: "State", field: "service_state"}, //, lookup: serviceStatesEnum },
               {
                 field: "isUpdating",
                 searchable: false,
+                filtering:false,
                 render: rowdata =>
                   rowdata.isUpdating ? <Spinner /> : null
               }
@@ -178,8 +185,17 @@ class ServicesTable extends Component {
             options={{
               actionsColumnIndex: -1,
               search: true,
-              filtering: false
+              filtering: true
             }}
+          //   components={{
+          //     FilterRow: props => (
+          //         <div style={{ backgroundColor: '#e8eaf5' }}>
+          //             {/* <MTableFilterRow {...props} /> */}
+          //         </div>
+          //     )
+          // }}
+
+
             // components={{
             //   OverlayLoading: props => <Spinner />
             // }}
