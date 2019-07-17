@@ -224,7 +224,7 @@ JWT_AUTH = {
 
 MAX_ATTEMPTS = 0
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 # CORS Headers
 CORS_ORIGIN_WHITELIST = (
     'google.com',
