@@ -7,7 +7,6 @@ import FormAlert from "../components/Form/FormAlert";
 async function coreLogin(url, username, password) {
   let response = await fetch(url, {
     method: "POST",
-    mode: "cors",
     headers: {
       "Content-Type": "application/json"
     },
