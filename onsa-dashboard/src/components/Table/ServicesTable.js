@@ -73,7 +73,7 @@ class ServicesTable extends Component {
         const servicesMappedNames = this.props.services.map(serv => {
         let newServ= {...serv}
         newServ.service_type =  serviceEnum[serv.service_type]
-
+        newServ.originalServState = serv.service_state
         newServ.service_state = startCase(lowerCase(serviceStatesEnum[serv.service_state]))
         return newServ
       })
@@ -122,9 +122,8 @@ class ServicesTable extends Component {
                     rowData.id,
                     rowData.service_type
                   ),
-                //   alert("Configure SCO for service Id:  " + rowData.id),
                 disabled:
-                  rowdata.service_state !== "in_construction" ||
+                  rowdata.originalServState !== "in_construction" ||
                   rowdata.isUpdating
               }),
               // Unsubscribe
@@ -140,7 +139,7 @@ class ServicesTable extends Component {
                   ),
 
                 disabled:
-                  notDeletableStates.includes(rowdata.service_state) ||
+                  notDeletableStates.includes(rowdata.originalServState) ||
                   rowdata.isUpdating
               }),
               // Terminate
@@ -155,7 +154,7 @@ class ServicesTable extends Component {
                   ),
 
                 disabled:
-                  rowdata.service_state !== "an_activated" ||
+                  rowdata.originalServState !== "an_activated" ||
                   rowdata.isUpdating
               }),
               //Retry
@@ -170,7 +169,7 @@ class ServicesTable extends Component {
                   ),
 
                 disabled:
-                  !retryableStates.includes(rowdata.service_state) ||
+                  !retryableStates.includes(rowdata.originalServState) ||
                   rowdata.isUpdating
               })
               //refresh all
