@@ -6,15 +6,15 @@ import PropTypes from 'prop-types';
 const ResourcesCard = (props) => {
     // console.log("[Card - render]")
     return (
-      <div className="p-2 my-2 ml-2 rounded">
+      <div className="p-2 rounded">
         <Toast>
-          <ToastHeader>{props.title}</ToastHeader>
+          <ToastHeader className="text-muted font-italic h6 my-1">{props.title}</ToastHeader>
           <ToastBody className="text-left">
             {/* Customer Info, Access Node , Networking: */}
-            <ul>
+            <ul className="list-unstyled pl-2">
               {props.data.map(item => (
                 <li key={item.field}>
-                  <strong> {item.field}:</strong> <span> {item.value} </span>
+                  <strong> {item.field}: </strong><label> {item.value}</label>
                 </li>
               ))}
             </ul>

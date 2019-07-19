@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {HTTPGet, ServiceURLs} from '../../../middleware/api'
 import ResourcesCard from './ResourcesCard'
+import { lowerCase, startCase } from 'lodash';
+
 
 
 class ResourcesDetailRow extends Component {
@@ -30,41 +32,46 @@ class ResourcesDetailRow extends Component {
     let ntwData = []
 
     for (let key in rscJson) {
-      if (key === "access_node") {// deconstruc acces_node obj.
-        let an = { ...rscJson[key] };
-        anData = Object.keys(an).map(key => {
-          return { field: key, value: an[key] };
+      if (key === "access_node") { 
+        let an = { ...rscJson[key] }; // deconstruc acces_node obj.
+        Object.keys(an).forEach(key => {
+          let item = {
+            field: startCase(lowerCase(key.replace(/_/g, " "))),
+            value: an[key]
+          };
+          if (key === "name") {
+            anData.unshift(item);
+          } else if (key === "model") {
+            anData.splice(1, 0, item);
+          } else {
+            anData.push(item);
+          }
         });
-
       } else if (key === "customer") {
         ctmData.push(
-          { field: "CUIT", value: "22-9999999-5" }, // change value to props.servicedata
+          { field: "CUIT", value: "22-9999999-5" }, // TODO change value to props.servicedata
           { field: "Product Id", value: this.props.serviceData.id },
           { field: "Name", value: rscJson[key] }
         );
-
       } else if (key === "customer_location") {
         ctmData.push({
           field: "CPE Location",
           value: rscJson[key]
         });
-
       } else if (key === "location") {
         ctmData.push({ field: "HUB", value: rscJson[key] });
-
       } else if (key === "loopback") {
         ntwData.push({ field: "Loopback", value: rscJson[key] });
-        
       } else if (key === "router_node") {
-        let routerNode = { field: "Router Node", value: rscJson[key].name };
+        let routerNode = {
+          field: "Router Node",
+          value: rscJson[key].name
+        };
         anData.push(routerNode);
-
       } else if (key === "vlan_id") {
-        ntwData.push({ field: "VLan", value: rscJson[key] });
-
+        ntwData.push({ field: "Vlan", value: rscJson[key] });
       } else if (key === "wan_network") {
         ntwData.push({ field: "WAN", value: rscJson[key] });
-
       } else if (key === "vrf_id") {
         ntwData.push({ field: "VRF", value: rscJson[key] });
       }
@@ -81,7 +88,7 @@ class ResourcesDetailRow extends Component {
     console.log("service: ", this.props.serviceData)
 
     return (
-      <div className="row">
+      <div className="row p-2" style={{backgroundColor: "#f2f2f2" }}>
         <div className="col-4">
           <ResourcesCard
             title="Customer & Service"
