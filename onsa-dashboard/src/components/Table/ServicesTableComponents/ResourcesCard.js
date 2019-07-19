@@ -8,7 +8,7 @@ const ResourcesCard = (props) => {
     return (
       <div className="p-2 rounded">
         <Toast>
-          <ToastHeader className="text-muted font-italic h6 my-1">{props.title}</ToastHeader>
+          <ToastHeader className="text-muted h6 my-1" style={{letterSpacing: "0.1rem"}}>{props.title}</ToastHeader>
           <ToastBody className="text-left">
             {/* Customer Info, Access Node , Networking: */}
             <ul className="list-unstyled pl-2">
