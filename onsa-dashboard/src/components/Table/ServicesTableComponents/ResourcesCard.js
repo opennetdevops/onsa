@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 
 const ResourcesCard = (props) => {
-    
+    // console.log("[Card - render]")
     return (
       <div className="p-2 my-2 ml-2 rounded">
         <Toast>
