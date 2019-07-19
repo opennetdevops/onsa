@@ -8,9 +8,10 @@ import {
   serviceStatesEnum,
   serviceEnum
 } from "../../site-constants";
-
+import { lowerCase, startCase } from 'lodash';
 
 import MaterialTable from 'material-table';
+import ResourcesDetailRow from './ServicesTableComponents/ResourcesDetailRow'
 
 // import MTableFilterRow from "./ServicesTableComponents/FilterRow"
 //import Table - Icons:
@@ -35,7 +36,6 @@ import Loop from '@material-ui/icons/Loop';
 import Settings from "@material-ui/icons/Settings"
 import SettingsPower from "@material-ui/icons/SettingsPowerRounded"
 
-import { camelCase, lowerFirst, lowerCase, startCase } from 'lodash';
  
 const tableIcons = {
     Add: () => <AddBox />,
@@ -73,7 +73,6 @@ class ServicesTable extends Component {
         const servicesMappedNames = this.props.services.map(serv => {
         let newServ= {...serv}
         newServ.service_type =  serviceEnum[serv.service_type]
-//newServ.service_type = .camelCase(serviceEnum[serv.service_type])
 
         newServ.service_state = startCase(lowerCase(serviceStatesEnum[serv.service_state]))
         return newServ
@@ -102,8 +101,8 @@ class ServicesTable extends Component {
                 render: rowData => {
                   return (
                     <div style={{ textAlign: "center" }}>
-                      {" "}
-                      <h4>Resources.. service Id: {rowData.id}</h4>{" "}
+                      {/* <h4>Resources.. service Id: {rowData.id}</h4> */}
+                      <ResourcesDetailRow serviceData={rowData}/>
                     </div>
                   );
                 }
