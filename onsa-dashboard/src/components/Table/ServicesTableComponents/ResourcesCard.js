@@ -8,7 +8,7 @@ import classes from "./ResourcesDetailRow.module.css"
 const ResourcesCard = (props) => {
     // console.log("[Card - render]")
     return (
-      <div className="p-2 ">
+      // <div className="">
         <Toast className={classes.resourceCardBody}>
           {/* <ToastHeader className="text-muted h6 my-1" style={{letterSpacing: "0.1rem"}}>{props.title}</ToastHeader> */}
           <ToastHeader className={classes.resourceCardHeader}>
@@ -29,7 +29,7 @@ const ResourcesCard = (props) => {
             </ul>
           </ToastBody>
         </Toast>
-      </div>
+      // </div>
     );
 }
 ResourcesCard.propTypes = {

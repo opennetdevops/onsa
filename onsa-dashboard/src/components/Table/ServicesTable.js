@@ -102,7 +102,8 @@ class ServicesTable extends Component {
                   return (
                     <div style={{ textAlign: "center" }}>
                       {/* <h4>Resources.. service Id: {rowData.id}</h4> */}
-                      <ResourcesDetailRow serviceData={rowData}/>
+                      <ResourcesDetailRow serviceData={rowData}
+                      />
                     </div>
                   );
                 }

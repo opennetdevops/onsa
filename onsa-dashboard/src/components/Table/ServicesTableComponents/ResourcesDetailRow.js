@@ -2,23 +2,27 @@ import React, { Component } from "react";
 import { HTTPGet, ServiceURLs } from "../../../middleware/api";
 import ResourcesCard from "./ResourcesCard";
 import { lowerCase, startCase } from "lodash";
-import classes from "./ResourcesDetailRow.module.css"
+import classes from "./ResourcesDetailRow.module.css";
+import Spinner from "../../UI/Spinner/HorizontalSpinner";
 
 class ResourcesDetailRow extends Component {
   state = {
     resources: null,
     customerData: [],
     accessNodeData: [],
-    networkingData: []
+    networkingData: [],
+    isLoading: true
   };
   componentDidMount() {
     let url = ServiceURLs("resources", this.props.serviceData.id);
 
     HTTPGet(url).then(
+    
       jsonResponse => {
         this.mapJsonToArrays(jsonResponse);
+        this.setState({ isLoading: false });
       },
-      error => {
+       error => {
         this.props.alert(false, error.message);
       }
     );
@@ -98,35 +102,48 @@ class ResourcesDetailRow extends Component {
       networkingData: ntwData
     });
   };
-  render() {
-    console.log("json resources: ", this.state.resources);
-    // console.log("ctmData: ",this.state.customerData)
-    console.log("service: ", this.props.serviceData);
-    let rowStyles = [classes.detailRow, classes.BSrow];
 
+    render() {
+    console.log("json resources: ", this.state.resources);
+    console.log("service: ", this.props.serviceData);
+
+    let rowStyles = [classes.detailRow, classes.BSrow];
+    let content = null;
+
+    if (this.state.isLoading) {
+      content = <Spinner /> ;
+    } else {
+      content = (
+        <React.Fragment>
+          <div className="col-4">
+            <ResourcesCard
+              title="Customer & Service"
+              data={this.state.customerData}
+            />
+          </div>
+
+          <div className="col-4">
+            <ResourcesCard
+              title="Access Node"
+              data={this.state.accessNodeData}
+            />
+          </div>
+          <div className="col-4">
+            <ResourcesCard
+              title="Networking"
+              data={this.state.networkingData}
+            />
+          </div>
+        </React.Fragment>
+      );
+    }
 
     return (
-      <div className={rowStyles.join(" ")} >
-        {/* style={{ backgroundColor: "#f2f2f2" }} */}
-        <div className="col-4">
-          <ResourcesCard
-            title="Customer & Service"
-            data={this.state.customerData}
-          />
-        </div>
-
-        <div className="col-4">
-          <ResourcesCard title="Access Node" data={this.state.accessNodeData} />
-        </div>
-        <div className="col-4">
-          <ResourcesCard title="Networking" data={this.state.networkingData} />
-        </div>
-        {/* Customer Info, Access Node , Networking: */}
-        {/* <div className="col-12">
+      <div className={rowStyles.join(" ")}>{content}</div>
+      /* <div className="col-12">
         <h6>Service data:</h6>
          <p>{JSON.stringify(this.props.data,null,2)}</p>
-        </div> */}
-      </div>
+        </div> */
     );
   }
 }
