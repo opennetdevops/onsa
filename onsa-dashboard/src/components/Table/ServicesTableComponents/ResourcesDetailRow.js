@@ -13,19 +13,32 @@ class ResourcesDetailRow extends Component {
     networkingData: [],
     isLoading: true
   };
+
+  abortController = new AbortController()
+
+
   componentDidMount() {
+    console.log("[row DidMount]")
+
     let url = ServiceURLs("resources", this.props.serviceData.id);
 
-    HTTPGet(url).then(
+    HTTPGet(url, this.abortController.signal).then(
     
       jsonResponse => {
         this.mapJsonToArrays(jsonResponse);
         this.setState({ isLoading: false });
       },
        error => {
+         console.log("error: ", error.message)
+        if (error.name !== "AbortError"){
         this.props.alert(false, error.message);
+        }
       }
     );
+  }
+
+  componentWillUnmount() {
+    this.abortController.abort();
   }
 
   mapJsonToArrays = rscJson => {

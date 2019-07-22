@@ -1,4 +1,4 @@
-async function HTTPGet(url) {
+async function HTTPGet(url, signal) {
   let response = await fetch(url, {
     method: "GET",
     mode: "cors",
@@ -6,7 +6,8 @@ async function HTTPGet(url) {
       "Content-Type": "application/json",
       Accept: "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token")
-    }
+    },
+    signal: signal
   });
 
   if (!response.ok) {

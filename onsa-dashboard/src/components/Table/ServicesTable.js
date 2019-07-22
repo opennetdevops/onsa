@@ -36,7 +36,11 @@ import Loop from '@material-ui/icons/Loop';
 import Settings from "@material-ui/icons/Settings"
 import SettingsPower from "@material-ui/icons/SettingsPowerRounded"
 
+// import { createMuiTheme } from '@material-ui/core/styles';
+// import { ThemeProvider } from '@material-ui/styles';
  
+
+
 const tableIcons = {
     Add: () => <AddBox />,
   Check: () => <Check />,
@@ -58,6 +62,8 @@ const tableIcons = {
   };
 
 class ServicesTable extends Component { 
+
+  
     // tableRef = React.createRef();
 
     // componentDidMount() {
@@ -102,7 +108,7 @@ class ServicesTable extends Component {
                   return (
                     <div style={{ textAlign: "center" }}>
                       {/* <h4>Resources.. service Id: {rowData.id}</h4> */}
-                      <ResourcesDetailRow serviceData={rowData}
+                      <ResourcesDetailRow serviceData={rowData} alert={this.props.alert}
                       />
                     </div>
                   );
@@ -184,8 +190,16 @@ class ServicesTable extends Component {
             options={{
               actionsColumnIndex: -1,
               search: true,
-              filtering: true
+              filtering: true,
+              rowStyle: {
+                // backgroundColor: '#EEE',
+                hover: {backgroundColor: '#EEE'}
+              }
+              
             }}
+            // onRowClick={(event, rowData, togglePanel) => (null)}
+
+
           //   components={{
           //     FilterRow: props => (
           //         <div style={{ backgroundColor: '#e8eaf5' }}>
