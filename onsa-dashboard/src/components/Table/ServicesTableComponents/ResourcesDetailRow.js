@@ -1,24 +1,22 @@
-import React, {Component} from 'react';
-import {HTTPGet, ServiceURLs} from '../../../middleware/api'
-import ResourcesCard from './ResourcesCard'
-import { lowerCase, startCase } from 'lodash';
-
-
+import React, { Component } from "react";
+import { HTTPGet, ServiceURLs } from "../../../middleware/api";
+import ResourcesCard from "./ResourcesCard";
+import { lowerCase, startCase } from "lodash";
+import classes from "./ResourcesDetailRow.module.css"
 
 class ResourcesDetailRow extends Component {
-
-    state = {
-        resources: null,
-        customerData: [],
-        accessNodeData:[],
-        networkingData:[]
-    }
+  state = {
+    resources: null,
+    customerData: [],
+    accessNodeData: [],
+    networkingData: []
+  };
   componentDidMount() {
     let url = ServiceURLs("resources", this.props.serviceData.id);
 
     HTTPGet(url).then(
       jsonResponse => {
-        this.mapJsonToArrays(jsonResponse)
+        this.mapJsonToArrays(jsonResponse);
       },
       error => {
         this.props.alert(false, error.message);
@@ -26,10 +24,10 @@ class ResourcesDetailRow extends Component {
     );
   }
 
-  mapJsonToArrays = (rscJson) => {
-    let ctmData = []
-    let anData = []
-    let ntwData = []
+  mapJsonToArrays = rscJson => {
+    let ctmData = [];
+    let anData = [];
+    let ntwData = [];
 
     for (let key in rscJson) {
       switch (key) {
@@ -67,7 +65,6 @@ class ResourcesDetailRow extends Component {
         case "location":
           ctmData.push({ field: "HUB", value: rscJson[key] });
           break;
-
         case "loopback":
           ntwData.push({ field: "Loopback", value: rscJson[key] });
           break;
@@ -80,7 +77,6 @@ class ResourcesDetailRow extends Component {
           break;
         case "vlan_id":
           ntwData.push({ field: "Vlan", value: rscJson[key] });
-
           break;
         case "wan_network":
           ntwData.push({ field: "WAN", value: rscJson[key] });
@@ -91,23 +87,27 @@ class ResourcesDetailRow extends Component {
         case "public_network":
           ntwData.push({ field: "Public Network", value: rscJson[key] });
           break;
-
         default:
           break;
       }
     }
-        this.setState({
-          resources: rscJson, customerData: ctmData , accessNodeData: anData, networkingData: ntwData
-        });
-        
-      }
+    this.setState({
+      resources: rscJson,
+      customerData: ctmData,
+      accessNodeData: anData,
+      networkingData: ntwData
+    });
+  };
   render() {
-    console.log("json resources: ",this.state.resources)
+    console.log("json resources: ", this.state.resources);
     // console.log("ctmData: ",this.state.customerData)
-    console.log("service: ", this.props.serviceData)
+    console.log("service: ", this.props.serviceData);
+    let rowStyles = [classes.detailRow, classes.BSrow];
+
 
     return (
-      <div className="row p-2" style={{backgroundColor: "#f2f2f2" }}>
+      <div className={rowStyles.join(" ")} >
+        {/* style={{ backgroundColor: "#f2f2f2" }} */}
         <div className="col-4">
           <ResourcesCard
             title="Customer & Service"
@@ -116,16 +116,10 @@ class ResourcesDetailRow extends Component {
         </div>
 
         <div className="col-4">
-          <ResourcesCard
-            title="Access Node"
-            data={this.state.accessNodeData}
-          />
+          <ResourcesCard title="Access Node" data={this.state.accessNodeData} />
         </div>
         <div className="col-4">
-          <ResourcesCard
-            title="Networking"
-            data={this.state.networkingData}
-          />
+          <ResourcesCard title="Networking" data={this.state.networkingData} />
         </div>
         {/* Customer Info, Access Node , Networking: */}
         {/* <div className="col-12">

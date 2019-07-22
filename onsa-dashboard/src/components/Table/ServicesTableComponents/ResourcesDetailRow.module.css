@@ -1,0 +1,35 @@
+.detailRow {
+    background-color: #0a53262f;
+    padding: 1rem;
+}
+
+.BSrow {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+  }
+
+.resourceCardHeader {
+    letter-spacing: 0.1rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #95a5a6;
+    font-size: 1.05rem;
+}
+
+.resourceCardBody {
+    border-radius: 0.75rem;
+}
+
+.resourceCardValue {
+    -webkit-user-select: all;  /* Chrome all / Safari all */
+    -moz-user-select: all;     /* Firefox all */
+    -ms-user-select: all;      /* IE 10+ */
+    user-select: all;          /* Likely future */ 
+}
