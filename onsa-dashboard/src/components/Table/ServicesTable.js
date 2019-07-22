@@ -81,6 +81,7 @@ class ServicesTable extends Component {
         newServ.service_type =  serviceEnum[serv.service_type]
         newServ.originalServState = serv.service_state
         newServ.service_state = startCase(lowerCase(serviceStatesEnum[serv.service_state]))
+        newServ.newBW = serv.bandwidth + " Mbps"
         return newServ
       })
         return (
@@ -91,6 +92,7 @@ class ServicesTable extends Component {
               { title: "Product ID", field: "id" },
               { title: "GTS", field: "gts_id" },
               { title: "Service Type", field: "service_type"}, //, lookup: serviceEnum
+              { title: "BW", field: "newBW"}, 
               { title: "State", field: "service_state"}, //, lookup: serviceStatesEnum },
               {
                 field: "isUpdating",

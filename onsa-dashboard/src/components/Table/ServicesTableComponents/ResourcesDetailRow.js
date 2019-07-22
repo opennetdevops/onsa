@@ -18,7 +18,6 @@ class ResourcesDetailRow extends Component {
 
 
   componentDidMount() {
-    console.log("[row DidMount]")
 
     let url = ServiceURLs("resources", this.props.serviceData.id);
 
@@ -29,7 +28,6 @@ class ResourcesDetailRow extends Component {
         this.setState({ isLoading: false });
       },
        error => {
-         console.log("error: ", error.message)
         if (error.name !== "AbortError"){
         this.props.alert(false, error.message);
         }
