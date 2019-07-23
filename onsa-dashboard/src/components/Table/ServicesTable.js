@@ -193,14 +193,19 @@ class ServicesTable extends Component {
             options={{
               actionsColumnIndex: -1,
               search: true,
-              filtering: true,
-              // rowStyle: {
-                // backgroundColor: '#EEE',
-                // hover: {backgroundColor: '#EEE'} }
-              
-              exportButton: true              
+              filtering: false,
+              exportButton: true,
+              grouping:true              
             }}
-            // onRowClick={(event, rowData, togglePanel) => (null)}
+        
+          />
+        );
+ 
+     }
+}
+
+export default ServicesTable;
+    // onRowClick={(event, rowData, togglePanel) => (null)}
           //   components={{
           //     FilterRow: props => (
           //         <div style={{ backgroundColor: '#e8eaf5' }}>
@@ -213,10 +218,3 @@ class ServicesTable extends Component {
             // components={{
             //   OverlayLoading: props => <Spinner />
             // }}
-          />
-        );
- 
-     }
-}
-
-export default ServicesTable;
