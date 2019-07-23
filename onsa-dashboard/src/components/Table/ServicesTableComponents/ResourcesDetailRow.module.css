@@ -1,10 +1,13 @@
 .detailRow {
-    background-color: rgba(0, 66, 99, 0.719);
+    background-color: #6088a7;
+    /* background-color: rgba(0, 66, 99, 0.719); */
     /* background: linear-gradient(to bottom right, #006699 68%, #000099 97%); */
     padding: 1rem 1rem 1rem 1.5rem;
     /* margin-right: auto;
     margin-left: auto; */
     justify-content: center;
+    font-family: "Titillium Web";
+    
 }
 
 .BSrow {
@@ -24,7 +27,7 @@
     font-weight: 500;
     line-height: 1.2;
     /* font-style: italic; */
-    color: #0a4549;
+    color: #14162b;
     font-size: 1.05rem;
     background-color: inherit ;
     /* position: absolute; */

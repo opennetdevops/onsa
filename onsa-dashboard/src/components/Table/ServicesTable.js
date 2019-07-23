@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-
-
 import Spinner from "../UI/Spinner/Spinner";
 import {
   notDeletableStates,
@@ -10,7 +8,6 @@ import {
 } from "../../site-constants";
 import { lowerCase, startCase } from 'lodash';
 
-import MaterialTable from 'material-table';
 import ResourcesDetailRow from './ServicesTableComponents/ResourcesDetailRow'
 
 // import MTableFilterRow from "./ServicesTableComponents/FilterRow"
@@ -38,7 +35,10 @@ import SettingsPower from "@material-ui/icons/SettingsPowerRounded"
 
 // import { createMuiTheme } from '@material-ui/core/styles';
 // import { ThemeProvider } from '@material-ui/styles';
- 
+
+import MaterialTable, { MTableHeader } from 'material-table';
+import classes from "./ServiceTable.module.css";
+
 
 
 const tableIcons = {
@@ -85,14 +85,15 @@ class ServicesTable extends Component {
         return newServ
       })
         return (
+          <div className={classes.tableWrapper}>
           <MaterialTable
             icons={tableIcons}
             columns={[
-              { title: "Product ID", field: "id" },
+              { title: "Product", field: "id" },
               { title: "GTS", field: "gts_id" },
               { title: "Service Type", field: "service_type"}, //, lookup: serviceEnum
               { title: "BW", field: "newBW"}, 
-              { title: "State", field: "service_state"}, //, lookup: serviceStatesEnum },
+              { title: "State    ", field: "service_state"}, //, lookup: serviceStatesEnum },
               {
                 field: "isUpdating",
                 searchable: false,
@@ -116,7 +117,7 @@ class ServicesTable extends Component {
                 }
               }
             ]}
-            title="Services"
+            title="Services Dashboard"
             isLoading={this.props.isLoadingServices}
             actions={[
               // config SCO
@@ -191,12 +192,28 @@ class ServicesTable extends Component {
             options={{
               actionsColumnIndex: -1,
               search: true,
-              filtering: false,
+              filtering: true,
               exportButton: true,
-              grouping:true              
+              grouping:true,
+              headerStyle: {
+                backgroundColor: "#346c97", // '#01579b',
+                color: '#FFF',
+                fontFamily:"Oswald",
+                fontWeight:400,
+                fontSize: "18px",
+                textAlign: "center",
+              },
+              rowStyle: {
+                fontFamily: 'Titillium Web',
+                fontSize: "16px"
+                // fontWeight: "200"
+              }
+             
             }}
+            
         
           />
+          </div>
         );
  
      }
