@@ -1,8 +1,9 @@
 .detailRow {
-    background-color: #57343f2c;
+    background-color: rgba(0, 66, 99, 0.719);
+    /* background: linear-gradient(to bottom right, #006699 68%, #000099 97%); */
     padding: 1rem 1rem 1rem 1.5rem;
-    margin-right: auto;
-    margin-left: auto;
+    /* margin-right: auto;
+    margin-left: auto; */
     justify-content: center;
 }
 
@@ -12,8 +13,8 @@
     display: flex;
     -ms-flex-wrap: wrap;
         flex-wrap: wrap;
-    margin-right: -15px;
-    margin-left: -15px;
+    /* margin-right: -15px;
+    margin-left: -15px; */
   }
 
 .resourceCardHeader {
@@ -22,15 +23,17 @@
     margin-top: 0.5rem;
     font-weight: 500;
     line-height: 1.2;
-    color: #95a5a6;
+    /* font-style: italic; */
+    color: #0a4549;
     font-size: 1.05rem;
-    background-color: #57343f2c;
+    background-color: inherit ;
     /* position: absolute; */
 }
 
 .resourceCardBody {
     border-radius: 0.75rem;
     padding:0;
+    background-color: rgb(255, 255, 255);
 }
 
 .resourceCardValue {

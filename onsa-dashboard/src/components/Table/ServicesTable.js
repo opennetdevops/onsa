@@ -86,7 +86,6 @@ class ServicesTable extends Component {
       })
         return (
           <MaterialTable
-            // tableRef={this.tableRef}
             icons={tableIcons}
             columns={[
               { title: "Product ID", field: "id" },
@@ -110,7 +109,6 @@ class ServicesTable extends Component {
                 render: rowData => {
                   return (
                     <div style={{ textAlign: "center" }}>
-                      {/* <h4>Resources.. service Id: {rowData.id}</h4> */}
                       <ResourcesDetailRow serviceData={rowData} alert={this.props.alert}
                       />
                     </div>
