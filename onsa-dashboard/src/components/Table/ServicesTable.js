@@ -98,6 +98,7 @@ class ServicesTable extends Component {
                 field: "isUpdating",
                 searchable: false,
                 filtering:false,
+                export:false,
                 render: rowdata =>
                   rowdata.isUpdating ? <Spinner /> : null
               }
@@ -193,15 +194,13 @@ class ServicesTable extends Component {
               actionsColumnIndex: -1,
               search: true,
               filtering: true,
-              rowStyle: {
+              // rowStyle: {
                 // backgroundColor: '#EEE',
-                hover: {backgroundColor: '#EEE'}
-              }
+                // hover: {backgroundColor: '#EEE'} }
               
+              exportButton: true              
             }}
             // onRowClick={(event, rowData, togglePanel) => (null)}
-
-
           //   components={{
           //     FilterRow: props => (
           //         <div style={{ backgroundColor: '#e8eaf5' }}>
