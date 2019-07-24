@@ -379,6 +379,7 @@ class ServiceCreate extends React.Component {
                       aria-label="Add"
                       size="small"
                       style={{color:"#505252d3"}}
+                      tabIndex="-1"
                     > 
                       <AddPhoto style={{marginLeft: "0.3rem", marginBottom: "0.5rem" }}  />
                     </a>
