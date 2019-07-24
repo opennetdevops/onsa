@@ -193,6 +193,7 @@ class ServicesTable extends Component {
               filtering: true,
               exportButton: true,
               grouping:true,
+              pageSizeOptions:[5,10,20,50 ],
               headerStyle: {
                 backgroundColor: "#346c97", // '#01579b',
                 color: '#FFF',
@@ -204,12 +205,8 @@ class ServicesTable extends Component {
               rowStyle: {
                 fontFamily: 'Titillium Web',
                 fontSize: "16px"
-                // fontWeight: "200"
               }
-             
             }}
-            
-        
           />
           </div>
         );
@@ -218,16 +215,3 @@ class ServicesTable extends Component {
 }
 
 export default ServicesTable;
-    // onRowClick={(event, rowData, togglePanel) => (null)}
-          //   components={{
-          //     FilterRow: props => (
-          //         <div style={{ backgroundColor: '#e8eaf5' }}>
-          //             {/* <MTableFilterRow {...props} /> */}
-          //         </div>
-          //     )
-          // }}
-
-
-            // components={{
-            //   OverlayLoading: props => <Spinner />
-            // }}

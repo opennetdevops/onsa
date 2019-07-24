@@ -115,8 +115,8 @@ class ResourcesDetailRow extends Component {
   };
 
     render() {
-    console.log("json resources: ", this.state.resources);
-    console.log("service: ", this.props.serviceData);
+    // console.log("json resources: ", this.state.resources);
+    // console.log("service: ", this.props.serviceData);
 
     let rowStyles = [classes.detailRow, classes.BSrow];
     let content = null;
@@ -150,14 +150,8 @@ class ResourcesDetailRow extends Component {
     }
 
     return (
-      <div
-       className={rowStyles.join(" ")}
-      // className="detailRow "
-       >
-         {/* <div className="col-4 bg-warning  "><h5>testing col</h5></div> */}
-         {/* <div className="col-4 bg-info"><h5>testing col</h5></div> */}
-         {/* <div className="col-4 bg-primary"><h5>testing col</h5></div> */}
-      {content}
+      <div className={rowStyles.join(" ")} >
+        {content}
       </div>
       /* <div className="col-12">
         <h6>Service data:</h6>

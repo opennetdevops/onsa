@@ -78,10 +78,6 @@ class Dashboard extends React.Component {
     this.updateUpdatingServices(serviceId, true);
   };
 
-  // handleOnClick = event => {
-  //   const value = event.target.value;
-  //   const name = event.target.name;
-
     handleActionClick = (action, serviceId, serviceType, prevServState) => {
 
     this.setState({
@@ -292,113 +288,10 @@ class Dashboard extends React.Component {
       return newServ
     } )
     
-    // let isUpdating = false;
-    // const tableRows = this.state.services.map(service => {
-    //   isUpdating = this.state.updatingServices.some(
-    //     serviceItem => service.id === serviceItem.id
-    //   );
-
-    //   return (
-    //     <tr className="table-borderless" key={service.id}>
-    //       <td>
-    //         <Badge color="primary">{service.id}</Badge>
-    //       </td>
-    //       <td>
-    //         <Badge color="secondary">{service.gts_id}</Badge>
-    //       </td>
-    //       <td>
-    //         <Badge color="success">{serviceEnum[service.service_type]}</Badge>
-    //       </td>
-    //       <td>
-    //         <Badge color="secondary">
-    //           {serviceStatesEnum[service.service_state]}
-    //         </Badge>
-    //       </td>
-    //       <td>{isUpdating ? <Spinner /> : null}</td>
-
-    //       <td>
-    //         <Button
-    //           className="btn btn-primary btn-sm btn-block"
-    //           color="primary"
-    //           name="resources"
-    //           onClick={this.handleOnClick}
-    //           type="button"
-    //           value={JSON.stringify(service)}
-    //         >
-    //           View details
-    //         </Button>
-    //       </td>
-    //       {service.service_state === "in_construction" ? (
-    //         <td>
-    //           <Button
-    //             className="btn btn-primary btn-sm btn-block"
-    //             color="success"
-    //             name="anActivate"
-    //             onClick={this.handleOnClick}
-    //             type="button"
-    //             value={JSON.stringify(service)}
-    //             disabled={isUpdating}
-    //           >
-    //             Configure SCO
-    //           </Button>
-    //         </td>
-    //       ) : null}
-
-    //       {service.service_state === "an_activated" ? (
-    //         <td>
-    //           <Button
-    //             className="btn btn-primary btn-sm btn-block"
-    //             color="info"
-    //             name="terminate"
-    //             onClick={this.handleOnClick}
-    //             type="button"
-    //             value={JSON.stringify(service)}
-    //             disabled={isUpdating}
-
-    //           >
-    //             Terminate
-    //           </Button>
-    //         </td>
-    //       ) : null}
-    //       {notDeletableStates.indexOf(service.service_state) === -1 ? (
-    //         <td>
-    //           <button
-    //             className="btn btn-danger btn-sm btn-block"
-    //             color="danger"
-    //             name="unsubscribe"
-    //             onClick={this.handleOnClick}
-    //             type="button"
-    //             value={JSON.stringify(service)}
-    //             disabled={isUpdating}
-
-    //           >
-    //             Unsubscribe
-    //           </button>
-    //         </td>
-    //       ) : null}
-    //       {retryableStates.indexOf(service.service_state) !== -1 ? (
-    //         <td>
-    //           <Button
-    //             className="btn btn-primary btn-sm btn-block"
-    //             color="success"
-    //             name="retry"
-    //             onClick={this.handleOnClick}
-    //             type="button"
-    //             value={JSON.stringify(service)}
-    //             disabled={isUpdating}
-
-    //           >
-    //             Retry
-    //           </Button>
-    //         </td>
-    //       ) : null}
-    //     </tr>
-    //   );
-    // });
 
     return (
       <div className="container-fluid">
-        <div className="row justify-content-center">
+        <div className="row justify-content-center" >
           <FormAlert
             dialogSuccess={this.state.dialogSuccess}
             dialogText={this.state.dialogText}
@@ -406,26 +299,13 @@ class Dashboard extends React.Component {
             msgLabel={this.state.dialogLabel}
           />
         </div>
-        <div className="row justify-content-center" style={{marginTop: "5vh"}}>
-          
+        <div className="row justify-content-center" >
           <ServicesTable 
           services= {servicesData}
           onClickedAction={this.handleActionClick}
           isLoadingServices={this.state.loadingServices}
           alert={this.showAlertBox}
           />
-          
-          {/* <table className="table table-hover col-md-12">
-            <thead>
-              <tr>
-                <th scope="col">Product ID</th>
-                <th scope="col">GTS </th>
-                <th scope="col">Service Type</th>
-                <th scope="col">Service State</th>
-              </tr>
-            </thead>
-            <tbody>{tableRows}</tbody>
-          </table> */}
         </div>
 
         <ResourcesModal
