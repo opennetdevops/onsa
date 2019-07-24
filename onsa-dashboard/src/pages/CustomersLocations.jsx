@@ -3,6 +3,21 @@ import FormAlert from "../components/Form/FormAlert";
 import { HTTPPost, ClientURLs } from "../middleware/api.js";
 import ClientSelect from "../components/Clients/ClientSelect";
 import { validationSchema } from "../components/Validators/CustomerLocations";
+import Button from '@material-ui/core/Button';
+import DoneAll from '@material-ui/icons/DoneAll'
+
+const btnStyle =   {
+  fontWeight: "bold",
+  display: "block",
+  fontSize: "1.2rem",
+  margin: "auto",
+  paddingLeft: "6rem",
+  paddingRight: "5rem"
+}
+const iconBtnStyle = {
+  fontSize: "2.2rem",
+  paddingBottom: "0.4rem "
+}
 
 class CustomersLocations extends React.Component {
   constructor(props) {
@@ -118,6 +133,13 @@ class CustomersLocations extends React.Component {
   }
 
   render() {
+    let btnModalStyle = null
+    if (this.props.onModal) {
+      btnModalStyle = {...btnStyle,   
+      paddingLeft: "3rem" ,
+      paddingRight: "2rem" }
+}
+
 
     const colSize = this.props.onModal ? "col-12" : "col-md-8"
     return (
@@ -180,13 +202,17 @@ class CustomersLocations extends React.Component {
 
               <div className="row justify-content-center">
                 <div className="col-sm-6 ">
-                  <button
-                    className="btn btn-primary btn-lg btn-block"
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="large"
                     type="submit"
-                    value="Submit"
+                    className="confirmCustomButton"
+                    style={this.props.onModal ? btnModalStyle : btnStyle}
                   >
                     Create
-                  </button>
+                    <DoneAll className="ml-2" style={iconBtnStyle} />
+                  </Button>
                 </div>
               </div>
             </form>

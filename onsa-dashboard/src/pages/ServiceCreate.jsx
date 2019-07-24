@@ -18,11 +18,7 @@ import CustomerLocationModal from '../components/Modals/CustomerLocationModal';
 
 import Button from '@material-ui/core/Button';
 import DoneAll from '@material-ui/icons/DoneAll'
-import Check from '@material-ui/icons/Check';
-import Create from '@material-ui/icons/Create';
 import AddPhoto from "@material-ui/icons/AddToPhotos";
-import IconButton from '@material-ui/core/IconButton';
-import Fab from '@material-ui/core/Fab/Fab';
 
 
 const btnStyle =   {
@@ -387,16 +383,7 @@ class ServiceCreate extends React.Component {
                       <AddPhoto style={{marginLeft: "0.3rem", marginBottom: "0.5rem" }}  />
                     </a>
                   </sup>
-                  {/* <sup>
-                    <a
-                      href="/"
-                      onClick={this.handleAddCustomerLocation}
-                      className="badge badge-info ml-2 p-1 font-italic "
-                      tabIndex="-1"
-                    >
-                      Add
-                    </a>
-                  </sup> */}
+                  
                   <Select
                     onChange={this.handleCustLocationOnChange}
                     options={this.state.custLocationsOptions}
