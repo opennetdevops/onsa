@@ -61,10 +61,7 @@ const tableIcons = {
 
 class ServicesTable extends Component { 
 
-  
-    // tableRef = React.createRef();
-
-    // componentDidMount() {
+      // componentDidMount() {
     //     console.log("[Table DidMount:] ", this.props)
     // }
 
