@@ -20,7 +20,7 @@ const Navbar = props => {
 
   return (
     <nav className={classNames(className, bsSuffix)} {...attributes} style={{
-		backgroundColor: "#f1f2f6", backgroundImage: `linear-gradient(90deg, #f1f2f6 0%, #c9c6c6 74%)`
+		backgroundColor: "#f1f2f6", backgroundImage: `linear-gradient(86deg, #f1f2f6 0%, #c9c6c6 74%)`
 	}}>
       <NavbarToggler
         data-toggle="collapse"
