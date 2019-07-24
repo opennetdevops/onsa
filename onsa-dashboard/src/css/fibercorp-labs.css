@@ -221,3 +221,14 @@ p .navbar-font {
 .visibilityAlert{
   visibility: hidden;
 }
+
+.confirmCustomButton{
+  font-weight: bold;
+}
+
+@media (max-width:1024px) {
+  .confirmCustomButton{
+    padding-left: 3rem !important;
+    padding-right: 2rem !important;
+  }
+}

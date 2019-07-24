@@ -7,10 +7,8 @@ import {
   serviceEnum
 } from "../../site-constants";
 import { lowerCase, startCase } from 'lodash';
-
 import ResourcesDetailRow from './ServicesTableComponents/ResourcesDetailRow'
 
-// import MTableFilterRow from "./ServicesTableComponents/FilterRow"
 //import Table - Icons:
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
@@ -36,7 +34,7 @@ import SettingsPower from "@material-ui/icons/SettingsPowerRounded"
 // import { createMuiTheme } from '@material-ui/core/styles';
 // import { ThemeProvider } from '@material-ui/styles';
 
-import MaterialTable, { MTableHeader } from 'material-table';
+import MaterialTable from 'material-table';
 import classes from "./ServiceTable.module.css";
 
 
