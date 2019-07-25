@@ -65,9 +65,11 @@ class ServiceView(View):
                         service_state=state).values())
                     tip_services = list(Tip.objects.filter(
                         service_state=state).values())
+                    legacy_services = list(Legacy.objects.filter(
+                        service_state=state).values())
 
                     services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                        + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services
+                        + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services + legacy_services
 
                 elif access_port_id is not None:
                     cpeless_irs_services = list(
@@ -98,9 +100,13 @@ class ServiceView(View):
                     vcpe_irs_services = list(VcpeIrs.objects.all().values())
                     vpls_services = list(Vpls.objects.all().values())
                     tip_services = list(Tip.objects.all().values())
+                    legacy_services = list(Legacy.objects.all().values())
 
                     services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
-                        + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services
+                        + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services + legacy_services
+                    
+                    for i in range(len(services)):
+                        services[i]['cuic']=Client.objects.get(id=services[i]['client_id']).cuic
 
                 return JsonResponse(services, safe=False)
 
@@ -109,6 +115,8 @@ class ServiceView(View):
                 ServiceClass = getattr(models, ServiceTypes[s.service_type])
                 s = ServiceClass.objects.get(pk=service_id)
                 data = s.fields()
+                for i in len(data):
+                    logging.debug(f'{data[i]} and {i}')
 
                 return JsonResponse(data, safe=False)
 
