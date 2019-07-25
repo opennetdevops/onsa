@@ -3,6 +3,22 @@ import { URLs, HTTPPost } from "../middleware/api.js";
 import FormAlert from "../components/Form/FormAlert";
 // import * as yup from "yup";
 import { validationSchema } from "../components/Validators/Customers";
+import Button from '@material-ui/core/Button';
+import DoneAll from '@material-ui/icons/DoneAll'
+
+
+const btnStyle =   {
+  fontWeight: "bold",
+  display: "block",
+  fontSize: "1.2rem",
+  margin: "auto",
+  paddingLeft: "6rem",
+  paddingRight: "5rem"
+}
+const iconBtnStyle= {
+  fontSize: "2.2rem",
+  paddingBottom: "0.4rem "
+}
 
 class Customers extends React.Component {
   constructor(props) {
@@ -122,17 +138,17 @@ class Customers extends React.Component {
 
               <div className="row justify-content-center">
                 <div className="col-sm-6 ">
-                  <button
-                    className="btn btn-primary btn-lg btn-block"
-                    disabled={
-                      false
-                      // !(this.state.client && this.state.cuic) ? true : false
-                    }
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="large"
                     type="submit"
-                    value="Submit"
+                    className="confirmCustomButton"
+                    style={btnStyle}
                   >
                     Create
-                  </button>
+                    <DoneAll className="ml-2" style={iconBtnStyle} />
+                  </Button>
                 </div>
               </div>
             </form>

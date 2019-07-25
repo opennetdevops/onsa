@@ -14,8 +14,25 @@ import Select from "react-select";
 import { validationSchema} from "../components/Validators/ServiceCreate";
 
 import { URLs, ClientURLs, HTTPGet, HTTPPost } from "../middleware/api.js";
-import CustomerLocationModal from '../components/Container/CustomerLocationModal';
+import CustomerLocationModal from '../components/Modals/CustomerLocationModal';
 
+import Button from '@material-ui/core/Button';
+import DoneAll from '@material-ui/icons/DoneAll'
+import AddPhoto from "@material-ui/icons/AddToPhotos";
+
+
+const btnStyle =   {
+    fontWeight: "bold",
+    display: "block",
+    fontSize: "1.2rem",
+    margin: "auto",
+    paddingLeft: "6rem",
+    paddingRight: "5rem"
+  }
+const iconBtnStyle= {
+  fontSize: "2.2rem",
+  paddingBottom: "0.4rem "
+}
 
 class ServiceCreate extends React.Component {
   constructor(props) {
@@ -356,15 +373,18 @@ class ServiceCreate extends React.Component {
                 <div className="col-lg-6 order-lg-3 mb-3">
                   <label htmlFor="customerLoc">Customer Location</label>
                   <sup>
-                    <a
+                    <a 
                       href="/"
                       onClick={this.handleAddCustomerLocation}
-                      className="badge badge-info ml-2 p-1 font-italic "
+                      aria-label="Add"
+                      size="small"
+                      style={{color:"#505252d3"}}
                       tabIndex="-1"
-                    >
-                      Add
+                    > 
+                      <AddPhoto style={{marginLeft: "0.3rem", marginBottom: "0.5rem" }}  />
                     </a>
                   </sup>
+                  
                   <Select
                     onChange={this.handleCustLocationOnChange}
                     options={this.state.custLocationsOptions}
@@ -527,13 +547,18 @@ class ServiceCreate extends React.Component {
               <hr className="mb-4" />
               {/* SUBMIT BUTTON */}
               <div className="row justify-content-center">
-                <div className="col-sm-6 ">
-                  <button
-                    className="btn btn-primary btn-block btn-lg "
+                <div className="col-sm-6  ">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="large"
                     type="submit"
+                    className="confirmCustomButton"
+                    style={btnStyle}
                   >
                     Create
-                  </button>
+                    <DoneAll className="ml-2" style={iconBtnStyle} />
+                  </Button>
                 </div>
               </div>
             </Form>

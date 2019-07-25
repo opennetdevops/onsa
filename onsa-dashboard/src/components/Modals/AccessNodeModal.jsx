@@ -14,16 +14,18 @@ class AccessNodeModal extends React.Component {
      this.inputVlan = React.createRef();
 
     this.state = {
-      vlanId: ""
+      vlanId: "",
     };
   }  
   
   componentDidUpdate(prevProps) {
     if (prevProps.isOpen !== this.props.isOpen) {
       this.setState({ vlanId: "" });
-      if (this.props.service.type === "tip") {
-      this.inputVlan.current.focus();}
-    }
+      //  if (this.props.service.type === "tip") {
+      //  this.inputVlan.current.focus();
+      // console.log(this.inputVlan)
+      // }
+     }
   }
 
 
@@ -103,6 +105,7 @@ class AccessNodeModal extends React.Component {
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
         className={className}
+        returnFocusAfterClose={false}
       >
         <ModalHeader toggle={this.handleToggle}>Activate SCO</ModalHeader>
         <ModalBody>

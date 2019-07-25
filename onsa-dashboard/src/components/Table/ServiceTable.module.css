@@ -1,0 +1,13 @@
+.tableWrapper{
+    font-family: inherit;
+}
+
+.tableWrapper H6 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    
+}
+.tableWrapper td {
+    font-size: .9rem;
+}

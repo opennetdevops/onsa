@@ -123,7 +123,7 @@ class Login extends React.Component {
             <FormInput
               type="password"
               id="inputPassword"
-              className="form-control"
+              className="form-control mt-1"
               name="password"
               value={this.state.password}
               onChange={this.handleChange}

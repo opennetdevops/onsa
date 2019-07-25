@@ -61,6 +61,8 @@ class UnsubscribeModal extends React.Component {
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
         className={className}
+        returnFocusAfterClose={false}
+
       >
         <ModalHeader toggle={this.handleToggle}>Unsubscribe</ModalHeader>
         <ModalBody>

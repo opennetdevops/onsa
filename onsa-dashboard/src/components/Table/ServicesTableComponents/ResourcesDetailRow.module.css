@@ -1,0 +1,47 @@
+.detailRow {
+    background-color: #6088a7;
+    /* background-color: rgba(0, 66, 99, 0.719); */
+    /* background: linear-gradient(to bottom right, #006699 68%, #000099 97%); */
+    padding: 1rem 1rem 1rem 1.5rem;
+    /* margin-right: auto;
+    margin-left: auto; */
+    justify-content: center;
+    font-family: "Titillium Web";
+    
+}
+
+.BSrow {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    /* margin-right: -15px;
+    margin-left: -15px; */
+  }
+
+.resourceCardHeader {
+    letter-spacing: 0.1rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    /* font-style: italic; */
+    color: #14162b;
+    font-size: 1.05rem;
+    background-color: inherit ;
+    /* position: absolute; */
+}
+
+.resourceCardBody {
+    border-radius: 0.9rem;
+    padding:0;
+    background-color: rgb(255, 255, 255);
+}
+
+.resourceCardValue {
+    -webkit-user-select: all;  /* Chrome all / Safari all */
+    -moz-user-select: all;     /* Firefox all */
+    -ms-user-select: all;      /* IE 10+ */
+    user-select: all;          /* Likely future */ 
+}
