@@ -65,7 +65,7 @@ class ResourcesDetailRow extends Component {
 
         case "customer":
           ctmData.push(
-            { field: "CUIT", value: "22-9999999-5" }, // TODO change value to props.servicedata
+            { field: "CUIT", value: this.props.serviceData.cuic }, 
             { field: "Product Id", value: this.props.serviceData.id },
             { field: "Name", value: rscJson[key] }
           );
