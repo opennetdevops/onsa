@@ -322,7 +322,7 @@ class ServiceCreate extends React.Component {
     HTTPPost(url, data).then(
       () => {
         this.showAlertBox(true, "Service created successfuly");
-        // this.resetFormFields();
+        this.resetFormFields();
       },
       error => {
         this.showAlertBox(false, error.message);
