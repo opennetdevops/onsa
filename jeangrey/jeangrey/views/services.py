@@ -115,8 +115,7 @@ class ServiceView(View):
                 ServiceClass = getattr(models, ServiceTypes[s.service_type])
                 s = ServiceClass.objects.get(pk=service_id)
                 data = s.fields()
-                for i in len(data):
-                    logging.debug(f'{data[i]} and {i}')
+                data['cuic']=Client.objects.get(id=s.client_id).cuic
 
                 return JsonResponse(data, safe=False)
 

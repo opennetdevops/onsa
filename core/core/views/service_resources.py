@@ -24,6 +24,22 @@ class ServiceResourcesView(APIView):
     def get_resources(self, service):
         # desarmamos el service para armar el "listado" de resources involucrados y presentarlos como objetos.
         service = pop_empty_keys(service)
+        client = get_client(service['client_id'])
+        customer_location = get_customer_location(
+            service['client_id'], service['customer_location_id'])
+
+        if service['service_type'] == "legacy":
+            resources = {
+                "customer": client['name'],
+                "customer_location": customer_location['address']
+            }
+            # if 'client_node_sn' in service.keys():
+            #     client_node = get_client_node(service['client_node_sn'])
+
+            #     resources["client_node"] = {"model": client_node['model'],
+            #                                 "wan_port": client_node['uplink_port'],
+            #                                 "SN": client_node['serial_number']}
+            return resources
 
         router_node = get_router_node(service['router_node_id'])
         access_node = get_access_node(service['access_node_id'])
@@ -32,9 +48,6 @@ class ServiceResourcesView(APIView):
         an_device_model = get_device_model(access_node['device_model_id'])
 
         location = get_location(service['location_id'])
-        customer_location = get_customer_location(
-            service['client_id'], service['customer_location_id'])
-        client = get_client(service['client_id'])
 
         resources = {
             "customer": client['name'],
