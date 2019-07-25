@@ -106,3 +106,8 @@ class Vpls(Service):
 
     def __str__(self):
         return str(self.id)
+
+class Legacy(Service):
+
+    def __str__(self):
+        return str(self.id)

@@ -12,7 +12,8 @@ ServiceTypes = {
     "cpe_mpls": "CpeMpls",
     "vcpe_irs": "VcpeIrs",
     "vpls": "Vpls",
-    "tip": "Tip"
+    "tip": "Tip",
+    "legacy": "Legacy"
 }
 
 
