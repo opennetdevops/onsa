@@ -148,9 +148,8 @@ class ServicesTable extends Component {
                     rowData.service_state
                   ),
 
-                disabled:
-                  notDeletableStates.includes(rowdata.originalServState) ||
-                  rowdata.isUpdating
+                disabled: notDeletableStates.includes(rowdata.originalServState) || rowdata.isUpdating
+                || rowdata.service_type === "Legacy"
               }),
               // Terminate
               rowdata => ({
