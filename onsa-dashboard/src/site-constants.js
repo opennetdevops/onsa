@@ -13,6 +13,7 @@ const serviceEnum = {
   cpeless_mpls: "CPEless MPLS",
   cpe_irs: "CPE IRS",
   cpe_mpls: "CPE MPLS",
+  legacy: "Legacy",
   vpls: "VPLS",
   vcpe_irs: "vCPE",
   tip: "TIP"

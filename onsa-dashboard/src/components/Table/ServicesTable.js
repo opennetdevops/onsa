@@ -67,6 +67,7 @@ class ServicesTable extends Component {
 
     componentDidUpdate() {
         // console.log("[Table DidUpdate:] ")
+        console.log("[Table DidUpdate:] ", this.props.services[0])
     }
 
     render() {
@@ -76,7 +77,8 @@ class ServicesTable extends Component {
         newServ.service_type =  serviceEnum[serv.service_type]
         newServ.originalServState = serv.service_state
         newServ.service_state = startCase(lowerCase(serviceStatesEnum[serv.service_state]))
-        newServ.newBW = serv.bandwidth + " Mbps"
+        newServ.newBW = (newServ.bandwidth == null) ? "-": newServ.bandwidth
+        newServ.newGTS = (newServ.gts_id == null) ? "-": newServ.gts_id  
         return newServ
       })
         return (
@@ -85,9 +87,13 @@ class ServicesTable extends Component {
             icons={tableIcons}
             columns={[
               { title: "Product", field: "id" },
-              { title: "GTS", field: "gts_id" },
+              { title: "GTS", field: "newGTS" },
               { title: "Service Type", field: "service_type"}, //, lookup: serviceEnum
-              { title: "BW", field: "newBW"}, 
+              { title: "BW [mbps]", field: "newBW",
+
+              // render: rowdata =>
+              //     rowdata.bandwidth ? rowdata.bandwidth : " - "
+            }, 
               { title: "State    ", field: "service_state"}, //, lookup: serviceStatesEnum },
               {
                 field: "isUpdating",
