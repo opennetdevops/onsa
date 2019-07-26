@@ -31,6 +31,7 @@ class ServiceResourcesView(APIView):
         if service['service_type'] == "legacy":
             resources = {
                 "customer": client['name'],
+                "cuic": client['cuic'],
                 "customer_location": customer_location['address']
             }
             # if 'client_node_sn' in service.keys():
@@ -51,6 +52,7 @@ class ServiceResourcesView(APIView):
 
         resources = {
             "customer": client['name'],
+            "cuic": client['cuic'],
             "location": location['name'],
             "customer_location": customer_location['address'],
             "router_node": {'name': router_node['hostname']},

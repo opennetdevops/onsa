@@ -105,8 +105,8 @@ class ServiceView(View):
                     # services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
                     #     + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services + legacy_services
                     services = list(Service.objects.all().values('client_id', 'bandwidth','service_type','gts_id','service_state','id'))
-                    for i in range(len(services)):
-                        services[i]['cuic']=Client.objects.get(id=services[i]['client_id']).cuic
+                    # for i in range(len(services)):
+                    #     services[i]['cuic']=Client.objects.get(id=services[i]['client_id']).cuic
                         # logging.debug(services[i])
                         # for x in ['access_node_id', 'access_port_id', 'autonomous_system', 'client_network','client_node_sn', 'client_port_id', 'customer_location_id', 'vrf_id', 'service_ptr_id','wan_network','location_id','loopback','logical_unit_id','router_node_id','vlan_id']:
                         #     if x in services[i].keys():
