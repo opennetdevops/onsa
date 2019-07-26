@@ -195,7 +195,7 @@ class ServicesTable extends Component {
               search: true,
               filtering: true,
               exportButton: true,
-              grouping:true,
+              grouping:false,
               pageSizeOptions:[5,10,20,50 ],
               headerStyle: {
                 backgroundColor: "#346c97", // '#01579b',
