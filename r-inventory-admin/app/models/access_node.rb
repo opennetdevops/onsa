@@ -10,4 +10,8 @@ class AccessNode < ApplicationRecord
 		"#{self[:mgmt_ip].to_s}/#{self[:mgmt_ip].prefix}" if self[:mgmt_ip]
 	end
 
+	def to_s
+		self.hostname
+	end
+
 end
