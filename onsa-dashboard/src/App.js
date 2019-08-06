@@ -37,13 +37,13 @@ class App extends React.Component {
       <Tag tag="main" role="main">
       <Router history={hist}>
         <Switch>
-          <Redirect exact from='/' to='/login'/>
           {publicRoutes.map((prop, key) => {
             return <Route path={prop.path} key={key} render={(props) => <prop.component {...props} displayNavbar={this.handleNavbar}/>}/>;
           })}
           {privateRoutes.map((prop, key) => {
             return <PrivateRoute component={prop.component} path={prop.path} key={key} displayNavbar={this.handleNavbar}/>;
           })}
+          <Redirect exact from='/' to='/login'/>
         </Switch>
       </Router>
       </Tag>
