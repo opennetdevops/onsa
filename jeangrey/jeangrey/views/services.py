@@ -101,10 +101,10 @@ class ServiceView(View):
                     # vpls_services = list(Vpls.objects.all().values())
                     # tip_services = list(Tip.objects.all().values())
                     # legacy_services = list(Legacy.objects.all().values())
-
+                    services = list(Service.objects.all().values('client_id', 'client__cuic','client__name', 'bandwidth','service_type','gts_id','service_state','id'))
                     # services = cpe_mpls_services + cpeless_irs_services + cpeless_mpls_services \
                     #     + vpls_services + vcpe_irs_services + cpe_irs_services + tip_services + legacy_services
-                    services = list(Service.objects.all().values('client_id', 'bandwidth','service_type','gts_id','service_state','id'))
+                    # services = list(Service.objects.all().values('client_id', 'bandwidth','service_type','gts_id','service_state','id'))
                     # for i in range(len(services)):
                     #     services[i]['cuic']=Client.objects.get(id=services[i]['client_id']).cuic
                         # logging.debug(services[i])
@@ -120,7 +120,7 @@ class ServiceView(View):
                 s = ServiceClass.objects.get(pk=service_id)
                 data = s.fields()
                 data['cuic']=Client.objects.get(id=s.client_id).cuic
-               
+                data['client__name']=Client.objects.get(id=s.client_id).name
 
                 return JsonResponse(data, safe=False)
 
