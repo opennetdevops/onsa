@@ -5,7 +5,6 @@ $ ->
   $('#access_node_device_model_id').change ->
 	  if $('#select2-access_node_device_model_id-container').attr('title') != ""
 	  	id = $('#access_node_device_model_id option:selected').val()
-	  	console.log($('#access_node_device_model_id option:selected').val())
 	  	$.ajax "/device_models/" + id + "/" + "uplink_ports",
 		    type: 'GET'
 		    dataType: 'json'
