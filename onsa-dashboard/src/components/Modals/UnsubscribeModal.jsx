@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { URLs, HTTPDelete } from "../../middleware/api.js";
+import classes from "./Modals.module.css";
 
 class UnsubscribeModal extends React.Component {
   constructor(props) {
@@ -9,7 +10,7 @@ class UnsubscribeModal extends React.Component {
 
     this.state = { confirmed: false };
   }
-  
+
   componentDidUpdate(prevProps) {
     if (prevProps.isOpen !== this.props.isOpen) {
       this.setState({ confirmed: false });
@@ -18,29 +19,26 @@ class UnsubscribeModal extends React.Component {
 
   handleUnsubscribe = () => {
     let serviceId = this.props.service.id;
-    let prevState = this.props.service.prevServState
-    let operationStatus =  null
+    let prevState = this.props.service.prevServState;
+    let operationStatus = null;
 
-    this.props.toggle("unsubscribeModal", "true", serviceId)
+    this.props.toggle("unsubscribeModal", "true", serviceId);
 
     HTTPDelete(URLs["services"] + "/" + serviceId).then(
-      (response) => {
-
-        if (prevState === "in_construction") {
+      response => {
+        if (prevState === "In Construction") {
           operationStatus = "unsubscribeCompleted";
         } else {
           operationStatus = "unsubscribeInProgress";
           this.props.alert(
             "info",
-            "The service with product ID " +
-              serviceId +
-              " is being updated..."
+            "The service with product ID " + serviceId + " is being updated..."
           );
         }
         this.props.serviceHasChanged(serviceId, operationStatus);
       },
       error => {
-        this.props.onUpdateError(error.message, serviceId)
+        this.props.onUpdateError(error.message, serviceId);
       }
     );
   };
@@ -50,24 +48,27 @@ class UnsubscribeModal extends React.Component {
   };
 
   handleInputChange = event => {
-    this.setState({ confirmed : event.target.checked });
+    this.setState({ confirmed: event.target.checked });
   };
 
   render() {
-    const { className } = this.props;
-
     return (
       <Modal
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
-        className={className}
+        className={this.props.className}
         returnFocusAfterClose={false}
-
+        contentClassName={classes.ActionsModal}
       >
-        <ModalHeader toggle={this.handleToggle}>Unsubscribe</ModalHeader>
+        <ModalHeader
+          toggle={this.handleToggle}
+          className={classes.ActionsModalHeader}
+        >
+          Unsubscribe
+        </ModalHeader>
         <ModalBody>
           <div className="col-md-12 order-md-1">
-            <form >
+            <form>
               <div className="col-md-6 mb-1">
                 <label htmlFor="client">Product Id</label>
 
@@ -97,7 +98,7 @@ class UnsubscribeModal extends React.Component {
                 </div>
               </div>
 
-              <ModalFooter>
+              <ModalFooter className={classes.ActionsModalFooter}>
                 <Button
                   className="btn btn-primary"
                   onClick={this.handleUnsubscribe}

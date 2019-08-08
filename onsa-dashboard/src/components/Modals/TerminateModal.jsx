@@ -2,6 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { URLs, HTTPPut } from "../../middleware/api.js";
+import classes from "./Modals.module.css"
+
 
 class TerminateModal extends React.Component {
   handleChange = event => {
@@ -46,10 +48,11 @@ class TerminateModal extends React.Component {
         toggle={this.handleToggle}
         className={className}
         returnFocusAfterClose={false}
+        contentClassName={classes.ActionsModal}
         
       >
-        <ModalHeader toggle={this.handleToggle}>Terminate service</ModalHeader>
-        <ModalBody>
+        <ModalHeader toggle={this.handleToggle} className={classes.ActionsModalHeader} >Terminate service</ModalHeader>
+        <ModalBody >
           <div className="col-md-12 order-md-1">
             <form >
               <div className="row">
@@ -64,7 +67,7 @@ class TerminateModal extends React.Component {
                 </div>
                 
               </div>
-              <ModalFooter>
+              <ModalFooter className={classes.ActionsModalFooter}>
                 <Button
                   className="btn"
                   color="primary"

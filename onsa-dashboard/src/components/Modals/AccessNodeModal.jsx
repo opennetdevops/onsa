@@ -4,6 +4,7 @@ import { URLs, HTTPPost } from "../../middleware/api.js";
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { validationSchema } from "../../components/Validators/ConfigureSCO" ;
+import classes from "./Modals.module.css"
 
 
 
@@ -42,7 +43,7 @@ class AccessNodeModal extends React.Component {
     const serviceId = this.props.service.id;
     let vlanInput = null
 
-    if (this.props.service.type === "tip") {
+    if (this.props.service.type === "TIP") {
       vlanInput = this.state.vlanId
       data = {
         deployment_mode: "automated",
@@ -106,9 +107,10 @@ class AccessNodeModal extends React.Component {
         toggle={this.handleToggle}
         className={className}
         returnFocusAfterClose={false}
+        contentClassName={classes.ActionsModal}
       >
-        <ModalHeader toggle={this.handleToggle}>Activate SCO</ModalHeader>
-        <ModalBody>
+        <ModalHeader toggle={this.handleToggle} className={classes.ActionsModalHeader} >Activate SCO</ModalHeader>
+        <ModalBody >
           <div className="col-md-12 order-md-1">
             <form >
               <div className="row">
@@ -122,7 +124,7 @@ class AccessNodeModal extends React.Component {
                   />
                 </div>
 
-                {this.props.service.type === "tip" ? (
+                {this.props.service.type === "TIP" ? (
                   <div className="col-md-6 mb-3">
                     <label htmlFor="clientId">Vlan ID</label>
                     <input
@@ -138,7 +140,7 @@ class AccessNodeModal extends React.Component {
                   </div>
                 ) : null}
               </div>
-              <ModalFooter>
+              <ModalFooter className={classes.ActionsModalFooter}>
                 <Button
                   color="primary"
                   onClick={this.handleSubmit}

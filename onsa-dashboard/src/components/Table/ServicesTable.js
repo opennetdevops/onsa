@@ -22,7 +22,7 @@ import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
-import RemoveCircle from '@material-ui/icons/RemoveCircle';
+import RemoveCircle from '@material-ui/icons/DeleteRounded';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 // import Refresh from '@material-ui/icons/Refresh';
@@ -37,6 +37,17 @@ import SettingsPower from "@material-ui/icons/SettingsPowerRounded"
 import MaterialTable from 'material-table';
 import classes from "./ServiceTable.module.css";
 
+// const themeTable = createMuiTheme({
+//   overrides: {
+//     MuiTableCell: {
+//       root: {
+//         "&:hover": {
+//           backgroundColor: "rgba(33, 150, 243, 0.5)"
+//         }
+//       }
+//     }
+//   }
+// });
 
 
 const tableIcons = {
@@ -59,161 +70,274 @@ const tableIcons = {
   ViewColumn: () => <ViewColumn />
   };
 
-class ServicesTable extends Component { 
+const cellStyle =      {
+  paddingTop: "0.5rem",
+  paddingRight:"1rem ",
+  paddingBottom: "0.5rem",
+  paddingLeft: "1rem",
+  textAlign:"left",
+  
+} 
+const cellStyleSmall = { 
+  ...cellStyle, paddingRight:"0.5rem", paddingLeft:"2rem", textAlign:"left"//, backgroundColor:"#eee"
+} 
+const headerStyleSmall = {
+  ...cellStyleSmall, textAlign:"left"
+}
+const headerStyleLarge = {
+  ...cellStyle
+}
+const headerStyleXL = {
+  ...cellStyle, width: "15rem"
+}
 
-      // componentDidMount() {
-    //     console.log("[Table DidMount:] ", this.props)
-    // }
+class ServicesTable extends Component {
+  tableRef = React.createRef();
+  
+  state = {
+    mappedServices: []
+  }
 
-    componentDidUpdate() {
-        // console.log("[Table DidUpdate:] ")
-        console.log("[Table DidUpdate:] ", this.props.services[0])
+  componentDidMount() {
+    console.log("[Table DidMount:] ");
+  }
+
+  componentDidUpdate(prevProps) {
+    console.log("[Table DidUpdate:] ");
+    if (prevProps.services !== this.props.services  ) {
+      this.setState({mappedServices: this.mapServicesName(this.props.services)})
     }
 
-    render() {
-      //
-        const servicesMappedNames = this.props.services.map(serv => {
-        let newServ= {...serv}
-        newServ.service_type =  serviceEnum[serv.service_type]
-        newServ.originalServState = serv.service_state
-        newServ.service_state = startCase(lowerCase(serviceStatesEnum[serv.service_state]))
-        newServ.newBW = (newServ.bandwidth == null) ? "-": newServ.bandwidth
-        newServ.newGTS = (newServ.gts_id == null) ? "-": newServ.gts_id  
-        return newServ
-      })
-        return (
-          <div className={classes.tableWrapper}>
-          <MaterialTable
-            icons={tableIcons}
-            columns={[
-              { title: "Product", field: "id" },
-              { title: "GTS", field: "newGTS" },
-              { title: "Service Type", field: "service_type"}, //, lookup: serviceEnum
-              { title: "BW [mbps]", field: "newBW",
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    if (
+      nextProps.services !== this.props.services ||
+      nextState.mappedServices !== this.state.mappedServices
+    ) {
+      console.log(" -- SERVICES CHANGED -- ");
+      return true;
+    }
+    if (nextProps.updatingServices !== this.props.updatingServices) {
+      // console.log(" -- UpdatingLIST CHANGED -- ")
+      return true;
+    }
+    return false;
+  }
 
-              // render: rowdata =>
-              //     rowdata.bandwidth ? rowdata.bandwidth : " - "
-            }, 
-              { title: "State    ", field: "service_state"}, //, lookup: serviceStatesEnum },
-              {
-                field: "isUpdating",
-                searchable: false,
-                filtering:false,
-                export:false,
-                render: rowdata =>
-                  rowdata.isUpdating ? <Spinner /> : null
+  mapServicesName = services => {
+    const servicesMappedNames = services.map(serv => {
+      return this.mapServiceName(serv);
+    });
+    return servicesMappedNames;
+  };
+  mapServiceName = service => {
+    let newServ = { ...service };
+    newServ.service_type = serviceEnum[service.service_type];
+    newServ.originalServState = service.service_state;
+    newServ.service_state = startCase(
+      lowerCase(serviceStatesEnum[service.service_state])
+    );
+    if ("client__name" in newServ) {
+      newServ.client__name =
+        service.client__name.length < 40
+          ? service.client__name
+          : service.client__name.substring(0, 40).concat("..");
+    }
+    newServ.newBW = newServ.bandwidth == null ? "-" : newServ.bandwidth;
+    newServ.newGTS = newServ.gts_id == null ? "-" : newServ.gts_id;
+    return newServ;
+  };
+
+  render() {
+    // const updatingService = !this.props.updatingServices.length;
+    console.log( "[Table Render], services: " );
+
+    return (
+      <div className={classes.tableWrapper}>
+        <MaterialTable
+          style={classes.servicesTable}
+          tableRef={this.tableRef}
+          icons={tableIcons}
+          columns={[
+            {
+              title: "CUIC",
+              field: "client__cuic",
+              cellStyle: cellStyle,
+              headerStyle: headerStyleLarge
+            },
+            {
+              title: "Client Name",
+              field: "client__name",
+              cellStyle: cellStyle,
+              headerStyle: headerStyleXL
+            },
+            {
+              title: "Product",
+              field: "id",
+              cellStyle: cellStyle,
+              headerStyle: headerStyleLarge
+            },
+            {
+              title: "GTS",
+              field: "gts_id",
+              cellStyle: cellStyle,
+              headerStyle: headerStyleLarge
+            },
+            {
+              title: "Service Type",
+              field: "service_type",
+              grouping: false,
+              cellStyle: cellStyleSmall,
+              headerStyle: headerStyleSmall
+            }, //, lookup: serviceEnum
+            {
+              title: "BW [mbps]",
+              field: "bandwidth",
+              grouping: false,
+              cellStyle: cellStyleSmall,
+              headerStyle: headerStyleSmall,
+              customSort: (a, b) => a.bandwidth - b.bandwidth
+            },
+            {
+              title: "State    ",
+              field: "service_state",
+              grouping: false,
+              cellStyle: cellStyle,
+              headerStyle: cellStyle
+            }, //, lookup: serviceStatesEnum },
+            {
+              field: "isUpdating",
+              searchable: false,
+              // defaultSort: "desc",
+              filtering: false,
+              export: false,
+              cellStyle: cellStyleSmall,
+              headerStyle: headerStyleSmall,
+              grouping: false,
+              render: rowdata =>
+                this.props.updatingServices.some(e => e.id === rowdata.id) ? (
+                  <Spinner />
+                ) : null
+            }
+          ]}
+          data={this.state.mappedServices}
+          detailPanel={[
+            {
+              tooltip: " View Resources",
+              render: rowData => {
+                return (
+                  <div style={{ textAlign: "center" }}>
+                    <ResourcesDetailRow
+                      serviceData={rowData}
+                      alert={this.props.alert}
+                    />
+                  </div>
+                );
               }
-            ]}
-            data={servicesMappedNames}
-            detailPanel={[
-              {
-                tooltip: " View Resources",
-                render: rowData => {
-                  return (
-                    <div style={{ textAlign: "center" }}>
-                      <ResourcesDetailRow serviceData={rowData} alert={this.props.alert}
-                      />
-                    </div>
-                  );
-                }
-              }
-            ]}
-            title="Services Dashboard"
-            isLoading={this.props.isLoadingServices}
-            actions={[
-              // config SCO
-              rowdata => ({
-                icon: () => <Settings />,
-                tooltip: "Configure SCO",
-                onClick: (event, rowData) =>
-                  
-                  this.props.onClickedAction(
-                    "anActivate",
-                    rowData.id,
-                    rowData.service_type
-                  ),
-                disabled:
-                  rowdata.originalServState !== "in_construction" ||
-                  rowdata.isUpdating
-              }),
-              // Unsubscribe
-              rowdata => ({
-                icon: () => <RemoveCircle />,
-                tooltip: "Unsubscribe service",
-                onClick: (event, rowData) =>
-                  this.props.onClickedAction(
-                    "unsubscribe",
-                    rowData.id,
-                    rowData.service_type,
-                    rowData.service_state
-                  ),
+            }
+          ]}
+          title="Services Dashboard"
+          isLoading={this.props.isLoadingServices}
+          actions={[
+            // config SCO
+            rowdata => ({
+              icon: () => <Settings />,
+              tooltip: "Configure SCO",
+              onClick: (event, rowData) =>
+                this.props.onClickedAction(
+                  "anActivate",
+                  rowData.id,
+                  rowData.service_type
+                ),
+              disabled:
+                rowdata.originalServState !== "in_construction" ||
+                rowdata.isUpdating
+            }),
 
-                disabled: notDeletableStates.includes(rowdata.originalServState) || rowdata.isUpdating
-                || rowdata.service_type === "Legacy"
-              }),
-              // Terminate
-              rowdata => ({
-                icon: () => <SettingsPower />,
-                tooltip: "Terminate",
-                onClick: (event, rowData) =>
-                  this.props.onClickedAction(
-                    "terminate",
-                    rowData.id,
-                    rowData.service_type
-                  ),
+            // Terminate
+            rowdata => ({
+              icon: () => <SettingsPower />,
+              tooltip: "Terminate",
+              onClick: (event, rowData) =>
+                this.props.onClickedAction(
+                  "terminate",
+                  rowData.id,
+                  rowData.service_type
+                ),
 
-                disabled:
-                  rowdata.originalServState !== "an_activated" ||
-                  rowdata.isUpdating
-              }),
-              //Retry
-              rowdata => ({
-                icon: () => <Loop />,
-                tooltip: "Retry!",
-                onClick: (event, rowData) =>
-                  this.props.onClickedAction(
-                    "retry",
-                    rowData.id,
-                    rowData.service_type
-                  ),
-
-                disabled:
-                  !retryableStates.includes(rowdata.originalServState) ||
-                  rowdata.isUpdating
-              })
-              //refresh all
-              //    {
-              //      icon: () => <Refresh/>,
-              //      tooltip: 'Refresh Data',
-              //      isFreeAction: true,
-              //     //  onClick: this.tableRef.current && this.tableRef.current.onQueryChange()
-              //    }
-            ]}
-            options={{
-              actionsColumnIndex: -1,
-              search: true,
-              filtering: true,
-              exportButton: true,
-              grouping:false,
-              pageSizeOptions:[5,10,20,50 ],
-              headerStyle: {
-                backgroundColor: "#346c97", // '#01579b',
-                color: '#FFF',
-                fontFamily:"Oswald",
-                fontWeight:400,
-                fontSize: "18px",
-                textAlign: "center",
+              disabled:
+                rowdata.originalServState !== "an_activated" ||
+                rowdata.isUpdating
+            }),
+            // Unsubscribe
+            rowdata => ({
+              icon: () => <RemoveCircle />,
+              tooltip: "Unsubscribe service",
+              onClick: (event, rowData) => {
+                this.props.onClickedAction(
+                  "unsubscribe",
+                  rowData.id,
+                  rowData.service_type,
+                  rowData.service_state
+                );
               },
-              rowStyle: {
-                fontFamily: 'Titillium Web',
-                fontSize: "16px"
-              }
-            }}
-          />
-          </div>
-        );
- 
-     }
+
+              disabled:
+                notDeletableStates.includes(rowdata.originalServState) ||
+                rowdata.isUpdating ||
+                rowdata.service_type === "Legacy"
+            }),
+            //Retry
+            rowdata => ({
+              icon: () => <Loop />,
+              tooltip: "Retry!",
+              onClick: (event, rowData) =>
+                this.props.onClickedAction(
+                  "retry",
+                  rowData.id,
+                  rowData.service_type
+                ),
+
+              disabled:
+                !retryableStates.includes(rowdata.originalServState) ||
+                rowdata.isUpdating
+            })
+
+            //refresh all
+            // {
+            //   icon: () => <Refresh />,
+            //   tooltip: "Refresh Data",
+            //   isFreeAction: true,
+            //   onClick: (event, rowData) =>  this.props.refreshData()
+            // }
+          ]}
+          options={{
+            actionsColumnIndex: -1,
+            search: true,
+            filtering: false,
+            sorting: true,
+            exportButton: true,
+            grouping: false, //updatingService
+            pageSize: 5,
+            pageSizeOptions: [5, 10, 20, 50],
+            emptyRowsWhenPaging: false,
+            exportAllData: true,
+            headerStyle: {
+              backgroundColor: "#2b587ab7", 
+              color: "#FFF",
+              fontFamily: "Oswald",
+              fontWeight: 400,
+              fontSize: "18px",
+              textAlign: "center"
+            },
+            rowStyle: {
+              fontFamily: "Titillium Web"
+            }
+          }}
+        />
+      </div>
+    );
+  }
 }
 
 export default ServicesTable;

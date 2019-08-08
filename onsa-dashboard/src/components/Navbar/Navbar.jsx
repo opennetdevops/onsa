@@ -20,7 +20,7 @@ const Navbar = props => {
 
   return (
     <nav className={classNames(className, bsSuffix)} {...attributes} style={{
-		backgroundColor: "#f1f2f6", backgroundImage: `linear-gradient(86deg, #f1f2f6 0%, #c9c6c6 74%)`
+		backgroundColor: "#eee"
 	}}>
       <NavbarToggler
         data-toggle="collapse"
@@ -106,7 +106,7 @@ Navbar.propTypes = {
 
 Navbar.defaultProps = {
   className: "navbar",
-  bsSuffix: "navbar navbar-expand-md navbar-dark fixed-top border-bottom"
-};
+  bsSuffix: "navbar navbar-expand-md fixed-top border-bottom navbar-light"
+}; //navbar-dark
 
 export default Navbar;

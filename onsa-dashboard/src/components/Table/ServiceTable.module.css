@@ -1,5 +1,7 @@
 .tableWrapper{
     font-family: inherit;
+    width: 95vw;
+    background-color: transparent;
 }
 
 .tableWrapper H6 {
@@ -9,5 +11,15 @@
     
 }
 .tableWrapper td {
-    font-size: .9rem;
+    font-size: .8rem;
+    line-break: strict;
+    /* text-transform: capitalize; */
+}
+.tableWrapper button {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.servicesTable {
+    background-color: #f9f9f9 !important;
 }

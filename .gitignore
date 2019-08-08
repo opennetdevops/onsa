@@ -58,3 +58,6 @@ ENV/
 # mypy
 .mypy_cache/
 .DS_Store
+
+# Trashbin
+/.Trash-1000

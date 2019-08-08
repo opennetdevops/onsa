@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { URLs, HTTPPut } from "../../middleware/api.js";
+import classes from "./Modals.module.css"
 
 class RetryModal extends React.Component {
   constructor(props) {
@@ -55,7 +56,7 @@ class RetryModal extends React.Component {
         returnFocusAfterClose={false}
 
       >
-        <ModalHeader toggle={this.handleToggle}>Retry</ModalHeader>
+        <ModalHeader toggle={this.handleToggle} className={classes.ActionsModalHeader}>Retry</ModalHeader>
         <ModalBody>
           <div className="col-md-12 order-md-1">
             <form
@@ -84,7 +85,7 @@ class RetryModal extends React.Component {
                 </div>
               </div>
 
-              <ModalFooter>
+              <ModalFooter className={classes.ActionsModalFooter}>
                 <Button
                   className="btn btn-primary"
                   onClick={this.handleRetry}
