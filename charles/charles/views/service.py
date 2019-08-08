@@ -32,6 +32,12 @@ class ServiceView(View):
             else:
                 charles_service = Service.objects.get(
                     service_id=data['service_id'])
+                # Check if already on target state and
+                # Check if doing some task (means that this request was already triggered)
+                if charles_service.service_state == data['target_state'] or ("_in_progress" in charles_service.service_state):
+                    msg = {MSG_HEADER: MSG_SERVICE_REQUESTED}
+                    return JsonResponse(msg, status=HTTP_201_CREATED)
+
                 logging.debug(
                     f'charles service state: {charles_service.service_state} , last state: {charles_service.last_state}')
                 charles_service.reprocess(
