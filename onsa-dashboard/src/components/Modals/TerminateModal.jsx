@@ -5,7 +5,6 @@ import { URLs, HTTPPut, HTTPGet } from "../../middleware/api.js";
 import classes from "./Modals.module.css";
 import Select from "react-select";
 
-
 class TerminateModal extends React.Component {
   state = {
     brands: [],
@@ -26,14 +25,13 @@ class TerminateModal extends React.Component {
   componentDidMount() {
     HTTPGet(URLs.device_models, this.abortController.signal).then(
       jsonResponse => {
-        console.log("original JSON: ", jsonResponse);
+        // console.log("original JSON: ", jsonResponse);
         this.mapJsonToArrays(jsonResponse);
-        // this.setState({  });
       },
       error => {
-        // if (error.name !== "AbortError"){
-        this.props.alert(false, error.message);
-        // }
+        if (error.name !== "AbortError") {
+          this.props.alert(false, error.message);
+        }
       }
     );
   }
@@ -53,21 +51,12 @@ class TerminateModal extends React.Component {
       });
       const distinctBrands = this.getDistinctValues(brands);
 
-      brands = distinctBrands.map(brand => ({value:brand, label: brand }) )
-      
-      // brands = distinctBrands;
-      // const distinctModels = this.getDistinctValues(models);
-
-      // models = distinctModels;
-
-      console.log("UNIQUE brands: ", brands)
-      console.log("UNIQUE models: ", modelsBrands)
-
+      brands = distinctBrands.map(brand => ({ value: brand, label: brand }));
     }
     this.setState({ modelsBrands: modelsBrands, brands: brands });
   };
 
-  getDistinctValues = array => ( [...new Set(array.map(x => x.value))])
+  getDistinctValues = array => [...new Set(array.map(x => x.value))];
 
   handleSubmit = () => {
     let data = { service_state: "service_activated" };
@@ -86,30 +75,26 @@ class TerminateModal extends React.Component {
   };
 
   handleSelectBrandChange = selectedOption => {
-    let models =[]
-     this.state.modelsBrands.forEach(item => {
+    let models = [];
+    this.state.modelsBrands.forEach(item => {
       if (item.brand === selectedOption.value) {
-        models.push( {value:item.model, label: item.model})
-      } 
-    })
-    console.log("models Calculados. ", models)
-    this.setState({selectedBrand: selectedOption, models:models})
-  }
-  handleSelectModelChange = selectedOption => (this.setState({selectedModel: selectedOption}))
+        models.push({ value: item.model, label: item.model });
+      }
+    });
+    this.setState({ selectedBrand: selectedOption, models: models });
+  };
+  handleSelectModelChange = selectedOption =>
+    this.setState({ selectedModel: selectedOption });
 
   handleToggle = () => {
     this.props.toggle("terminateModal", "true");
   };
 
   render() {
-    const { className } = this.props;
-
-   
     return (
       <Modal
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
-        className={className}
         returnFocusAfterClose={false}
         contentClassName={classes.ActionsModal}
       >
@@ -122,7 +107,6 @@ class TerminateModal extends React.Component {
         <ModalBody>
           <div className="col-md-12 order-md-1">
             <form>
-          
               <div className="form-group row">
                 <label htmlFor="service" className="col-sm-2 col-form-label">
                   Product
@@ -141,19 +125,19 @@ class TerminateModal extends React.Component {
                 <div className="col-md-6 mb-3">
                   <label htmlFor="selectBrand">Brand</label>
                   <Select
-                   options={this.state.brands}
-                   name="selectBrand"
-                   onChange={this.handleSelectBrandChange}
-                   value={this.state.selectedBrand}
-                   />
+                    options={this.state.brands}
+                    name="selectBrand"
+                    onChange={this.handleSelectBrandChange}
+                    value={this.state.selectedBrand}
+                  />
                 </div>
                 <div className="col-md-6 mb-3">
                   <label htmlFor="selectModel">Device Model</label>
                   <Select
-                   options={this.state.models}
-                   name="selectModel"
-                   onChange={this.handleSelectModelChange}
-                   value={this.state.selectedModel}
+                    options={this.state.models}
+                    name="selectModel"
+                    onChange={this.handleSelectModelChange}
+                    value={this.state.selectedModel}
                   />
                 </div>
               </div>
