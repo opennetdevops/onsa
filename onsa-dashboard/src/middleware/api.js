@@ -98,7 +98,8 @@ const URLs = {
   services: process.env.REACT_APP_CORE_URL + "/core/api/services",
   projects: process.env.REACT_APP_CORE_URL + "/core/api/projects",
   locations: process.env.REACT_APP_CORE_URL + "/core/api/locations",
-  clients: process.env.REACT_APP_CORE_URL + "/core/api/clients"
+  clients: process.env.REACT_APP_CORE_URL + "/core/api/clients",
+  device_models: process.env.REACT_APP_CORE_URL + "/core/api/device_models"
 };
 
 const ServiceURLs = (key, serviceID) => {

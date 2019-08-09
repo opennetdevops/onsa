@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { URLs, HTTPPut } from "../../middleware/api.js";
+import { URLs, HTTPPut, HTTPGet } from "../../middleware/api.js";
 import classes from "./Modals.module.css";
 import Select from "react-select";
 
@@ -18,11 +18,61 @@ const models = [
 ];
 
 class TerminateModal extends React.Component {
+  
+  state = {
+    brands: [],
+    models: []
+  }
+
+  abortController = new AbortController()
+
+  
   handleChange = event => {
     const value = event.target.value;
     const name = event.target.name;
     this.setState({ [name]: value });
   };
+
+  componentDidMount() {
+
+    HTTPGet(URLs.device_models, this.abortController.signal).then(
+    
+      jsonResponse => {
+        console.log("original JSON: ", jsonResponse)
+        
+        // this.mapJsonToArrays(jsonResponse);
+        // this.setState({  });
+      },
+       error => {
+        // if (error.name !== "AbortError"){
+        this.props.alert(false, error.message);
+        // }
+      }
+    );
+  }
+  componentWillUnmount() {
+    this.abortController.abort();
+  }
+
+  mapJsonToArrays = devicesJson => { 
+    let models = []
+    let brands = []
+
+    if (devicesJson.length) {
+    devicesJson.forEach(device => {
+      brands.push(
+        { value: device.brand, label: device.brand })
+      
+      models.push(
+        { value: device.model, label: device.model })
+    })
+    }
+    this.setState({models: models, brands: brands})
+  }
+
+  getDeviceOptions = () => {
+
+  }
 
   handleSubmit = () => {
     let data = { service_state: "service_activated" };
@@ -84,11 +134,11 @@ class TerminateModal extends React.Component {
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="selectBrand">Brand</label>
-                  <Select options={brands} name="selectBrand" />
+                  <Select options={this.state.brands} name="selectBrand" />
                 </div>
                 <div className="col-md-6 mb-3">
                   <label htmlFor="selectModel">Device Model</label>
-                  <Select options={models} name="selectModel" />
+                  <Select options={this.state.models} name="selectModel" />
                 </div>
               </div>
               <div className="row">
