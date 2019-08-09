@@ -5,28 +5,28 @@ import { URLs, HTTPPut, HTTPGet } from "../../middleware/api.js";
 import classes from "./Modals.module.css";
 import Select from "react-select";
 
-const brands = [
-  { value: "Cisco", label: "Cisco" },
-  { value: "Transition", label: "Transition" },
-  { value: "Huawei", label: "Huawei" }
-];
+// const brands = [
+//   { value: "Cisco", label: "Cisco" },
+//   { value: "Transition", label: "Transition" },
+//   { value: "Huawei", label: "Huawei" }
+// ];
 
-const models = [
-  { value: "model1", label: "model1" },
-  { value: "model2", label: "model2" },
-  { value: "model3", label: "model3" }
-];
+// const models = [
+//   { value: "model1", label: "model1" },
+//   { value: "model2", label: "model2" },
+//   { value: "model3", label: "model3" }
+// ];
 
 class TerminateModal extends React.Component {
-  
   state = {
     brands: [],
-    models: []
-  }
+    models: [],
+    selectedBrand: null,
+    selectedModel: null
+  };
 
-  abortController = new AbortController()
+  abortController = new AbortController();
 
-  
   handleChange = event => {
     const value = event.target.value;
     const name = event.target.name;
@@ -34,16 +34,13 @@ class TerminateModal extends React.Component {
   };
 
   componentDidMount() {
-
     HTTPGet(URLs.device_models, this.abortController.signal).then(
-    
       jsonResponse => {
-        console.log("original JSON: ", jsonResponse)
-        
-        // this.mapJsonToArrays(jsonResponse);
+        console.log("original JSON: ", jsonResponse);
+        this.mapJsonToArrays(jsonResponse);
         // this.setState({  });
       },
-       error => {
+      error => {
         // if (error.name !== "AbortError"){
         this.props.alert(false, error.message);
         // }
@@ -54,25 +51,29 @@ class TerminateModal extends React.Component {
     this.abortController.abort();
   }
 
-  mapJsonToArrays = devicesJson => { 
-    let models = []
-    let brands = []
+  mapJsonToArrays = devicesJson => {
+    let models = [];
+    let brands = [];
 
     if (devicesJson.length) {
-    devicesJson.forEach(device => {
-      brands.push(
-        { value: device.brand, label: device.brand })
-      
-      models.push(
-        { value: device.model, label: device.model })
-    })
+      devicesJson.forEach(device => {
+        brands.push({ value: device.brand, label: device.brand });
+
+        models.push({ value: device.model, label: device.model });
+      });
+      const distinctBrands = this.getDistinctValues(brands);
+      const distinctModels = this.getDistinctValues(models);
+      brands = distinctBrands;
+      models = distinctModels;
+
+      console.log("UNIQUE brands: ", brands)
+      console.log("UNIQUE models: ", models)
+
     }
-    this.setState({models: models, brands: brands})
-  }
+    this.setState({ models: models, brands: brands });
+  };
 
-  getDeviceOptions = () => {
-
-  }
+  getDistinctValues = array => [...new Set(array.map(x => x.value))];
 
   handleSubmit = () => {
     let data = { service_state: "service_activated" };
@@ -89,6 +90,9 @@ class TerminateModal extends React.Component {
       }
     );
   };
+
+  handleSelectBrandChange = selectedOption => (this.setState({selectedBrand: selectedOption}))
+  handleSelectModelChange = selectedOption => (this.setState({selectedModel: selectedOption}))
 
   handleToggle = () => {
     this.props.toggle("terminateModal", "true");
@@ -109,16 +113,17 @@ class TerminateModal extends React.Component {
           toggle={this.handleToggle}
           className={classes.ActionsModalHeader}
         >
-          Configure CPE 
+          Configure CPE
         </ModalHeader>
         <ModalBody>
           <div className="col-md-12 order-md-1">
             <form>
-              {/* <div className="row">
-                <div className="col-md-6 mb-3"> */}
-                  <div className="form-group row">
-                  <label htmlFor="service" className="col-sm-2 col-form-label">Product</label>
-                  <div className="col-sm-4">
+          
+              <div className="form-group row">
+                <label htmlFor="service" className="col-sm-2 col-form-label">
+                  Product
+                </label>
+                <div className="col-sm-4">
                   <input
                     type="text"
                     className="form-control"
@@ -126,24 +131,31 @@ class TerminateModal extends React.Component {
                     disabled
                     name="service"
                   />
-                  </div>
-
-                  {/* </div>
-                </div> */}
+                </div>
               </div>
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label htmlFor="selectBrand">Brand</label>
-                  <Select options={this.state.brands} name="selectBrand" />
+                  <Select
+                   options={this.state.brands}
+                   name="selectBrand"
+                   onChange={this.handleSelectBrandChange}
+                   value={this.state.selectedBrand}
+                   />
                 </div>
                 <div className="col-md-6 mb-3">
                   <label htmlFor="selectModel">Device Model</label>
-                  <Select options={this.state.models} name="selectModel" />
+                  <Select
+                   options={this.state.models}
+                   name="selectModel"
+                   onChange={this.handleSelectModelChange}
+                   value={this.state.selectedModel}
+                  />
                 </div>
               </div>
               <div className="row">
                 <div className="col-md-6 mb-3">
-                <label htmlFor="client">CPE S/N</label>
+                  <label htmlFor="client">CPE S/N</label>
                   <input
                     type="text"
                     className="form-control"
@@ -151,15 +163,13 @@ class TerminateModal extends React.Component {
                   />
                 </div>
                 <div className="col-md-6 mb-3">
-                <label htmlFor="client"> IP Address  </label>
+                  <label htmlFor="client"> IP Address </label>
                   <input
                     type="text"
                     className="form-control"
                     placeholder="WAN IP address"
                   />
                 </div>
-
-
               </div>
 
               <ModalFooter className={classes.ActionsModalFooter}>
