@@ -141,6 +141,18 @@ def get_device_model(device_model_id):
     else:
         raise DeviceModelException("Unable to fetch device model.", status_code=r.status_code)
 
+
+def get_device_models():
+    url = settings.INVENTORY_URL + "device_models"
+    token = get_inventory_authentication_token()
+    rheaders = { 'Content-Type': 'application/json' , 'Authorization': 'Bearer ' + token}
+    r = requests.get(url, auth = None, verify = False, headers = rheaders)
+        
+    if r.json() and r.status_code == HTTP_200_OK:
+        return r.json()
+    else:
+        raise DeviceModelException("Unable to fetch device models.", status_code=r.status_code)
+
 def get_free_access_port(location_id):
     url = settings.INVENTORY_URL + "locations/"+ str(location_id) + "/access_ports?used=false"
     token = get_inventory_authentication_token()

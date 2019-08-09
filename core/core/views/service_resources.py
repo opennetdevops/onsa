@@ -34,12 +34,6 @@ class ServiceResourcesView(APIView):
                 "cuic": client['cuic'],
                 "customer_location": customer_location['address']
             }
-            # if 'client_node_sn' in service.keys():
-            #     client_node = get_client_node(service['client_node_sn'])
-
-            #     resources["client_node"] = {"model": client_node['model'],
-            #                                 "wan_port": client_node['uplink_port'],
-            #                                 "SN": client_node['serial_number']}
             return resources
 
         router_node = get_router_node(service['router_node_id'])

@@ -33,7 +33,7 @@ urlpatterns = [
     path('/api/login', obtain_ldap_jwt_token),
     path('/api/services', require_http_methods(["GET", "POST"])(service_view)),
     path('/api/services/<str:service_id>',
-         require_http_methods(["GET", "PUT","DELETE"])(service_view)),
+         require_http_methods(["GET", "PUT", "DELETE"])(service_view)),
     path('/api/services/<str:service_id>/activation',
          require_http_methods(["POST"])(service_activation_view)),
     path('/api/services/<str:service_id>/resources',
@@ -57,20 +57,18 @@ urlpatterns = [
          require_http_methods(["GET", "PUT", "DELETE"])(vrfs_view)),
     path('/api/multiclient_access_ports',
          require_http_methods(["GET"])(multiclient_access_ports)),
+    path('/api/device_models',
+         require_http_methods(["GET"])(device_models_view)),
 
     # Test for Monitoring
 
     path('/api/monitoring/<str:service_id>/status',
-        require_http_methods(["GET"])(status_monitoring_view)),
+         require_http_methods(["GET"])(status_monitoring_view)),
     path('/api/monitoring/<str:service_id>/traffic',
-        require_http_methods(["GET"])(traffic_monitoring_view)),
+         require_http_methods(["GET"])(traffic_monitoring_view)),
 
 
 
     # Swagger Routes
-    url('/swagger', schema_view.with_ui('swagger',
-                                        cache_timeout=0), name='schema-swagger-ui'),
-    url('/api', schema_view.with_ui('swagger', cache_timeout=0)),
-    url('/api/docs', schema_view.with_ui('swagger', cache_timeout=0)),
-    url('/docs', schema_view.with_ui('swagger', cache_timeout=0)),
+    url('/api', schema_view.with_ui('swagger', cache_timeout=0))
 ]
