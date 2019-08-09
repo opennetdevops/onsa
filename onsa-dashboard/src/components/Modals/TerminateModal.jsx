@@ -5,22 +5,12 @@ import { URLs, HTTPPut, HTTPGet } from "../../middleware/api.js";
 import classes from "./Modals.module.css";
 import Select from "react-select";
 
-// const brands = [
-//   { value: "Cisco", label: "Cisco" },
-//   { value: "Transition", label: "Transition" },
-//   { value: "Huawei", label: "Huawei" }
-// ];
-
-// const models = [
-//   { value: "model1", label: "model1" },
-//   { value: "model2", label: "model2" },
-//   { value: "model3", label: "model3" }
-// ];
 
 class TerminateModal extends React.Component {
   state = {
     brands: [],
     models: [],
+    modelsBrands: [],
     selectedBrand: null,
     selectedModel: null
   };
@@ -52,28 +42,32 @@ class TerminateModal extends React.Component {
   }
 
   mapJsonToArrays = devicesJson => {
-    let models = [];
     let brands = [];
+    let modelsBrands = [];
 
     if (devicesJson.length) {
       devicesJson.forEach(device => {
         brands.push({ value: device.brand, label: device.brand });
 
-        models.push({ value: device.model, label: device.model });
+        modelsBrands.push({ brand: device.brand, model: device.model });
       });
       const distinctBrands = this.getDistinctValues(brands);
-      const distinctModels = this.getDistinctValues(models);
-      brands = distinctBrands;
-      models = distinctModels;
+
+      brands = distinctBrands.map(brand => ({value:brand, label: brand }) )
+      
+      // brands = distinctBrands;
+      // const distinctModels = this.getDistinctValues(models);
+
+      // models = distinctModels;
 
       console.log("UNIQUE brands: ", brands)
-      console.log("UNIQUE models: ", models)
+      console.log("UNIQUE models: ", modelsBrands)
 
     }
-    this.setState({ models: models, brands: brands });
+    this.setState({ modelsBrands: modelsBrands, brands: brands });
   };
 
-  getDistinctValues = array => [...new Set(array.map(x => x.value))];
+  getDistinctValues = array => ( [...new Set(array.map(x => x.value))])
 
   handleSubmit = () => {
     let data = { service_state: "service_activated" };
@@ -91,7 +85,16 @@ class TerminateModal extends React.Component {
     );
   };
 
-  handleSelectBrandChange = selectedOption => (this.setState({selectedBrand: selectedOption}))
+  handleSelectBrandChange = selectedOption => {
+    let models =[]
+     this.state.modelsBrands.forEach(item => {
+      if (item.brand === selectedOption.value) {
+        models.push( {value:item.model, label: item.model})
+      } 
+    })
+    console.log("models Calculados. ", models)
+    this.setState({selectedBrand: selectedOption, models:models})
+  }
   handleSelectModelChange = selectedOption => (this.setState({selectedModel: selectedOption}))
 
   handleToggle = () => {
@@ -101,6 +104,7 @@ class TerminateModal extends React.Component {
   render() {
     const { className } = this.props;
 
+   
     return (
       <Modal
         isOpen={this.props.isOpen}
