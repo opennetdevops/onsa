@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { URLs, HTTPPut, HTTPGet } from "../../middleware/api.js";
 import classes from "./Modals.module.css";
 import Select from "react-select";
 import { VALIDATAIONSCHEMA } from "../Validators/ConfigureCPE";
 import FormAlert from "../Form/FormAlert";
+import Button from '@material-ui/core/Button';
 
 
 class TerminateModal extends React.Component {
@@ -150,7 +151,7 @@ class TerminateModal extends React.Component {
         isOpen={this.props.isOpen}
         toggle={this.handleToggle}
         returnFocusAfterClose={false}
-        contentClassName={classes.ActionsModal}
+        contentClassName={classes.CustomerLocationModal}
       >
         <ModalHeader
           toggle={this.handleToggle}
@@ -231,13 +232,17 @@ class TerminateModal extends React.Component {
 
               <ModalFooter className={classes.ActionsModalFooter}>
                 <Button
-                  className="btn"
+                  // className="btn"
+                  // color="primary"
+                  // variant="outlined"
                   color="primary"
                   onClick={this.handleSubmit}
+                  className={classes.ModalActionButton}
+                
                 >
                   Continue
                 </Button>
-                <Button color="secondary" onClick={this.handleToggle}>
+                <Button color="secondary" onClick={this.handleToggle} className={classes.ModalActionButton}>
                   Close
                 </Button>
               </ModalFooter>

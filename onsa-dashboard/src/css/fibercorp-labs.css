@@ -227,6 +227,7 @@ p .navbar-font {
 
 .confirmCustomButton{
   font-weight: bold;
+  outline:none !important;
 }
 
 @media (max-width:1024px) {
