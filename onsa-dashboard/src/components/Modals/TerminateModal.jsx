@@ -8,11 +8,10 @@ import { VALIDATAIONSCHEMA } from "../Validators/ConfigureCPE";
 import FormAlert from "../Form/FormAlert";
 import Button from '@material-ui/core/Button';
 
-
 class TerminateModal extends React.Component {
   state = {
     brands: [],
-    dialogShow:false,
+    dialogShow: false,
     models: [],
     modelsBrands: [],
     ipAddress: "",
@@ -38,10 +37,15 @@ class TerminateModal extends React.Component {
   }
   componentDidUpdate(prevProps) {
     if (prevProps.isOpen !== this.props.isOpen) {
-      this.setState({ dialogShow: false });
-     }
+      this.setState({
+        dialogShow: false,
+        selectedBrand: "",
+        selectedModel: "",
+        serialNumber: "",
+        ipAddress: ""
+      });
+    }
   }
-
 
   handleChange = event => {
     const value = event.target.value;
@@ -70,8 +74,9 @@ class TerminateModal extends React.Component {
       devicesJson.forEach(device => {
         brands.push({ value: device.brand, label: device.brand });
 
-        modelsBrands.push({ brand: device.brand, model: device.model });
-      });
+        modelsBrands.push({ id: device.id, brand: device.brand, model: device.model });
+       });
+      
       const distinctBrands = this.getDistinctValues(brands);
 
       brands = distinctBrands.map(brand => ({ value: brand, label: brand }));
@@ -82,30 +87,41 @@ class TerminateModal extends React.Component {
   getDistinctValues = array => [...new Set(array.map(x => x.value))];
 
   handleSubmit = () => {
-    let data = { service_state: "service_activated" }; // TODO
     const serviceId = this.props.service.id;
 
-    let validateData = {
-      ...data,
+    let dataToValidate = {
       serialNumber: this.state.serialNumber,
       ipAddress: this.state.ipAddress,
       brand: this.state.selectedBrand.label,
       model: this.state.selectedModel.label
     };
 
+
     VALIDATAIONSCHEMA()
-      .validate(validateData)
+      .validate(dataToValidate)
       .then(
         () => {
           this.props.toggle("terminateModal", "true", serviceId);
-          // this.submitRequest( serviceId, data); // TODO validateData
-          console.log("SUCCESS GO SUBMIT");
+          
+          let selectedDeviceModel = this.state.modelsBrands.find(
+            dModel =>
+              dModel.brand === dataToValidate.brand &&
+              dModel.model === dataToValidate.model
+          );
+
+          let data = {
+            service_state: "service_activated",
+            serial_number: dataToValidate.serialNumber,
+            ip_address: dataToValidate.ipAddress,
+            device_model_id: selectedDeviceModel.id
+          };
+
+          console.log("SUCCESS GO SUBMIT: ", data );
+          // this.submitRequest( serviceId, data); 
         },
         err => {
           // this.props.alert(false, err.message, "Validation Error: ");
           this.showAlertBox(false, err.message, "Validation Error: ");
-
-          // this.props.toggle("terminateModal", "true");
         }
       );
   };
@@ -129,7 +145,11 @@ class TerminateModal extends React.Component {
         models.push({ value: item.model, label: item.model });
       }
     });
-    this.setState({ selectedBrand: selectedOption, models: models });
+    this.setState({
+      selectedBrand: selectedOption,
+      models: models,
+      selectedModel: ""
+    });
   };
 
   handleInputChange = event => {
@@ -152,6 +172,7 @@ class TerminateModal extends React.Component {
         toggle={this.handleToggle}
         returnFocusAfterClose={false}
         contentClassName={classes.CustomerLocationModal}
+        size="lg"
       >
         <ModalHeader
           toggle={this.handleToggle}
@@ -232,17 +253,17 @@ class TerminateModal extends React.Component {
 
               <ModalFooter className={classes.ActionsModalFooter}>
                 <Button
-                  // className="btn"
-                  // color="primary"
-                  // variant="outlined"
                   color="primary"
                   onClick={this.handleSubmit}
                   className={classes.ModalActionButton}
-                
                 >
                   Continue
                 </Button>
-                <Button color="secondary" onClick={this.handleToggle} className={classes.ModalActionButton}>
+                <Button
+                  color="secondary"
+                  onClick={this.handleToggle}
+                  className={classes.ModalActionButton}
+                >
                   Close
                 </Button>
               </ModalFooter>
