@@ -48,4 +48,13 @@
    
  }
 
+ .ModalSubtitle {
+   font-weight: 300 !important;
+   font-size:  1.0rem;
+   display: block;
+   margin-left: 0.2rem;
+   margin-top: 0.2rem;
+   
+ }
+
  

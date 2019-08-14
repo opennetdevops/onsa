@@ -37,7 +37,7 @@ class TerminateModal extends React.Component {
   }
   componentDidUpdate(prevProps) {
     if (prevProps.isOpen !== this.props.isOpen) {
-      this.setState({
+       this.setState({
         dialogShow: false,
         selectedBrand: "",
         selectedModel: "",
@@ -174,11 +174,10 @@ class TerminateModal extends React.Component {
         contentClassName={classes.CustomerLocationModal}
         size="lg"
       >
-        <ModalHeader
+        <ModalHeader 
           toggle={this.handleToggle}
           className={classes.ActionsModalHeader}
-        >
-          Configure CPE
+        > Configure CPE <div className={classes.ModalSubtitle} > Product Id: {this.props.service.id} </div >
         </ModalHeader>
         <ModalBody>
           <div className="row justify-content-center">
@@ -189,25 +188,9 @@ class TerminateModal extends React.Component {
               msgLabel={this.state.dialogLabel}
             />
           </div>
-
-          <div className="col-md-12 order-md-1">
             <form>
-              <div className="form-group row">
-                <label htmlFor="service" className="col-sm-2 col-form-label">
-                  Product
-                </label>
-                <div className="col-sm-4">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder={this.props.service.id}
-                    disabled
-                    name="service"
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
+              <div className="row justify-content-center">
+                <div className="col-md-6 col-lg-5 mb-3">
                   <label htmlFor="selectBrand">Brand</label>
                   <Select
                     options={this.state.brands}
@@ -216,7 +199,7 @@ class TerminateModal extends React.Component {
                     value={this.state.selectedBrand}
                   />
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-md-6 col-lg-5 mb-3">
                   <label htmlFor="selectModel">Device Model</label>
                   <Select
                     options={this.state.models}
@@ -225,9 +208,8 @@ class TerminateModal extends React.Component {
                     value={this.state.selectedModel}
                   />
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 mb-3">
+             
+                <div className="col-md-6 col-lg-5 mb-3">
                   <label htmlFor="serialNumber">CPE S/N</label>
                   <input
                     type="text"
@@ -238,7 +220,7 @@ class TerminateModal extends React.Component {
                     onChange={this.handleInputChange}
                   />
                 </div>
-                <div className="col-md-6 mb-3">
+                <div className="col-md-6 col-lg-5 mb-3">
                   <label htmlFor="ipAddress"> IP Address </label>
                   <input
                     type="text"
@@ -268,8 +250,7 @@ class TerminateModal extends React.Component {
                 </Button>
               </ModalFooter>
             </form>
-          </div>
-        </ModalBody>
+             </ModalBody>
       </Modal>
     );
   }
