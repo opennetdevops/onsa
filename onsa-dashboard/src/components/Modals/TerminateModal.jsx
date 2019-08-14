@@ -120,7 +120,6 @@ class TerminateModal extends React.Component {
           // this.submitRequest( serviceId, data); 
         },
         err => {
-          // this.props.alert(false, err.message, "Validation Error: ");
           this.showAlertBox(false, err.message, "Validation Error: ");
         }
       );
