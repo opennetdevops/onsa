@@ -1,2 +1,0 @@
-./stop.sh
-./run.sh
