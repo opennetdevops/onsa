@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 .vscode
 *.ipynb
-
+scripts/
 # Postgres DB volume
 volumes/postgres/
 

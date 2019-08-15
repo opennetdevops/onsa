@@ -1,4 +1,0 @@
-flask
-mongoengine
-configparser
-flask_expects_json

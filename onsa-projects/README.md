@@ -1,2 +1,0 @@
-# onsa-project-manager
-
