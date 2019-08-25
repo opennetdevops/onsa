@@ -27,7 +27,7 @@ class App extends React.Component {
   handleNavbar = (value) => {
     this.setState({'isLogin': value});
   }
-//Test comment - - delete it
+
   render() {
 
     return (
